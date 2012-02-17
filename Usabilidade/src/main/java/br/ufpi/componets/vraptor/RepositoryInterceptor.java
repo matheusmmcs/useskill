@@ -1,4 +1,4 @@
-package br.ufpi.componets;
+package br.ufpi.componets.vraptor;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;

@@ -6,7 +6,6 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.repositories.TesteRepository;
-import br.ufpi.repositories.UsuarioRepository;
 
 @Resource
 public class TesteController {

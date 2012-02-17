@@ -1,6 +1,5 @@
 package br.ufpi.controllers;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.mail.EmailException;
@@ -15,8 +14,6 @@ import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
-import br.ufpi.repositories.UsuarioRepositoryImpl;
-import br.ufpi.util.Criptografa;
 import br.ufpi.util.EmailUtils;
 import br.ufpi.util.Mensagem;
 
@@ -49,10 +46,11 @@ public class UsuarioController {
 			}
 			});
 		validator.onErrorUsePageOf(this).newUsuario();
-		usuario.setSenha( Criptografa.criptografar(usuario.getSenha()));
+		usuario.criptografarSenhaGerarConfimacaoEmail();
+		/*usuario.setSenha( Criptografa.criptografar(usuario.getSenha()));
 		do{
 			usuario.setConfirmacaoEmail(Criptografa.criptografar(new Date().toString()));
-		}while(usuarioRepository.isContainConfirmacaoEmail(usuario.getConfirmacaoEmail()));
+		}while(usuarioRepository.isContainConfirmacaoEmail(usuario.getConfirmacaoEmail()));*/
 		usuarioRepository.create(usuario);
 		result.redirectTo(this).index();
 	}
