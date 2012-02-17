@@ -1,16 +1,13 @@
 package br.ufpi.componets.vraptor;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
-import org.hibernate.cfg.Configuration;
-
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.ComponentFactory;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import org.hibernate.cfg.Configuration;
 
 @ApplicationScoped
 @Component

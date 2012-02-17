@@ -4,6 +4,7 @@ import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.SessionScoped;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
+import javax.annotation.PreDestroy;
 
 @Component
 @SessionScoped
@@ -26,6 +27,7 @@ public class UsuarioLogado {
 		return usuario != null;
 	}
 
+        @PreDestroy
 	public void logout() {
 		usuario = null;
 		setTeste(null);

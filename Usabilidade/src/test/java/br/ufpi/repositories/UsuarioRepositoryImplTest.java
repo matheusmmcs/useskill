@@ -37,6 +37,7 @@ public class UsuarioRepositoryImplTest {
     /**
      * Test of logar method, of class UsuarioRepositoryImpl.
      */
+    @Ignore
     @Test
     public void tesCriarUsuario() {
 
