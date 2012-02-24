@@ -32,6 +32,7 @@ public class Acao implements Serializable {
     private String tagClass;
     private String tagName;
     private String tagValue;
+    private int posicaoPaginaY;
     private int posicaoPaginaX;
     @Column(length = 20)
     private String tagType;
@@ -51,7 +52,6 @@ public class Acao implements Serializable {
     public void setPosicaoPaginaY(int posicaoPaginaY) {
         this.posicaoPaginaY = posicaoPaginaY;
     }
-    private int posicaoPaginaY;
 
     public Fluxo getFluxo() {
         return fluxo;

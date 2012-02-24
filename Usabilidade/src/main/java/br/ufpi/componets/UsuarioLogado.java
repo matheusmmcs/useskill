@@ -13,6 +13,7 @@ public class UsuarioLogado {
 	private Teste teste;
 
 	public UsuarioLogado( ) {
+	
 	}
 
 	public Usuario getPessoa() {
@@ -27,7 +28,7 @@ public class UsuarioLogado {
 		return usuario != null;
 	}
 
-        @PreDestroy
+       @PreDestroy
 	public void logout() {
 		usuario = null;
 		setTeste(null);
@@ -40,5 +41,6 @@ public class UsuarioLogado {
 	public void setTeste(Teste teste) {
 		this.teste = teste;
 	}
+	
 
 }

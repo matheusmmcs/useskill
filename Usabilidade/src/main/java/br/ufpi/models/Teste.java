@@ -18,7 +18,7 @@ public class Teste implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	@OneToMany(mappedBy = "teste")
+	@OneToMany(mappedBy = "teste",cascade=CascadeType.ALL)
 	private List<Tarefa> tarefas;
 	@OneToOne(cascade = CascadeType.ALL)
 	private Questionario caracterizacao;
@@ -112,6 +112,15 @@ public class Teste implements Serializable {
 
 	public void setTitulo(String titulo) {
 		this.titulo = titulo;
+	}
+
+	@Override
+	public String toString() {
+		return "Teste [id=" + id + ", tarefas=" + tarefas + ", caracterizacao="
+				+ caracterizacao + ", satisfacao=" + satisfacao
+				+ ", usuarioCriador=" + usuarioCriador + ", titulo=" + titulo
+				+ ", tituloPublico=" + tituloPublico + ", textoIndroducao="
+				+ textoIndroducao + "]";
 	}
 
 }

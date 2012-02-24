@@ -14,5 +14,5 @@ public interface TesteRepository {
 	Teste find(Long id);
 
 	List<Teste> findAll();
-
+ void saveUpdate(Teste entity);
 }

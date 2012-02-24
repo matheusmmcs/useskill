@@ -18,7 +18,7 @@ public class EmailUtils {
 
     private static final String HOSTNAME = "smtp.gmail.com";
     private static final String USERNAME = "cleitonmoura18@gmail.com";
-    private static final String PASSWORD = "cl170532";
+    private static final String PASSWORD = "";
     private static final String EMAILORIGEM = "cleitonmoura18@gmail.com";
     private HtmlEmail email;
 

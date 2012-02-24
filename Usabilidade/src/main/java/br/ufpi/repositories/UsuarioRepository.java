@@ -19,9 +19,12 @@ public interface UsuarioRepository {
 	Usuario find(Long id);
 
 	List<Usuario> findAll();
+
 	/**
 	 * Procura um usuario pelo email.
-	 * @param email Email de um usuario
+	 * 
+	 * @param email
+	 *            Email de um usuario
 	 * @return Usuario que possui email igual
 	 */
 	Usuario findEmail(String email);
@@ -44,25 +47,40 @@ public interface UsuarioRepository {
 	 *         tiver usuario retorna null.
 	 */
 	Usuario findConfirmacaoEmail(String confirmacaoEmail);
+
 	/**
 	 * Devolve todos os testes criados de um usuario.
+	 * 
 	 * @param usuario
 	 * @return
 	 */
 	List<Teste> findTesteCriados(Usuario usuario);
+
 	/**
 	 * Procura por todos os testes participados de um usuario
+	 * 
 	 * @param usuario
 	 * @return
 	 */
 	List<Teste> findTestesParticipados(Usuario usuario);
+
 	/**
 	 * Analisa se no banco de dados contem o email inserido.
-	 * @param email Email que esta procurando.
+	 * 
+	 * @param email
+	 *            Email que esta procurando.
 	 * @return True se contem o email busacado
 	 */
 	boolean isContainsEmail(String email);
 
+	/**
+	 * Analisa se algum usuario já possui confirmação de email igual.
+	 * 
+	 * @param confirmacaoEmail
+	 * @author Cleiton
+	 *            analisa se a String buscada, possui algum usuario com a mesma.
+	 * @return True se já possuir este email e False caso contrario.
+	 */
 	boolean isContainConfirmacaoEmail(String confirmacaoEmail);
 
 }

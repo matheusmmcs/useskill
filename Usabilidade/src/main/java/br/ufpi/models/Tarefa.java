@@ -25,9 +25,9 @@ public class Tarefa implements Serializable {
     @OneToMany(mappedBy = "tarefa",cascade=CascadeType.ALL)
     private List<Impressao> impressoes;
     @OneToOne(cascade=CascadeType.ALL)
-    private Fluxo fluxoIdeal;
+    private FluxoIdeal fluxoIdeal;
     @OneToMany(cascade=CascadeType.ALL)
-    private List< Fluxo> fluxoUsuario;
+    private List< FluxoUsuario> fluxoUsuario;
     @ManyToOne(cascade = CascadeType.REFRESH)
     private Teste teste;
 
@@ -43,15 +43,15 @@ public class Tarefa implements Serializable {
         return fluxoIdeal;
     }
 
-    public void setFluxoIdeal(Fluxo fluxoIdeal) {
+    public void setFluxoIdeal(FluxoIdeal fluxoIdeal) {
         this.fluxoIdeal = fluxoIdeal;
     }
 
-    public List<Fluxo> getFluxoUsuario() {
+    public List<FluxoUsuario> getFluxoUsuario() {
         return fluxoUsuario;
     }
 
-    public void setFluxoUsuario(List<Fluxo> fluxoUsuario) {
+    public void setFluxoUsuario(List<FluxoUsuario> fluxoUsuario) {
         this.fluxoUsuario = fluxoUsuario;
     }
 
@@ -85,6 +85,12 @@ public class Tarefa implements Serializable {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+
+	@Override
+	public String toString() {
+		return "Tarefa [id=" + id + ", nome=" + nome + ", roteiro=" + roteiro
+				+ "]";
 	}
 
   

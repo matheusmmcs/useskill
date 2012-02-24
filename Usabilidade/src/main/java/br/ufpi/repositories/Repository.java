@@ -24,7 +24,13 @@ public abstract class Repository<T, I extends Serializable> {
 	public void create(T entity) {
 		session.persist(entity);
 	}
-	
+	/**
+	 * Usado para salvar ou atualizar objeto.
+	 * @param entity
+	 */
+	public void saveUpdate(T entity) {
+		session.saveOrUpdate(entity);
+	}
 	@SuppressWarnings("unchecked")
 	public T update(T entity) {
 		return (T) session.merge(entity);

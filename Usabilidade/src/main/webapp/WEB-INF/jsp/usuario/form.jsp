@@ -14,6 +14,10 @@
     <input type="text" name="usuario.nome" value="${usuario.nome}" id="nome"/>
     Email:
     <input type="text" name="usuario.email" value="${usuario.email}"/>
+    Telefone:
+   				<input type="text" name="usuarios.telefones[${status.index}]" value="${telefones}" />
+		
+    <input type="text" name="usuario.telefones[0]" value="${usuario.telefones[0]}"/>
     Senha:
     <input type="password" name="usuario.senha" id="usuario.senha" value="${usuario.senha}"/>
     Confirma Senha:
@@ -23,5 +27,4 @@
     </div>
 </form>
 
-<a href="${pageContext.request.contextPath}/usuarios">Back</a>
-</script>
+<a href="${pageContext.request.contextPath}/login">Back</a>

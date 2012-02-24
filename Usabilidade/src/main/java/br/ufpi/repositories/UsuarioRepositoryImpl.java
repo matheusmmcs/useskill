@@ -23,7 +23,7 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 	public Usuario logar(String email, String senha) {
 		Criteria criteria = session.createCriteria(Usuario.class);
 		criteria.add(Restrictions.eq("email", email));
-		criteria.add(Restrictions.eq("senha", Criptografa.criptografar(senha)));
+		criteria.add(Restrictions.eq("senha", senha));
 		return (Usuario) criteria.uniqueResult();
 	}
 
