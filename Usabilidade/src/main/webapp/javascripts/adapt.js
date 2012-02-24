@@ -1,9 +1,18 @@
 (function (adpt) {
-    var linkPagina = removeUltimaBarra(adpt("#usabilidadeApelation").html())
+    //supondo:http://localhost:8084/usabilidade/?url=http://www.google.com/images/
+    //http://www.google.com/images
+    var linkPagina = removeUltimaBarra(getUrlVars()["url"])
+    //http://www.google.com
     var linkRaizPagina = removeUltimaBarra(getRaizPagina())//+"/easy"
+    //http://localhost:8084/usabilidade/?url=http://www.google.com/images
     var linkServidor = removeUltimaBarra(location.href)
+    //http://localhost:8084
     var linkRaizServidor = removeUltimaBarra(getPaginaRaizServidor())
+    //http://localhost:8084/usabilidade
+    var linkHostPath = removeUltimaBarra(location.host+location.pathname);
     var i;            
+       
+    //alert("linkPagina: "+linkPagina+"\nlinkRaizPagina: "+linkRaizPagina+"\nlinkServidor: "+linkServidor+"\nlinkRaizServidor: "+linkRaizServidor+"\nlinkHostPath: "+linkHostPath)
        
     var links = adpt("link[href]")
     corrigeRedirect(links, "href")
@@ -18,7 +27,7 @@
     var a = adpt("a[href]")
     corrigeRedirect(a, "href")
     for(var i=0; i<a.length; i++){
-        a[i].href = "http://localhost:8084/Crawler/?url="+a[i].href
+        a[i].href = linkHostPath+"/?url="+a[i].href
     }                
                 
     var forms = adpt("form[action]")
@@ -98,7 +107,9 @@
     * retorno = http://www.google.com
     */
     function getRaizPagina(){
-        var paginaCarregada = adpt("#usabilidadeApelation").html()
+        //url carregada (?url=)
+        var paginaCarregada = linkPagina
+        //quebro a url
         var regex = new RegExp('(http://[a-z|.|0-9]*)')
         if(regex.test(paginaCarregada)){
             return paginaCarregada.match(regex)[0]
@@ -132,5 +143,19 @@
         }else{
             return string
         }
+    }
+    
+    // Read a page's GET URL variables and return them as an associative array.
+    function getUrlVars()
+    {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for(var i = 0; i < hashes.length; i++)
+        {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
     }
 })(jQuery);

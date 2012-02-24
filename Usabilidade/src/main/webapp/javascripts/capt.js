@@ -182,6 +182,6 @@
         }).done(function( msg ) {
             alert("Dados: " + msg);
         });
-        alert(dados);
+        //alert(dados);
     }
 })(jQuery);

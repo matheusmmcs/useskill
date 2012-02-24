@@ -82,4 +82,9 @@ public class TesteController {
 	// TODO Decidir se vai ser usado o id ou a seção
 	public void criarPergunta() {
 	}
+        
+        @Get()
+        public void realizarTeste(){
+            
+        }
 }
