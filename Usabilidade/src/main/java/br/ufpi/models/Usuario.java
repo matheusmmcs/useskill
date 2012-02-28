@@ -12,6 +12,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -50,9 +51,9 @@ public class Usuario implements Serializable {
 	private boolean emailConfirmado;
 	@Column(length = 32, unique = true)
 	private String confirmacaoEmail;
-	@OneToMany(mappedBy = "usuarioCriador", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "usuarioCriador", cascade = CascadeType.ALL,fetch=FetchType.LAZY)
 	private List<Teste> testesCriados;
-	@ManyToMany(mappedBy = "usuariosParticipantes")
+	@ManyToMany(mappedBy = "usuariosParticipantes",fetch=FetchType.LAZY)
 	private List<Teste> testesParticipados;
 	@Transient
 	private UsuarioRepository usuarioRepository;

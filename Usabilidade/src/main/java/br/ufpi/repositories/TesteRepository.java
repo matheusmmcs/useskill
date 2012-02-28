@@ -14,5 +14,13 @@ public interface TesteRepository {
 	Teste find(Long id);
 
 	List<Teste> findAll();
- void saveUpdate(Teste entity);
+
+	void saveUpdate(Teste entity);
+	/**
+	 * procura por teste criado pelo usuario
+	 * @param idUsuario id do usuario que criou o teste
+	 * @param idTeste id do teste procurado
+	 * @return Teste caso o teste seja do idUsuario seja o criador do teste e null se não encontrar
+	 */
+	Teste testCriado(Long idUsuario, Long idTeste);
 }

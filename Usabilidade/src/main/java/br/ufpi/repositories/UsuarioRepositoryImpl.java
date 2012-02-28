@@ -67,4 +67,6 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 		return false;
 	}
 
+	
+
 }

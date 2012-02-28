@@ -82,5 +82,6 @@ public interface UsuarioRepository {
 	 * @return True se já possuir este email e False caso contrario.
 	 */
 	boolean isContainConfirmacaoEmail(String confirmacaoEmail);
+	
 
 }

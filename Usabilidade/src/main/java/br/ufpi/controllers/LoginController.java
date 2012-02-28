@@ -51,7 +51,7 @@ public class LoginController {
         String senhaCriptografada = Criptografa.criptografar(senha);
         Usuario pessoa = usuarioRepository.logar(email, senhaCriptografada);
         if (pessoa != null) {
-            usuarioLogado.setPessoa(pessoa);
+            usuarioLogado.setUsuario(pessoa);
          } else {
             validator.checking(new Validations() {
 

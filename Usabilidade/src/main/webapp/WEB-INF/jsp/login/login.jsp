@@ -5,20 +5,24 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Login</title>
+
     </head>
     <body>
         <c:forEach var="error" items="${errors}">
-           ${error.message}<br />
+            ${error.message}<br />
         </c:forEach>
         ${error }
         <form id="loginForm"
               action="${pageContext.request.contextPath}/conta" method="post">
 
             <fmt:message key="email" />
-            * : <input type="text" name="email" class="required"/> <br />
+            * : <input type="text" name="email" class="required" id="email"/> <br />
             <fmt:message key="senha" />
-            *: <input type="password" name="senha" /><br /> <input type="submit"
-                                                                   value=<fmt:message key="entrar" /> />
+            *: <input type="password" name="senha" id="senha"/><br /> <input type="submit"
+                                                                             value=<fmt:message key="entrar" />
+                                                                             />
+
         </form>
+
     </body>
 </html>
