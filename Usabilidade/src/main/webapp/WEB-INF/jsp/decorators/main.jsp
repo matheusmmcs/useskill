@@ -8,16 +8,11 @@
         <title><decorator:title default="Vraptor Scaffold"/></title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/stylesheets/application.css"/>
         <decorator:head/>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/javascripts/jquery.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/javascripts/application.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/javascripts/jquery.validate.js"></script>
     </head>
     <body>
         <decorator:body/>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/javascripts/jquery.js"></script>
-        
-        <script type="text/javascript" src="${pageContext.request.contextPath}/javascripts/json2.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/javascripts/adapt.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/javascripts/capt.js"></script>
-        
-        <script type="text/javascript" src="${pageContext.request.contextPath}/javascripts/application.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/javascripts/jquery.validate.js"></script>
     </body>
 </html>
