@@ -10,40 +10,13 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/reset.css"/>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css"/>
         <decorator:head/>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/application.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.validate.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.easing1.3.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/menu.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/application.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.validate.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.easing1.3.js"></script>
     </head>
     <body>
-        <div id="topo">
-            <div id="topo_centro">
-                <a id="usabilitool" title="Usabilitool" href="#"></a>
-            </div>
-            <div id="menu_topo">
-                <div id="menu_topo_centro">
-                    <img alt="" src="img/select.png" class="imagem_selected"/>
-                    <ul>
-                        <li>
-                            <a href="#" class="menu_selected">Início</a>
-                        </li>
-                        <li>
-                            <a href="#">Início</a>
-                        </li>
-                        <li>
-                            <a href="#">Inícioasdasdasd</a>
-                        </li>
-                        <li>
-                            <a href="#">Início</a>
-                        </li>
-                        <li>
-                            <a href="#">Início</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+        <%@include file="topo.jsp"%>
         <div id="conteudo">
             <div id="conteudo_interno">
                 <decorator:body/>
