@@ -39,7 +39,7 @@ public class AnnotationConfigurationFactory implements ComponentFactory<Configur
 
 	@Override
 	public Configuration getInstance() {
-		return null;
+		return configuration;
 	}
 
 }
