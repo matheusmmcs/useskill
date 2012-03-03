@@ -1,6 +1,6 @@
 <c:if test="${not empty errors}">
     <c:forEach items="${errors}" var="error">
-        ${error.category} - ${error.message}<br />
+        ${error.message}<br />
     </c:forEach>
 </c:if>
 
@@ -42,4 +42,42 @@
         </tr>
     </table>
 </form>
-<a href="${pageContext.request.contextPath}/usuarios">Back</a>
+<a href="${pageContext.request.contextPath}">Back</a>
+<script type="text/javascript">
+    (function ($) {
+        var contador=0;
+        
+        $('button.inserir_tel').click(function(){
+            $('.linha_depois_tel').before(conteudo_inserir())
+        })
+        $('button.remover_tel').live("click", function(){
+            $(this).parent().parent().remove()
+        })
+        
+        function conteudo_inserir(){
+            contador++;
+            return '<tr><td><fmt:message key="telefone"/>:</td><td><input type="text" name="usuario.telefones['+contador+']" value="${usuario.telefones['+contador+']}" /></td><td><button type="button" class="remover_tel">remover</button></td></tr>'
+        }
+    } 
+)(jQuery);
+
+    $("#editUsuario_Form").validate({
+        rules:{
+            "usuario.nome":{
+                required:true
+            },
+            "usuario.email":{
+                required:true,
+                email:true
+            },
+            "usuario.senha":{
+                required:true,
+                minLength: 6
+            },
+            "confirmaSenha":{
+                required:true,
+                equalTo:"#usuario.senha"
+            }
+        }
+    });
+</script>

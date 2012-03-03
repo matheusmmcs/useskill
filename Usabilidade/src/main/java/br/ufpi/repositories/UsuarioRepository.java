@@ -17,6 +17,7 @@ public interface UsuarioRepository {
 	void destroy(Usuario entity);
 
 	Usuario find(Long id);
+        Usuario load(Usuario usuario);
 
 	List<Usuario> findAll();
 
@@ -55,6 +56,14 @@ public interface UsuarioRepository {
 	 * @return
 	 */
 	List<Teste> findTesteCriados(Usuario usuario);
+        /**
+	 * Devolve todos os testes criados de por ordem inversa de criação.
+         * Os testes criados primeiro serão mostrados por ultimo
+	 * 
+	 * @param usuario
+	 * @return
+	 */
+	List<Teste> findTesteCriadosOrderData(Usuario usuario);
 
 	/**
 	 * Procura por todos os testes participados de um usuario

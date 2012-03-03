@@ -10,63 +10,75 @@ import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.util.Criptografa;
+import org.hibernate.criterion.Property;
 
 @Component
 public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
-		UsuarioRepository {
+        UsuarioRepository {
 
-	UsuarioRepositoryImpl(Session session) {
-		super(session);
-	}
+    UsuarioRepositoryImpl(Session session) {
+        super(session);
+        System.out.println("####################################################################");
+    }
 
-	@Override
-	public Usuario logar(String email, String senha) {
-		Criteria criteria = session.createCriteria(Usuario.class);
-		criteria.add(Restrictions.eq("email", email));
-		criteria.add(Restrictions.eq("senha", senha));
-		return (Usuario) criteria.uniqueResult();
-	}
+    @Override
+    public Usuario logar(String email, String senha) {
+        Criteria criteria = session.createCriteria(Usuario.class);
+        criteria.add(Restrictions.eq("email", email));
+        criteria.add(Restrictions.eq("senha", senha));
+        return (Usuario) criteria.uniqueResult();
+    }
 
-	@Override
-	public Usuario findConfirmacaoEmail(String confirmacaoEmail) {
-		Criteria criteria = session.createCriteria(Usuario.class);
-		criteria.add(Restrictions.eq("confirmacaoEmail", confirmacaoEmail));
-		return (Usuario) criteria.uniqueResult();
-	}
+    @Override
+    public Usuario findConfirmacaoEmail(String confirmacaoEmail) {
+        Criteria criteria = session.createCriteria(Usuario.class);
+        criteria.add(Restrictions.eq("confirmacaoEmail", confirmacaoEmail));
+        return (Usuario) criteria.uniqueResult();
+    }
 
-	@Override
-	public List<Teste> findTesteCriados(Usuario usuario) {
-		Criteria criteria = session.createCriteria(Teste.class);
-		criteria.add(Restrictions.eq("usuarioCriador", usuario));
-		return criteria.list();
-	}
+    @Override
+    public List<Teste> findTesteCriados(Usuario usuario) {
+        Criteria criteria = session.createCriteria(Teste.class);
+        criteria.add(Restrictions.eq("usuarioCriador", usuario));
+        return criteria.list();
+    }
 
-	@Override
-	public List<Teste> findTestesParticipados(Usuario usuario) {
-		return null;
-	}
+    @Override
+    public List<Teste> findTestesParticipados(Usuario usuario) {
+        return null;
+    }
 
-	@Override
-	public Usuario findEmail(String email) {
-		Criteria criteria = session.createCriteria(Usuario.class);
-		criteria.add(Restrictions.eq("email", email));
-		return (Usuario) criteria.uniqueResult();
-	}
+    @Override
+    public Usuario findEmail(String email) {
+        Criteria criteria = session.createCriteria(Usuario.class);
+        criteria.add(Restrictions.eq("email", email));
+        return (Usuario) criteria.uniqueResult();
+    }
 
-	@Override
-	public boolean isContainsEmail(String email) {
-		Criteria criteria = session.createCriteria(Usuario.class);
-		criteria.add(Restrictions.eq("email", email));
-		return criteria.uniqueResult() == null ? false : true;
-	}
+    @Override
+    public boolean isContainsEmail(String email) {
+        Criteria criteria = session.createCriteria(Usuario.class);
+        criteria.add(Restrictions.eq("email", email));
+        return criteria.uniqueResult() == null ? false : true;
+    }
 
-	@Override
-	public boolean isContainConfirmacaoEmail(String confirmacaoEmail) {
-		Criteria criteria = session.createCriteria(Usuario.class);
-		criteria.add(Restrictions.eq("confirmacaoEmail", confirmacaoEmail));
-		return false;
-	}
+    @Override
+    public boolean isContainConfirmacaoEmail(String confirmacaoEmail) {
+        Criteria criteria = session.createCriteria(Usuario.class);
+        criteria.add(Restrictions.eq("confirmacaoEmail", confirmacaoEmail));
+        return false;
+    }
 
-	
+    @Override
+    public Usuario load(Usuario usuario) {
+        return (Usuario) session.load(Usuario.class, usuario.getId());
+    }
 
+    @Override
+    public List<Teste> findTesteCriadosOrderData(Usuario usuario) {
+        Criteria criteria = session.createCriteria(Teste.class);
+        criteria.add(Restrictions.eq("usuarioCriador", usuario));
+        criteria.addOrder(Property.forName("id").desc());
+        return criteria.list();
+    }
 }

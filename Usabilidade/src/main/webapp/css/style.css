@@ -65,3 +65,38 @@ a#usabilitool{
     padding: 15px;
 
 }
+input.error{
+    border: 1px solid #F9DD34;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-top-style: solid;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-top-color: #F9DD34;
+    border-right-color: #F9DD34;
+    border-bottom-color: #F9DD34;
+    border-left-color: #F9DD34;
+    background-repeat-x: repeat;
+    background-repeat-y: no-repeat;
+    background-attachment: initial;
+    background-position-x: 50%;
+    background-position-y: 0%;
+    background-origin: initial;
+    background-clip: initial;
+    background-color: #FFEF8F;
+    color: #363636;
+}
+
+label {
+    display: block;
+    width: 100px;
+    clear: left;
+    float: left;
+}
+input {
+    display: block;
+    float: left;
+}

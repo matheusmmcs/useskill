@@ -5,24 +5,44 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Login</title>
-
     </head>
     <body>
         <c:forEach var="error" items="${errors}">
             ${error.message}<br />
         </c:forEach>
-        ${error }
-        <form id="loginForm"
-              action="${pageContext.request.contextPath}/conta" method="post">
+        <div id="loginDiv">
+            <form id="loginForm"
+                  action="${pageContext.request.contextPath}/conta" method="post">
+                <label for="email">
+                    <fmt:message key="email" />
+                    * :             
+                </label>
+                <input type="text" name="email" class="required" id="email"/>             
+                <label for="senha">
+                    <fmt:message key="senha" />
+                    *:             
+                </label>
+                <input type="password" name="senha" id="senha"/>     
+                <input type="submit"
+                       value=<fmt:message key="entrar" />
+                       />  
+            </form>
+            <a href="${pageContext.request.contextPath}/usuario/recupera-senha">
+                <fmt:message key="esqueceu.senha"/></a>
+        </div>
 
-            <fmt:message key="email" />
-            * : <input type="text" name="email" class="required" id="email"/> <br />
-            <fmt:message key="senha" />
-            *: <input type="password" name="senha" id="senha"/><br /> <input type="submit"
-                                                                             value=<fmt:message key="entrar" />
-                                                                             />
-
-        </form>
-
+        <script type="text/javascript">
+            $("#loginForm").validate({
+                rules:{
+                    email:{
+                        required:true,
+                        email:true
+                    },
+                    senha:{
+                        required:true                        
+                    }
+                },
+                errorElement: "div"});
+        </script>
     </body>
 </html>

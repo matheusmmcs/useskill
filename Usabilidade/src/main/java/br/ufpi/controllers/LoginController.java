@@ -41,18 +41,22 @@ public class LoginController {
      */
     @Post("/conta")
     public void conta(final String email, final String senha) {
-        // TODO Se a validação não for feita por jqueryValidate
-        /*
-         * validator.checking(new Validations() { { that(!email.isEmpty(),
-         * "email", "campo.obrigatorio", i18n("email")); that(!senha.isEmpty(),
-         * "senha", "campo.obrigatorio", i18n("senha")); } });
-         * validator.onErrorUsePageOf(this).login();
-         */
+        validator.checking(new Validations() {
+            {
+                that(!email.isEmpty(),
+                        "email", "campo.obrigatorio", i18n("email"));
+                that(!senha.isEmpty(),
+                        "senha", "campo.obrigatorio", i18n("senha"));
+            }
+        });
+        validator.onErrorRedirectTo(this).login();
         String senhaCriptografada = Criptografa.criptografar(senha);
-        Usuario pessoa = usuarioRepository.logar(email, senhaCriptografada);
-        if (pessoa != null) {
-            usuarioLogado.setUsuario(pessoa);
-         } else {
+        Usuario usuario = usuarioRepository.logar(email, senhaCriptografada);
+        if (usuario != null) {
+            usuarioLogado.setUsuario(usuario);
+            usuarioLogado.setTeste(null);
+            result.redirectTo(this).logado();
+        } else {
             validator.checking(new Validations() {
 
                 {
@@ -61,6 +65,12 @@ public class LoginController {
             });
             validator.onErrorRedirectTo(this).login();
         }
+    }
+
+    @Get("/usuario")
+    @Logado
+    public void logado() {
+        result.include("testesCriados", usuarioRepository.findTesteCriadosOrderData(usuarioLogado.getUsuario()));
     }
 
     /**
@@ -76,21 +86,21 @@ public class LoginController {
 
     /**
      * Usuario ao receber o email acessara a pagina passada e esta action valida
-     * a inscrição do usuario.
-     * Caso o email de confirmação não for encontrado é gerado o resultado de página não encontrada.
+     * a inscrição do usuario. Caso o email de confirmação não for encontrado é
+     * gerado o resultado de página não encontrada.
      *
      * @param confirmacaoEmail
      */
     @Get("/confirmar/{confirmacaoEmail}")
     public void validarInscricao(String confirmacaoEmail) {
         Usuario usuario = usuarioRepository.findConfirmacaoEmail(confirmacaoEmail);
-        if(usuario!=null){
-        usuario.setEmailConfirmado(true);
-        usuario.setConfirmacaoEmail(null);
-        usuarioRepository.update(usuario);
-        result.include(usuario);}
-        else{
-        result.notFound();
+        if (usuario != null) {
+            usuario.setEmailConfirmado(true);
+            usuario.setConfirmacaoEmail(null);
+            usuarioRepository.update(usuario);
+            result.include(usuario);
+        } else {
+            result.notFound();
         }
     }
 
@@ -136,6 +146,6 @@ public class LoginController {
      * @return
      */
     private String geradorSenha(Usuario usuario) {
-        return Criptografa.criptografar(usuario.getNome() + usuario.getEmail()+new Date()).substring(0, 9);
+        return Criptografa.criptografar(usuario.getNome() + usuario.getEmail() + new Date()).substring(0, 9);
     }
 }

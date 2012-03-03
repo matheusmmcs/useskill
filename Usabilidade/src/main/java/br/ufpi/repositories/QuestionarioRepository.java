@@ -5,7 +5,6 @@
 package br.ufpi.repositories;
 
 import br.ufpi.models.Questionario;
-import br.ufpi.models.Teste;
 import java.util.List;
 
 /**

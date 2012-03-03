@@ -1,5 +1,6 @@
 package br.ufpi.controllers;
 
+import br.com.caelum.vraptor.Delete;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.TesteRepository;
+import br.ufpi.util.Criptografa;
 
 @Resource
 public class TesteController {
@@ -75,16 +77,16 @@ public class TesteController {
         teste.setTextoIndroducao(textoIndroducao);
         usuarioLogado.getUsuario().getTestesCriados();
         testeRepository.saveUpdate(teste);
-        result.include("tarefas",usuarioLogado.getTeste().getTarefas());
-        result.include("perguntas",usuarioLogado.getTeste().getSatisfacao().getPerguntas());
+        result.include("tarefas", usuarioLogado.getTeste().getTarefas());
+        result.include("perguntas", usuarioLogado.getTeste().getSatisfacao().getPerguntas());
     }
 
     @Logado
     @Get("teste/{idTeste}/editar/passo2")
     public void passo2(Long idTeste) {
         this.isTestePertenceUsuarioLogado(idTeste);
-        result.include("tarefas",usuarioLogado.getTeste().getTarefas());
-        result.include("perguntas",usuarioLogado.getTeste().getSatisfacao().getPerguntas());
+        result.include("tarefas", usuarioLogado.getTeste().getTarefas());
+        result.include("perguntas", usuarioLogado.getTeste().getSatisfacao().getPerguntas());
 
     }
 
@@ -119,6 +121,7 @@ public class TesteController {
     @Logado
     @Post("teste/{testeId}/editar/passo2/salvar/pergunta")
     public void salvarPergunta(Long testeId, Pergunta pergunta) {
+        System.out.println("perguntaId="+pergunta.getTipoRespostaAlternativa());
         validator.validate(pergunta);
         Questionario satisfacao = usuarioLogado.getTeste().getSatisfacao();
         if (satisfacao.getPerguntas() == null) {
@@ -153,9 +156,27 @@ public class TesteController {
             }
         }
     }
-        
-        @Get()
-        public void realizarTeste(){
-            
+
+    @Get("teste/{idTeste}/remover")
+    @Logado
+    public void remove(Long idTeste) {
+        this.isTestePertenceUsuarioLogado(idTeste);
+    }
+
+    @Delete()
+    @Logado
+    public void removed(String senha) {
+        senha = Criptografa.criptografar(senha);
+        if (senha.equals(usuarioLogado.getUsuario().getSenha())) {
+            testeRepository.destroy(usuarioLogado.getTeste());
+            usuarioLogado.setTeste(null);
+            result.redirectTo(LoginController.class).logado();
+        } else {
+            result.redirectTo(this).remove(usuarioLogado.getTeste().getId());
         }
+    }
+
+    @Get()
+    public void realizarTeste() {
+    }
 }

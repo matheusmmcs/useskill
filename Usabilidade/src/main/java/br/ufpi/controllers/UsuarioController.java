@@ -16,6 +16,7 @@ import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.EmailUtils;
 import br.ufpi.util.Mensagem;
+import javax.servlet.http.HttpServletRequest;
 
 @Resource
 public class UsuarioController {
@@ -23,12 +24,14 @@ public class UsuarioController {
     private final Result result;
     private final UsuarioRepository usuarioRepository;
     private final Validator validator;
+     private final HttpServletRequest request; 
 
     public UsuarioController(Result result, UsuarioRepository repository,
-            Validator validator) {
+            Validator validator,HttpServletRequest request) {
         this.result = result;
         this.usuarioRepository = repository;
         this.validator = validator;
+        this.request=request;
     }
 
     @Get("/usuarios")
@@ -49,11 +52,8 @@ public class UsuarioController {
         }
         validator.onErrorUsePageOf(this).newUsuario();
         usuario.criptografarSenhaGerarConfimacaoEmail();
-        /*usuario.setSenha( Criptografa.criptografar(usuario.getSenha()));
-        do{
-        usuario.setConfirmacaoEmail(Criptografa.criptografar(new Date().toString()));
-        }while(usuarioRepository.isContainConfirmacaoEmail(usuario.getConfirmacaoEmail()));*/
         usuarioRepository.create(usuario);
+        this.enviarEmail(usuario);
         result.redirectTo(this).index();
     }
 
@@ -89,10 +89,13 @@ public class UsuarioController {
     }
 
     private void enviarEmail(Usuario pessoa) {
+        String header = request.getHeader("Host");
+        header=header+request.getContextPath();
+        System.out.println("header"+header);
         Mensagem mensagem = new Mensagem();
         mensagem.setDestino(pessoa.getEmail());
         mensagem.setTitulo("Teste");
-        mensagem.setMensagem("<h1>Cleiton<h1>");
+        mensagem.setMensagem(header+"/confirmar/"+pessoa.getConfirmacaoEmail());
         EmailUtils emailUtils = new EmailUtils();
         try {
             emailUtils.enviaEmail(mensagem);

@@ -7,13 +7,13 @@
             <img alt="" src="${pageContext.request.contextPath}/img/select.png" class="imagem_selected"/>
             <ul>
                 <li>
-                    <a href="${pageContext.request.contextPath}">Início</a>
+                    <a href="${pageContext.request.contextPath}"><fmt:message key="inicio"/></a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/usuarios/new">Cadastre-se</a>
+                    <a href="${pageContext.request.contextPath}/usuarios/new"><fmt:message key="usuario.cadastro"/></a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/login">Acessar Conta</a>
+                    <a href="${pageContext.request.contextPath}/login"><fmt:message key="acessar.conta"/></a>
                 </li>
                 <li>
                     <a href="${pageContext.request.contextPath}/usuarios">Usuários</a>
