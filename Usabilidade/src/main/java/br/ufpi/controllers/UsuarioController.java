@@ -24,14 +24,13 @@ public class UsuarioController {
     private final Result result;
     private final UsuarioRepository usuarioRepository;
     private final Validator validator;
-     private final HttpServletRequest request; 
+//     private final HttpServletRequest request; 
 
     public UsuarioController(Result result, UsuarioRepository repository,
-            Validator validator,HttpServletRequest request) {
+            Validator validator) {
         this.result = result;
         this.usuarioRepository = repository;
         this.validator = validator;
-        this.request=request;
     }
 
     @Get("/usuarios")
@@ -53,7 +52,8 @@ public class UsuarioController {
         validator.onErrorUsePageOf(this).newUsuario();
         usuario.criptografarSenhaGerarConfimacaoEmail();
         usuarioRepository.create(usuario);
-        this.enviarEmail(usuario);
+        EmailUtils emailUtils=new EmailUtils();
+        emailUtils.enviarEmailConfirmacao(usuario);
         result.redirectTo(this).index();
     }
 
@@ -88,19 +88,5 @@ public class UsuarioController {
         result.redirectTo(this).index();
     }
 
-    private void enviarEmail(Usuario pessoa) {
-        String header = request.getHeader("Host");
-        header=header+request.getContextPath();
-        System.out.println("header"+header);
-        Mensagem mensagem = new Mensagem();
-        mensagem.setDestino(pessoa.getEmail());
-        mensagem.setTitulo("Teste");
-        mensagem.setMensagem(header+"/confirmar/"+pessoa.getConfirmacaoEmail());
-        EmailUtils emailUtils = new EmailUtils();
-        try {
-            emailUtils.enviaEmail(mensagem);
-        } catch (EmailException e) {
-            e.printStackTrace();
-        }
-    }
+    
 }

@@ -11,6 +11,7 @@ import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.Criptografa;
+import br.ufpi.util.EmailUtils;
 import java.util.Date;
 
 @Resource
@@ -42,6 +43,7 @@ public class LoginController {
     @Post("/conta")
     public void conta(final String email, final String senha) {
         validator.checking(new Validations() {
+
             {
                 that(!email.isEmpty(),
                         "email", "campo.obrigatorio", i18n("email"));
@@ -51,11 +53,16 @@ public class LoginController {
         });
         validator.onErrorRedirectTo(this).login();
         String senhaCriptografada = Criptografa.criptografar(senha);
+        System.out.println("#####senha="+senhaCriptografada);
         Usuario usuario = usuarioRepository.logar(email, senhaCriptografada);
         if (usuario != null) {
-            usuarioLogado.setUsuario(usuario);
-            usuarioLogado.setTeste(null);
-            result.redirectTo(this).logado();
+            if (usuario.isEmailConfirmado()) {
+                usuarioLogado.setUsuario(usuario);
+                usuarioLogado.setTeste(null);
+                result.redirectTo(this).logado();
+            } else {
+                result.forwardTo(this).reenviaEmailConfirmacao(usuario.getEmail());
+            }
         } else {
             validator.checking(new Validations() {
 
@@ -110,7 +117,8 @@ public class LoginController {
      *
      */
     @Get("/usuario/recupera-senha")
-    public void recuperaSenha() {
+    public void recuperaSenha(String email) {
+        result.include("email", email);
     }
 
     /**
@@ -129,12 +137,19 @@ public class LoginController {
                     that(false, "email.nao.cadastrado", "email.nao.cadastrado");
                 }
             });
-            validator.onErrorUsePageOf(this).recuperaSenha();
+            validator.onErrorUsePageOf(this).recuperaSenha(email);
         } else {
-            String novaSenha = Criptografa.criptografar(geradorSenha(usuario));
-            usuario.setSenha(novaSenha);
-            // TODO Enviar email para o usuario com senha nova.
+            String novaSenha = geradorSenha(usuario);
+            System.out.println("novaSenha="+novaSenha);
+            String senha = Criptografa.criptografar(novaSenha);
+            System.out.println("senha="+senha);
+            usuario.setSenha(senha);
+           // EmailUtils emailUtils = new EmailUtils();
+           // emailUtils.enviarNovaSenha(usuario, novaSenha);
+            usuario.setNome("ASMDfasdfasdfasd");
             usuarioRepository.update(usuario);
+            usuarioRepository.find(usuario.getId());
+            System.out.println("Usuario senha="+usuario.getSenha());
             return email;
         }
         return null;
@@ -146,6 +161,47 @@ public class LoginController {
      * @return
      */
     private String geradorSenha(Usuario usuario) {
-        return Criptografa.criptografar(usuario.getNome() + usuario.getEmail() + new Date()).substring(0, 9);
+        return Criptografa.criptografar(usuario.getNome() + usuario.getEmail() + new Date()).substring(0, 8);
+    }
+
+    @Get({"usuario/reenviar/email"})
+    public void reenviaEmailConfirmacao(String email) {
+        result.include("email", email);
+    }
+
+    @Post("usuario/reenviar/email")
+    public void reenviaEmailConfirmacaoCompleto(String email) {
+        if (email != null) {
+            Usuario usuario = usuarioRepository.findEmail(email);
+            if (usuario != null) {
+                if (usuario.getConfirmacaoEmail() != null) {
+                    EmailUtils emailUtils = new EmailUtils();
+                    emailUtils.enviarEmailConfirmacao(usuario);
+                    result.include("email", email);
+                    result.include("isConfirmado", false);
+
+                } else {
+                    result.include("email", email);
+                    result.include("isConfirmado", true);
+
+                }
+            } else {
+                validator.checking(new Validations() {
+
+                    {
+                        that(false, "email.nao.cadastrado", "email.nao.cadastrado");
+                    }
+                });
+                validator.onErrorForwardTo(this).reenviaEmailConfirmacao(email);
+            }
+        } else {
+            validator.checking(new Validations() {
+
+                {
+                    that(false, "email.nao.cadastrado", "email.nao.cadastrado");
+                }
+            });
+            validator.onErrorForwardTo(this).reenviaEmailConfirmacao(email);
+        }
     }
 }

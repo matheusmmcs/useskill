@@ -11,8 +11,7 @@ public interface UsuarioRepository {
 	 */
 
 	void create(Usuario entity);
-
-	Usuario update(Usuario entity);
+        Usuario update(Usuario entity);
 
 	void destroy(Usuario entity);
 
