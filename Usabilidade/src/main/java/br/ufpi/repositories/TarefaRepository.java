@@ -12,6 +12,7 @@ public interface TarefaRepository {
 	void destroy(Tarefa entity);
 
 	Tarefa find(Long id);
-
 	List<Tarefa> findAll();
+
+	void saveUpdate(Tarefa tarefa);
 }

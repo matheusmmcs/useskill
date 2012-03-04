@@ -18,7 +18,6 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 
     UsuarioRepositoryImpl(Session session) {
         super(session);
-        System.out.println("####################################################################");
     }
 
     @Override

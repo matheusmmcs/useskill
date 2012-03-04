@@ -33,7 +33,11 @@ public abstract class Repository<T, I extends Serializable> {
 	}
 	@SuppressWarnings("unchecked")
 	public T update(T entity) {
+		
 		return (T) session.merge(entity);
+	}
+	public void atualizar(T entity){
+		session.update(entity);
 	}
 	
 	public void destroy(T entity) {

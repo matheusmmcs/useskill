@@ -26,7 +26,7 @@ public class LoginIntercerptor implements Interceptor {
 		if (usuarioLogado.islogado())
 			stack.next(method, resourceInstance);
 		else {
-			result.redirectTo(LoginController.class).login();
+			result.redirectTo(LoginController.class).login(null);
 		}
 
 	}

@@ -90,49 +90,9 @@ public class TesteController {
 
     }
 
-    /**
-     * Usado para criar Tarefas
-     */
-    @Logado
-    @Get("teste/{testeId}/editar/passo2/criar/tarefa")
-    public void criarTarefa(Long testeId) {
-    }
+  
 
-    @Logado
-    @Post
-    public void salvarTarefa(Tarefa tarefa) {
-        validator.validate(tarefa);
-        Teste teste = usuarioLogado.getTeste();
-        List<Tarefa> tarefas = teste.getTarefas();
-        if (tarefas == null) {
-            teste.setTarefas(new ArrayList<Tarefa>());
-        }
-        teste.getTarefas().add(tarefa);
-        testeRepository.update(teste);
-    }
-
-    @Logado
-    @Get({"teste/{testeId}/editar/passo2/criar/pergunta", "teste/{testeId}/editar/passo2/editar/{idPergunta}/pergunta"})
-    public Pergunta criarPergunta(Long testeId) {
-        //TODO se o idPergunta for diferente de null eu irei lançar ela
-        return new Pergunta();
-    }
-
-    @Logado
-    @Post("teste/{testeId}/editar/passo2/salvar/pergunta")
-    public void salvarPergunta(Long testeId, Pergunta pergunta) {
-        System.out.println("perguntaId="+pergunta.getTipoRespostaAlternativa());
-        validator.validate(pergunta);
-        Questionario satisfacao = usuarioLogado.getTeste().getSatisfacao();
-        if (satisfacao.getPerguntas() == null) {
-            satisfacao.setPerguntas(new ArrayList<Pergunta>());
-        }
-        pergunta.setQuestionario(satisfacao);
-        satisfacao.getPerguntas().add(pergunta);
-        usuarioLogado.getTeste().setSatisfacao(satisfacao);
-        testeRepository.saveUpdate(usuarioLogado.getTeste());
-        result.redirectTo(this).passo2(testeId);
-    }
+  
 
     /**
      * *

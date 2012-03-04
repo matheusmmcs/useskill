@@ -11,12 +11,16 @@ public interface UsuarioRepository {
 	 */
 
 	void create(Usuario entity);
-        Usuario update(Usuario entity);
+
+	Usuario update(Usuario entity);
+
+	void atualizar(Usuario entity);
 
 	void destroy(Usuario entity);
 
 	Usuario find(Long id);
-        Usuario load(Usuario usuario);
+
+	Usuario load(Usuario usuario);
 
 	List<Usuario> findAll();
 
@@ -55,9 +59,10 @@ public interface UsuarioRepository {
 	 * @return
 	 */
 	List<Teste> findTesteCriados(Usuario usuario);
-        /**
-	 * Devolve todos os testes criados de por ordem inversa de criação.
-         * Os testes criados primeiro serão mostrados por ultimo
+
+	/**
+	 * Devolve todos os testes criados de por ordem inversa de criação. Os
+	 * testes criados primeiro serão mostrados por ultimo
 	 * 
 	 * @param usuario
 	 * @return
@@ -85,11 +90,10 @@ public interface UsuarioRepository {
 	 * Analisa se algum usuario já possui confirmação de email igual.
 	 * 
 	 * @param confirmacaoEmail
-	 * @author Cleiton
-	 *            analisa se a String buscada, possui algum usuario com a mesma.
+	 * @author Cleiton analisa se a String buscada, possui algum usuario com a
+	 *         mesma.
 	 * @return True se já possuir este email e False caso contrario.
 	 */
 	boolean isContainConfirmacaoEmail(String confirmacaoEmail);
-	
 
 }

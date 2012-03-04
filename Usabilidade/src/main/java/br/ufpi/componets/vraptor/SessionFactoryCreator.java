@@ -11,7 +11,6 @@ import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.ComponentFactory;
 
 @ApplicationScoped
-@Component
 public class SessionFactoryCreator implements ComponentFactory<SessionFactory> {
 
 	private SessionFactory factory;
