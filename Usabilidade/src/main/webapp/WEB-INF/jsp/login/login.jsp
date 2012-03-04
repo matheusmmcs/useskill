@@ -17,7 +17,7 @@
                     <fmt:message key="email" />
                     * :             
                 </label>
-                <input type="text" name="email" class="required" id="email"/>             
+                <input type="text" name="email" class="required" id="email" value="${email}"/>             
                 <label for="senha">
                     <fmt:message key="senha" />
                     *:             
