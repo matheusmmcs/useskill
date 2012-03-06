@@ -25,11 +25,24 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.Criptografa;
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * 
  * @author Cleiton
  */
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
+    @NamedQuery(name = "Usuario.findById", query = "SELECT u FROM Usuario u WHERE u.id = :id"),
+    @NamedQuery(name = "Usuario.findByConfirmacaoEmail", query = "SELECT u FROM Usuario u WHERE u.confirmacaoEmail = :confirmacaoEmail"),
+    @NamedQuery(name = "Usuario.findByEmail", query = "SELECT u FROM Usuario u WHERE u.email = :email"),
+    @NamedQuery(name = "Usuario.findByEmailConfirmado", query = "SELECT u FROM Usuario u WHERE u.emailConfirmado = :emailConfirmado"),
+    @NamedQuery(name = "Usuario.findByNome", query = "SELECT u FROM Usuario u WHERE u.nome = :nome"),
+    @NamedQuery(name = "Usuario.findBySenha", query = "SELECT u FROM Usuario u WHERE u.senha = :senha"),
+    @NamedQuery(name="Usuario.EmailSenha",query="SELECT u FROM Usuario u WHERE u.email= :email AND u.senha= :senha")
+})
 @Entity
 public class Usuario implements Serializable {
 

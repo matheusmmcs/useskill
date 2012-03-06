@@ -7,11 +7,23 @@ package br.ufpi.models;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * 
  * @author Cleiton
  */
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Teste.findAll", query = "SELECT t FROM Teste t"),
+    @NamedQuery(name = "Teste.findById", query = "SELECT t FROM Teste t WHERE t.id = :id"),
+    @NamedQuery(name = "Teste.findByTextoIndroducao", query = "SELECT t FROM Teste t WHERE t.textoIndroducao = :textoIndroducao"),
+    @NamedQuery(name = "Teste.findByTitulo", query = "SELECT t FROM Teste t WHERE t.titulo = :titulo"),
+    @NamedQuery(name = "Teste.findByTituloPublico", query = "SELECT t FROM Teste t WHERE t.tituloPublico = :tituloPublico"),
+   // @NamedQuery(name="Usuario.findTestesCriados",query="SELECT t FROM Teste t WHERE t.usuarioCriador_id= :usuarioCriador"),
+    //@NamedQuery(name="Teste.criadorIgual",query="SELECT  FROM Teste * WHERE t.usuarioCriador_id= :usuarioCriador AND t.id= :idteste" ),
+    //@NamedQuery(name="Teste.CriadorByDesc",query="SELECT * FROM Teste AS t WHERE t.usuarioCriador_id= :usuarioCriador_id ORDER BY t.id DESC")  
+})
 @Entity
 public class Teste implements Serializable {
 	private static final long serialVersionUID = 1L;

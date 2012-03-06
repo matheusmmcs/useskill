@@ -14,7 +14,7 @@ public interface UsuarioRepository {
 
 	Usuario update(Usuario entity);
 
-	void atualizar(Usuario entity);
+	
 
 	void destroy(Usuario entity);
 

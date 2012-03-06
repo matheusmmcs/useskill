@@ -4,57 +4,50 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 public abstract class Repository<T, I extends Serializable> {
-	
-	protected final Session session;
-	protected final Class<T> clazz;
 
-	protected Repository(Session session) {
-		this.session = session;
-		
-		@SuppressWarnings("unchecked")
-		Class<T> clazz = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    protected final EntityManager entityManager;
+    protected final Class<T> clazz;
 
-		this.clazz = clazz;
-	}
-	
-	public void create(T entity) {
-		session.persist(entity);
-	}
-	/**
-	 * Usado para salvar ou atualizar objeto.
-	 * @param entity
-	 */
-	public void saveUpdate(T entity) {
-		session.saveOrUpdate(entity);
-	}
-	@SuppressWarnings("unchecked")
-	public T update(T entity) {
-		
-		return (T) session.merge(entity);
-	}
-	public void atualizar(T entity){
-		session.update(entity);
-	}
-	
-	public void destroy(T entity) {
-		session.delete(entity);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public T find(I id) {
-		return (T) session.get(clazz, id);
-	}
-	
-	public List<T> findAll() {
-		Query query = session.createQuery("from " + clazz.getName());
+    protected Repository(EntityManager entityManager) {
+        this.entityManager = entityManager;
 
-		@SuppressWarnings("unchecked")
-		List<T> resultList = query.list();
+        @SuppressWarnings("unchecked")
+        Class<T> clazz = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
-		return resultList;
-	}
+        this.clazz = clazz;
+    }
+
+    public void create(T entity) {
+        entityManager.persist(entity);
+    }
+
+    public T update(T entity) {
+        return entityManager.merge(entity);
+    }
+
+    public void destroy(T entity) {
+        entityManager.remove( entityManager.merge(entity));
+    }
+
+    public T find(I id) {
+        return entityManager.find(clazz, id);
+    }
+
+    public List<T> findAll() {
+        Query query = entityManager.createQuery("from " + clazz.getName());
+
+        @SuppressWarnings("unchecked")
+        List<T> resultList = query.getResultList();
+
+        return resultList;
+    }
+    //TODO Analisar se esta correto a forma de salva no banco com MErge
+
+    public void saveUpdate(T entity) {
+        entityManager.merge(entity);
+    }
 }

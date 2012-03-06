@@ -6,7 +6,7 @@ package br.ufpi.repositories;
 
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Questionario;
-import org.hibernate.Session;
+import javax.persistence.EntityManager;
 
 /**
  *
@@ -15,8 +15,10 @@ import org.hibernate.Session;
 @Component
 public class QuestionarioRepositoryImpl extends Repository<Questionario, Long> implements QuestionarioRepository{
 
-    public QuestionarioRepositoryImpl(Session session) {
-        super(session);
+    public QuestionarioRepositoryImpl(EntityManager entityManager) {
+        super(entityManager);
     }
+
+   
     
 }

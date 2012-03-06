@@ -40,11 +40,9 @@ public class TesteController {
     @Get("teste/criar")
     @Logado
     public void criarTeste() {
-        if (usuarioLogado.getTeste() == null) {
-            this.usuarioLogado.setTeste(new Teste());
-            this.usuarioLogado.getTeste().setUsuarioCriador(
-                    usuarioLogado.getUsuario());
-        }
+        this.usuarioLogado.setTeste(new Teste());
+        this.usuarioLogado.getTeste().setUsuarioCriador(
+                usuarioLogado.getUsuario());
     }
 
     @Logado
@@ -53,7 +51,11 @@ public class TesteController {
         Teste teste = usuarioLogado.getTeste();
         teste.setTitulo(titulo);
         teste.setSatisfacao(new Questionario());
-        testeRepository.saveUpdate(teste);
+        if (teste.getId() == null) {
+            testeRepository.create(teste);
+        } else {
+            testeRepository.update(teste);
+        }
         result.redirectTo(this).passo1(teste.getId());
 
     }
@@ -66,9 +68,10 @@ public class TesteController {
     }
 
     @Logado
-    @Post("teste/{id}/editar/passo2")
-    public void passo2(String titulo, String tituloPublico,
+    @Post("teste/{idTeste}/editar/passo2")
+    public void passo2(Long idTeste, String titulo, String tituloPublico,
             String textoIndroducao) {
+        this.isTestePertenceUsuarioLogado(idTeste);
         Teste teste = usuarioLogado.getTeste();
         teste.setTitulo(titulo);
         teste.setTituloPublico(tituloPublico);
@@ -85,7 +88,7 @@ public class TesteController {
         this.isTestePertenceUsuarioLogado(idTeste);
         result.include("tarefas", usuarioLogado.getTeste().getTarefas());
         for (Pergunta object : usuarioLogado.getTeste().getSatisfacao().getPerguntas()) {
-            System.out.println("Titulo############"+object.getTitulo());
+            System.out.println("Titulo############" + object.getTitulo());
         }
         result.include("perguntas", usuarioLogado.getTeste().getSatisfacao().getPerguntas());
 
@@ -126,11 +129,13 @@ public class TesteController {
         validator.onErrorRedirectTo(this).remove(usuarioLogado.getTeste().getId());
         String senhaCriptografada = Criptografa.criptografar(senha);
         if (senhaCriptografada.equals(usuarioLogado.getUsuario().getSenha())) {
+            System.out.println("Id de Teste Removido" + usuarioLogado.getTeste().getId());
             testeRepository.destroy(usuarioLogado.getTeste());
             usuarioLogado.setTeste(null);
             result.redirectTo(LoginController.class).logado();
         } else {
             validator.checking(new Validations() {
+
                 {
                     that(!senha.isEmpty(), "senha.incorreta", "senha.incorreta");
                 }

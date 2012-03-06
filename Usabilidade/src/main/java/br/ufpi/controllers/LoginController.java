@@ -148,7 +148,7 @@ public class LoginController {
 			usuario.setSenha(senha);
 			EmailUtils emailUtils = new EmailUtils();
 			emailUtils.enviarNovaSenha(usuario, novaSenha);
-			usuarioRepository.atualizar(usuario);
+			usuarioRepository.update(usuario);
 			return email;
 		}
 		return null;
