@@ -14,10 +14,10 @@
             <li>
                 <a href="${pageContext.request.contextPath}/usuario"><fmt:message key="inicio"/></a>
             </li>
-           <!-- <li>
-              <a href="${pageContext.request.contextPath}/usuarios/new">Cadastre-se</a> 
-            </li>
             <li>
+                <a href="${pageContext.request.contextPath}/teste/criar"><fmt:message key="crie.seu.teste"/></a> 
+            </li>
+           <!-- <li>
                 <a href="${pageContext.request.contextPath}/login">Acessar Conta</a>
             </li>
             <li>

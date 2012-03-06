@@ -1,19 +1,17 @@
 package br.ufpi.controllers;
 
 import br.com.caelum.vraptor.Delete;
-import java.util.ArrayList;
-import java.util.List;
 
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
-import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.Criptografa;
@@ -86,13 +84,12 @@ public class TesteController {
     public void passo2(Long idTeste) {
         this.isTestePertenceUsuarioLogado(idTeste);
         result.include("tarefas", usuarioLogado.getTeste().getTarefas());
+        for (Pergunta object : usuarioLogado.getTeste().getSatisfacao().getPerguntas()) {
+            System.out.println("Titulo############"+object.getTitulo());
+        }
         result.include("perguntas", usuarioLogado.getTeste().getSatisfacao().getPerguntas());
 
     }
-
-  
-
-  
 
     /**
      * *
@@ -103,17 +100,11 @@ public class TesteController {
      *
      */
     private void isTestePertenceUsuarioLogado(Long idTeste) {
-        if (usuarioLogado.getTeste() != null
-                && usuarioLogado.getTeste().getId() != null
-                && usuarioLogado.getTeste().getId().equals(idTeste)) {
-            return;
+        Teste teste = testeRepository.testCriado(usuarioLogado.getUsuario().getId(), idTeste);
+        if (teste != null) {
+            usuarioLogado.setTeste(teste);
         } else {
-            Teste teste = testeRepository.testCriado(usuarioLogado.getUsuario().getId(), idTeste);
-            if (teste != null) {
-                usuarioLogado.setTeste(teste);
-            } else {
-                result.notFound();
-            }
+            result.notFound();
         }
     }
 
@@ -125,14 +116,26 @@ public class TesteController {
 
     @Delete()
     @Logado
-    public void removed(String senha) {
-        senha = Criptografa.criptografar(senha);
-        if (senha.equals(usuarioLogado.getUsuario().getSenha())) {
+    public void removed(final String senha) {
+        validator.checking(new Validations() {
+
+            {
+                that(!senha.isEmpty(), "campo.obrigatorio", "campo.obrigatorio", "senha");
+            }
+        });
+        validator.onErrorRedirectTo(this).remove(usuarioLogado.getTeste().getId());
+        String senhaCriptografada = Criptografa.criptografar(senha);
+        if (senhaCriptografada.equals(usuarioLogado.getUsuario().getSenha())) {
             testeRepository.destroy(usuarioLogado.getTeste());
             usuarioLogado.setTeste(null);
             result.redirectTo(LoginController.class).logado();
         } else {
-            result.redirectTo(this).remove(usuarioLogado.getTeste().getId());
+            validator.checking(new Validations() {
+                {
+                    that(!senha.isEmpty(), "senha.incorreta", "senha.incorreta");
+                }
+            });
+            validator.onErrorRedirectTo(this).remove(usuarioLogado.getTeste().getId());
         }
     }
 

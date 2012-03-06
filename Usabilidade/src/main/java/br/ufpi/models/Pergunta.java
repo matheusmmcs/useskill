@@ -22,7 +22,7 @@ public class Pergunta implements Serializable {
     private String titulo;
     @Column(columnDefinition = "TEXT")
     private String texto;
-    private boolean tipoRespostaAlternativa;
+    private Boolean tipoRespostaAlternativa;
     @OneToMany(mappedBy = "pergunta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Alternativa> alternativas;
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)

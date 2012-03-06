@@ -4,7 +4,7 @@
 </c:if>
 <c:if test="${not empty perguntas}"><c:forEach items="${perguntas}" var="pergunta">
         <div id="pergunta_exibe">
-            
+             ${pergunta.titulo} 
             
         </div>
         <br>
