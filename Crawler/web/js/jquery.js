@@ -1,4 +1,14 @@
-if(jQuery==undefined){
+var tem = false;
+try{
+    if(jQuery!=undefined){
+        tem = true; 
+    }else{
+        tem = false;
+    }
+}catch(e){
+    tem = false;
+}
+if(!tem){
     /*!
  * jQuery JavaScript Library v1.6.2
  * http://jquery.com/
@@ -3073,7 +3083,7 @@ if(jQuery==undefined){
                             jQuery.extend({}, handleObj, {
                                 handler: liveHandler, 
                                 guid: handleObj.handler.guid
-                                }) );
+                            }) );
                     },
 
                     remove: function( handleObj ) {

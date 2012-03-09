@@ -19,9 +19,12 @@ import java.util.regex.Pattern;
  */
 public class WebCliente {
     
-    private static String domain, upperDomain;
-
+    private static String domain = "", upperDomain = "", page = "";
+    private static Map<String, Object> params = new HashMap<String, Object>();
+    private static Map<String, Object> headers = new HashMap<String, Object>();
+    
     public static enum HttpMethod {
+        
         POST,
         GET;
     }
@@ -35,30 +38,30 @@ public class WebCliente {
         
         return component;
     }
-    
+
+    //transformar os parametros passados para uma url: chave=valor&
     private static String mapToURLMap(Map<String, Object> params) {
         if (params != null && !params.isEmpty()) {
             StringBuilder str = new StringBuilder();
-
+            
             for (Map.Entry<String, Object> entry : params.entrySet()) {
                 str.append(entry.getKey());
                 str.append("=");
                 str.append(encodeURIComponent(entry.getValue().toString()));
                 str.append("&");
             }
-
+            
             str.deleteCharAt(str.length() - 1);
-
             return str.toString().replaceAll("\\s", "+");
         }
         
         return null;
     }
     
-    public static String getPageContent(String urlPagina, Map<String, Object> headers, Map<String, Object> params, HttpMethod method) {
+    public static String getPageContent(String urlPagina, HttpMethod method) {
         try {
             String paramsStr = mapToURLMap(params);
-            
+            //se houver parametro a ser passado pelo metodo get
             if (method.equals(HttpMethod.GET) && paramsStr != null) {
                 urlPagina = urlPagina + "?" + paramsStr;
             }
@@ -84,6 +87,7 @@ public class WebCliente {
                     for (int i = 0; i < parts.length; i++) {
                         System.out.println("[PAGE CONTENT] SET-COOKIE <" + i + ">: " + parts[i]);
                     }
+                    headers.put("Cookie", parts[0]);
                 }
                 if (responseHeaders.containsKey("Cookie")) {
                     String setCookies = responseHeaders.get("Cookie").get(0);
@@ -91,11 +95,17 @@ public class WebCliente {
                     for (int i = 0; i < parts.length; i++) {
                         System.out.println("[PAGE CONTENT] COOKIE <" + i + ">: " + parts[i]);
                     }
+                    headers.put("Cookie", parts[0]);
+                }
+                
+                //imprimir no servidor todos os 
+                for (Map.Entry<String, Object> entry : headers.entrySet()) {
+                    System.out.println("--------------HEADER-------------------" +entry.getKey() +" : "+ entry.getValue().toString());
                 }
                 
                 StringBuilder str = new StringBuilder();
                 String line;
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
                 
                 while ((line = br.readLine()) != null) {
                     str.append(line);
@@ -105,8 +115,7 @@ public class WebCliente {
                 str.deleteCharAt(str.length() - 1);
                 
                 return str.toString();
-            }
-            else {
+            } else {
                 throw new RuntimeException("HTTP ERROR: " + responseCode);
             }
         } catch (Exception ex) {
@@ -117,35 +126,32 @@ public class WebCliente {
         }
     }
     
-    public static String prependLinks(String html, String page) {
+    public static String prependLinks(String html) {
         domain = page;
         int domainEnd = domain.indexOf("/", domain.indexOf("://") + 3);
         if (domainEnd < 0) {
             upperDomain = domain;
-        }
-        else {
+        } else {
             upperDomain = domain.substring(0, domainEnd);
         }
-        if(upperDomain.endsWith("/")){
-            upperDomain = upperDomain.substring(0, upperDomain.length()-1);
+        if (upperDomain.endsWith("/")) {
+            upperDomain = upperDomain.substring(0, upperDomain.length() - 1);
         }
-        if(!domain.endsWith("/")){
-            domain = domain+"/";
+        if (!domain.endsWith("/")) {
+            domain = domain + "/";
         }
         
         StringBuffer codigo = new StringBuffer();
         String addr;
         Matcher m = Pattern.compile("(?i)(src=|href=|url\\(\\s*)(['\\\"]?)([^'\\\"\\)]+)(['\\\"\\)]?)").matcher(html);
-
+        
         while (m.find()) {
             addr = m.group(3);
             if (addr.startsWith("http") || addr.startsWith("#")) {
                 m.appendReplacement(codigo, "$1$2$3$4");
-            }
-            else if (addr.startsWith("/")) {
+            } else if (addr.startsWith("/")) {
                 m.appendReplacement(codigo, "$1$2" + upperDomain + "$3$4");
-            }
-            else {
+            } else {
                 m.appendReplacement(codigo, "$1$2" + domain + "$3$4");
             }
         }
@@ -156,7 +162,6 @@ public class WebCliente {
     
     public static String injectCodeAtHead(String html, String code) {
         int location = html.lastIndexOf("</head>");
-        System.out.println("Location: "+location);
         html = html.substring(0, location) + code + html.substring(location);
         
         return html;
@@ -166,47 +171,35 @@ public class WebCliente {
         StringBuffer codigo = new StringBuffer();
         String addr;
         Matcher m = Pattern.compile("(?i)(<a.*?href=|<form.*?action=)(['\"]?)([^'#\"]+)(['\"]?)").matcher(html);
-
+        
         while (m.find()) {
             addr = m.group(3);
             if (addr.startsWith("http") || addr.startsWith("#")) {
-                m.appendReplacement(codigo, "$1$2"+ page + "$3$4");
-            }
-            else if (addr.startsWith("/")) {
-                m.appendReplacement(codigo, "$1$2" + upperDomain + "$3$4");
+                m.appendReplacement(codigo, "$1$2" + page + "$3$4");
+            } else if (addr.startsWith("/")) {
+                m.appendReplacement(codigo, "$1$2" + "http://localhost:8084/Crawler/index.jsp?url=" + upperDomain + "$3$4");
             }
         }
         m.appendTail(codigo);
-
+        
         return codigo.toString();
     }
     
-    
     public static String loadPage(String url) {
-        //String page = "http://www.globo.com/";
-        String page = url;
-        
-        
-        Map<String, Object> params = new HashMap<String, Object>();
-//        params.put("q", "HADOUKEN");
-//        params.put("t", "post");
-        
-        Map<String, Object> headers = new HashMap<String, Object>();
+        page = url;
+
+//      params.put("q", "HADOUKEN");
+//      params.put("t", "post");
+
         headers.put("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0.2) Gecko/20100101 Firefox/10.0.2");
         headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         headers.put("Accept-Language", "pt-br,pt;q=0.8,en-us;q=0.5,en;q=0.3");
-//        sheaders.put("Cookie", "PREF=ID=d8fb8e477886f445:U=0353d12be12e6d1a:FF=0:TM=1330998012:LM=1330998012:S=Xu3ReWCxOWg2C4-b");
-        
-        System.out.println("Pegando codigo de " + page);
-        
-        String html = getPageContent(page, headers, params, HttpMethod.GET);
-        html = prependLinks(html, page);
+//      headers.put("Cookie", "_redmine_session=BAh7CDoPc2Vzc2lvbl9pZCIlMmYzYmJjYzgxODc3MzI1M2MyZGEyNjY0Y2RhNDkxMjU6DHVzZXJfaWRpDToQX2NzcmZfdG9rZW4iMWZQZ3dzTDRnZzJCQUc5UDdUYS94S0lkcXdrZlpKSTZWc3JqNmNtL3RVZnc9--e7f5d354a3ed5199c3e04d3b971eec1e50b84d1e");
+
+        String html = getPageContent(page, HttpMethod.GET);
+        html = prependLinks(html);
         html = injectCodeAtHead(html, "<script type=\"text/javascript\" src=\"js/jquery.js\"></script> <script type=\"text/javascript\" src=\"js/capt.js\"></script>");
-        html = converteLink(html, "http://localhost:8084/Crawler/index.jsp?url=");
-        
-//        StringEscapeUtils result = new StringEscapeUtils();
-//        html = result.unescapeHtml(html);
-        
+        html = converteLink(html, "http://localhost:8084/Crawler/index.jsp?url=");        
         
         return html;
     }
