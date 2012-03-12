@@ -3,6 +3,7 @@
     method="POST">
     <c:if test="${not empty pergunta.id}">
         <input type="hidden" name="pergunta.id" value="${pergunta.id}" />
+        <input type="hidden" name="_method" value="put"/>
     </c:if>
     <label for="pergunta.titulo"> <fmt:message
             key="pergunta.titulo" />

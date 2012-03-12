@@ -1,5 +1,6 @@
 package br.ufpi.repositories;
 
+import br.ufpi.models.Teste;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
@@ -45,9 +46,6 @@ public abstract class Repository<T, I extends Serializable> {
 
         return resultList;
     }
-    //TODO Analisar se esta correto a forma de salva no banco com MErge
 
-    public void saveUpdate(T entity) {
-        entityManager.merge(entity);
-    }
+  
 }

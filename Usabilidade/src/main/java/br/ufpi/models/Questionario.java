@@ -22,7 +22,7 @@ public class Questionario implements Serializable {
     @OneToMany(mappedBy = "questionario",cascade=CascadeType.ALL)
     private List<Pergunta> perguntas;
     
-    @OneToOne
+    @OneToOne(cascade=CascadeType.REFRESH)
     private Teste teste;
 
     public Long getId() {

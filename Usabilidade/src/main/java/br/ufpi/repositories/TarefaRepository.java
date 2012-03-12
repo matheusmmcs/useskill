@@ -14,5 +14,4 @@ public interface TarefaRepository {
 	Tarefa find(Long id);
 	List<Tarefa> findAll();
 
-	void saveUpdate(Tarefa tarefa);
 }

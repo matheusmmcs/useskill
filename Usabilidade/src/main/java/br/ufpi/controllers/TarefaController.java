@@ -10,7 +10,7 @@ import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.TarefaRepository;
-
+//TODO refazer estes passos para tarefa
 @Resource
 public class TarefaController {
 	private final Result result;
@@ -40,7 +40,7 @@ public class TarefaController {
 	@Post
 	public void salvarTarefa(Tarefa tarefa) {
 		validator.validate(tarefa);
-		validator.onErrorRedirectTo(tarefa);
+		validator.onErrorRedirectTo(this).criarTarefa(usuarioLogado.getTeste().getId(), tarefa);
 		Teste teste = usuarioLogado.getTeste();
 		tarefa.setTeste(teste);
 		tarefaRepository.create(tarefa);
@@ -49,7 +49,7 @@ public class TarefaController {
 	@Logado
 	public void editarTarefa(Tarefa tarefa) {
 		validator.validate(tarefa);
-		validator.onErrorRedirectTo(tarefa);
+		validator.onErrorRedirectTo(this);
 		Teste teste = usuarioLogado.getTeste();
 		tarefa.setTeste(teste);
 		tarefaRepository.update(tarefa);

@@ -12,7 +12,11 @@ import javax.persistence.*;
  *
  * @author Cleiton
  */
+
 @Entity
+@NamedQueries({
+	@NamedQuery(name="Tarefa.pertence.Teste.Usuario",query="select t from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa and t.teste.usuarioCriador.id= :usuario ")
+})
 public class Tarefa implements Serializable {
 
     private static final long serialVersionUID = 1L;

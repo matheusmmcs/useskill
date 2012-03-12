@@ -50,7 +50,9 @@ public class TesteController {
     public void salvar(String titulo) {
         Teste teste = usuarioLogado.getTeste();
         teste.setTitulo(titulo);
-        teste.setSatisfacao(new Questionario());
+        Questionario questionario = new Questionario();
+        questionario.setTeste(teste);
+        teste.setSatisfacao(questionario);
         if (teste.getId() == null) {
             testeRepository.create(teste);
         } else {
@@ -77,7 +79,7 @@ public class TesteController {
         teste.setTituloPublico(tituloPublico);
         teste.setTextoIndroducao(textoIndroducao);
         usuarioLogado.getUsuario().getTestesCriados();
-        testeRepository.saveUpdate(teste);
+        testeRepository.update(teste);
         result.include("tarefas", usuarioLogado.getTeste().getTarefas());
         result.include("perguntas", usuarioLogado.getTeste().getSatisfacao().getPerguntas());
     }
@@ -87,16 +89,16 @@ public class TesteController {
     public void passo2(Long idTeste) {
         this.isTestePertenceUsuarioLogado(idTeste);
         result.include("tarefas", usuarioLogado.getTeste().getTarefas());
-        for (Pergunta object : usuarioLogado.getTeste().getSatisfacao().getPerguntas()) {
-            System.out.println("Titulo############" + object.getTitulo());
-        }
+        // for (Pergunta object :
+        // usuarioLogado.getTeste().getSatisfacao().getPerguntas()) {
+        // System.out.println("Titulo############" + object.getTitulo());
+        // }
         result.include("perguntas", usuarioLogado.getTeste().getSatisfacao().getPerguntas());
 
     }
 
     /**
-     * *
-     * Analisa se o id do teste buscado pertence ao usuario logado, se não
+     * * Analisa se o id do teste buscado pertence ao usuario logado, se não
      * pertencer ao usuario buscado sera redirecionado para pagina 404.
      *
      * @param idTeste buscado e analisado para ver se pertence ao usuario
@@ -123,13 +125,16 @@ public class TesteController {
         validator.checking(new Validations() {
 
             {
-                that(!senha.isEmpty(), "campo.obrigatorio", "campo.obrigatorio", "senha");
+                that(!senha.isEmpty(), "campo.obrigatorio",
+                        "campo.obrigatorio", "senha");
             }
         });
-        validator.onErrorRedirectTo(this).remove(usuarioLogado.getTeste().getId());
+        validator.onErrorRedirectTo(this).remove(
+                usuarioLogado.getTeste().getId());
         String senhaCriptografada = Criptografa.criptografar(senha);
         if (senhaCriptografada.equals(usuarioLogado.getUsuario().getSenha())) {
-            System.out.println("Id de Teste Removido" + usuarioLogado.getTeste().getId());
+            System.out.println("Id de Teste Removido"
+                    + usuarioLogado.getTeste().getId());
             testeRepository.destroy(usuarioLogado.getTeste());
             usuarioLogado.setTeste(null);
             result.redirectTo(LoginController.class).logado();
@@ -140,7 +145,8 @@ public class TesteController {
                     that(!senha.isEmpty(), "senha.incorreta", "senha.incorreta");
                 }
             });
-            validator.onErrorRedirectTo(this).remove(usuarioLogado.getTeste().getId());
+            validator.onErrorRedirectTo(this).remove(
+                    usuarioLogado.getTeste().getId());
         }
     }
 

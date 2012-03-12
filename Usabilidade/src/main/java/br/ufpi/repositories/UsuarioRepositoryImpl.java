@@ -3,14 +3,11 @@ package br.ufpi.repositories;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-
+import javax.persistence.Query;
 
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
-import javax.persistence.Query;
 
 @Component
 public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
@@ -22,25 +19,24 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 
     @Override
     public Usuario logar(String email, String senha) {
-        Query createNativeQuery = entityManager.createNamedQuery("Usuario.EmailSenha", Usuario.class);
+        Query createNativeQuery = entityManager.createNamedQuery("Usuario.EmailSenha");
         createNativeQuery.setParameter("email", email);
-        createNativeQuery.setParameter("senha", senha);
-
+        createNativeQuery.setParameter("senha", senha);        
         return (Usuario) createNativeQuery.getSingleResult();
     }
 
     @Override
     public Usuario findConfirmacaoEmail(String confirmacaoEmail) {
-        Query createNativeQuery = entityManager.createNamedQuery("Usuario.findByConfirmacaoEmail", Usuario.class);
+        Query createNativeQuery = entityManager.createNamedQuery("Usuario.findByConfirmacaoEmail");
         createNativeQuery.setParameter("confirmacaoEmail", confirmacaoEmail);
         return (Usuario) createNativeQuery.getSingleResult();
     }
 
     @Override
     public List<Teste> findTesteCriados(Usuario usuario) {
-        Query createNativeQuery = entityManager.createNativeQuery("SELECT * FROM Teste t WHERE t.usuarioCriador_id= :usuarioCriador", Teste.class);
-        createNativeQuery.setParameter("usuarioCriador", usuario);
-        return createNativeQuery.getResultList();
+        Query query = entityManager.createQuery("select t from Teste t where t.usuarioCriador= :usuarioCriador");
+        query.setParameter("usuarioCriador", usuario);
+        return (List<Teste>) query.getResultList();
     }
 
     @Override
@@ -74,8 +70,8 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 
     @Override
     public List<Teste> findTesteCriadosOrderData(Usuario usuario) {
-        Query query = entityManager.createNativeQuery("SELECT * FROM Teste AS t WHERE t.usuarioCriador_id= :usuarioCriador_id ORDER BY t.id DESC ", Teste.class);
-        query.setParameter("usuarioCriador_id", usuario);
+        Query query = entityManager.createQuery("SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador ORDER BY t.id DESC ");
+        query.setParameter("usuarioCriador", usuario);
         return query.getResultList();
     }
 }

@@ -53,7 +53,14 @@
             </plugin>
         </plugins>
     </build>
-
+    <repositories>
+        <repository>
+            <url>http://download.java.net/maven/2/</url>
+            <id>hibernate-support</id>
+            <layout>default</layout>
+            <name>Repository for library Library[hibernate-support]</name>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>br.com.caelum</groupId>
@@ -84,7 +91,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>3.6.7.Final</version>
+            <version>3.3.2.GA</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -158,7 +165,21 @@
             <artifactId>htmlunit</artifactId>
             <version>2.7</version>
         </dependency>
-            
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate</artifactId>
+            <version>3.2.5.ga</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.sql</groupId>
+            <artifactId>jdbc-stdext</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.0.1B</version>
+        </dependency>
     </dependencies>
 
     <reporting>
