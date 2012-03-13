@@ -10,19 +10,39 @@ import javax.persistence.TypedQuery;
 
 @Component
 public class TesteRepositoryImpl extends Repository<Teste, Long> implements
-        TesteRepository {
+		TesteRepository {
 
-    public TesteRepositoryImpl(EntityManager entityManager) {
-        super(entityManager);
-    }
+	public TesteRepositoryImpl(EntityManager entityManager) {
+		super(entityManager);
+	}
 
-    @Override
-    public Teste testCriado(Long idUsuario, Long idTeste) {
-    	Usuario usuario= new Usuario();
-    	usuario.setId(idUsuario);
-        Query query = entityManager.createQuery("SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste");
-        query.setParameter("idteste", idTeste);
-        query.setParameter("usuarioCriador", usuario);
-        return (Teste) query.getSingleResult();
-    }
+	@Override
+	public Teste testCriado(Long idUsuario, Long idTeste) {
+		Usuario usuario = new Usuario();
+		usuario.setId(idUsuario);
+		Query query = entityManager.createQuery("Teste.Criado");
+		query.setParameter("idteste", idTeste);
+		query.setParameter("usuarioCriador", usuario);
+		return (Teste) query.getSingleResult();
+	}
+
+	@Override
+	public Teste testCriadoNaoRealizado(Long idUsuario, Long idTeste) {
+		Usuario usuario = new Usuario();
+		usuario.setId(idUsuario);
+		Query query = entityManager.createQuery("Teste.Criado.NaoRealizado");
+		query.setParameter("idteste", idTeste);
+		query.setParameter("usuarioCriador", usuario);
+		return (Teste) query.getSingleResult();
+	}
+
+	@Override
+	public Teste testCriadoRealizado(Long idUsuario, Long idTeste) {
+		Usuario usuario = new Usuario();
+		usuario.setId(idUsuario);
+		Query query = entityManager.createQuery("Teste.Criado.Realizado");
+		query.setParameter("idteste", idTeste);
+		query.setParameter("usuarioCriador", usuario);
+		return (Teste) query.getSingleResult();
+	}
 }

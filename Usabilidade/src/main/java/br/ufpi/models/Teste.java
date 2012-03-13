@@ -15,14 +15,15 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Teste.findAll", query = "SELECT t FROM Teste t"),
-    @NamedQuery(name = "Teste.findById", query = "SELECT t FROM Teste t WHERE t.id = :id"),
-    @NamedQuery(name = "Teste.findByTextoIndroducao", query = "SELECT t FROM Teste t WHERE t.textoIndroducao = :textoIndroducao"),
-    @NamedQuery(name = "Teste.findByTitulo", query = "SELECT t FROM Teste t WHERE t.titulo = :titulo"),
-    @NamedQuery(name = "Teste.findByTituloPublico", query = "SELECT t FROM Teste t WHERE t.tituloPublico = :tituloPublico"),
-   // @NamedQuery(name="Usuario.findTestesCriados",query="SELECT t FROM Teste t WHERE t.usuarioCriador_id= :usuarioCriador"),
-    //@NamedQuery(name="Teste.criadorIgual",query="SELECT  FROM Teste * WHERE t.usuarioCriador_id= :usuarioCriador AND t.id= :idteste" ),
-    //@NamedQuery(name="Teste.CriadorByDesc",query="SELECT * FROM Teste AS t WHERE t.usuarioCriador_id= :usuarioCriador_id ORDER BY t.id DESC")  
+		@NamedQuery(name = "Teste.findAll", query = "SELECT t FROM Teste t"),
+		@NamedQuery(name = "Teste.findById", query = "SELECT t FROM Teste t WHERE t.id = :id"),
+		@NamedQuery(name = "Teste.findByTextoIndroducao", query = "SELECT t FROM Teste t WHERE t.textoIndroducao = :textoIndroducao"),
+		@NamedQuery(name = "Teste.findByTitulo", query = "SELECT t FROM Teste t WHERE t.titulo = :titulo"),
+		@NamedQuery(name = "Teste.findByTituloPublico", query = "SELECT t FROM Teste t WHERE t.tituloPublico = :tituloPublico"),
+		@NamedQuery(name = "Teste.Criado.NaoRealizado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.realizado=false"),
+		@NamedQuery(name = "Teste.Criado.Realizado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.realizado=true"),
+		@NamedQuery(name = "Teste.Criado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste")
+// @NamedQuery(name="Teste.CriadorByDesc",query="SELECT * FROM Teste AS t WHERE t.usuarioCriador_id= :usuarioCriador_id ORDER BY t.id DESC")
 })
 @Entity
 public class Teste implements Serializable {
@@ -30,7 +31,7 @@ public class Teste implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	@OneToMany(mappedBy = "teste",cascade=CascadeType.ALL)
+	@OneToMany(mappedBy = "teste", cascade = CascadeType.ALL)
 	private List<Tarefa> tarefas;
 	@OneToOne(cascade = CascadeType.ALL)
 	private Questionario caracterizacao;
@@ -43,15 +44,21 @@ public class Teste implements Serializable {
 	/**
 	 * Titulo mostrado apenas para o Criador.
 	 */
-	@Column(length=200)
+	@Column(length = 200)
 	private String titulo;
 	/**
 	 * Titulo maior usado para informa os usuarios participantes
 	 */
-	@Column(length=200)
+	@Column(length = 200)
 	private String tituloPublico;
-	@Column(columnDefinition="TiNYTEXT")
+	@Column(columnDefinition = "TiNYTEXT")
 	private String textoIndroducao;
+	/**
+	 * Indica se o teste ja foi realizado. Caso true o teste não pode ser mais
+	 * alterado.
+	 * 
+	 */
+	private boolean realizado;
 
 	public Long getId() {
 		return id;
@@ -61,7 +68,6 @@ public class Teste implements Serializable {
 		this.id = id;
 	}
 
-	
 	public List<Tarefa> getTarefas() {
 		return tarefas;
 	}
@@ -124,6 +130,14 @@ public class Teste implements Serializable {
 
 	public void setTitulo(String titulo) {
 		this.titulo = titulo;
+	}
+
+	public boolean isRealizado() {
+		return realizado;
+	}
+
+	public void setRealizado(boolean testeRealizado) {
+		this.realizado = testeRealizado;
 	}
 
 	@Override

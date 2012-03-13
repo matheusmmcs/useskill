@@ -43,7 +43,7 @@ public class Tarefa implements Serializable {
         this.id = id;
     }
 
-    public Fluxo getFluxoIdeal() {
+    public FluxoIdeal getFluxoIdeal() {
         return fluxoIdeal;
     }
 

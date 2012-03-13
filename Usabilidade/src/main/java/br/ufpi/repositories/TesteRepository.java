@@ -22,4 +22,19 @@ public interface TesteRepository {
 	 * @return Teste caso o teste seja do idUsuario seja o criador do teste e null se não encontrar
 	 */
 	Teste testCriado(Long idUsuario, Long idTeste);
+
+	
+	/** Retorna todos os Testes que estaão com o campo testeRealizado igual a falso
+	 * @param idUsuario identificador do usuario pertencente ao teste
+	 * @param idTeste identificados do teste a ser procurado
+	 * @return null caso o teste não seja encontrado
+	 */
+	Teste testCriadoNaoRealizado(Long idUsuario, Long idTeste);
+
+	/** Retorna todos os Testes que estaão com o campo testeRealizado igual a true
+	 * @param idUsuario identificador do usuario pertencente ao teste
+	 * @param idTeste identificados do teste a ser procurado
+	 * @return null caso o teste não seja encontrado
+	 */
+	Teste testCriadoRealizado(Long idUsuario, Long idTeste);
 }

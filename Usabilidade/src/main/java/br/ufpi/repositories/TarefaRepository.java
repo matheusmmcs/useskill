@@ -14,4 +14,6 @@ public interface TarefaRepository {
 	Tarefa find(Long id);
 	List<Tarefa> findAll();
 
+	Tarefa pertenceTeste(Long idTarefa, Long idTeste, Long idUsuario);
+
 }

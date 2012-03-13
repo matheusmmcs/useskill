@@ -65,7 +65,7 @@ public class TesteController {
     @Logado
     @Get("teste/{id}/editar/passo1")
     public void passo1(Long id) {
-        this.isTestePertenceUsuarioLogado(id);
+        this.testeNaoRealizadoPertenceUsuarioLogado(id);
 
     }
 
@@ -73,7 +73,7 @@ public class TesteController {
     @Post("teste/{idTeste}/editar/passo2")
     public void passo2(Long idTeste, String titulo, String tituloPublico,
             String textoIndroducao) {
-        this.isTestePertenceUsuarioLogado(idTeste);
+        this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
         Teste teste = usuarioLogado.getTeste();
         teste.setTitulo(titulo);
         teste.setTituloPublico(tituloPublico);
@@ -87,7 +87,7 @@ public class TesteController {
     @Logado
     @Get("teste/{idTeste}/editar/passo2")
     public void passo2(Long idTeste) {
-        this.isTestePertenceUsuarioLogado(idTeste);
+        this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
         result.include("tarefas", usuarioLogado.getTeste().getTarefas());
         // for (Pergunta object :
         // usuarioLogado.getTeste().getSatisfacao().getPerguntas()) {
@@ -104,8 +104,8 @@ public class TesteController {
      * @param idTeste buscado e analisado para ver se pertence ao usuario
      *
      */
-    private void isTestePertenceUsuarioLogado(Long idTeste) {
-        Teste teste = testeRepository.testCriado(usuarioLogado.getUsuario().getId(), idTeste);
+    private void testeNaoRealizadoPertenceUsuarioLogado(Long idTeste) {
+        Teste teste = testeRepository.testCriadoNaoRealizado(usuarioLogado.getUsuario().getId(), idTeste);
         if (teste != null) {
             usuarioLogado.setTeste(teste);
         } else {
@@ -116,7 +116,7 @@ public class TesteController {
     @Get("teste/{idTeste}/remover")
     @Logado
     public void remove(Long idTeste) {
-        this.isTestePertenceUsuarioLogado(idTeste);
+        this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
     }
 
     @Delete()

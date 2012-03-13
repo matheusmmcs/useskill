@@ -148,4 +148,16 @@ public class Acao implements Serializable {
     public void setUrl(String url) {
         this.url = url;
     }
+
+	@Override
+	public String toString() {
+		return "Acao [id=" + id + ", fluxo=" + fluxo + ", tipoAcao=" + tipoAcao
+				+ ", tempo=" + tempo + ", url=" + url + ", conteudo="
+				+ conteudo + ", tag=" + tag + ", tagId=" + tagId
+				+ ", tagClass=" + tagClass + ", tagName=" + tagName
+				+ ", tagValue=" + tagValue + ", posicaoPaginaY="
+				+ posicaoPaginaY + ", posicaoPaginaX=" + posicaoPaginaX
+				+ ", tagType=" + tagType + "]";
+	}
+    
 }

@@ -12,6 +12,11 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
         super(entityManager);
     }
 
+	@Override
+	public Tarefa pertenceTeste(Long idTarefa, Long idTeste, Long idUsuario) {
+		return (Tarefa) entityManager.createNamedQuery("Tarefa.pertence.Teste.Usuario").setParameter(0, idTeste).setParameter(1,idTarefa ).setParameter(2, idUsuario).getSingleResult();
+	}
+
 	
 
 
