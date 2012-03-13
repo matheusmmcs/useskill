@@ -21,7 +21,7 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 	public Teste testCriado(Long idUsuario, Long idTeste) {
 		Usuario usuario = new Usuario();
 		usuario.setId(idUsuario);
-		Query query = entityManager.createQuery("Teste.Criado");
+		Query query = entityManager.createNamedQuery("Teste.Criado");
 		query.setParameter("idteste", idTeste);
 		query.setParameter("usuarioCriador", usuario);
 		try {

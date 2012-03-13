@@ -79,7 +79,7 @@ public class LoginController {
 	@Logado
 	public void logado() {
 		result.include("testesCriados", usuarioRepository
-				.findTesteCriadosOrderData(usuarioLogado.getUsuario()));
+				.findTesteCriadosRealizadoOrdenadorData(usuarioLogado.getUsuario()));
 	}
 
 	/**
