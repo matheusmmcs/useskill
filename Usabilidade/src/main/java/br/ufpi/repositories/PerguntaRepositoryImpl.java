@@ -34,10 +34,15 @@ public class PerguntaRepositoryImpl extends Repository<Pergunta, Long>
 	}
 
 	public Questionario findQuestionario(Long idPergunta) {
-		
-		return (Questionario) entityManager
-				.createNamedQuery("Pertunta.getQuestionario")
-				.setParameter("pergunta",idPergunta).getSingleResult();
+		try {
+			return (Questionario) entityManager
+					.createNamedQuery("Pertunta.getQuestionario")
+					.setParameter("pergunta",idPergunta).getSingleResult();
+
+		} catch (NoResultException e) {
+			return null;
+		}
+
 	}
 
 

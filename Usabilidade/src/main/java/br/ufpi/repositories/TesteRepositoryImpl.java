@@ -5,6 +5,7 @@ import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
@@ -23,17 +24,28 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		Query query = entityManager.createQuery("Teste.Criado");
 		query.setParameter("idteste", idTeste);
 		query.setParameter("usuarioCriador", usuario);
-		return (Teste) query.getSingleResult();
+		try {
+			return (Teste) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+
 	}
 
 	@Override
 	public Teste testCriadoNaoRealizado(Long idUsuario, Long idTeste) {
 		Usuario usuario = new Usuario();
 		usuario.setId(idUsuario);
-		Query query = entityManager.createNamedQuery("Teste.Criado.NaoRealizado");
+		Query query = entityManager
+				.createNamedQuery("Teste.Criado.NaoRealizado");
 		query.setParameter("idteste", idTeste);
 		query.setParameter("usuarioCriador", usuario);
-		return (Teste) query.getSingleResult();
+		try {
+			return (Teste) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+
 	}
 
 	@Override
@@ -43,6 +55,10 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		Query query = entityManager.createNamedQuery("Teste.Criado.Realizado");
 		query.setParameter("idteste", idTeste);
 		query.setParameter("usuarioCriador", usuario);
-		return (Teste) query.getSingleResult();
+		try {
+			return (Teste) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 }
