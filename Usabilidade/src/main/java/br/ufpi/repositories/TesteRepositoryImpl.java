@@ -30,7 +30,7 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 	public Teste testCriadoNaoRealizado(Long idUsuario, Long idTeste) {
 		Usuario usuario = new Usuario();
 		usuario.setId(idUsuario);
-		Query query = entityManager.createQuery("Teste.Criado.NaoRealizado");
+		Query query = entityManager.createNamedQuery("Teste.Criado.NaoRealizado");
 		query.setParameter("idteste", idTeste);
 		query.setParameter("usuarioCriador", usuario);
 		return (Teste) query.getSingleResult();
@@ -40,7 +40,7 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 	public Teste testCriadoRealizado(Long idUsuario, Long idTeste) {
 		Usuario usuario = new Usuario();
 		usuario.setId(idUsuario);
-		Query query = entityManager.createQuery("Teste.Criado.Realizado");
+		Query query = entityManager.createNamedQuery("Teste.Criado.Realizado");
 		query.setParameter("idteste", idTeste);
 		query.setParameter("usuarioCriador", usuario);
 		return (Teste) query.getSingleResult();
