@@ -8,6 +8,7 @@ import javax.persistence.Query;
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
+import javax.persistence.NoResultException;
 
 @Component
 public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
@@ -19,24 +20,39 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 
     @Override
     public Usuario logar(String email, String senha) {
-        Query createNativeQuery = entityManager.createNamedQuery("Usuario.EmailSenha");
-        createNativeQuery.setParameter("email", email);
-        createNativeQuery.setParameter("senha", senha);        
-        return (Usuario) createNativeQuery.getSingleResult();
+        Query query = entityManager.createNamedQuery("Usuario.EmailSenha");
+        query.setParameter("email", email);
+        query.setParameter("senha", senha);
+        try {
+
+            return (Usuario) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
     public Usuario findConfirmacaoEmail(String confirmacaoEmail) {
         Query createNativeQuery = entityManager.createNamedQuery("Usuario.findByConfirmacaoEmail");
         createNativeQuery.setParameter("confirmacaoEmail", confirmacaoEmail);
+        try {
+
         return (Usuario) createNativeQuery.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
     public List<Teste> findTesteCriados(Usuario usuario) {
         Query query = entityManager.createQuery("select t from Teste t where t.usuarioCriador= :usuarioCriador");
         query.setParameter("usuarioCriador", usuario);
+        try {
+
         return (List<Teste>) query.getResultList();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
@@ -46,9 +62,13 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 
     @Override
     public Usuario findEmail(String email) {
-        Query createNativeQuery = entityManager.createNativeQuery("Usuario.findByEmail", Usuario.class);
-        createNativeQuery.setParameter("email", email);
-        return (Usuario) createNativeQuery.getSingleResult();
+        Query createNamQuery = entityManager.createNativeQuery("Usuario.findByEmail");
+        createNamQuery.setParameter("email", email);
+        try {
+        return (Usuario) createNamQuery.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
@@ -63,15 +83,23 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 
     @Override
     public Usuario load(Usuario usuario) {
-        Query createNativeQuery = entityManager.createNativeQuery("Usuario.findById", Usuario.class);
+        Query createNativeQuery = entityManager.createNamedQuery("Usuario.findById");
         createNativeQuery.setParameter("id", usuario.getId());
+            try {
         return (Usuario) createNativeQuery.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
     public List<Teste> findTesteCriadosOrderData(Usuario usuario) {
-        Query query = entityManager.createQuery("SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador ORDER BY t.id DESC ");
+        Query query = entityManager.createNamedQuery("Usuario.TesteCriado.Realizado");
         query.setParameter("usuarioCriador", usuario);
+    try {
         return query.getResultList();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

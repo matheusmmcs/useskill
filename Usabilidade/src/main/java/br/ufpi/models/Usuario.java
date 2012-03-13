@@ -27,6 +27,7 @@ import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.Criptografa;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CollectionOfElements;
 
 /**
  * 
@@ -40,7 +41,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Usuario.findByEmailConfirmado", query = "SELECT u FROM Usuario u WHERE u.emailConfirmado = :emailConfirmado"),
     @NamedQuery(name = "Usuario.findByNome", query = "SELECT u FROM Usuario u WHERE u.nome = :nome"),
     @NamedQuery(name = "Usuario.findBySenha", query = "SELECT u FROM Usuario u WHERE u.senha = :senha"),
-    @NamedQuery(name="Usuario.EmailSenha",query="SELECT u FROM Usuario u WHERE u.email= :email AND u.senha= :senha")
+    @NamedQuery(name="Usuario.EmailSenha",query="SELECT u FROM Usuario u WHERE u.email= :email AND u.senha= :senha"),
+    @NamedQuery(name="Usuario.TesteCriado.Realizado",query="SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador AND t.realizado= true ORDER BY t.id DESC")
 })
 @Entity
 public class Usuario implements Serializable {
@@ -51,7 +53,7 @@ public class Usuario implements Serializable {
 	private Long id;
 	@NotBlank(message = "{campo.obrigatorio}")
 	private String nome;
-	@ElementCollection
+	@CollectionOfElements
 	@Column(length = 15)
 	private List<String> telefones;
 	@NotNull

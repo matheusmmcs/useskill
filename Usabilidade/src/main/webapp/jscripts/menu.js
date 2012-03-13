@@ -7,7 +7,7 @@
         adicionarClassSelected();
         percorre()
         widthSelecionado=centraliza(selecionado)
-        anima(widthSelecionado)
+        imagem.css("left",widthSelecionado)
 
         //funcao para percorrer todos os elementos gerando seus dados
         function percorre(){
