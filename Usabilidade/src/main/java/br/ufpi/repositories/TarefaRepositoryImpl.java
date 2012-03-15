@@ -7,6 +7,7 @@ import br.ufpi.models.Teste;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 @Component
 public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 		TarefaRepository {
@@ -17,13 +18,32 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 
 	@Override
 	public Tarefa pertenceTeste(Long idTarefa, Long idTeste, Long idUsuario) {
-		try {
-			return (Tarefa) entityManager.createNamedQuery("Tarefa.pertence.Teste.Usuario").setParameter(0, idTeste).setParameter(1,idTarefa ).setParameter(2, idUsuario).getSingleResult();
+Query query = entityManager.createNamedQuery("Tarefa.pertence.Teste.Usuario");
+			query.setParameter("teste", idTeste);
+			query.setParameter("tarefa",idTarefa );
+			query.setParameter("usuario", idUsuario);
+			try {
+			return (Tarefa) 
+					query.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
 
 	}
+
+	@Override
+	public Tarefa perteceTesteNaoRealizado(Long idTarefa, Long idTeste,
+			Long idUsuario) {
+		try {
+					Query query = entityManager.createNamedQuery("Tarefa.Teste_NaoRealizado.Usuario");
+					query.setParameter("teste", idTeste);
+					query.setParameter("tarefa",idTarefa );
+					query.setParameter("usuario", idUsuario);
+					return (Tarefa)
+					query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}	}
 
 	
 

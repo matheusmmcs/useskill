@@ -1,8 +1,40 @@
-<c:if test="${not empty tarefas}">
-	<c:forEach items="${tarefas}" var="tarefa">
-        ${tarefa.titulo}
-    </c:forEach>
-</c:if>
+
+<table>
+	<thead>
+		<tr>
+			<td><fmt:message key="tarefa.nome" /></td>
+			<td><fmt:message key="tarefa.fluxoIdeal.criado" /></td>
+			<td><fmt:message key="editar" /></td>
+			<td><fmt:message key="remover" /></td>
+
+		</tr>
+	</thead>
+	<c:if test="${not empty tarefas}">
+		<c:forEach items="${tarefas}" var="tarefa">
+			<tr>
+				<td><a
+					href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">
+						${tarefa.nome}</a></td>
+
+				<td><c:if test="${tarefa.fluxoIdealPreenchido == false}">
+			Gravar Fluxo Ideal
+			</c:if> <c:if test="${tarefa.fluxoIdealPreenchido == true}">
+			Editar Fluxo Ideal</c:if>
+				<td><a
+					href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">
+						<fmt:message key="editar" />
+				</a></td>
+				<td>
+					<form action="${pageContext.request.contextPath}/teste/removed/tarefa" method="post">
+						<input type="hidden" value="${tarefa.id }" name="idTarefa">
+						<input type="submit" value="<fmt:message key="remover"/>" class="ancora">
+					</form>
+				</td>
+
+			</tr>
+		</c:forEach>
+	</c:if>
+</table>
 <c:if test="${not empty perguntas}">
 	<c:forEach items="${perguntas}" var="pergunta">
 		<div id="pergunta_exibe">
@@ -10,7 +42,7 @@
 				href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta">${pergunta.titulo}</a>
 			<a
 				href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta">Editar</a>
-		<!-- 	<form action="${pageContext.request.contextPath}/teste/duplicar/pergunta" method="post">
+			<!-- 	<form action="${pageContext.request.contextPath}/teste/duplicar/pergunta" method="post">
 				<input type="submit" value="Duplicar" >
 				 <input type="hidden" name="testeId"
 					value="${usuarioLogado.teste.id }"> <input type="hidden"
