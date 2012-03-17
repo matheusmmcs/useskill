@@ -11,7 +11,6 @@ import br.com.caelum.vraptor.Validator;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Acao;
-import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;

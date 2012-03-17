@@ -22,9 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 		@NamedQuery(name = "Teste.findByTituloPublico", query = "SELECT t FROM Teste t WHERE t.tituloPublico = :tituloPublico"),
 		@NamedQuery(name = "Teste.Criado.NaoRealizado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.realizado=false"),
 		@NamedQuery(name = "Teste.Criado.Realizado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.realizado=true"),
-		@NamedQuery(name = "Teste.Criado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste")
-// @NamedQuery(name="Teste.CriadorByDesc",query="SELECT * FROM Teste AS t WHERE t.usuarioCriador_id= :usuarioCriador_id ORDER BY t.id DESC")
-})
+		@NamedQuery(name = "Teste.Criado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste"), })
 @Entity
 public class Teste implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -33,7 +31,7 @@ public class Teste implements Serializable {
 	private Long id;
 	@OneToMany(mappedBy = "teste", cascade = CascadeType.ALL)
 	private List<Tarefa> tarefas;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Questionario caracterizacao;
 	@OneToOne(cascade = CascadeType.ALL)
 	private Questionario satisfacao;

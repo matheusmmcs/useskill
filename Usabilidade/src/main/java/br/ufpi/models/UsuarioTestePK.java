@@ -1,0 +1,28 @@
+package br.ufpi.models;
+
+import java.io.Serializable;
+
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+
+@Embeddable
+public class UsuarioTestePK implements Serializable {
+	@ManyToOne(fetch=FetchType.LAZY)
+	private Usuario participante;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Teste teste;
+	public Usuario getUsuario() {
+		return participante;
+	}
+	public void setUsuario(Usuario usuario) {
+		this.participante = usuario;
+	}
+	public Teste getTeste() {
+		return teste;
+	}
+	public void setTeste(Teste teste) {
+		teste = teste;
+	}
+	
+}

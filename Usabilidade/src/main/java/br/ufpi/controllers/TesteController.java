@@ -10,7 +10,6 @@ import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.UsuarioLogado;
-import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.TesteRepository;
@@ -89,12 +88,18 @@ public class TesteController {
     public void passo2(Long idTeste) {
         this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
         result.include("tarefas", usuarioLogado.getTeste().getTarefas());
-        // for (Pergunta object :
-        // usuarioLogado.getTeste().getSatisfacao().getPerguntas()) {
-        // System.out.println("Titulo############" + object.getTitulo());
-        // }
         result.include("perguntas", usuarioLogado.getTeste().getSatisfacao().getPerguntas());
 
+    }
+    
+    /**
+     * Passo para a escolha dos usuarios.
+     * Pode ser por questionario ou por escolha de caracterização
+     */
+    @Logado
+    @Get()
+    public void passo3(){
+    	
     }
 
     /**

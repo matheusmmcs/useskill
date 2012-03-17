@@ -2,7 +2,7 @@ package br.ufpi.controllers;
 
 import java.util.List;
 
-import org.apache.commons.mail.EmailException;
+
 
 import br.com.caelum.vraptor.Delete;
 import br.com.caelum.vraptor.Get;
@@ -15,8 +15,6 @@ import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.EmailUtils;
-import br.ufpi.util.Mensagem;
-import javax.servlet.http.HttpServletRequest;
 
 @Resource
 public class UsuarioController {

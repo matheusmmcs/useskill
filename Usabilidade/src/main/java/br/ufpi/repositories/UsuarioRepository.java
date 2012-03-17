@@ -14,8 +14,6 @@ public interface UsuarioRepository {
 
 	Usuario update(Usuario entity);
 
-	
-
 	void destroy(Usuario entity);
 
 	Usuario find(Long id);
@@ -96,5 +94,11 @@ public interface UsuarioRepository {
 	 * @return True se já possuir este email e False caso contrario.
 	 */
 	boolean isContainConfirmacaoEmail(String confirmacaoEmail);
+        /**
+         * Retorna todos os testes que o usuario foi convidado para participar
+         * @param idUsuario Identificador do usuario que foi convidado para participar do Teste
+         * @return Retorna todos os testes que o usuario foi convidado a Participar
+         */
+        List<Teste> findTestesConvidados(Long idUsuario);
 
 }
