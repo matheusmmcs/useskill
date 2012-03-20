@@ -14,5 +14,7 @@
     <class>br.ufpi.models.Tarefa</class>
     <class>br.ufpi.models.Teste</class>
     <class>br.ufpi.models.Usuario</class>
+    <class>br.ufpi.models.Convidado</class>
+    <class>br.ufpi.models.UsuarioTestePK</class>
   </persistence-unit>
 </persistence>
