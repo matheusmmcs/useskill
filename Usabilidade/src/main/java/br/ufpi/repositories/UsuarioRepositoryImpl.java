@@ -12,105 +12,113 @@ import javax.persistence.NoResultException;
 
 @Component
 public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
-        UsuarioRepository {
+		UsuarioRepository {
 
-    UsuarioRepositoryImpl(EntityManager entityManager) {
-        super(entityManager);
-    }
+	UsuarioRepositoryImpl(EntityManager entityManager) {
+		super(entityManager);
+	}
 
-    @Override
-    public Usuario logar(String email, String senha) {
-        Query query = entityManager.createNamedQuery("Usuario.EmailSenha");
-        query.setParameter("email", email);
-        query.setParameter("senha", senha);
-        try {
+	@Override
+	public Usuario logar(String email, String senha) {
+		Query query = entityManager.createNamedQuery("Usuario.EmailSenha");
+		query.setParameter("email", email);
+		query.setParameter("senha", senha);
+		try {
 
-            return (Usuario) query.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
+			return (Usuario) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
-    @Override
-    public Usuario findConfirmacaoEmail(String confirmacaoEmail) {
-        Query createNativeQuery = entityManager.createNamedQuery("Usuario.findByConfirmacaoEmail");
-        createNativeQuery.setParameter("confirmacaoEmail", confirmacaoEmail);
-        try {
+	@Override
+	public Usuario findConfirmacaoEmail(String confirmacaoEmail) {
+		Query createNativeQuery = entityManager
+				.createNamedQuery("Usuario.findByConfirmacaoEmail");
+		createNativeQuery.setParameter("confirmacaoEmail", confirmacaoEmail);
+		try {
 
-            return (Usuario) createNativeQuery.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
+			return (Usuario) createNativeQuery.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
-    @Override
-    public List<Teste> findTesteCriados(Usuario usuario) {
-        Query query = entityManager.createQuery("select t from Teste t where t.usuarioCriador= :usuarioCriador");
-        query.setParameter("usuarioCriador", usuario);
-        try {
+	@Override
+	public List<Teste> findTesteCriados(Usuario usuario) {
+		Query query = entityManager
+				.createQuery("select t from Teste t where t.usuarioCriador= :usuarioCriador");
+		query.setParameter("usuarioCriador", usuario);
+		try {
 
-            return (List<Teste>) query.getResultList();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
+			return (List<Teste>) query.getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
-    @Override
-    public List<Teste> findTestesParticipados(Usuario usuario) {
-        return null;
-    }
+	@Override
+	public List<Teste> findTestesParticipados(Usuario usuario) {
+		return null;
+	}
 
-    @Override
-    public Usuario findEmail(String email) {
-        Query createNamQuery = entityManager.createNativeQuery("Usuario.findByEmail");
-        createNamQuery.setParameter("email", email);
-        try {
-            return (Usuario) createNamQuery.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
+	@Override
+	public Usuario findEmail(String email) {
+		Query createNamQuery = entityManager
+				.createNamedQuery("Usuario.findByEmail");
+		createNamQuery.setParameter("email", email);
+		try {
+			return (Usuario) createNamQuery.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
-    @Override
-    public boolean isContainsEmail(String email) {
-        return findEmail(email) == null ? false : true;
-    }
+	@Override
+	public boolean isContainsEmail(String email) {
+		return findEmail(email) == null ? false : true;
+	}
 
-    @Override
-    public boolean isContainConfirmacaoEmail(String confirmacaoEmail) {
-        return this.findConfirmacaoEmail(confirmacaoEmail) == null ? false
-                : true;
-    }
+	@Override
+	public boolean isContainConfirmacaoEmail(String confirmacaoEmail) {
+		return this.findConfirmacaoEmail(confirmacaoEmail) == null ? false
+				: true;
+	}
 
-    @Override
-    public Usuario load(Usuario usuario) {
-        Query createNativeQuery = entityManager.createNamedQuery("Usuario.findById");
-        createNativeQuery.setParameter("id", usuario.getId());
-        try {
-            return (Usuario) createNativeQuery.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
+	@Override
+	public Usuario load(Usuario usuario) {
+		Query createNativeQuery = entityManager
+				.createNamedQuery("Usuario.findById");
+		createNativeQuery.setParameter("id", usuario.getId());
+		try {
+			return (Usuario) createNativeQuery.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
-    @Override
-    public List<Teste> findTesteCriadosRealizadoOrdenadorData(Usuario usuario) {
-        Query query = entityManager.createNamedQuery("Usuario.TesteCriado.Realizado.Organizado.Id.Realizado");
-        query.setParameter("usuarioCriador", usuario);
-        try {
-            return (List<Teste>) query.getResultList();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
+	@Override
+	public List<Teste> findTesteCriadosRealizadoOrdenadorData(Usuario usuario) {
+		Query query = entityManager
+				.createNamedQuery("Usuario.TesteCriado.Realizado.Organizado.Id.Realizado");
+		query.setParameter("usuarioCriador", usuario);
+		try {
+			return (List<Teste>) query.getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
-    @Override
-    public List<Teste> findTestesConvidados(Long idUsuario) {
-        Query query = entityManager.createNamedQuery("Convidado.Teste");
-        query.setParameter("usuario", idUsuario);
-        query.setParameter("realizou", null);
-        System.out.println(query.toString());
-       return query.getResultList();
-    }
-    
+	@Override
+	public List<Teste> findTestesConvidados(Long idUsuario) {
+		Query query = entityManager.createNamedQuery("Convidado.Teste");
+		query.setParameter("usuario", idUsuario);
+//		query.setParameter("realizou", null);
+		return query.getResultList();
+	}
+
+
+
+	
+
 }

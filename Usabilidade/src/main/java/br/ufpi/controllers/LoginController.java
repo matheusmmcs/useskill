@@ -80,13 +80,7 @@ public class LoginController {
     @Get("/usuario")
     @Logado
     public void logado() {
-        List<Teste> findTestesConvidados = usuarioRepository.findTestesConvidados(usuarioLogado.getUsuario().getId());
-        System.out.println("¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨666699999999999999999");
-        for (Teste teste : findTestesConvidados) {
-            System.out.println(teste.getTitulo());
-            
-        }
-       result.include("testesConvidados", usuarioRepository.findTestesConvidados(usuarioLogado.getUsuario().getId()));
+        result.include("testesConvidados", usuarioRepository.findTestesConvidados(usuarioLogado.getUsuario().getId()));
         result.include("testesCriados", usuarioRepository.findTesteCriadosRealizadoOrdenadorData(usuarioLogado.getUsuario()));
     }
 

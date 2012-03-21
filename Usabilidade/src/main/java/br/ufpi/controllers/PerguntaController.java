@@ -106,6 +106,7 @@ public class PerguntaController {
 				validator.onErrorRedirectTo(TesteController.class).passo2(
 						testeId);
 			}
+			perguntaPertenceUsuario(pergunta.getId(), testeId);
 			pergunta.setQuestionario(perguntaRepository
 					.findQuestionario(pergunta.getId()));
 			perguntaRepository.update(pergunta);
@@ -114,7 +115,18 @@ public class PerguntaController {
 			result.redirectTo(LoginController.class).logado();
 		}
 	}
-
+@Logado
+	@Post("teste/apagar/pergunta")
+	public void deletarPergunta(Long testeId,Long perguntaId){
+	if (testeId != null && perguntaId!=null) {
+		Pergunta perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId, testeId);
+		perguntaRepository.destroy(perguntaPertenceUsuario);
+		result.redirectTo(TesteController.class).passo2(testeId);
+	}
+	else{
+		result.notFound();
+	}
+}
 	/**
 	 * Analisa se teste.id e pergunta.id pertencem ao usuarioLogado.
 	 * 

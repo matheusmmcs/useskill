@@ -3,6 +3,8 @@ package br.ufpi.repositories;
 import java.util.List;
 
 import br.ufpi.models.Teste;
+import br.ufpi.models.Usuario;
+import br.ufpi.util.Paginacao;
 
 public interface TesteRepository {
 	void create(Teste entity);
@@ -21,7 +23,7 @@ public interface TesteRepository {
 	 * @param idTeste id do teste procurado
 	 * @return null se não encontrar
 	 */
-	Teste testCriado(Long idUsuario, Long idTeste);
+	Teste getTestCriado(Long idUsuario, Long idTeste);
 
 	
 	/** Retorna todos os Testes que estaão com o campo testeRealizado igual a falso
@@ -29,12 +31,33 @@ public interface TesteRepository {
 	 * @param idTeste identificados do teste a ser procurado
 	 * @return null caso o teste não seja encontrado
 	 */
-	Teste testCriadoNaoRealizado(Long idUsuario, Long idTeste);
+	Teste getTestCriadoNaoRealizado(Long idUsuario, Long idTeste);
 
 	/** Retorna todos os Testes que estaão com o campo testeRealizado igual a true
 	 * @param idUsuario identificador do usuario pertencente ao teste
 	 * @param idTeste identificados do teste a ser procurado
 	 * @return null caso o teste não seja encontrado
 	 */
-	Teste testCriadoRealizado(Long idUsuario, Long idTeste);
+	Teste getTestCriadoRealizado(Long idUsuario, Long idTeste);
+
+	/**
+	 * Lista de todos os usuarios que podem participar de um teste. Vai mostrar
+	 * apenas os usuarios que ainda não forma convidados.
+	 * 
+	 * @param testeId
+	 * @return Lista de usuarios que podem participar do teste
+	 */
+	Paginacao<Usuario> usuariosLivresParaPartciparTeste(Long testeId, int numeroPagina,
+			int quantidade);
+
+	/**
+	 * Relata todos os usuarios que participaram de um teste
+	 * @param testeId
+	 * @param numeroPagina
+	 * @param quantidade
+	 * @return
+	 */
+	Paginacao<Usuario> getUsuariosConvidados(Long testeId, int numeroPagina,
+			int quantidade);
+	
 }

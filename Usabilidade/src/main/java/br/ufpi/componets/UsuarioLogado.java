@@ -18,7 +18,7 @@ public class UsuarioLogado {
 
 	public UsuarioLogado( UsuarioRepository repository) {
 		this.usuarioRepository=repository;
-		usuario=usuarioRepository.find(5l);
+		usuario=usuarioRepository.find(1l);
 		System.out.println(usuario);
 	}
 

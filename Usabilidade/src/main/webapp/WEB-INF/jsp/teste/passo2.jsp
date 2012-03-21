@@ -1,4 +1,4 @@
-
+<h1>Tarefas</h1>
 <table>
 	<thead>
 		<tr>
@@ -25,9 +25,12 @@
 						<fmt:message key="editar" />
 				</a></td>
 				<td>
-					<form action="${pageContext.request.contextPath}/teste/removed/tarefa" method="post">
+					<form
+						action="${pageContext.request.contextPath}/teste/removed/tarefa"
+						method="post">
 						<input type="hidden" value="${tarefa.id }" name="idTarefa">
-						<input type="submit" value="<fmt:message key="remover"/>" class="ancora">
+						<input type="submit" value="<fmt:message key="remover"/>"
+							class="ancora">
 					</form>
 				</td>
 
@@ -35,6 +38,7 @@
 		</c:forEach>
 	</c:if>
 </table>
+<h1>Perguntas</h1>
 <c:if test="${not empty perguntas}">
 	<c:forEach items="${perguntas}" var="pergunta">
 		<div id="pergunta_exibe">
@@ -42,12 +46,20 @@
 				href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta">${pergunta.titulo}</a>
 			<a
 				href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta">Editar</a>
-			<!-- 	<form action="${pageContext.request.contextPath}/teste/duplicar/pergunta" method="post">
-				<input type="submit" value="Duplicar" >
-				 <input type="hidden" name="testeId"
-					value="${usuarioLogado.teste.id }"> <input type="hidden"
-					name="perguntaId" value="${pergunta.id}"/>
-			</form> -->
+			<form
+				action="${pageContext.request.contextPath}/teste/duplicar/pergunta"
+				method="post">
+				<input type="submit" value="Duplicar"> <input type="hidden"
+					name="testeId" value="${usuarioLogado.teste.id }"> <input
+					type="hidden" name="perguntaId" value="${pergunta.id}" />
+			</form>
+			<form
+				action="${pageContext.request.contextPath}/teste/apagar/pergunta"
+				method="post">
+				<input type="submit" value="Deletar"> <input type="hidden"
+					name="testeId" value="${usuarioLogado.teste.id }"> <input
+					type="hidden" name="perguntaId" value="${pergunta.id}" />
+			</form>
 		</div>
 		<br>
 	</c:forEach>

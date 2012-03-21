@@ -200,7 +200,7 @@ public class TarefaController {
      *            Identificador do Teste a ser procurado
      */
     private void testeNaoRealizadoPertenceUsuarioLogado(Long idTeste) {
-        Teste teste = testeRepository.testCriadoNaoRealizado(usuarioLogado.getUsuario().getId(), idTeste);
+        Teste teste = testeRepository.getTestCriadoNaoRealizado(usuarioLogado.getUsuario().getId(), idTeste);
         if (teste != null) {
             usuarioLogado.setTeste(teste);
         } else {

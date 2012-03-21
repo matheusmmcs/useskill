@@ -34,16 +34,17 @@ import org.hibernate.annotations.CollectionOfElements;
  * @author Cleiton
  */
 @NamedQueries({
-    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
-    @NamedQuery(name = "Usuario.findById", query = "SELECT u FROM Usuario u WHERE u.id = :id"),
-    @NamedQuery(name = "Usuario.findByConfirmacaoEmail", query = "SELECT u FROM Usuario u WHERE u.confirmacaoEmail = :confirmacaoEmail"),
-    @NamedQuery(name = "Usuario.findByEmail", query = "SELECT u FROM Usuario u WHERE u.email = :email"),
-    @NamedQuery(name = "Usuario.findByEmailConfirmado", query = "SELECT u FROM Usuario u WHERE u.emailConfirmado = :emailConfirmado"),
-    @NamedQuery(name = "Usuario.findByNome", query = "SELECT u FROM Usuario u WHERE u.nome = :nome"),
-    @NamedQuery(name = "Usuario.findBySenha", query = "SELECT u FROM Usuario u WHERE u.senha = :senha"),
-    @NamedQuery(name="Usuario.EmailSenha",query="SELECT u FROM Usuario u WHERE u.email= :email AND u.senha= :senha"),
-    @NamedQuery(name="Usuario.TesteCriado.Realizado.Organizado.Id.Realizao",query="SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador AND t.realizado= true ORDER BY t.id DESC"),
-    @NamedQuery(name="Usuario.TesteCriado.Realizado.Organizado.Id.Realizado",query="SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador AND t.realizado= false ORDER BY t.id DESC"),
+		@NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
+		@NamedQuery(name = "Usuario.findById", query = "SELECT u FROM Usuario u WHERE u.id = :id"),
+		@NamedQuery(name = "Usuario.findByConfirmacaoEmail", query = "SELECT u FROM Usuario u WHERE u.confirmacaoEmail = :confirmacaoEmail"),
+		@NamedQuery(name = "Usuario.findByEmail", query = "SELECT u FROM Usuario u WHERE u.email = :email"),
+		@NamedQuery(name = "Usuario.findByEmailConfirmado", query = "SELECT u FROM Usuario u WHERE u.emailConfirmado = :emailConfirmado"),
+		@NamedQuery(name = "Usuario.findByNome", query = "SELECT u FROM Usuario u WHERE u.nome = :nome"),
+		@NamedQuery(name = "Usuario.findBySenha", query = "SELECT u FROM Usuario u WHERE u.senha = :senha"),
+		@NamedQuery(name = "Usuario.EmailSenha", query = "SELECT u FROM Usuario u WHERE u.email= :email AND u.senha= :senha"),
+		@NamedQuery(name = "Usuario.TesteCriado.Realizado.Organizado.Id.Realizao", query = "SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador AND t.realizado= true ORDER BY t.id DESC"),
+		@NamedQuery(name = "Usuario.TesteCriado.Realizado.Organizado.Id.Realizado", query = "SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador AND t.realizado= false ORDER BY t.id DESC"),
+		
 })
 @Entity
 public class Usuario implements Serializable {
@@ -66,13 +67,12 @@ public class Usuario implements Serializable {
 	private boolean emailConfirmado;
 	@Column(length = 32, unique = true)
 	private String confirmacaoEmail;
-	@OneToMany(mappedBy = "usuarioCriador", cascade = CascadeType.ALL,fetch=FetchType.LAZY)
+	@OneToMany(mappedBy = "usuarioCriador", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Teste> testesCriados;
-	@ManyToMany(mappedBy = "usuariosParticipantes",fetch=FetchType.LAZY)
+	@ManyToMany(mappedBy = "usuariosParticipantes", fetch = FetchType.LAZY)
 	private List<Teste> testesParticipados;
 	@Transient
 	private UsuarioRepository usuarioRepository;
-
 
 	public Usuario(UsuarioRepository usuarioRepository) {
 		super();
@@ -87,7 +87,7 @@ public class Usuario implements Serializable {
 		this.emailConfirmado = emailConfirmado;
 		this.confirmacaoEmail = confirmacaoEmail;
 	}
-	
+
 	public Usuario() {
 	}
 
@@ -181,8 +181,8 @@ public class Usuario implements Serializable {
 
 	public void criptografarSenhaGerarConfimacaoEmail() {
 		senha = Criptografa.criptografar(senha);
-		do{
-			confirmacaoEmail=Criptografa.criptografar(new Date().toString());
-		}while(getRepository().isContainConfirmacaoEmail(confirmacaoEmail));
+		do {
+			confirmacaoEmail = Criptografa.criptografar(new Date().toString());
+		} while (getRepository().isContainConfirmacaoEmail(confirmacaoEmail));
 	}
 }

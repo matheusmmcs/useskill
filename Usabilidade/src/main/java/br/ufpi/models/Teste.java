@@ -33,7 +33,7 @@ public class Teste implements Serializable {
 	private List<Tarefa> tarefas;
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Questionario caracterizacao;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL,fetch= FetchType.LAZY)
 	private Questionario satisfacao;
 	@ManyToMany
 	List<Usuario> usuariosParticipantes;
@@ -57,6 +57,11 @@ public class Teste implements Serializable {
 	 * 
 	 */
 	private boolean realizado;
+	/**
+	 * Indica se o Teste jah foi liberado para os usuarios responderem.
+	 * Diferença do realizao é que se liberado pode ser alterado.
+	 */
+	private boolean liberado;
 
 	public Long getId() {
 		return id;
@@ -145,6 +150,14 @@ public class Teste implements Serializable {
 				+ ", usuarioCriador=" + usuarioCriador + ", titulo=" + titulo
 				+ ", tituloPublico=" + tituloPublico + ", textoIndroducao="
 				+ textoIndroducao + "]";
+	}
+
+	public boolean isLiberado() {
+		return liberado;
+	}
+
+	public void setLiberado(boolean liberado) {
+		this.liberado = liberado;
 	}
 
 }
