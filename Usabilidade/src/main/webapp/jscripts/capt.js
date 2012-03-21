@@ -117,7 +117,6 @@
             if (tagName == 'A') {
                 href = capt(e.target).attr("href")
                 if (href != "" && href.indexOf("#") != 0) {
-                    e.preventDefault();
                     enviaJson(getResultadoJson())
 									
                 }
