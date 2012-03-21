@@ -6,6 +6,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Login</title>
     </head>
+    
     <body>
         <c:forEach var="error" items="${errors}">
             ${error.message}<br />

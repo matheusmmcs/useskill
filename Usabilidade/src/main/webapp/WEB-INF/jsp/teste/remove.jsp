@@ -10,7 +10,7 @@
     <input type="submit" value="Confirmar"/>
 </form>
 <script type="text/javascript">
-    $("#form_delete").validate({
+    $("#form_delete").validate({ 
         
         rules:{"senha":{
                 required:true

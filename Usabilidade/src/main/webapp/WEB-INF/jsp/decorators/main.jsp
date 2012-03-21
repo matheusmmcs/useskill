@@ -10,7 +10,7 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/reset.css"/>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css"/>
         <decorator:head/>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery_1.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/application.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.validate.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.easing1.3.js"></script>

@@ -7,5 +7,5 @@
                    value="${usuarioLogado.teste.titulo}" id="teste_titulo" /> 
     <button type="submit">
         <fmt:message key="botao.criar.teste" />
-    </button>
+    </button> 
 </form>
