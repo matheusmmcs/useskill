@@ -92,7 +92,7 @@ input.error{
 
 label {
     display: block;
-    width: 100px;
+    width: auto;
     clear: left;
     float: left;
 }

@@ -15,6 +15,7 @@
         src="${pageContext.request.contextPath}/jscripts/capt.js"></script>
     </head>
     <body>
-        <a href="http://localhost:8084/Usabilidade/">teste</a>
+        
+        
     </body>
 </html>

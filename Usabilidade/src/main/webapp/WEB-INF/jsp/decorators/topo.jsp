@@ -1,6 +1,6 @@
 <div id="topo">
     <div id="topo_centro">
-        <a id="usabilitool" title="Usabilitool" href="#"></a>
+        <a id="usabilitool" title="Usabilitool" href="${pageContext.request.contextPath}/"></a>
     </div>
     <div id="menu_topo">
         <div id="menu_topo_centro">

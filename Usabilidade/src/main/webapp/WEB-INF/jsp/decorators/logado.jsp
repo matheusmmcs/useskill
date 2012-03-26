@@ -9,6 +9,10 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/menu.css"/>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/reset.css"/>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css"/>
+                
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/contato/formee-structure.css"/>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/contato/formee-style.css"/>
+        
         <decorator:head/>
         <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/application.js"></script>

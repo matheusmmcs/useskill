@@ -109,7 +109,9 @@
             if (tagPaiClick[0].nodeName == "A") {
                 href = tagPaiClick.attr("href")
                 if (href != "" && href.indexOf("#") != 0) {
-                    enviaJson(getResultadoJson())
+                    //verificar se o botao clicado é o de finalizar
+                    
+                    enviaJson(getResultadoJson(),false)
                 }
             }
 
@@ -117,15 +119,16 @@
             if (tagName == 'A') {
                 href = capt(e.target).attr("href")
                 if (href != "" && href.indexOf("#") != 0) {
-                    enviaJson(getResultadoJson())
-									
+                    //verificar se o botao clicado é o de finalizar
+                    enviaJson(getResultadoJson(),false)
                 }
             }
 
             // se for input submit
             if (tagName == 'INPUT') {
                 if (capt(e.target).attr("type").toUpperCase() == "SUBMIT") {
-                    enviaJson(getResultadoJson())
+                    //verificar se o botao clicado é o de finalizar
+                    enviaJson(getResultadoJson(),false)
                 }
             }
         },
@@ -233,13 +236,13 @@
         return dif / seg;
     }
 
-    function enviaJson(dados) {
+    function enviaJson(dados, bool) {
         capt.ajax({
             url : '/Usabilidade/tarefa/save/fluxo/ideal',
             type : "POST",
             dataType : 'json',
             data : {
-                'dados': dados
+                'dados': dados, 'completo':bool
             },
             success : function(json) {
                 alert("foi");
