@@ -1,5 +1,6 @@
 package br.ufpi.componets;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
@@ -57,6 +58,8 @@ public class SessionActions {
 	}
 
 	public boolean addAction(List<Acao> actions) {
+		if (acoes == null)
+			this.acoes = new ArrayList<Acao>();
 		return this.acoes.addAll(actions);
 	}
 

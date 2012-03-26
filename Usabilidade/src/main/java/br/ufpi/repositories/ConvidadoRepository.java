@@ -3,6 +3,7 @@ package br.ufpi.repositories;
 import java.util.List;
 
 import br.ufpi.models.Convidado;
+import br.ufpi.models.Teste;
 
 public interface ConvidadoRepository {
 	void create(Convidado entity);
@@ -44,4 +45,6 @@ public interface ConvidadoRepository {
 	 * @return True se adicionou todos os usuarios ao Teste
 	 */
 	void desconvidarUsuarios(List<Long> idUsuarios, Long idTeste);
+
+	Teste getTesteConvidado(Long testeId, Long usuarioId);
 }

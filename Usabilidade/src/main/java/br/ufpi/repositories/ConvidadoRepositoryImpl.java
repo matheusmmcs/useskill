@@ -5,9 +5,12 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
 
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Convidado;
+import br.ufpi.models.Teste;
 
 @Component
 public class ConvidadoRepositoryImpl extends Repository<Convidado, Long>
@@ -51,5 +54,19 @@ public class ConvidadoRepositoryImpl extends Repository<Convidado, Long>
 		return convidados;
 	}
 
+	@Override
+	public Teste getTesteConvidado(Long testeId, Long usuarioId) {
+		Query namedQuery = super.entityManager
+				.createNamedQuery("Convidado.UsuarioFoiConvidado");
+		namedQuery.setParameter("teste", testeId);
+		namedQuery.setParameter("usuario", usuarioId);
+		try {
+			namedQuery.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+
+		return null;
+	}
 
 }
