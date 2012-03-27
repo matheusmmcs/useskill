@@ -25,16 +25,27 @@ public class SessionActions {
 	 */
 	private List<Acao> acoes;
 	/**
-	 * Tarefa ao qual um determinado Fluxo vai pertencer
+	 * False se nao for a primeira vez que a pagina foi aberta True se for a
+	 * primeira vez.
 	 */
-	private Tarefa tarefa;
+	private boolean primeiraPagina;
+
+	/**
+	 * Url que o browser vai estar
+	 */
+	//private String urlProxima;
+
+//	public String getUrlproxima() {
+//		return urlProxima;
+//	}
+//
+//	public void setUrlProxima(String urlEmAndamento) {
+//		this.urlProxima = urlEmAndamento;
+//	}
 
 	@PreDestroy
 	public void destroy() {
-		System.out
-				.println("###########################Deletado Secao###############");
 		acoes = null;
-		tarefa = null;
 	}
 
 	public List<Acao> getAcoes() {
@@ -45,22 +56,22 @@ public class SessionActions {
 		this.acoes = acoes;
 	}
 
-	public Tarefa getTarefa() {
-		return tarefa;
-	}
-
-	public void setTarefa(Tarefa tarefa) {
-		this.tarefa = tarefa;
-	}
-
 	public SessionActions() {
-		System.out.println("####################3Contruindo##############");
+		primeiraPagina = true;
 	}
 
 	public boolean addAction(List<Acao> actions) {
 		if (acoes == null)
 			this.acoes = new ArrayList<Acao>();
 		return this.acoes.addAll(actions);
+	}
+
+	public boolean isPrimeiraPagina() {
+		return primeiraPagina;
+	}
+
+	public void setPrimeiraPagina(boolean primeiraPagina) {
+		this.primeiraPagina = primeiraPagina;
 	}
 
 }

@@ -26,6 +26,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.bcel.generic.ACONST_NULL;
+
 @Resource
 public class TarefaController {
 
@@ -179,6 +181,18 @@ public class TarefaController {
 
 	}
 
+	/**
+	 * Salva os Fluxos e altera a url para a pxoxima pagina aberta.
+	 * 
+	 * @param dados
+	 *            Ações em formato Json
+	 * @param completo
+	 *            Determina true se teste estiverCompleto
+	 * @param tarefaId
+	 *            Identificador da Tarefa que o fluxo pertence
+	 * @param fluxoIdeal
+	 *            True se for fluxo ideal
+	 */
 	private void saveFluxo(String dados, Boolean completo, Long tarefaId,
 			boolean fluxoIdeal) {
 		Gson gson = new Gson();
@@ -196,6 +210,7 @@ public class TarefaController {
 			}
 			actions.destroy();
 		}
+	//	actions.setUrlProxima();
 	}
 
 	/**
@@ -213,11 +228,11 @@ public class TarefaController {
 			acao.setFluxo(fluxoUsuario);
 		}
 		Long proximo = fluxoTarefa.getProximo();
-		if(proximo==null){
+		if (proximo == null) {
 			result.redirectTo(TesteParticiparController.class).termino();
 		}
 		fluxoUsuarioRepository.create(fluxoUsuario);
-		result.redirectTo(this).visualizar();
+		result.redirectTo(this).acoes();
 	}
 
 	/**
@@ -229,10 +244,19 @@ public class TarefaController {
 	 * @return
 	 */
 	@Logado
-	@Post
-	public Tarefa visualizar(Long idTarefa) {
-		return tarefaPertenceTeste(usuarioLogado.getTeste().getId(), idTarefa);
+	@Get()
+	public Tarefa visualizar(String url, Long idTarefa) {
+		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
+				idTarefa);
+//		if (this.actions.isPrimeiraPagina())
+//			result.include("url", this.actions.getUrlproxima());
+//		else
+//			result.include("url", tarefa.getUrlInicial());
+
+		return tarefa;
 	}
+
+
 
 	/**
 	 * Utilizado para mostrar ao usuario a tarefa definida. Usado apenas para os
@@ -244,9 +268,15 @@ public class TarefaController {
 	 */
 	@Logado
 	@Get
-	public Tarefa visualizar() {
+	public Tarefa acoes() {
 		Long idTarefa = fluxoTarefa.getVez();
-		return getTarefa(idTarefa);
+		Tarefa tarefa = getTarefa(idTarefa);
+//		if (this.actions.isPrimeiraPagina())
+//			result.include("url", this.actions.getUrlproxima());
+//		else
+//			result.include("url", tarefa.getUrlInicial());
+		return tarefa;
+
 	}
 
 	private void gravaFluxoIdeal(Long tarefaId) {
@@ -262,6 +292,8 @@ public class TarefaController {
 		tarefa.setFluxoIdeal(fluxoIdeal);
 		tarefa.setFluxoIdealPreenchido(true);
 		tarefaRepository.update(tarefa);
+		result.redirectTo(TesteController.class).passo2(
+				usuarioLogado.getTeste().getId());
 
 	}
 

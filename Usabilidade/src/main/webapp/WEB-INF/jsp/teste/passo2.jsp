@@ -17,7 +17,8 @@
 						${tarefa.nome}</a></td>
 
 				<td><c:if test="${tarefa.fluxoIdealPreenchido == false}">
-						<form action="${pageContext.request.contextPath}/tarefa/visualizar" method="post">
+						<form action="${pageContext.request.contextPath}/tarefa/visualizar" method="get">
+						<input type="hidden" value="${tarefa.urlInicial }" name="url">
 							<input type="hidden" value="${tarefa.id }" name="idTarefa">
 							<input type="submit" value="<fmt:message key="gravar" />">
 						</form>
