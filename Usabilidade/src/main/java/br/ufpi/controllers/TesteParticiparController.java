@@ -1,5 +1,8 @@
 package br.ufpi.controllers;
 
+import java.util.List;
+
+import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
@@ -9,6 +12,7 @@ import br.ufpi.annotation.Logado;
 import br.ufpi.componets.SessionFluxoTarefa;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Convidado;
+import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.ConvidadoRepository;
 import br.ufpi.repositories.TesteRepository;
@@ -58,15 +62,21 @@ public class TesteParticiparController {
 		fluxoTarefa.criarLista(usuarioLogado.getTeste());
 
 	}
-	
+
+	@Logado
+	@Get
+	public void termino() {
+		//TODO Marca teste como realizado e que usuario aceitou o convite
+	}
+
 	private void usuarioConvidado(Long testeId) {
 		if (testeId != null) {
 			this.usuarioLogado.getUsuario();
 			Teste testeConvidado = convidadoRepository.getTesteConvidado(
 					testeId, usuarioLogado.getUsuario().getId());
-			if (testeConvidado != null)
+			if (testeConvidado != null) {
 				usuarioLogado.setTeste(testeConvidado);
-			else {
+			} else {
 				result.notFound();
 			}
 		}

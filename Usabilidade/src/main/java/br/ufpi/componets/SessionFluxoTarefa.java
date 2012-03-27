@@ -32,19 +32,30 @@ public class SessionFluxoTarefa {
 	public void criarLista(Teste teste) {
 		tarefas = new ArrayList<Long>();
 		for (Tarefa tarefa : teste.getTarefas()) {
-			tarefas.add(tarefa.getId());
+			this.tarefas.add(tarefa.getId());
 
 		}
 	}
 
 	public Long getProximo() {
-		if (tarefas.size() > 0)
+		if (tarefas.size() > 0) {
+			tarefas.remove(0);
 			return tarefas.get(0);
-		else
+		} else
 			return null;
 	}
+
 	@PreDestroy
-	public void destroy(){
-		this.tarefas= null;
+	public void destroy() {
+		this.tarefas = null;
+	}
+
+	/**
+	 * Retorna a tarefa que esta sendo usada no momento
+	 * 
+	 * @return
+	 */
+	public Long getVez() {
+		return this.getTarefas().get(0);
 	}
 }

@@ -17,6 +17,7 @@ import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.FluxoUsuario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
+import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
 import com.google.gson.Gson;
@@ -33,19 +34,22 @@ public class TarefaController {
 	private UsuarioLogado usuarioLogado;
 	private final Validator validator;
 	private final TesteRepository testeRepository;
+	private final FluxoUsuarioRepository fluxoUsuarioRepository;
 	private SessionActions actions;
 	private final SessionFluxoTarefa fluxoTarefa;
 
 	public TarefaController(Result result, TarefaRepository tarefaRepository,
 			UsuarioLogado usuarioLogado, Validator validator,
-			TesteRepository testeRepository, SessionActions actions,
-			SessionFluxoTarefa fluxoTarefa) {
+			TesteRepository testeRepository,
+			FluxoUsuarioRepository fluxoUsuarioRepository,
+			SessionActions actions, SessionFluxoTarefa fluxoTarefa) {
 		super();
 		this.result = result;
 		this.tarefaRepository = tarefaRepository;
 		this.usuarioLogado = usuarioLogado;
 		this.validator = validator;
 		this.testeRepository = testeRepository;
+		this.fluxoUsuarioRepository = fluxoUsuarioRepository;
 		this.actions = actions;
 		this.fluxoTarefa = fluxoTarefa;
 	}
@@ -208,7 +212,12 @@ public class TarefaController {
 		for (Acao acao : acoes) {
 			acao.setFluxo(fluxoUsuario);
 		}
-		//TODO Gravar Fluxo de usuario
+		Long proximo = fluxoTarefa.getProximo();
+		if(proximo==null){
+			result.redirectTo(TesteParticiparController.class).termino();
+		}
+		fluxoUsuarioRepository.create(fluxoUsuario);
+		result.redirectTo(this).visualizar();
 	}
 
 	/**
@@ -236,7 +245,7 @@ public class TarefaController {
 	@Logado
 	@Get
 	public Tarefa visualizar() {
-		Long idTarefa = fluxoTarefa.getProximo();
+		Long idTarefa = fluxoTarefa.getVez();
 		return getTarefa(idTarefa);
 	}
 

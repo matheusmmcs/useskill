@@ -61,12 +61,11 @@ public class ConvidadoRepositoryImpl extends Repository<Convidado, Long>
 		namedQuery.setParameter("teste", testeId);
 		namedQuery.setParameter("usuario", usuarioId);
 		try {
-			namedQuery.getSingleResult();
+			return (Teste) namedQuery.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
 
-		return null;
 	}
 
 }
