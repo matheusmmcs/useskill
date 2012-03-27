@@ -17,8 +17,11 @@
 						${tarefa.nome}</a></td>
 
 				<td><c:if test="${tarefa.fluxoIdealPreenchido == false}">
-			Gravar Fluxo Ideal
-			</c:if> <c:if test="${tarefa.fluxoIdealPreenchido == true}">
+						<form action="${pageContext.request.contextPath}/tarefa/visualizar" method="post">
+							<input type="hidden" value="${tarefa.id }" name="idTarefa">
+							<input type="submit" value="<fmt:message key="gravar" />">
+						</form>
+					</c:if> <c:if test="${tarefa.fluxoIdealPreenchido == true}">
 			Editar Fluxo Ideal</c:if>
 				<td><a
 					href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">

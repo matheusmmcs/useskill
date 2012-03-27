@@ -221,7 +221,7 @@ public class TarefaController {
 	 */
 	@Logado
 	@Post
-	public Tarefa vizualizar(Long idTarefa) {
+	public Tarefa visualizar(Long idTarefa) {
 		return tarefaPertenceTeste(usuarioLogado.getTeste().getId(), idTarefa);
 	}
 
@@ -235,7 +235,7 @@ public class TarefaController {
 	 */
 	@Logado
 	@Get
-	public Tarefa vizualizar() {
+	public Tarefa visualizar() {
 		Long idTarefa = fluxoTarefa.getProximo();
 		return getTarefa(idTarefa);
 	}
