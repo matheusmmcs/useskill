@@ -26,6 +26,21 @@ body{
     height: 140px;
     margin: 0px auto;
 }
+#topo #topo_direito{
+    float: right;
+    width: 200px;
+    height: 30px;
+    margin-top: 50px;
+}
+#topo #topo_direito #logout{
+    float: right;
+}
+#topo #topo_direito #nome{
+    float: right;
+    font-size: 14px;
+    margin: 6px 15px 0 0;
+}
+
 a#usabilitool{
     position: absolute;
     float: right;
@@ -57,9 +72,9 @@ a#usabilitool{
     margin: 0px auto 20px auto;
     background: #eef3f6;
 
-    -moz-box-shadow: 0 0 5px #4a5e78;
-    -webkit-box-shadow: 0 0 5px #4a5e78;
-    box-shadow: 0 0 5px #4a5e78;
+    -moz-box-shadow: 0 0 5px #b3bac4;
+    -webkit-box-shadow: 0 0 5px #b3bac4;
+    box-shadow: 0 0 5px #b3bac4;
 }
 #conteudo #conteudo_interno{
     padding: 15px;

@@ -2,7 +2,7 @@
 
 <decorators defaultdir="/WEB-INF/jsp/decorators">
 	<decorator name="teste" page="teste.jsp">
-		<pattern>/captura/teste</pattern>
+		<pattern>/tarefa/visualizar</pattern>
 	</decorator>
 	<decorator name="logado" page="logado.jsp">
 		<pattern>/teste/*</pattern>

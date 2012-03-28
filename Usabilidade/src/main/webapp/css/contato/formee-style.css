@@ -212,3 +212,13 @@ form .formee-txt:focus, .formee input[type="text"]:focus, .formee input[type="pa
 .formee a:hover{
     color: #153449;
 }
+
+a.formee-button{
+    font-size: 14px;
+    text-decoration: none;
+    color: white;
+}
+
+a.formee-button:hover{
+    color: white;
+}

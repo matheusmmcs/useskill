@@ -1,77 +1,45 @@
 <head>
-    <title>Usuario [index]</title>
-    <style type="text/css">
-        label{cursor: default}
-        .title{font-weight: bold}
-        .formee a.input{padding: 6px 6px}
-        .grid-1-12, .grid-4-12, .grid-5-12{overflow: hidden} 
-    </style>
+    <title>Usuario</title>
 </head>
-<body>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/contato/formee.js"></script>
-    <div class="formee" id="loginForm">
-        <fieldset>
-            <legend>Lista de Usuários</legend>
-            <div class="row title">
-                <div class="grid-4-12 clear">
-                    <label>Nome do Usuário</label>
-                </div>
-                <div class="grid-5-12">
-                    <label>Email do Usuário</label>
-                </div>
-                <div class="grid-1-12">
-                    <label style="margin-left: 7px;">Ver</label>
-                </div>
-                <div class="grid-1-12">
-                    <label style="margin-left: 7px;">Editar</label>
-                </div>
-                <div class="grid-1-12">
-                    <label>Excluir</label>
-                </div>
-            </div>
-            <c:forEach items="${usuarioList}" var="usuario">
-                <div class="row">
-                    <div class="grid-4-12 clear">
-                        <label>${usuario.nome}</label>
-                    </div>
-                    <div class="grid-5-12">
-                        <label>${usuario.email}</label>
-                    </div>
-                    <div class="grid-1-12">
-                        <a class="input" href="${pageContext.request.contextPath}/usuarios/${usuario.id}">Ver</a>
-                    </div>
-                    <div class="grid-1-12">
-                        <a class="input" href="${pageContext.request.contextPath}/usuarios/${usuario.id}/edit">Editar</a>
-                    </div>
-                    <div class="grid-1-12">
-                        <form action="${pageContext.request.contextPath}/usuarios/${usuario.id}" method="post">
-                            <input type="hidden" name="_method" value="delete"/>
-                            <input type="submit" onclick="return confirm('Are you sure?')" value="Excluir" name="excluir" title="Excluir" class="right" style="width: 50px; font-size: 10px; font-weight: normal; padding: 4px 1px; margin: 0px auto"/>
-                        </form>
-                    </div>
-                </div>
-            </c:forEach>
-        </fieldset>
-    </div>  
+<body> 
 
-    <br />
-    <a href="${pageContext.request.contextPath}/usuarios/new">New Usuario</a> 
-    <script type="text/javascript">
-        (function ($) {               
-            $(document).ready(function(){
-                var rows = $('.row')
-                var bool=true;
-                var cont=0;
-                rows.each(function(){
-                    if(bool){
-                        rows.eq(cont).css('background', '#cbd5dd')
-                        bool=false
-                    }else{
-                        bool=true
-                    }
-                    cont++
-                })
-            })
-        })(jQuery);
-    </script>
+    <div class="row show-grid">
+        <div class="span2 offset10">
+            <a class="btn btn-primary" href="${pageContext.request.contextPath}/usuarios/new">Cadastrar Usuário</a> 
+        </div>
+    </div>
+    <div class="row show-grid">
+        <div class="span12">
+            <h1>Lista de Usuários</h1>
+        </div>
+        <div class="span12">
+            <table class="table table-striped table-bordered table-condensed" style="background-color: white">
+                <thead>
+                    <tr>
+                        <th>Nome do Usuário</th>
+                        <th>Email do Usuário</th>
+                        <th>Ver</th>
+                        <th>Editar</th>
+                        <th>Excluir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach items="${usuarioList}" var="usuario">
+                        <tr>
+                            <td>${usuario.nome}</td>
+                            <td>${usuario.email}</td>
+                            <td width="100"><a class="btn" href="${pageContext.request.contextPath}/usuarios/${usuario.id}" style="margin-left: 20px"><span class="icon-zoom-in"></span> Ver</a></td>
+                            <td width="100"><a class="btn" href="${pageContext.request.contextPath}/usuarios/${usuario.id}/edit" style="margin-left: 12px"><span class="icon-pencil"></span> Editar</a></td>
+                            <td width="100">
+                                <form action="${pageContext.request.contextPath}/usuarios/${usuario.id}" method="post">
+                                    <input type="hidden" name="_method" value="delete"/>
+                                    <input type="submit" onclick="return confirm('Are you sure?')" value="Excluir" name="excluir" title="Excluir" class="btn icon-trash" style="margin-left: 18px"/>
+                                </form>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>

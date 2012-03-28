@@ -3,27 +3,41 @@
 </head>
 <body>
 
-    <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/contato/formee.js"></script>
-    <div class="formee" id="loginForm" style="width: 600px; margin: 0 auto;">
-        <fieldset>
-            <legend>Usuário Selecionado</legend>
-            <div class="row title">
-                <div class="grid-12-12 clear">
-                    <label>Nome do Usuário</label>
-                    <input type="text" name="nome" value="${usuario.nome}" disabled/>
-                </div>
-                <div class="grid-12-12">
-                    <label>Email do Usuário</label>
-                    <input type="text" name="email" value="${usuario.email}" disabled/>
-                </div>
-                <div class="grid-10-12">
+<c:if test="${not empty errors}">
+    <div class="alert alert-error">
+        <c:forEach items="${errors}" var="error">
+            ${error.message}<br />
+        </c:forEach>
+    </div>
+</c:if>
 
-                </div>
-                <div class="grid-2-12">
-                    <a class="input" href="${pageContext.request.contextPath}/usuarios/${usuario.id}/edit">Editar</a>
-                </div>
-            </div>	
-        </fieldset>
-    </div>  
-<a href="${pageContext.request.contextPath}/usuarios">Back</a>
+    
+    
+<form class="form-horizontal form-layout w600">
+    <c:if test="${not empty usuario.id}">
+        <input type="hidden" name="usuario.id" value="${usuario.id}" />
+        <input type="hidden" name="_method" value="put" />
+    </c:if>
+    <fieldset>
+        <legend>Usuário Selecionado</legend>
+        <div class="control-group">
+            <label class="control-label" for="input01"><fmt:message key="nome" />*</label>
+            <div class="controls">
+                <input type="text" name="nome" value="${usuario.nome}" disabled class="input-xlarge"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="input01"><fmt:message key="email" />*</label>
+            <div class="controls">
+                <input type="text" name="email" value="${usuario.email}" disabled class="input-xlarge"/>
+            </div>
+        </div>
+        
+
+        <div class="form-actions">
+            <a href="${pageContext.request.contextPath}/usuarios/${usuario.id}/edit" class="btn btn-primary" style="float: right">Editar</a>
+        </div>
+    </fieldset>
+</form>
+     
 </body>

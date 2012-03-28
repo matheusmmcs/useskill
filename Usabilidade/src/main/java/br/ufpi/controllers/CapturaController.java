@@ -21,6 +21,7 @@ public class CapturaController {
 	@Get()
     public String teste() {
     	String url = request.getParameter("url");
+        url = "http://www.globo.com";
         Map<String, String[]> parametrosRecebidos = request.getParameterMap();
         String metodo = request.getMethod();
 

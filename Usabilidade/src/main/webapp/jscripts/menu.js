@@ -39,6 +39,7 @@
             esse+=parseInt($.data(linksmenu[indice],"paddingE"))/2
             esse+=parseInt($.data(linksmenu[indice],"marginE"))/2
             total+=esse
+            
             return total;
         }
         //funcao para animar ate o width passado

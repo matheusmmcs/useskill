@@ -5,19 +5,21 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title><decorator:title default="Vraptor Scaffold"/></title>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/menu.css"/>
+        <title><decorator:title default="Usabilidade"/></title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/reset.css"/>
+        
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/bootstrap.css"/>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/bootstrap-ex.css"/>
+        
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/menu.css"/>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css"/>
-                
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/contato/formee-structure.css"/>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/contato/formee-style.css"/>
         
         <decorator:head/>
         <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/application.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.validate.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.easing1.3.js"></script>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/jscripts/bootstrap.js"/>
     </head>
     <body>
         <%@include file="topoLogado.jsp"%>

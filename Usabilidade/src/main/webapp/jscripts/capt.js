@@ -242,7 +242,9 @@
             type : "POST",
             dataType : 'json',
             data : {
-                'dados': dados, 'completo':bool
+                'dados': dados, 
+                'completo': bool, 
+                'tarefaId': get_url_parameter("idTarefa")
             },
             success : function(json) {
                 alert("foi");
@@ -264,5 +266,14 @@
 		 */
     // alert(dados);
     // window.open('http://brunomarota.blogspot.com/2011/03/como-abrir-uma-nova-aba-com-javascript.html','_blank')
+    }
+    
+    function get_url_parameter( param ){
+        param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+        var r1 = "[\\?&]"+param+"=([^&#]*)";
+        var r2 = new RegExp( r1 );
+        var r3 = r2.exec( window.location.href );
+        if( r3 == null ) return "";
+        else return r3[1];
     }
 })(jQuery);
