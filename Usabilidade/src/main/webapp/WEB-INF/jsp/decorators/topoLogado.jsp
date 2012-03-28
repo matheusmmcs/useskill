@@ -3,7 +3,7 @@
         <a id="usabilitool" title="Usabilitool" href="${pageContext.request.contextPath}/"></a>
         <div id="topo_direito">
             <a href="${pageContext.request.contextPath}/logout" id="logout" class="btn btn-danger"><fmt:message key="logout"/></a>
-            <span id="nome">Usuário Fulano</span>
+            <span id="nome">${usuarioLogado.usuario.nome}</span>
         </div>
     </div>
     <div id="menu_topo">
