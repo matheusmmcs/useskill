@@ -39,7 +39,7 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 			Long idUsuario) {
 		try {
 			Query query = entityManager
-					.createNamedQuery("Tarefa.Teste_NaoRealizado.Usuario");
+					.createNamedQuery("Tarefa.pertence.Teste.Nao.Liberado.Usuario");
 			query.setParameter("teste", idTeste);
 			query.setParameter("tarefa", idTarefa);
 			query.setParameter("usuario", idUsuario);

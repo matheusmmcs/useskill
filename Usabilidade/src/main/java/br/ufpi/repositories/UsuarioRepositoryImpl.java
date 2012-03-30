@@ -98,9 +98,9 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 	}
 
 	@Override
-	public List<Teste> findTesteCriadosRealizadoOrdenadorData(Usuario usuario) {
+	public List<Teste> findTesteNaoLiberadosOrdenadorData(Usuario usuario) {
 		Query query = entityManager
-				.createNamedQuery("Usuario.TesteCriado.Realizado.Organizado.Id.Realizado");
+				.createNamedQuery("Usuario.TesteCriado.Nao.Liberado.Organizado.Id");
 		query.setParameter("usuarioCriador", usuario);
 		try {
 			return (List<Teste>) query.getResultList();

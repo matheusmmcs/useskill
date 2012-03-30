@@ -55,7 +55,6 @@ public class TesteParticiparController {
 	/**
 	 * @param testeId
 	 */
-	@Logado
 	@Post
 	public void aceitar(Long testeId) {
 		usuarioConvidado(testeId);
@@ -66,7 +65,7 @@ public class TesteParticiparController {
 	@Logado
 	@Get
 	public void termino() {
-		//TODO Marca teste como realizado e que usuario aceitou o convite
+	
 	}
 
 	private void usuarioConvidado(Long testeId) {

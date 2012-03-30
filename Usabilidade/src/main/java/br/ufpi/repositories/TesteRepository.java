@@ -26,19 +26,19 @@ public interface TesteRepository {
 	Teste getTestCriado(Long idUsuario, Long idTeste);
 
 	
-	/** Retorna todos os Testes que estaão com o campo testeRealizado igual a falso
+	/** Retorna todos os Testes que estaão com o campo liberado igual a falso
 	 * @param idUsuario identificador do usuario pertencente ao teste
 	 * @param idTeste identificados do teste a ser procurado
 	 * @return null caso o teste não seja encontrado
 	 */
-	Teste getTestCriadoNaoRealizado(Long idUsuario, Long idTeste);
+	Teste getTestCriadoNaoLiberado(Long idUsuario, Long idTeste);
 
-	/** Retorna todos os Testes que estaão com o campo testeRealizado igual a true
+	/** Retorna todos os Testes que estaão com o campo Liberado igual a true
 	 * @param idUsuario identificador do usuario pertencente ao teste
 	 * @param idTeste identificados do teste a ser procurado
 	 * @return null caso o teste não seja encontrado
 	 */
-	Teste getTestCriadoRealizado(Long idUsuario, Long idTeste);
+	Teste getTestCriadoLiberado(Long idUsuario, Long idTeste);
 
 	/**
 	 * Lista de todos os usuarios que podem participar de um teste. Vai mostrar
@@ -59,5 +59,11 @@ public interface TesteRepository {
 	 */
 	Paginacao<Usuario> getUsuariosConvidados(Long testeId, int numeroPagina,
 			int quantidade);
+	/**Procura por todos os usuarios convidados para um teste.
+	 * @param testeId
+	 * @return
+	 */
+	List< Usuario> getUsuariosConvidadosAll(Long testeId);
+	
 	
 }

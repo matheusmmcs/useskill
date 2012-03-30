@@ -59,7 +59,7 @@ public interface UsuarioRepository {
 	List<Teste> findTesteCriados(Usuario usuario);
 
 	/**
-	 * Devolve todos os testes criados e ainda não realizado de um usuario por
+	 * Devolve todos os testes criados e ainda não liberados de um usuario por
 	 * ordem inversa de criação. Os testes criados primeiro serão mostrados por
 	 * ultimo.
 	 * 
@@ -67,7 +67,7 @@ public interface UsuarioRepository {
 	 * @param usuario
 	 * @return
 	 */
-	List<Teste> findTesteCriadosRealizadoOrdenadorData(Usuario usuario);
+	List<Teste> findTesteNaoLiberadosOrdenadorData(Usuario usuario);
 
 	/**
 	 * Procura por todos os testes participados de um usuario

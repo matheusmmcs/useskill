@@ -35,11 +35,11 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 	}
 
 	@Override
-	public Teste getTestCriadoNaoRealizado(Long idUsuario, Long idTeste) {
+	public Teste getTestCriadoNaoLiberado(Long idUsuario, Long idTeste) {
 		Usuario usuario = new Usuario();
 		usuario.setId(idUsuario);
 		Query query = entityManager
-				.createNamedQuery("Teste.Criado.NaoRealizado");
+				.createNamedQuery("Teste.Criado.NaoLiberado");
 		query.setParameter("idteste", idTeste);
 		query.setParameter("usuarioCriador", usuario);
 		try {
@@ -51,10 +51,10 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 	}
 
 	@Override
-	public Teste getTestCriadoRealizado(Long idUsuario, Long idTeste) {
+	public Teste getTestCriadoLiberado(Long idUsuario, Long idTeste) {
 		Usuario usuario = new Usuario();
 		usuario.setId(idUsuario);
-		Query query = entityManager.createNamedQuery("Teste.Criado.Realizado");
+		Query query = entityManager.createNamedQuery("Teste.Criado.Liberado");
 		query.setParameter("idteste", idTeste);
 		query.setParameter("usuarioCriador", usuario);
 		try {
@@ -100,5 +100,14 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		count.setMaxResults(quantidade);
 		paginacao.setCount((Long) count.getSingleResult());
 		return paginacao;
+	}
+
+	@Override
+	public List<Usuario> getUsuariosConvidadosAll(Long testeId) {
+		Query query = entityManager
+				.createNamedQuery("Convidado.Usuarios.Convidados.Count");
+		query.setParameter("teste", testeId);
+		return  query.getResultList();
+		
 	}
 }

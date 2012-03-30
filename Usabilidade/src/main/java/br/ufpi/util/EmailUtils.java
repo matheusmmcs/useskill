@@ -4,6 +4,7 @@
  */
 package br.ufpi.util;
 
+import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import java.net.URL;
 import org.apache.commons.mail.DefaultAuthenticator;
@@ -115,4 +116,16 @@ public class EmailUtils {
             e.printStackTrace();
         }
     }
+    public void enviarConviteTeste(Usuario pessoa, Teste teste) {
+      Mensagem mensagem = new Mensagem();
+      mensagem.setDestino(pessoa.getEmail());
+      mensagem.setTitulo("Você foi confidado para participar do Teste");
+      mensagem.setMensagem("");
+      
+      try {
+          this.enviaEmail(mensagem);
+      } catch (EmailException e) {
+          e.printStackTrace();
+      }
+  }
 }

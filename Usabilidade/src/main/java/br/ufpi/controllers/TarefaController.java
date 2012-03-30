@@ -241,7 +241,7 @@ public class TarefaController {
         result.redirectTo(this).acoes();
     }
 
-    /**
+/**
      * Utilizado para mostrar ao usuario a tarefa definida. Usado apenas para o
      * Testador
      * 
@@ -254,6 +254,7 @@ public class TarefaController {
     public String visualizar(Long idTarefa) {
         Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
                 idTarefa);
+
 
 //		if (this.actions.isPrimeiraPagina())
 //			result.include("url", this.actions.getUrlproxima());
@@ -336,6 +337,7 @@ public class TarefaController {
         return tarefa;
     }
 
+
     /**
      * Analisa se um determinado Teste pertence ao usuario
      * 
@@ -343,7 +345,7 @@ public class TarefaController {
      *            Identificador do Teste a ser procurado
      */
     private void testeNaoRealizadoPertenceUsuarioLogado(Long idTeste) {
-        Teste teste = testeRepository.getTestCriadoNaoRealizado(usuarioLogado.getUsuario().getId(), idTeste);
+        Teste teste = testeRepository.getTestCriadoNaoLiberado(usuarioLogado.getUsuario().getId(), idTeste);
         if (teste != null) {
             usuarioLogado.setTeste(teste);
         } else {

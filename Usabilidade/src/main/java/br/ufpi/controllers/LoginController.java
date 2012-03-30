@@ -81,7 +81,7 @@ public class LoginController {
     @Logado
     public void logado() {
         result.include("testesConvidados", usuarioRepository.findTestesConvidados(usuarioLogado.getUsuario().getId()));
-        result.include("testesCriados", usuarioRepository.findTesteCriadosRealizadoOrdenadorData(usuarioLogado.getUsuario()));
+        result.include("testesCriados", usuarioRepository.findTesteNaoLiberadosOrdenadorData(usuarioLogado.getUsuario()));
     }
 
     /**

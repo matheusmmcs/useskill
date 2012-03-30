@@ -20,8 +20,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 		@NamedQuery(name = "Teste.findByTextoIndroducao", query = "SELECT t FROM Teste t WHERE t.textoIndroducao = :textoIndroducao"),
 		@NamedQuery(name = "Teste.findByTitulo", query = "SELECT t FROM Teste t WHERE t.titulo = :titulo"),
 		@NamedQuery(name = "Teste.findByTituloPublico", query = "SELECT t FROM Teste t WHERE t.tituloPublico = :tituloPublico"),
-		@NamedQuery(name = "Teste.Criado.NaoRealizado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.realizado=false"),
-		@NamedQuery(name = "Teste.Criado.Realizado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.realizado=true"),
+		@NamedQuery(name = "Teste.Criado.NaoLiberado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.liberado=false"),
+		@NamedQuery(name = "Teste.Criado.Liberado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.liberado=true"),
 		@NamedQuery(name = "Teste.Criado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste"), })
 @Entity
 public class Teste implements Serializable {
@@ -51,13 +51,7 @@ public class Teste implements Serializable {
 	private String tituloPublico;
 	@Column(columnDefinition = "TiNYTEXT")
 	private String textoIndroducao;
-	/**
-	 * Indica se o teste ja foi realizado. Caso true o teste não pode ser mais
-	 * alterado.
-	 * 
-	 */
-	private boolean realizado;
-	/**
+		/**
 	 * Indica se o Teste jah foi liberado para os usuarios responderem.
 	 * Diferença do realizao é que se liberado pode ser alterado.
 	 */
@@ -135,14 +129,7 @@ public class Teste implements Serializable {
 		this.titulo = titulo;
 	}
 
-	public boolean isRealizado() {
-		return realizado;
-	}
-
-	public void setRealizado(boolean testeRealizado) {
-		this.realizado = testeRealizado;
-	}
-
+	
 	@Override
 	public String toString() {
 		return "Teste [id=" + id + ", tarefas=" + tarefas + ", caracterizacao="

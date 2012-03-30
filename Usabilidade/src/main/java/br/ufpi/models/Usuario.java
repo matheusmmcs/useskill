@@ -42,8 +42,8 @@ import org.hibernate.annotations.CollectionOfElements;
 		@NamedQuery(name = "Usuario.findByNome", query = "SELECT u FROM Usuario u WHERE u.nome = :nome"),
 		@NamedQuery(name = "Usuario.findBySenha", query = "SELECT u FROM Usuario u WHERE u.senha = :senha"),
 		@NamedQuery(name = "Usuario.EmailSenha", query = "SELECT u FROM Usuario u WHERE u.email= :email AND u.senha= :senha"),
-		@NamedQuery(name = "Usuario.TesteCriado.Realizado.Organizado.Id.Realizao", query = "SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador AND t.realizado= true ORDER BY t.id DESC"),
-		@NamedQuery(name = "Usuario.TesteCriado.Realizado.Organizado.Id.Realizado", query = "SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador AND t.realizado= false ORDER BY t.id DESC"),
+		@NamedQuery(name = "Usuario.TesteCriado.Liberado.Organizado.Id", query = "SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador AND t.liberado= true ORDER BY t.id DESC"),
+		@NamedQuery(name = "Usuario.TesteCriado.Nao.Liberado.Organizado.Id", query = "SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador AND t.liberado= false ORDER BY t.id DESC"),
 		
 })
 @Entity

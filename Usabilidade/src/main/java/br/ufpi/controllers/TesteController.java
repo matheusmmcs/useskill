@@ -18,6 +18,7 @@ import br.ufpi.models.Usuario;
 import br.ufpi.repositories.ConvidadoRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.Criptografa;
+import br.ufpi.util.EmailUtils;
 import br.ufpi.util.Paginacao;
 
 @Resource
@@ -75,7 +76,7 @@ public class TesteController {
 	@Logado
 	@Get("teste/{id}/editar/passo1")
 	public void passo1(Long id) {
-		this.testeNaoRealizadoPertenceUsuarioLogado(id);
+		this.testeNaoLiberadoPertenceUsuarioLogado(id);
 
 	}
 
@@ -83,7 +84,7 @@ public class TesteController {
 	@Post("teste/{idTeste}/editar/passo2")
 	public void passo2(Long idTeste, String titulo, String tituloPublico,
 			String textoIndroducao) {
-		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
+		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 		Teste teste = usuarioLogado.getTeste();
 		teste.setTitulo(titulo);
 		teste.setTituloPublico(tituloPublico);
@@ -98,7 +99,7 @@ public class TesteController {
 	@Logado
 	@Get("teste/{idTeste}/editar/passo2")
 	public void passo2(Long idTeste) {
-		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
+		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 		result.include("tarefas", usuarioLogado.getTeste().getTarefas());
 		result.include("perguntas", usuarioLogado.getTeste().getSatisfacao()
 				.getPerguntas());
@@ -113,18 +114,7 @@ public class TesteController {
 	@Logado
 	@Get("teste/{idTeste}/editar/passo3")
 	public void passo3(Long idTeste) {
-		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
-		Paginacao<Usuario> usuariosConvidados = testeRepository
-				.getUsuariosConvidados(idTeste, 1, 50);
-		result.include("usuariosEscolhidos",
-				usuariosConvidados.getListObjects());
-		result.include("totalUsuariosEscolhidos", usuariosConvidados.getCount());
-		Paginacao<Usuario> paginacaoUsuariosLivres = testeRepository
-				.usuariosLivresParaPartciparTeste(idTeste, 1, 50);
-		result.include("usuariosLivres",
-				paginacaoUsuariosLivres.getListObjects());
-		result.include("totalUsuarios", paginacaoUsuariosLivres.getCount());
-
+		this.addUsers(idTeste, false);
 	}
 
 	/**
@@ -135,7 +125,7 @@ public class TesteController {
 	@Logado
 	@Get("teste/{idTeste}/editar/passo4")
 	public void passo4(Long idTeste) {
-		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
+		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 
 	}
 
@@ -143,20 +133,28 @@ public class TesteController {
 	 * Liber um Teste para que os usuarios possa Liberar para os usuarios
 	 * selecionados o teste.
 	 * 
-	 * @param idteste
+	 * @param idTeste
 	 *            Identificador do Teste a ser Liberado
 	 */
 	@Logado
 	@Post("teste/liberar")
-	public void liberarTeste(Long idteste) {
-		this.testeNaoRealizadoPertenceUsuarioLogado(idteste);
+	public void liberarTeste(Long idTeste) {
+		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 		Teste teste = usuarioLogado.getTeste();
 		teste.setLiberado(true);
+		List<Usuario> usuarios = testeRepository
+				.getUsuariosConvidadosAll(idTeste);
+		EmailUtils email = new EmailUtils();
+		for (Usuario usuario : usuarios) {
+			email.enviarConviteTeste(usuario, teste);
+		}
 		testeRepository.update(teste);
 	}
 
 	/**
-	 * Usado para selecionar uma lista de usuarios
+	 * Usado para convidar um lista de usuarios a participarem de um teste
+	 * Caso o teste jah tenha sido liberado ele redireciona para a pagina convidar
+	 * caso contrario para pagina passo3
 	 * 
 	 * @param idUsuarios
 	 *            Lista de Usuarios que foram marcados para participar do teste
@@ -168,10 +166,22 @@ public class TesteController {
 			convidadoRepository.convidarUsuarios(idUsuarios, usuarioLogado
 					.getTeste().getId());
 		}
-		result.redirectTo(this).passo3(usuarioLogado.getTeste().getId());
-
+		if (!usuarioLogado.getTeste().isLiberado())
+			result.redirectTo(this).passo3(usuarioLogado.getTeste().getId());
+		else {
+			result.redirectTo(this).convidar(usuarioLogado.getTeste().getId());
+		}
 	}
 
+	/**
+	 * 
+	 * Usado para desconvidar um lista de usuarios a participarem de um teste
+	 * Caso o teste jah tenha sido liberado ele redireciona para a pagina convidar
+	 * caso contrario para pagina passo3
+	 * @param idUsuarios
+	 *            Lista de identificadores de usuarios que não participaram de
+	 *            um teste
+	 */
 	@Logado
 	@Post("teste/desconvidar/usuario")
 	public void desconvidarUsuario(List<Long> idUsuarios) {
@@ -179,8 +189,34 @@ public class TesteController {
 			convidadoRepository.desconvidarUsuarios(idUsuarios, usuarioLogado
 					.getTeste().getId());
 		}
-		result.redirectTo(this).passo3(usuarioLogado.getTeste().getId());
+		if (!usuarioLogado.getTeste().isLiberado())
+			result.redirectTo(this).passo3(usuarioLogado.getTeste().getId());
+		else {
+			result.redirectTo(this).convidar(usuarioLogado.getTeste().getId());
+		}
+	}
 
+	/**
+	 * * Analisa se o id do teste buscado pertence ao usuario logado e se o
+	 * teste ainda não foi liberado, se não pertencer ao usuario buscado sera
+	 * redirecionado para pagina 404.
+	 * 
+	 * @param idTeste
+	 *            buscado e analisado para ver se pertence ao usuario
+	 * 
+	 */
+	private void testeNaoLiberadoPertenceUsuarioLogado(Long idTeste) {
+		if (idTeste != null) {
+			Teste teste = testeRepository.getTestCriadoNaoLiberado(
+					usuarioLogado.getUsuario().getId(), idTeste);
+			if (teste != null) {
+				usuarioLogado.setTeste(teste);
+			} else {
+				result.notFound();
+			}
+		} else {
+			result.notFound();
+		}
 	}
 
 	/**
@@ -191,10 +227,10 @@ public class TesteController {
 	 *            buscado e analisado para ver se pertence ao usuario
 	 * 
 	 */
-	private void testeNaoRealizadoPertenceUsuarioLogado(Long idTeste) {
+	private void testePertenceUsuarioLogado(Long idTeste) {
 		if (idTeste != null) {
-			Teste teste = testeRepository.getTestCriadoNaoRealizado(
-					usuarioLogado.getUsuario().getId(), idTeste);
+			Teste teste = testeRepository.getTestCriado(usuarioLogado
+					.getUsuario().getId(), idTeste);
 			if (teste != null) {
 				usuarioLogado.setTeste(teste);
 			} else {
@@ -208,7 +244,7 @@ public class TesteController {
 	@Get("teste/{idTeste}/remover")
 	@Logado
 	public void remove(Long idTeste) {
-		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
+		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 	}
 
 	@Delete()
@@ -242,7 +278,44 @@ public class TesteController {
 		}
 	}
 
+	@Logado
+	@Get("teste/{idTeste}/convidar/usuarrios")
+	public void convidar(Long idTeste) {
+		addUsers(idTeste, false);
+
+	}
+
+	/**
+	 * Adiciona usuarios a um determinado Teste
+	 * 
+	 * @param idTeste
+	 *            Identificador do teste a ser add usuarios
+	 * @param liberado
+	 *            true para testes liberados e false para testes não liberados
+	 */
+	private void addUsers(Long idTeste, boolean liberado) {
+		if (liberado)
+			this.testePertenceUsuarioLogado(idTeste);
+		else
+			this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
+		if (!liberado) {
+			Paginacao<Usuario> usuariosConvidados = testeRepository
+					.getUsuariosConvidados(idTeste, 1, 50);
+			result.include("usuariosEscolhidos",
+					usuariosConvidados.getListObjects());
+			result.include("totalUsuariosEscolhidos",
+					usuariosConvidados.getCount());
+		}
+		Paginacao<Usuario> paginacaoUsuariosLivres = testeRepository
+				.usuariosLivresParaPartciparTeste(idTeste, 1, 50);
+		result.include("usuariosLivres",
+				paginacaoUsuariosLivres.getListObjects());
+		result.include("totalUsuarios", paginacaoUsuariosLivres.getCount());
+
+	}
+
 	@Get()
 	public void realizarTeste() {
+		// TODO analisar se é pra deletar metodo
 	}
 }
