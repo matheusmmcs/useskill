@@ -177,7 +177,9 @@ public class TarefaController {
      * @param completo Realata se terminou a captura de informações de um teste
      */
     public void saveFluxoIdeal(String dados, Boolean completo, Long tarefaId) {
-        saveFluxo(dados, completo, tarefaId, true);
+    	System.out.println("Carregar: saveFluxoIdeal");
+    	System.out.println(dados+" - "+completo+" - "+tarefaId);
+        //saveFluxo(dados, completo, tarefaId, true);
     }
 
     @Logado
@@ -241,6 +243,20 @@ public class TarefaController {
         result.redirectTo(this).acoes();
     }
 
+    @Logado
+    @Get()
+    public String carregar(Long idTarefa){
+    	System.out.println("Action: Carregar");
+    	Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(), idTarefa);
+    	
+        //String url = request.getParameter("url");
+        //String idTarefaReq = request.getParameter("idTarefa");
+        //System.out.println("http://localhost:8080/Usabilidade/tarefa/visualizar/?url="+url+"&idTarefa="+idTarefaReq);
+    	
+    	System.out.println("${String} = http://localhost:8080/Usabilidade/tarefa/visualizar?url="+tarefa.getUrlInicial()+"&idTarefa="+idTarefa);
+        return "http://localhost:8080/Usabilidade/tarefa/visualizar?url="+tarefa.getUrlInicial()+"&idTarefa="+idTarefa;
+    }
+    
 /**
      * Utilizado para mostrar ao usuario a tarefa definida. Usado apenas para o
      * Testador
@@ -252,14 +268,8 @@ public class TarefaController {
     @Logado
     @Get()
     public String visualizar(Long idTarefa) {
-        Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
-                idTarefa);
-
-
-//		if (this.actions.isPrimeiraPagina())
-//			result.include("url", this.actions.getUrlproxima());
-//		else
-//			result.include("url", tarefa.getUrlInicial());
+    	System.out.println("Action: Visualizar: getId:"+usuarioLogado.getTeste().getId()+" - idTarefa:"+idTarefa);
+        Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(), idTarefa);
 
         String url = request.getParameter("url");
         Map<String, String[]> parametrosRecebidos = request.getParameterMap();
@@ -268,13 +278,12 @@ public class TarefaController {
         Enumeration headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = (String) headerNames.nextElement();
-            System.out.println(headerName);
-            System.out.println("HN(HN): " + request.getHeader(headerName));
+            //System.out.println(headerName);
+            //System.out.println("HN(HN): " + request.getHeader(headerName));
         }
-
-
+        
         if (url != null) {
-            return WebCliente.loadPage("http://localhost:8080/Usabilidade/tarefa/visualizar", url, parametrosRecebidos, metodo);
+            return WebCliente.loadPage("http://localhost:8080/Usabilidade/tarefa/visualizar", url, Integer.parseInt(idTarefa.toString()), parametrosRecebidos, metodo);
         } else {
             return "erro";
         }

@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
     <li>
-        <a href="${pageContext.request.contextPath}/usuario">InÃ­cio</a> <span class="divider">/</span>
+        <a href="${pageContext.request.contextPath}/usuario">Início</a> <span class="divider">/</span>
     </li>
     <li>
         <a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo1">Editar Teste - Passo 1</a> <span class="divider">/</span>
@@ -38,7 +38,7 @@
             <legend>Passo 2</legend>
 
 
-            <form class="form-horizontal" id="loginForm" action="${pageContext.request.contextPath}/conta" method="post">
+            <div class="form-horizontal" id="loginForm">
                 <div class="span9" style="margin-top: 20px">
                     <h1>Tarefas</h1>
                 </div>
@@ -86,7 +86,7 @@
                         </tbody>
                     </table>
                 </div>
-            </form>
+            </div>
 
             <div class="form-horizontal" id="loginForm">
                 <div class="span9" style="margin-top: 20px">
@@ -140,7 +140,7 @@
         </fieldset>        
         <div class="form-actions">
             <form id="teste_passo1" action="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo3" method="get">
-                <input type="submit" value="<fmt:message key="salvar.continuar" />" title="PrÃ³ximo passo" class="btn btn-primary" style="float: right; width: 120px"/>
+                <input type="submit" value="<fmt:message key="salvar.continuar" />" title="Próximo passo" class="btn btn-primary" style="float: right; width: 120px"/>
             </form>
         </div>
     </div>

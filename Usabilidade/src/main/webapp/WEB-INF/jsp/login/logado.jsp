@@ -1,6 +1,6 @@
 <body>
     <ul class="breadcrumb">
-        <li class="active">InÃ­cio</li>
+        <li class="active">Início</li>
     </ul>
     <div class="row show-grid">
         <div class="span2 offset10">
@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="row show-grid" style="margin: 0px auto 0 auto">
-                    <form class="form-horizontal" id="loginForm" action="${pageContext.request.contextPath}/conta" method="post">
+                    <div class="form-horizontal" id="loginForm">
                         <div class="span9">
                             <h1>Convites de Testes</h1>
                         </div>
@@ -83,7 +83,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
 

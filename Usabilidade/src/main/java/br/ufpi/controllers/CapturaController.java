@@ -34,9 +34,10 @@ public class CapturaController {
 
 
         if (url != null) {
-        	return WebCliente.loadPage("http://localhost:8080/Usabilidade/captura/teste", url, parametrosRecebidos, metodo);
+        	//return WebCliente.loadPage("http://localhost:8080/Usabilidade/captura/teste", url, parametrosRecebidos, metodo);
         }else{
-        	return "erro";
+        	//return "erro";
         }
+        return "erro";
     }
 }

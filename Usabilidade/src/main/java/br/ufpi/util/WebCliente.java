@@ -38,7 +38,7 @@ public class WebCliente {
     }
 
     //transformar os parametros passados para uma url: chave=valor&
-    private static String mapToURLMap(Map<String, Object> params) {
+    private static String mapToURLMap(Map<String, Object> params, Integer idPergunta) {
         if (params != null && !params.isEmpty()) {
             StringBuilder str = new StringBuilder();
 
@@ -47,8 +47,9 @@ public class WebCliente {
                 str.append("=");
                 str.append(encodeURIComponent(entry.getValue().toString()));
                 str.append("&");
+                System.out.println(entry.getKey()+"="+encodeURIComponent(entry.getValue().toString()));
             }
-
+            //str.append("idPergunta="+idPergunta.toString());
             str.deleteCharAt(str.length() - 1);
             return str.toString().replaceAll("\\s", "+");
         }
@@ -56,15 +57,16 @@ public class WebCliente {
         return null;
     }
 
-    public static String getPageContent(String urlPagina, HttpMethod method) {
+    public static String getPageContent(String urlPagina, Integer idPergunta, HttpMethod method) {
         try {
-            System.out.println("-----------------------------------FASE 2--------------------------------------");
-            String paramsStr = mapToURLMap(params);
+            //System.out.println("-----------------------------------FASE 2--------------------------------------");
+            String paramsStr = mapToURLMap(params, idPergunta);
             //se houver parametro a ser passado pelo metodo get
             if (method.equals(HttpMethod.GET) && paramsStr != null) {
                 urlPagina = urlPagina + "?" + paramsStr;
             }
 
+            System.out.println("# Url Pagina(WebClient): "+urlPagina);
             URL url = new URL(urlPagina);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -72,18 +74,18 @@ public class WebCliente {
                 conn.addRequestProperty(entry.getKey(), entry.getValue().toString());
             }
 
-            System.out.println("## METHOD: " + method);
+            //System.out.println("## METHOD: " + method);
             if (method.equals(HttpMethod.POST)) {
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
                 writer.write(paramsStr);
-                System.out.println("ParamsStr: " + paramsStr);
+                //System.out.println("ParamsStr: " + paramsStr);
             }
 
-            System.out.println("-----------------------------------FASE 3--------------------------------------");
+            //System.out.println("-----------------------------------FASE 3--------------------------------------");
             int responseCode = conn.getResponseCode();
-            System.out.println("########################### RESPOSTA CODE: " + responseCode + " #######################");
+            //System.out.println("########################### RESPOSTA CODE: " + responseCode + " #######################");
             if (responseCode == 200) {
                 Map<String, List<String>> responseHeaders = conn.getHeaderFields();
                 if (responseHeaders.containsKey("Set-Cookie")) {
@@ -105,7 +107,7 @@ public class WebCliente {
 
                 //imprimir todos os headers do servidor
                 for (Map.Entry<String, Object> entry : headers.entrySet()) {
-                    System.out.println("--------------HEADER-------------------" + entry.getKey() + " : " + entry.getValue().toString());
+                    //System.out.println("--------------HEADER-------------------" + entry.getKey() + " : " + entry.getValue().toString());
                 }
 
                 StringBuilder str = new StringBuilder();
@@ -119,7 +121,7 @@ public class WebCliente {
 
                 str.deleteCharAt(str.length() - 1);
 
-                System.out.println("-----------------------------------FASE 4--------------------------------------");
+                //System.out.println("-----------------------------------FASE 4--------------------------------------");
                 return str.toString();
             } else {
                 throw new RuntimeException("HTTP ERROR: " + responseCode);
@@ -173,7 +175,7 @@ public class WebCliente {
         return html;
     }
 
-    public static String converteLink(String html, String page) {
+    public static String converteLink(String html, String page, Integer idTarefa) {
         StringBuffer codigo = new StringBuffer();
         String addr;
         Matcher m = Pattern.compile("(?i)(<a.*?href=|<form.*?action=)(['\"]?)([^'#\"]+)(['\"]?)").matcher(html);
@@ -181,9 +183,9 @@ public class WebCliente {
         while (m.find()) {
             addr = m.group(3);
             if (addr.startsWith("http") || addr.startsWith("#")) {
-                m.appendReplacement(codigo, "$1$2" + page + "$3$4");
+                m.appendReplacement(codigo, "$1$2" + page + "$3" +"&idTarefa=" + idTarefa + "$4");
             } else if (addr.startsWith("/")) {
-                m.appendReplacement(codigo, "$1$2" + ferramenta + "?url=" + upperDomain + "$3$4");
+                m.appendReplacement(codigo, "$1$2" + ferramenta + "?url=" + upperDomain + "&idTarefa=" + idTarefa +"$3$4");
             }
         }
         m.appendTail(codigo);
@@ -191,23 +193,24 @@ public class WebCliente {
         return codigo.toString();
     }
 
-    public static String loadPage(String ferramenta, String url, Map<String, String[]> parameters, String method) {
+    public static String loadPage(String ferramenta, String url, Integer idTarefa, Map<String, String[]> parameters, String method) {
         Map<String, Object> parametros = new HashMap<String, Object>();
+        
 
         //percorrer o map de parametros
         String value = "";
-        System.out.println("\n\n\n-----------------------------------FASE 1--------------------------------------");
+        //System.out.println("\n\n\n-----------------------------------FASE 1--------------------------------------");
         for (String key : parameters.keySet()) {
             //percorrer a String[] com os valores
             List<String> wordList = Arrays.asList(parameters.get(key));
             for (String e : wordList) {
                 value += e;
             }
-            System.out.println("chave: " + key + ", valor: " + value + ".");
+            //System.out.println("chave: " + key + ", valor: " + value + ".");
             parametros.put(key, value);
             value = "";
         }
-        System.out.println(method);
+        //System.out.println(method);
 
         page = url;
         params = parametros;
@@ -219,11 +222,11 @@ public class WebCliente {
 //        headers.put("Referer", "http://ticketscead.uapi.edu.br/redmine/login");
 //      headers.put("Cookie", "_redmine_session=BAh7CDoPc2Vzc2lvbl9pZCIlMmYzYmJjYzgxODc3MzI1M2MyZGEyNjY0Y2RhNDkxMjU6DHVzZXJfaWRpDToQX2NzcmZfdG9rZW4iMWZQZ3dzTDRnZzJCQUc5UDdUYS94S0lkcXdrZlpKSTZWc3JqNmNtL3RVZnc9--e7f5d354a3ed5199c3e04d3b971eec1e50b84d1e");
 
-        String html = getPageContent(page, HttpMethod.valueOf(method));
+        String html = getPageContent(page, idTarefa, HttpMethod.valueOf(method));
         html = prependLinks(html);
-        //html = injectCodeAtHead(html, "<script type=\"text/javascript\" src=\"/Usabilidade/jscripts/jquery.js\"></script> <script type=\"text/javascript\" src=\"/Usabilidade/jscripts/capt.js\"></script>");
-        html = converteLink(html, ferramenta + "?url=");
-
+        html = converteLink(html, ferramenta + "?url=", idTarefa);
+        //html = converteLink(html, ferramenta);
+        
         return html;
     }
 }
