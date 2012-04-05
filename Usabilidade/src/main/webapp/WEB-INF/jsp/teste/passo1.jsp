@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
     <li>
-        <a href="${pageContext.request.contextPath}/usuario">Início</a> <span class="divider">/</span>
+        <a href="${pageContext.request.contextPath}/usuario"><fmt:message key="inicio" /></a> <span class="divider">/</span>
     </li>
     <li class="active">Editar Teste - Passo 1</li>
 </ul>

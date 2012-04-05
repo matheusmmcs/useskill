@@ -5,19 +5,19 @@
 
     <div class="row show-grid">
         <div class="span2 offset10">
-            <a class="btn btn-primary" href="${pageContext.request.contextPath}/usuarios/new">Cadastrar UsuÃ¡rio</a> 
+            <a class="btn btn-primary" href="${pageContext.request.contextPath}/usuarios/new">Cadastrar Usuário</a> 
         </div>
     </div>
     <div class="row show-grid">
         <div class="span12">
-            <h1>Lista de UsuÃ¡rios</h1>
+            <h1>Lista de Usuários</h1>
         </div>
         <div class="span12">
             <table class="table table-striped table-bordered table-condensed" style="background-color: white">
                 <thead>
                     <tr>
-                        <th>Nome do UsuÃ¡rio</th>
-                        <th>Email do UsuÃ¡rio</th>
+                        <th>Nome do Usuário</th>
+                        <th>Email do Usuário</th>
                         <th>Ver</th>
                         <th>Editar</th>
                         <th>Excluir</th>

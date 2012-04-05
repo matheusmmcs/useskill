@@ -122,7 +122,11 @@
 								if (href != "" && href.indexOf("#") != 0) {
 									// verificar se o botao clicado é o de
 									// finalizar
-									enviaJson(getResultadoJson(), false)
+									if (capt(e.target).attr("id") == "concluir12qz3") {
+										enviaJson(getResultadoJson(), true)
+									} else {
+										enviaJson(getResultadoJson(), false)
+									}
 								}
 							}
 
@@ -250,7 +254,7 @@
 				'tarefaId' : get_url_parameter("idTarefa")
 			},
 			success : function(json) {
-				alert("foi");
+
 			},
 			error : function(e) {
 				console.log(e);

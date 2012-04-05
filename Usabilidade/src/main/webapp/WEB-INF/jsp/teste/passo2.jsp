@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
     <li>
-        <a href="${pageContext.request.contextPath}/usuario">Início</a> <span class="divider">/</span>
+        <a href="${pageContext.request.contextPath}/usuario"><fmt:message key="inicio" /></a> <span class="divider">/</span>
     </li>
     <li>
         <a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo1">Editar Teste - Passo 1</a> <span class="divider">/</span>
@@ -61,8 +61,7 @@
                                         </td>
                                         <td width="100">
                                             <c:if test="${tarefa.fluxoIdealPreenchido == false}">
-                                                <form action="${pageContext.request.contextPath}/tarefa/visualizar" method="get">
-                                                    <input type="hidden" value="${tarefa.urlInicial }" name="url">
+                                                <form action="${pageContext.request.contextPath}/tarefa/carregar" method="get">
                                                     <input type="hidden" value="${tarefa.id }" name="idTarefa">
                                                     <input class="btn"  type="submit" value="<fmt:message key="gravar" />" style="margin-left: 20px">
                                                 </form>

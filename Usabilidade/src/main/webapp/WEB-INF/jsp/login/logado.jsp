@@ -1,6 +1,6 @@
 <body>
     <ul class="breadcrumb">
-        <li class="active">Início</li>
+        <li class="active"><fmt:message key="inicio" /></li>
     </ul>
     <div class="row show-grid">
         <div class="span2 offset10">
