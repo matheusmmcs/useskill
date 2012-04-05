@@ -147,7 +147,7 @@ public class TarefaController {
 		tarefaUpdate.setNome(tarefa.getNome());
 		tarefaUpdate.setUrlInicial(tarefa.getUrlInicial());
 		tarefaRepository.update(tarefaUpdate);
-		// TODO REdirecionamento esta Faltando
+		result.redirectTo(TesteController.class).passo2(usuarioLogado.getTeste().getId());
 
 	}
 
