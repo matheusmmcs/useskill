@@ -179,6 +179,7 @@ public class TarefaController {
 	 */
 	public void saveFluxoIdeal(String dados, Boolean completo, Long tarefaId) {
 		System.out.println("Carregar: saveFluxoIdeal");
+		
 		if (completo) {
 			System.out
 					.println("COMPLETO");
@@ -257,7 +258,7 @@ public class TarefaController {
 	@Logado
 	@Get()
 	public String carregar(Long idTarefa) {
-		System.out.println("Action: Carregar");
+		//System.out.println("Action: Carregar");
 		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
 				idTarefa);
 
@@ -335,12 +336,14 @@ public class TarefaController {
 	private void gravaFluxoIdeal(Long tarefaId) {
 		Tarefa tarefa = this.tarefaPertenceTeste(usuarioLogado.getTeste()
 				.getId(), tarefaId);
+		
 		FluxoIdeal fluxoIdeal = new FluxoIdeal();
 		fluxoIdeal.setUsuario(usuarioLogado.getUsuario());
 		List<Acao> acoes = actions.getAcoes();
 		for (Acao acao : acoes) {
 			acao.setFluxo(fluxoIdeal);
 		}
+		
 		fluxoIdeal.setAcoes(acoes);
 		tarefa.setFluxoIdeal(fluxoIdeal);
 		tarefa.setFluxoIdealPreenchido(true);
