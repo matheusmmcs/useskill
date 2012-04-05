@@ -21,30 +21,28 @@ public class PerguntaRepositoryImpl extends Repository<Pergunta, Long>
 	@Override
 	public Pergunta perguntaPertenceUsuario(Long usuarioId, Long testeId,
 			Long perguntaId) {
-		Query query = entityManager
+				Query query = entityManager
 				.createNamedQuery("Pergunta.pertence.teste.usuario");
 		query.setParameter("teste", testeId);
 		query.setParameter("usuario", usuarioId);
 		query.setParameter("pergunta", perguntaId);
-		 try {  
-		        return (Pergunta) query.getSingleResult();
-		    } catch ( NoResultException nre ) {  
-		    		        return null;  
-		    }  
+		try {
+			return (Pergunta) query.getSingleResult();
+		} catch (NoResultException nre) {
+			return null;
+		}
 	}
 
 	public Questionario findQuestionario(Long idPergunta) {
 		try {
 			return (Questionario) entityManager
 					.createNamedQuery("Pertunta.getQuestionario")
-					.setParameter("pergunta",idPergunta).getSingleResult();
+					.setParameter("pergunta", idPergunta).getSingleResult();
 
 		} catch (NoResultException e) {
 			return null;
 		}
 
 	}
-
-
 
 }
