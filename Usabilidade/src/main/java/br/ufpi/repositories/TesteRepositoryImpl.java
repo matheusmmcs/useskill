@@ -105,7 +105,7 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 	@Override
 	public List<Usuario> getUsuariosConvidadosAll(Long testeId) {
 		Query query = entityManager
-				.createNamedQuery("Convidado.Usuarios.Convidados.Count");
+				.createNamedQuery("Convidado.Usuarios.Convidados");
 		query.setParameter("teste", testeId);
 		return  query.getResultList();
 		

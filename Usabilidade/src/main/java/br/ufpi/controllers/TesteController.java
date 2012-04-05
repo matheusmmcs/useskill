@@ -145,10 +145,12 @@ public class TesteController {
 		List<Usuario> usuarios = testeRepository
 				.getUsuariosConvidadosAll(idTeste);
 		EmailUtils email = new EmailUtils();
+		
 		for (Usuario usuario : usuarios) {
 			email.enviarConviteTeste(usuario, teste);
 		}
 		testeRepository.update(teste);
+		this.result.redirectTo(LoginController.class).logado();
 	}
 
 	/**
