@@ -269,14 +269,19 @@ public class TarefaController {
 
 	@Logado
 	@Get()
-	public String testar() {
+	public TarefaDetalhe testar() {
 		System.out.println("Action: Testar");
 		Long idTarefa = fluxoTarefa.getVez();
 		Tarefa tarefa = getTarefa(idTarefa);
 		// return "http://localhost:8080/Usabilidade/tarefa/acoes?url="+
 		// tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
-		return "http://localhost:8080/Usabilidade/tarefa/acoes?url="
-				+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
+		
+		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
+		
+		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
+		tarefadetalhe.setUrl("http://localhost:8080/Usabilidade/tarefa/acoes?url="
+						+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
+		return tarefadetalhe;
 	}
 
 	/**
