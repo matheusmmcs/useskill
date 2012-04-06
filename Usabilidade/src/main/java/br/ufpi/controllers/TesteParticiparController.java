@@ -58,7 +58,8 @@ public class TesteParticiparController {
 	@Post
 	public void aceitar(Long testeId) {
 		usuarioConvidado(testeId);
-		fluxoTarefa.criarLista(usuarioLogado.getTeste());
+		Teste teste = usuarioLogado.getTeste();
+		fluxoTarefa.criarLista(teste);
 
 	}
 

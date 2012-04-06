@@ -31,10 +31,11 @@ public class SessionFluxoTarefa {
 	 */
 	public void criarLista(Teste teste) {
 		tarefas = new ArrayList<Long>();
-		for (Tarefa tarefa : teste.getTarefas()) {
-			this.tarefas.add(tarefa.getId());
-
-		}
+		if (teste.getTarefas() != null)
+			for (Tarefa tarefa : teste.getTarefas()) {
+				this.tarefas.add(tarefa.getId());
+			}
+		System.out.println("Tarefas"+tarefas);
 	}
 
 	public Long getProximo() {

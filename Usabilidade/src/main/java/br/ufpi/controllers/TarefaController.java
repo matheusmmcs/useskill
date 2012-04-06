@@ -333,12 +333,6 @@ public class TarefaController {
 		System.out.println("Action: Visualizar: getId:"
 				+ usuarioLogado.getTeste().getId() + " - idTarefa:" + idTarefa);
 		Tarefa tarefa = getTarefa(idTarefa);
-
-		// if (this.actions.isPrimeiraPagina())
-		// result.include("url", this.actions.getUrlproxima());
-		// else
-		// result.include("url", tarefa.getUrlInicial());
-
 		String url = request.getParameter("url");
 		Map<String, String[]> parametrosRecebidos = request.getParameterMap();
 		String metodo = request.getMethod();
@@ -356,7 +350,11 @@ public class TarefaController {
 					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
 					metodo);
 		} else {
-			return "erro";
+			return WebClientTester.loadPage(
+					"http://localhost:8080/Usabilidade/tarefa/acoes", tarefa.getUrlInicial(),
+					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
+					metodo);
+					
 		}
 
 	}
