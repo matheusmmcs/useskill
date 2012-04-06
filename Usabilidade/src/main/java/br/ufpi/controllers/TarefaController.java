@@ -20,6 +20,7 @@ import br.ufpi.models.Teste;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
+import br.ufpi.util.TarefaDetalhe;
 import br.ufpi.util.WebClientTester;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -147,7 +148,8 @@ public class TarefaController {
 		tarefaUpdate.setNome(tarefa.getNome());
 		tarefaUpdate.setUrlInicial(tarefa.getUrlInicial());
 		tarefaRepository.update(tarefaUpdate);
-		result.redirectTo(TesteController.class).passo2(usuarioLogado.getTeste().getId());
+		result.redirectTo(TesteController.class).passo2(
+				usuarioLogado.getTeste().getId());
 
 	}
 
@@ -248,25 +250,33 @@ public class TarefaController {
 
 	@Logado
 	@Get()
-	public String carregar(Long idTarefa) {
+	public TarefaDetalhe carregar(Long idTarefa) {
 		System.out.println("Action: Carregar");
 		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
 				idTarefa);
+		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
+		
 		System.out
 				.println("${String} = http://localhost:8080/Usabilidade/tarefa/visualizar?url="
 						+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
-		return "http://localhost:8080/Usabilidade/tarefa/visualizar?url="
-				+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
+		
+		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
+		tarefadetalhe
+				.setUrl("http://localhost:8080/Usabilidade/tarefa/visualizar?url="
+						+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
+		return tarefadetalhe;
 	}
-	
+
 	@Logado
 	@Get()
 	public String testar() {
 		System.out.println("Action: Testar");
 		Long idTarefa = fluxoTarefa.getVez();
 		Tarefa tarefa = getTarefa(idTarefa);
-		//return "http://localhost:8080/Usabilidade/tarefa/acoes?url="+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
-		return "http://localhost:8080/Usabilidade/tarefa/acoes?url="+ tarefa.getUrlInicial()+ "&idTarefa=" + idTarefa;
+		// return "http://localhost:8080/Usabilidade/tarefa/acoes?url="+
+		// tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
+		return "http://localhost:8080/Usabilidade/tarefa/acoes?url="
+				+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
 	}
 
 	/**
@@ -320,15 +330,15 @@ public class TarefaController {
 	@Get
 	public String acoes() {
 		Long idTarefa = fluxoTarefa.getVez();
-		System.out.println("Action: Visualizar: getId:" + usuarioLogado.getTeste().getId() + " - idTarefa:" + idTarefa);
+		System.out.println("Action: Visualizar: getId:"
+				+ usuarioLogado.getTeste().getId() + " - idTarefa:" + idTarefa);
 		Tarefa tarefa = getTarefa(idTarefa);
-		
+
 		// if (this.actions.isPrimeiraPagina())
 		// result.include("url", this.actions.getUrlproxima());
 		// else
 		// result.include("url", tarefa.getUrlInicial());
-		
-		
+
 		String url = request.getParameter("url");
 		Map<String, String[]> parametrosRecebidos = request.getParameterMap();
 		String metodo = request.getMethod();
@@ -354,14 +364,14 @@ public class TarefaController {
 	private void gravaFluxoIdeal(Long tarefaId) {
 		Tarefa tarefa = this.tarefaPertenceTeste(usuarioLogado.getTeste()
 				.getId(), tarefaId);
-		
+
 		FluxoIdeal fluxoIdeal = new FluxoIdeal();
 		fluxoIdeal.setUsuario(usuarioLogado.getUsuario());
 		List<Acao> acoes = actions.getAcoes();
 		for (Acao acao : acoes) {
 			acao.setFluxo(fluxoIdeal);
 		}
-		
+
 		fluxoIdeal.setAcoes(acoes);
 		tarefa.setFluxoIdeal(fluxoIdeal);
 		tarefa.setFluxoIdealPreenchido(true);

@@ -5,9 +5,9 @@
 
 <html>
 <head>
-<decorator:head />
 <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/capt.js"></script>
+<decorator:head />
 </head>
 <body>
 	<decorator:body />

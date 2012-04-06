@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <decorators defaultdir="/WEB-INF/jsp/decorators">
+<decorator name="teste" page="blank.jsp">
+		<pattern>/tarefa/testar</pattern>
+		<pattern>/tarefa/carregar</pattern>
+	</decorator>
 	<decorator name="teste" page="teste.jsp">
 		<pattern>/tarefa/visualizar</pattern>
-		<pattern>/tarefa/carregar</pattern>
 	</decorator>
 	<decorator name="teste" page="testeUser.jsp">
 		<pattern>/tarefa/acoes</pattern>
-		<pattern>/tarefa/testar</pattern>
 	</decorator>
 	<decorator name="logado" page="logado.jsp">
 		<pattern>/teste/*</pattern>

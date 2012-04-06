@@ -5,100 +5,50 @@
 	href="${pageContext.request.contextPath}/css/bootstrap-ex.css" />
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/jscripts/bootstrap.js"></script>
-<style>
-body,.page_content,.page_table {
-	background: white;
-	height: 100%;
-	margin: 0;
-	padding: 0;
-	width: 100%;
-}
+<link rel="stylesheet" type="text/css"
+	href="${pageContext.request.contextPath}/css/testar-carregar.css" />
+<!--  FANCYBOX -->
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/plugin/fancybox/jquery.fancybox.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="${pageContext.request.contextPath}/plugin/fancybox/jquery.fancybox.css"
+	media="screen" />
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.fancybox').fancybox();
+	});
+</script>
 
-iframe {
-	height: 100%;
-	width: 100%;
-	min-height: 500px;
-}
-
-tbody {
-	display: table-row-group;
-	vertical-align: middle;
-	border-color: inherit;
-}
-
-tr {
-	display: table-row;
-	vertical-align: inherit;
-	border-color: inherit;
-}
-
-html {
-	height: 100%;
-	max-height: 100%;
-	padding: 0;
-	margin: 0;
-	border: 0;
-	overflow: auto;
-	text-align: justify
-}
-
-body {
-	background-color: #ffffff;
-	height: 100%;
-	max-height: 100%;
-	overflow: auto;
-	padding: 0;
-	margin: 0;
-	border: 0;
-}
-
-table.page_table {
-	padding: 0px;
-	width: 100%;
-	height: 100%;
-	max-height: 100%;
-}
-
-td.outerTable {
-	height: 100%;
-	max-height: 100%;
-	vertical-align: top;
-}
-
-td.brandingPanel {
-	height: 60px;
-	vertical-align: top;
-	background: #EEF3F6;
-	border-bottom: 1px solid #007aa5;
-}
-
-td.bodyPanel {
-	vertical-align: top;
-}
-
-.concluir {
-	float: right;
-	margin: 15px 30px;
-	padding: 5px 30px;
-}
-</style>
 </head>
 <body>
+	<div id="inline1" style="width: 400px; display: none;">
+		<h3>Roteiro</h3>
+		<p>${tarefaDetalhe.roteiro}</p>
+	</div>
 	<table cellspacing="0" cellpadding="0" class="page_table">
 		<tbody>
 			<tr>
 				<td class="brandingPanel">
 					<div id="topocontrole">
-						<a class="btn btn-success concluir" id="concluir12qz3"
-							href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2"
-							style="margin-left: 10px"><span class="icon-ok"></span> <fmt:message
-								key="concluirTarefa" /> </a>
+						<div class="direita">
+							<a class="btn btn-success concluir" id="concluir12qz3"
+								href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2"><span
+								class="icon-ok"></span> <fmt:message key="concluirTarefa" /> </a>
+						</div>
+						<div class="centro">
+							<a class="fancybox btn btn-info" id="roteiro" href="#inline1">Roteiro</a>
+						</div>
+						<div class="esquerda">
+							<a class="bom btn btn-primary">Bom</a>
+							<a class="ruim btn btn-danger">Ruim</a>
+							<a class="comentario btn"><fmt:message key="comentario" /></a>
+						</div>
 					</div>
 				</td>
 			</tr>
 			<tr>
-				<td class="bodyPanel"><iframe src="${string}" frameborder="0"
-						scrolling="auto"> </iframe>
+				<td class="bodyPanel"><iframe src="${tarefaDetalhe.url}"
+						frameborder="0" scrolling="auto"> </iframe>
 				</td>
 			</tr>
 		</tbody>
