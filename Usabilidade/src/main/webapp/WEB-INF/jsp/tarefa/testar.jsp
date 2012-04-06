@@ -90,7 +90,7 @@ td.bodyPanel {
 				<td class="brandingPanel">
 					<div id="topocontrole">
 						<a class="btn btn-success concluir" id="concluir12qz3"
-							href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2"
+							href="${pageContext.request.contextPath}/teste/testar"
 							style="margin-left: 10px"><span class="icon-ok"></span> <fmt:message
 								key="concluirTarefa" /> </a>
 					</div>

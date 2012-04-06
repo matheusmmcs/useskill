@@ -362,7 +362,7 @@
 
 						function enviaJson(dados, bool) {
 							capt.ajax({
-								url : "/Usabilidade/tarefa/save/fluxo/ideal",
+								url : "/Usabilidade/tarefa/save/fluxo/usuario",
 								type : "POST",
 								dataType : 'json',
 								data : {

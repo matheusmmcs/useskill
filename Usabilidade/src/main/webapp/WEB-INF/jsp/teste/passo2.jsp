@@ -34,7 +34,7 @@
                 <a class="btn btn-primary" href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/criar/pergunta" style="margin-left: 5px">Inserir Pergunta</a>
             </div>
         </div>
-        <fieldset style="width: 750px; margin: -50px auto 0 auto">
+        <fieldset style="width: 750px; margin: -30px auto 0 auto">
             <legend>Passo 2</legend>
 
 

@@ -5,6 +5,10 @@
 		<pattern>/tarefa/visualizar</pattern>
 		<pattern>/tarefa/carregar</pattern>
 	</decorator>
+	<decorator name="teste" page="testeUser.jsp">
+		<pattern>/tarefa/acoes</pattern>
+		<pattern>/tarefa/testar</pattern>
+	</decorator>
 	<decorator name="logado" page="logado.jsp">
 		<pattern>/teste/*</pattern>
 		<pattern>/usuario</pattern>

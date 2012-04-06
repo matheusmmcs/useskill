@@ -20,7 +20,7 @@ import br.ufpi.models.Teste;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
-import br.ufpi.util.WebCliente;
+import br.ufpi.util.WebClientTester;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -178,18 +178,7 @@ public class TarefaController {
 	 * @param completo Realata se terminou a captura de informações de um teste
 	 */
 	public void saveFluxoIdeal(String dados, Boolean completo, Long tarefaId) {
-		System.out.println("Carregar: saveFluxoIdeal");
-		
-		if (completo) {
-			System.out
-					.println("COMPLETO");
-			System.out
-					.println("COMPLETO");
-			System.out
-					.println("COMPLETO");
-			System.out
-					.println("COMPLETO");
-		}
+		System.out.println("Action: saveFluxoIdeal");
 		System.out.println(dados + " - " + completo + " - " + tarefaId);
 		saveFluxo(dados, completo, tarefaId, true);
 	}
@@ -197,6 +186,8 @@ public class TarefaController {
 	@Logado
 	@Post("tarefa/save/fluxo/usuario")
 	public void saveFluxoUsuario(String dados, Boolean completo, Long tarefaId) {
+		System.out.println("Action: saveFluxoUsuario");
+		System.out.println(dados + " - " + completo + " - " + tarefaId);
 		saveFluxo(dados, completo, tarefaId, false);
 
 	}
@@ -258,19 +249,24 @@ public class TarefaController {
 	@Logado
 	@Get()
 	public String carregar(Long idTarefa) {
-		//System.out.println("Action: Carregar");
+		System.out.println("Action: Carregar");
 		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
 				idTarefa);
-
-		// String url = request.getParameter("url");
-		// String idTarefaReq = request.getParameter("idTarefa");
-		// System.out.println("http://localhost:8080/Usabilidade/tarefa/visualizar/?url="+url+"&idTarefa="+idTarefaReq);
-
 		System.out
 				.println("${String} = http://localhost:8080/Usabilidade/tarefa/visualizar?url="
 						+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
 		return "http://localhost:8080/Usabilidade/tarefa/visualizar?url="
 				+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
+	}
+	
+	@Logado
+	@Get()
+	public String testar() {
+		System.out.println("Action: Testar");
+		Long idTarefa = fluxoTarefa.getVez();
+		Tarefa tarefa = getTarefa(idTarefa);
+		//return "http://localhost:8080/Usabilidade/tarefa/acoes?url="+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
+		return "http://localhost:8080/Usabilidade/tarefa/acoes?url="+ tarefa.getUrlInicial()+ "&idTarefa=" + idTarefa;
 	}
 
 	/**
@@ -303,7 +299,7 @@ public class TarefaController {
 		}
 
 		if (url != null) {
-			return WebCliente.loadPage(
+			return WebClientTester.loadPage(
 					"http://localhost:8080/Usabilidade/tarefa/visualizar", url,
 					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
 					metodo);
@@ -322,14 +318,36 @@ public class TarefaController {
 	 */
 	@Logado
 	@Get
-	public Tarefa acoes() {
+	public String acoes() {
 		Long idTarefa = fluxoTarefa.getVez();
+		System.out.println("Action: Visualizar: getId:" + usuarioLogado.getTeste().getId() + " - idTarefa:" + idTarefa);
 		Tarefa tarefa = getTarefa(idTarefa);
+		
 		// if (this.actions.isPrimeiraPagina())
 		// result.include("url", this.actions.getUrlproxima());
 		// else
 		// result.include("url", tarefa.getUrlInicial());
-		return tarefa;
+		
+		
+		String url = request.getParameter("url");
+		Map<String, String[]> parametrosRecebidos = request.getParameterMap();
+		String metodo = request.getMethod();
+
+		Enumeration headerNames = request.getHeaderNames();
+		while (headerNames.hasMoreElements()) {
+			String headerName = (String) headerNames.nextElement();
+			// System.out.println(headerName);
+			// System.out.println("HN(HN): " + request.getHeader(headerName));
+		}
+
+		if (url != null) {
+			return WebClientTester.loadPage(
+					"http://localhost:8080/Usabilidade/tarefa/acoes", url,
+					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
+					metodo);
+		} else {
+			return "erro";
+		}
 
 	}
 

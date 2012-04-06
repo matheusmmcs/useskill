@@ -12,4 +12,4 @@
             "email":{ required:true,
                 email:true}
         }});
-</script>
+</script> 

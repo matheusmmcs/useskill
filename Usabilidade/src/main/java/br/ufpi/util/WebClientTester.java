@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WebCliente {
+public class WebClientTester {
 
     private static String domain = "", upperDomain = "", page = "", ferramenta = "";
     private static Map<String, Object> params = new HashMap<String, Object>();

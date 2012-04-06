@@ -6,7 +6,7 @@
         <div id="menu_topo_centro">
             <img alt="" src="${pageContext.request.contextPath}/img/select.png" class="imagem_selected"/>
             <ul>
-                <li>
+                <li> 
                     <a href="${pageContext.request.contextPath}"><fmt:message key="inicio"/></a>
                 </li>
                 <li>
