@@ -181,15 +181,15 @@ public class TarefaController {
 	 */
 	public void saveFluxoIdeal(String dados, Boolean completo, Long tarefaId) {
 		System.out.println("Action: saveFluxoIdeal");
-		System.out.println(dados + " - " + completo + " - " + tarefaId);
+		// System.out.println(dados + " - " + completo + " - " + tarefaId);
 		saveFluxo(dados, completo, tarefaId, true);
 	}
 
 	@Logado
 	@Post("tarefa/save/fluxo/usuario")
 	public void saveFluxoUsuario(String dados, Boolean completo, Long tarefaId) {
-		System.out.println("Action: saveFluxoUsuario");
-		System.out.println(dados + " - " + completo + " - " + tarefaId);
+		// System.out.println("Action: saveFluxoUsuario");
+		// System.out.println(dados + " - " + completo + " - " + tarefaId);
 		saveFluxo(dados, completo, tarefaId, false);
 
 	}
@@ -244,7 +244,7 @@ public class TarefaController {
 		fluxoUsuarioRepository.create(fluxoUsuario);
 		fluxoTarefa.getProximo();
 		System.out.println("Salvou Fluxo Usuario");
-		
+
 	}
 
 	@Logado
@@ -266,11 +266,52 @@ public class TarefaController {
 		return tarefadetalhe;
 	}
 
+	/**
+	 * Utilizado para mostrar ao usuario a tarefa definida. Usado apenas para o
+	 * Testador
+	 * 
+	 * @param idTarefa
+	 *            identicado da Tarefa a ser realizada
+	 * @param url
+	 *            url a ser exibida
+	 * @return
+	 */
+	@Logado
+	@Get()
+	public String visualizar(Long idTarefa) {
+		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
+				idTarefa);
+
+		String url = request.getParameter("url");
+		Map<String, String[]> parametrosRecebidos = request.getParameterMap();
+		String metodo = request.getMethod();
+
+		Enumeration headerNames = request.getHeaderNames();
+		while (headerNames.hasMoreElements()) {
+			String headerName = (String) headerNames.nextElement();
+		}
+
+		if (url != null) {
+			return WebClientTester.loadPage(
+					"http://localhost:8080/Usabilidade/tarefa/visualizar", url,
+					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
+					metodo);
+		} else {
+			return "erro";
+		}
+	}
+
 	@Logado
 	@Get()
 	public TarefaDetalhe testar() {
 		System.out.println("Action: Testar");
 		Long idTarefa = fluxoTarefa.getVez();
+		if (idTarefa == 0) {
+			result.redirectTo(LoginController.class).logado();
+			
+		}
+
+		System.out.println("IDTarefa =" + idTarefa);
 		Tarefa tarefa = getTarefa(idTarefa);
 		// return "http://localhost:8080/Usabilidade/tarefa/acoes?url="+
 		// tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
@@ -285,45 +326,6 @@ public class TarefaController {
 	}
 
 	/**
-	 * Utilizado para mostrar ao usuario a tarefa definida. Usado apenas para o
-	 * Testador
-	 * 
-	 * @param idTarefa
-	 *            identicado da Tarefa a ser realizada
-	 * @param url
-	 *            url a ser exibida
-	 * @return
-	 */
-	@Logado
-	@Get()
-	public String visualizar(Long idTarefa) {
-		System.out.println("Action: Visualizar: getId:"
-				+ usuarioLogado.getTeste().getId() + " - idTarefa:" + idTarefa);
-		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
-				idTarefa);
-
-		String url = request.getParameter("url");
-		Map<String, String[]> parametrosRecebidos = request.getParameterMap();
-		String metodo = request.getMethod();
-
-		Enumeration headerNames = request.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			String headerName = (String) headerNames.nextElement();
-			// System.out.println(headerName);
-			// System.out.println("HN(HN): " + request.getHeader(headerName));
-		}
-
-		if (url != null) {
-			return WebClientTester.loadPage(
-					"http://localhost:8080/Usabilidade/tarefa/visualizar", url,
-					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
-					metodo);
-		} else {
-			return "erro";
-		}
-	}
-
-	/**
 	 * Utilizado para mostrar ao usuario a tarefa definida. Usado apenas para os
 	 * usuarios Participantes
 	 * 
@@ -335,7 +337,7 @@ public class TarefaController {
 	@Get
 	public String acoes() {
 		Long idTarefa = fluxoTarefa.getVez();
-		System.out.println("Action: Visualizar: getId:"
+		System.out.println("Action: ACOES: getId:"
 				+ usuarioLogado.getTeste().getId() + " - idTarefa:" + idTarefa);
 		Tarefa tarefa = getTarefa(idTarefa);
 		String url = request.getParameter("url");

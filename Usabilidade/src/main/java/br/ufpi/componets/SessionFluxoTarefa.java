@@ -35,7 +35,7 @@ public class SessionFluxoTarefa {
 			for (Tarefa tarefa : teste.getTarefas()) {
 				this.tarefas.add(tarefa.getId());
 			}
-		System.out.println("Tarefas"+tarefas);
+		System.out.println("Tarefas" + tarefas);
 	}
 
 	public Long getProximo() {
@@ -57,6 +57,10 @@ public class SessionFluxoTarefa {
 	 * @return
 	 */
 	public Long getVez() {
-		return this.getTarefas().get(0);
+		try {
+			return this.getTarefas().get(0);
+		} catch (Exception e) {
+			return 0l;
+		}
 	}
 }
