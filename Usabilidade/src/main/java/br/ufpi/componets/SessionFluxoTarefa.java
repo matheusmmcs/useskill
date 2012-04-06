@@ -39,8 +39,8 @@ public class SessionFluxoTarefa {
 	}
 
 	public Long getProximo() {
+		tarefas.remove(0);
 		if (tarefas.size() > 0) {
-			tarefas.remove(0);
 			return tarefas.get(0);
 		} else
 			return null;

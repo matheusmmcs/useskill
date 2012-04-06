@@ -218,7 +218,8 @@ public class TarefaController {
 			if (fluxoIdeal) {
 				gravaFluxoIdeal(tarefaId);
 			} else {
-				gravaFluxoUSuario(tarefaId);
+				System.out.println("Salva Fluxo Usuario");
+				gravaFluxoUSuario(this.fluxoTarefa.getVez());
 
 			}
 			actions.destroy();
@@ -235,17 +236,15 @@ public class TarefaController {
 	private void gravaFluxoUSuario(Long tarefaId) {
 		FluxoUsuario fluxoUsuario = new FluxoUsuario();
 		fluxoUsuario.setUsuario(usuarioLogado.getUsuario());
-		fluxoUsuario.setAcoes(actions.getAcoes());
 		List<Acao> acoes = actions.getAcoes();
 		for (Acao acao : acoes) {
 			acao.setFluxo(fluxoUsuario);
 		}
-		Long proximo = fluxoTarefa.getProximo();
-		if (proximo == null) {
-			result.redirectTo(TesteParticiparController.class).termino();
-		}
+		fluxoUsuario.setAcoes(actions.getAcoes());
 		fluxoUsuarioRepository.create(fluxoUsuario);
-		result.redirectTo(this).acoes();
+		fluxoTarefa.getProximo();
+		System.out.println("Salvou Fluxo Usuario");
+		
 	}
 
 	@Logado
@@ -255,11 +254,11 @@ public class TarefaController {
 		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
 				idTarefa);
 		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
-		
+
 		System.out
 				.println("${String} = http://localhost:8080/Usabilidade/tarefa/visualizar?url="
 						+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
-		
+
 		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
 		tarefadetalhe
 				.setUrl("http://localhost:8080/Usabilidade/tarefa/visualizar?url="
@@ -275,11 +274,12 @@ public class TarefaController {
 		Tarefa tarefa = getTarefa(idTarefa);
 		// return "http://localhost:8080/Usabilidade/tarefa/acoes?url="+
 		// tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
-		
+
 		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
-		
+
 		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
-		tarefadetalhe.setUrl("http://localhost:8080/Usabilidade/tarefa/acoes?url="
+		tarefadetalhe
+				.setUrl("http://localhost:8080/Usabilidade/tarefa/acoes?url="
 						+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
 		return tarefadetalhe;
 	}
@@ -356,10 +356,11 @@ public class TarefaController {
 					metodo);
 		} else {
 			return WebClientTester.loadPage(
-					"http://localhost:8080/Usabilidade/tarefa/acoes", tarefa.getUrlInicial(),
+					"http://localhost:8080/Usabilidade/tarefa/acoes",
+					tarefa.getUrlInicial(),
 					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
 					metodo);
-					
+
 		}
 
 	}
