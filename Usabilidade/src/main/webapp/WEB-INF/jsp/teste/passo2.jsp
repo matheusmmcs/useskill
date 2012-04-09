@@ -67,7 +67,10 @@
                                                 </form>
                                             </c:if> 
                                             <c:if test="${tarefa.fluxoIdealPreenchido == true}">
-                                                Editar Fluxo Ideal
+                                               <form action="${pageContext.request.contextPath}/tarefa/carregar" method="get">
+                                                    <input type="hidden" value="${tarefa.id }" name="idTarefa">
+                                                    <input class="btn"  type="submit" value="<fmt:message key="editarFluxo" />" style="margin-left: 20px">
+                                                </form>
                                             </c:if>
                                         </td>
                                         <td width="100">

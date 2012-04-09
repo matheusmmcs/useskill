@@ -188,7 +188,7 @@ public class TarefaController {
 	@Logado
 	@Post("tarefa/save/fluxo/usuario")
 	public void saveFluxoUsuario(String dados, Boolean completo, Long tarefaId) {
-		// System.out.println("Action: saveFluxoUsuario");
+		 System.out.println("Action: saveFluxoUsuario");
 		// System.out.println(dados + " - " + completo + " - " + tarefaId);
 		saveFluxo(dados, completo, tarefaId, false);
 
@@ -368,6 +368,7 @@ public class TarefaController {
 	}
 
 	private void gravaFluxoIdeal(Long tarefaId) {
+		
 		Tarefa tarefa = this.tarefaPertenceTeste(usuarioLogado.getTeste()
 				.getId(), tarefaId);
 
