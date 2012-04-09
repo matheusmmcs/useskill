@@ -181,15 +181,15 @@ public class TarefaController {
 	 */
 	public void saveFluxoIdeal(String dados, Boolean completo, Long tarefaId) {
 		System.out.println("Action: saveFluxoIdeal");
-		// System.out.println(dados + " - " + completo + " - " + tarefaId);
+		System.out.println(dados + " - " + completo + " - " + tarefaId);
 		saveFluxo(dados, completo, tarefaId, true);
 	}
 
 	@Logado
 	@Post("tarefa/save/fluxo/usuario")
 	public void saveFluxoUsuario(String dados, Boolean completo, Long tarefaId) {
-		 System.out.println("Action: saveFluxoUsuario");
-		// System.out.println(dados + " - " + completo + " - " + tarefaId);
+		System.out.println("Action: saveFluxoUsuario");
+		System.out.println(dados + " - " + completo + " - " + tarefaId);
 		saveFluxo(dados, completo, tarefaId, false);
 
 	}
@@ -371,6 +371,8 @@ public class TarefaController {
 		
 		Tarefa tarefa = this.tarefaPertenceTeste(usuarioLogado.getTeste()
 				.getId(), tarefaId);
+		FluxoIdeal fluxoIdeal2 = tarefa.getFluxoIdeal();
+		System.out.println("FLUXO IDEAL SALVO="+fluxoIdeal2);
 
 		FluxoIdeal fluxoIdeal = new FluxoIdeal();
 		fluxoIdeal.setUsuario(usuarioLogado.getUsuario());
