@@ -13,7 +13,8 @@ import br.ufpi.models.Teste;
 @Component
 @SessionScoped
 public class SessionFluxoTarefa {
-	List<Long> tarefas;
+	private List<Long> tarefas;
+	private Long primeiraVez;
 
 	public List<Long> getTarefas() {
 		return tarefas;
@@ -30,6 +31,7 @@ public class SessionFluxoTarefa {
 	 * @param teste
 	 */
 	public void criarLista(Teste teste) {
+
 		tarefas = new ArrayList<Long>();
 		if (teste.getTarefas() != null)
 			for (Tarefa tarefa : teste.getTarefas()) {
@@ -39,8 +41,11 @@ public class SessionFluxoTarefa {
 	}
 
 	public Long getProximo() {
+		System.out.print("MOMENTO: ");
+		System.out.println( tarefas.get(0));
 		tarefas.remove(0);
 		if (tarefas.size() > 0) {
+			System.out.println("RETORNO" + tarefas.get(0));
 			return tarefas.get(0);
 		} else
 			return null;
@@ -57,6 +62,7 @@ public class SessionFluxoTarefa {
 	 * @return
 	 */
 	public Long getVez() {
+	
 		try {
 			return this.getTarefas().get(0);
 		} catch (Exception e) {

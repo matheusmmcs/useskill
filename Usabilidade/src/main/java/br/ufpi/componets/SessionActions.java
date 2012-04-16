@@ -8,7 +8,6 @@ import javax.annotation.PreDestroy;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.SessionScoped;
 import br.ufpi.models.Acao;
-import br.ufpi.models.Tarefa;
 
 /**
  * Usado para gravação do fluxo. Quando terminar a gravação do fluxo deleta a
