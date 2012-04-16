@@ -2,7 +2,7 @@ package br.ufpi.controllers;
 
 import java.util.List;
 
-
+import javax.servlet.http.HttpServletRequest;
 
 import br.com.caelum.vraptor.Delete;
 import br.com.caelum.vraptor.Get;
@@ -22,16 +22,21 @@ public class UsuarioController {
     private final Result result;
     private final UsuarioRepository usuarioRepository;
     private final Validator validator;
-//     private final HttpServletRequest request; 
+    private final HttpServletRequest request; 
 
-    public UsuarioController(Result result, UsuarioRepository repository,
-            Validator validator) {
-        this.result = result;
-        this.usuarioRepository = repository;
-        this.validator = validator;
-    }
+   
 
-    @Get("/usuarios")
+    public UsuarioController(Result result,
+			UsuarioRepository usuarioRepository, Validator validator,
+			HttpServletRequest request) {
+		super();
+		this.result = result;
+		this.usuarioRepository = usuarioRepository;
+		this.validator = validator;
+		this.request = request;
+	}
+
+	@Get("/usuarios")
     public List<Usuario> index() {
         return usuarioRepository.findAll();
     }
@@ -50,6 +55,11 @@ public class UsuarioController {
         validator.onErrorUsePageOf(this).newUsuario();
         usuario.criptografarSenhaGerarConfimacaoEmail();
         usuarioRepository.create(usuario);
+        if (EmailUtils.BASEURL == null) {
+			String header = request.getHeader("Host");
+			header = header + request.getContextPath();
+			EmailUtils.BASEURL = header;
+		}
         EmailUtils emailUtils=new EmailUtils();
         emailUtils.enviarEmailConfirmacao(usuario);
         result.redirectTo(this).index();

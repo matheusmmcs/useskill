@@ -53,6 +53,7 @@ public class TesteParticiparController {
 	}
 
 	/**
+	 * O Usuario aceita o Teste
 	 * @param testeId
 	 */
 	@Post
@@ -60,7 +61,7 @@ public class TesteParticiparController {
 		usuarioConvidado(testeId);
 		Teste teste = usuarioLogado.getTeste();
 		fluxoTarefa.criarLista(teste);
-	}
+		}
 
 	@Logado
 	@Get

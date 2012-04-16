@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Resource;
-import br.ufpi.util.WebClientTester;
 
 @Resource
 public class CapturaController {

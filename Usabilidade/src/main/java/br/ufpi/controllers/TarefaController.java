@@ -1,6 +1,13 @@
 package br.ufpi.controllers;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
@@ -13,26 +20,22 @@ import br.ufpi.componets.SessionActions;
 import br.ufpi.componets.SessionFluxoTarefa;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Acao;
+import br.ufpi.models.Convidado;
 import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.FluxoUsuario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
+import br.ufpi.models.UsuarioTestePK;
+import br.ufpi.repositories.ConvidadoRepository;
+import br.ufpi.repositories.ConvidadoRepositoryImpl;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.TarefaDetalhe;
 import br.ufpi.util.WebClientTester;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import java.util.Enumeration;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.bcel.generic.ACONST_NULL;
-import org.omg.PortableServer.REQUEST_PROCESSING_POLICY_ID;
 
 @Resource
 public class TarefaController {
@@ -43,6 +46,7 @@ public class TarefaController {
 	private final Validator validator;
 	private final TesteRepository testeRepository;
 	private final FluxoUsuarioRepository fluxoUsuarioRepository;
+	private final ConvidadoRepository convidadoRepository;
 	private SessionActions actions;
 	private final SessionFluxoTarefa fluxoTarefa;
 	private final HttpServletRequest request;
@@ -51,8 +55,8 @@ public class TarefaController {
 			UsuarioLogado usuarioLogado, Validator validator,
 			TesteRepository testeRepository,
 			FluxoUsuarioRepository fluxoUsuarioRepository,
-			SessionActions actions, SessionFluxoTarefa fluxoTarefa,
-			HttpServletRequest request) {
+			ConvidadoRepository convidadoRepository, SessionActions actions,
+			SessionFluxoTarefa fluxoTarefa, HttpServletRequest request) {
 		super();
 		this.result = result;
 		this.tarefaRepository = tarefaRepository;
@@ -60,6 +64,7 @@ public class TarefaController {
 		this.validator = validator;
 		this.testeRepository = testeRepository;
 		this.fluxoUsuarioRepository = fluxoUsuarioRepository;
+		this.convidadoRepository = convidadoRepository;
 		this.actions = actions;
 		this.fluxoTarefa = fluxoTarefa;
 		this.request = request;
@@ -140,13 +145,15 @@ public class TarefaController {
 	@Post("teste/tarefa/atualizar")
 	public void updateTarefa(Tarefa tarefa) {
 		validator.validate(tarefa);
-
 		validator.onErrorRedirectTo(this).editarTarefa(
 				usuarioLogado.getTeste().getId(), tarefa, true);
 		Tarefa tarefaUpdate = tarefaRepository.find(tarefa.getId());
 		tarefaUpdate.setRoteiro(tarefa.getRoteiro());
 		tarefaUpdate.setNome(tarefa.getNome());
-		tarefaUpdate.setUrlInicial(tarefa.getUrlInicial());
+		if (!tarefaUpdate.getUrlInicial().equals(tarefa.getUrlInicial())) {
+			tarefaUpdate.setFluxoIdealPreenchido(false);
+			tarefaUpdate.setUrlInicial(tarefa.getUrlInicial());
+		}
 		tarefaRepository.update(tarefaUpdate);
 		result.redirectTo(TesteController.class).passo2(
 				usuarioLogado.getTeste().getId());
@@ -189,7 +196,10 @@ public class TarefaController {
 	@Post("tarefa/save/fluxo/usuario")
 	public void saveFluxoUsuario(String dados, Boolean completo, Long tarefaId) {
 		System.out.println("Action: saveFluxoUsuario");
-		System.out.println(dados + " - " + completo + " - " + tarefaId);
+		// System.out.println(dados + " - " + completo + " - " + tarefaId);
+		if (completo) {
+			System.out.println("Completo");
+		}
 		saveFluxo(dados, completo, tarefaId, false);
 
 	}
@@ -234,6 +244,7 @@ public class TarefaController {
 	 * @param tarefaId
 	 */
 	private void gravaFluxoUSuario(Long tarefaId) {
+		System.out.println("GRAVA FLUXO DE USUARIO");
 		FluxoUsuario fluxoUsuario = new FluxoUsuario();
 		fluxoUsuario.setUsuario(usuarioLogado.getUsuario());
 		List<Acao> acoes = actions.getAcoes();
@@ -243,7 +254,7 @@ public class TarefaController {
 		fluxoUsuario.setAcoes(actions.getAcoes());
 		fluxoUsuarioRepository.create(fluxoUsuario);
 		fluxoTarefa.getProximo();
-		System.out.println("Salvou Fluxo Usuario");
+		System.out.println("AGORA VEz esta" + fluxoTarefa.getVez());
 
 	}
 
@@ -279,6 +290,7 @@ public class TarefaController {
 	@Logado
 	@Get()
 	public String visualizar(Long idTarefa) {
+		System.out.println("visualizar");
 		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
 				idTarefa);
 
@@ -306,18 +318,20 @@ public class TarefaController {
 	public TarefaDetalhe testar() {
 		System.out.println("Action: Testar");
 		Long idTarefa = fluxoTarefa.getVez();
+		System.out.println(idTarefa + "Tarefa na vez");
 		if (idTarefa == 0) {
+			Convidado convidado = new Convidado(new UsuarioTestePK(
+					usuarioLogado.getUsuario(), usuarioLogado.getTeste()));
+			convidado.setRealizou(true);
+			convidadoRepository.update(convidado);
 			result.redirectTo(LoginController.class).logado();
-			
 		}
 
-		System.out.println("IDTarefa =" + idTarefa);
 		Tarefa tarefa = getTarefa(idTarefa);
 		// return "http://localhost:8080/Usabilidade/tarefa/acoes?url="+
 		// tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
-
+		System.out.println("TESTAR TAREFA" + tarefa);
 		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
-
 		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
 		tarefadetalhe
 				.setUrl("http://localhost:8080/Usabilidade/tarefa/acoes?url="
@@ -336,11 +350,19 @@ public class TarefaController {
 	@Logado
 	@Get
 	public String acoes() {
+		System.out.println("ACOES ");
 		Long idTarefa = fluxoTarefa.getVez();
-		System.out.println("Action: ACOES: getId:"
-				+ usuarioLogado.getTeste().getId() + " - idTarefa:" + idTarefa);
+		if (idTarefa == 0) {
+			Convidado convidado = new Convidado(new UsuarioTestePK(
+					usuarioLogado.getUsuario(), usuarioLogado.getTeste()));
+			convidado.setRealizou(true);
+			convidadoRepository.update(convidado);
+			result.redirectTo(LoginController.class).logado();
+		}
+
 		Tarefa tarefa = getTarefa(idTarefa);
 		String url = request.getParameter("url");
+		System.out.println("URL" + url);
 		Map<String, String[]> parametrosRecebidos = request.getParameterMap();
 		String metodo = request.getMethod();
 
@@ -368,11 +390,10 @@ public class TarefaController {
 	}
 
 	private void gravaFluxoIdeal(Long tarefaId) {
-		
+		System.out.println("Grava Fluxo IDEAL");
+
 		Tarefa tarefa = this.tarefaPertenceTeste(usuarioLogado.getTeste()
 				.getId(), tarefaId);
-		FluxoIdeal fluxoIdeal2 = tarefa.getFluxoIdeal();
-		System.out.println("FLUXO IDEAL SALVO="+fluxoIdeal2);
 
 		FluxoIdeal fluxoIdeal = new FluxoIdeal();
 		fluxoIdeal.setUsuario(usuarioLogado.getUsuario());
@@ -447,4 +468,5 @@ public class TarefaController {
 		return tarefaRepository.find(idTarefa);
 
 	}
+
 }

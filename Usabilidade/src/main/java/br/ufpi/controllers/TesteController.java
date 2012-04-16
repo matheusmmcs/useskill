@@ -2,8 +2,9 @@ package br.ufpi.controllers;
 
 import java.util.List;
 
-import br.com.caelum.vraptor.Delete;
+import javax.servlet.http.HttpServletRequest;
 
+import br.com.caelum.vraptor.Delete;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
@@ -13,6 +14,7 @@ import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Questionario;
+import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.ConvidadoRepository;
@@ -29,16 +31,20 @@ public class TesteController {
 	private UsuarioLogado usuarioLogado;
 	private final Validator validator;
 	private final ConvidadoRepository convidadoRepository;
+	private final HttpServletRequest request; 
+
+	
 
 	public TesteController(Result result, TesteRepository testeRepository,
 			UsuarioLogado usuarioLogado, Validator validator,
-			ConvidadoRepository convidadoRepository) {
+			ConvidadoRepository convidadoRepository, HttpServletRequest request) {
 		super();
 		this.result = result;
 		this.testeRepository = testeRepository;
 		this.usuarioLogado = usuarioLogado;
 		this.validator = validator;
 		this.convidadoRepository = convidadoRepository;
+		this.request = request;
 	}
 
 	/**
@@ -144,8 +150,22 @@ public class TesteController {
 		teste.setLiberado(true);
 		List<Usuario> usuarios = testeRepository
 				.getUsuariosConvidadosAll(idTeste);
+		if (usuarios == null) {
+			// TODO Não tem usuarios Convidados e gerar erro
+		}
+		List<Tarefa> tarefas = teste.getTarefas();
+		for (Tarefa tarefa : tarefas) {
+			if (!tarefa.isFluxoIdealPreenchido()) {
+				// TODO Tem Tarefas sem o fluxo preenchido
+			}
+		}
+		 if (EmailUtils.BASEURL == null) {
+				String header = request.getHeader("Host");
+				header = header + request.getContextPath();
+				EmailUtils.BASEURL = header;
+			}
 		EmailUtils email = new EmailUtils();
-		
+
 		for (Usuario usuario : usuarios) {
 			email.enviarConviteTeste(usuario, teste);
 		}
@@ -154,8 +174,8 @@ public class TesteController {
 	}
 
 	/**
-	 * Usado para convidar um lista de usuarios a participarem de um teste
-	 * Caso o teste jah tenha sido liberado ele redireciona para a pagina convidar
+	 * Usado para convidar um lista de usuarios a participarem de um teste Caso
+	 * o teste jah tenha sido liberado ele redireciona para a pagina convidar
 	 * caso contrario para pagina passo3
 	 * 
 	 * @param idUsuarios
@@ -178,8 +198,9 @@ public class TesteController {
 	/**
 	 * 
 	 * Usado para desconvidar um lista de usuarios a participarem de um teste
-	 * Caso o teste jah tenha sido liberado ele redireciona para a pagina convidar
-	 * caso contrario para pagina passo3
+	 * Caso o teste jah tenha sido liberado ele redireciona para a pagina
+	 * convidar caso contrario para pagina passo3
+	 * 
 	 * @param idUsuarios
 	 *            Lista de identificadores de usuarios que não participaram de
 	 *            um teste
@@ -320,4 +341,11 @@ public class TesteController {
 	public void realizarTeste() {
 		// TODO analisar se é pra deletar metodo
 	}
+	@Logado
+	public void meusProjetos(){
+		Paginacao<Teste> testesParticipados = testeRepository.getTestesParticipados(usuarioLogado.getUsuario().getId(),1,50);
+		result.include("testesParticipados",testesParticipados.getListObjects());
+		result.include("testesParticipadosCount",testesParticipados.getCount());
+		}
+
 }
