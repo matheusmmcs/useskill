@@ -18,9 +18,6 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 
 	@Override
 	public Tarefa pertenceTeste(Long idTarefa, Long idTeste, Long idUsuario) {
-		System.out.println("idTarefa"+idTarefa);
-		System.out.println("idTeste"+idTeste);
-		System.out.println("idUsuario"+idUsuario);
 		Query query = entityManager
 				.createNamedQuery("Tarefa.pertence.Teste.Usuario");
 		query.setParameter("teste", idTeste);

@@ -6,6 +6,10 @@ import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.util.Paginacao;
 
+/**
+ * @author Cleiton
+ *
+ */
 public interface TesteRepository {
 	void create(Teste entity);
 
@@ -64,6 +68,14 @@ public interface TesteRepository {
 	 * @return
 	 */
 	List< Usuario> getUsuariosConvidadosAll(Long testeId);
+	/***
+	 * 
+	 * Lista todos os testes que um usuario foi convidado para participar
+	 * @param usuarioId Mostra todos os teste participados de um usuario
+	 * @return Lista de testes que o usuario participou
+	 * @param quantidade numero de Usuarios por paginas
+	 * @param numeroPagina numero da página que sera carregada
+	 */
 	
-	
+	Paginacao<Teste> getTestesParticipados(Long usuarioId, int quantidade, int numeroPagina); 
 }

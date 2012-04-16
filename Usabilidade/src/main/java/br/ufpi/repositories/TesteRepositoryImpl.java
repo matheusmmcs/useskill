@@ -96,8 +96,6 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		Query count = entityManager
 				.createNamedQuery("Convidado.Usuarios.Convidados.Count");
 		count.setParameter("teste", testeId);
-		count.setFirstResult(quantidade * (numeroPagina - 1));
-		count.setMaxResults(quantidade);
 		paginacao.setCount((Long) count.getSingleResult());
 		return paginacao;
 	}
@@ -107,7 +105,24 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		Query query = entityManager
 				.createNamedQuery("Convidado.Usuarios.Convidados");
 		query.setParameter("teste", testeId);
-		return  query.getResultList();
-		
+		return query.getResultList();
+
+	}
+
+	@Override
+	public Paginacao<Teste> getTestesParticipados(Long usuarioId,
+			int quantidade, int numeroPagina) {
+		Paginacao<Teste> paginacao = new Paginacao<Teste>();
+		Query query = entityManager
+				.createNamedQuery("Convidado.Teste.Participado");
+		query.setParameter("usuario", usuarioId);
+		query.setFirstResult(quantidade * (numeroPagina - 1));
+		query.setMaxResults(quantidade);
+		paginacao.setListObjects(query.getResultList());
+		Query count = entityManager
+				.createNamedQuery("Convidado.Teste.Participado.Count");
+		count.setParameter("usuario", usuarioId);
+		paginacao.setCount((Long) count.getSingleResult());
+		return paginacao;
 	}
 }

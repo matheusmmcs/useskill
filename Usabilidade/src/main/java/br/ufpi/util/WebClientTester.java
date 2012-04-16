@@ -47,7 +47,7 @@ public class WebClientTester {
                 str.append("=");
                 str.append(encodeURIComponent(entry.getValue().toString()));
                 str.append("&");
-                System.out.println(entry.getKey()+"="+encodeURIComponent(entry.getValue().toString()));
+//                System.out.println(entry.getKey()+"="+encodeURIComponent(entry.getValue().toString()));
             }
             //str.append("idPergunta="+idPergunta.toString());
             str.deleteCharAt(str.length() - 1);
@@ -66,7 +66,7 @@ public class WebClientTester {
                 urlPagina = urlPagina + "?" + paramsStr;
             }
 
-            System.out.println("# Url Pagina(WebClient): "+urlPagina);
+//            System.out.println("# Url Pagina(WebClient): "+urlPagina);
             URL url = new URL(urlPagina);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
