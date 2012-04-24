@@ -37,7 +37,7 @@ public interface TesteRepository {
 	 */
 	Teste getTestCriadoNaoLiberado(Long idUsuario, Long idTeste);
 
-	/** Retorna todos os Testes que estaão com o campo Liberado igual a true
+	/** Retorna todos os Testes que estão com o campo Liberado igual a true
 	 * @param idUsuario identificador do usuario pertencente ao teste
 	 * @param idTeste identificados do teste a ser procurado
 	 * @return null caso o teste não seja encontrado

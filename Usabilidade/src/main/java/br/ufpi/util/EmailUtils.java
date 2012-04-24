@@ -23,7 +23,6 @@ public class EmailUtils {
 	private static final String USERNAME = "usabilitool@gmail.com";
 	private static final String PASSWORD = "cl123456";
 	private static final String EMAILORIGEM = "usabilitool@gmail.com";
-	public static String BASEURL;
 	private HtmlEmail email;
 
 	public EmailUtils() {
@@ -104,7 +103,7 @@ public class EmailUtils {
 		Mensagem mensagem = new Mensagem();
 		mensagem.setDestino(pessoa.getEmail());
 		mensagem.setTitulo("Teste");
-		mensagem.setMensagem(EmailUtils.BASEURL + "/confirmar/"
+		mensagem.setMensagem(BaseUrl.BASEURL + "/confirmar/"
 				+ pessoa.getConfirmacaoEmail());
 
 		try {
