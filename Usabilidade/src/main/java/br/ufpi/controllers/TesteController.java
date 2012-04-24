@@ -19,6 +19,7 @@ import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.ConvidadoRepository;
 import br.ufpi.repositories.TesteRepository;
+import br.ufpi.util.BaseUrl;
 import br.ufpi.util.Criptografa;
 import br.ufpi.util.EmailUtils;
 import br.ufpi.util.Paginacao;
@@ -31,9 +32,7 @@ public class TesteController {
 	private UsuarioLogado usuarioLogado;
 	private final Validator validator;
 	private final ConvidadoRepository convidadoRepository;
-	private final HttpServletRequest request; 
-
-	
+	private final HttpServletRequest request;
 
 	public TesteController(Result result, TesteRepository testeRepository,
 			UsuarioLogado usuarioLogado, Validator validator,
@@ -150,20 +149,38 @@ public class TesteController {
 		teste.setLiberado(true);
 		List<Usuario> usuarios = testeRepository
 				.getUsuariosConvidadosAll(idTeste);
-		if (usuarios == null) {
-			// TODO Não tem usuarios Convidados e gerar erro
+		if (usuarios.isEmpty()||usuarios==null) {
+			validator.checking(new Validations() {
+				{
+					that(false, "nenhum.usuario.convidado",
+							"nenhum.usuario.convidado");
+				}
+			});
+			validator.onErrorRedirectTo(this).passo4(idTeste);
 		}
+		
 		List<Tarefa> tarefas = teste.getTarefas();
+		if (tarefas.isEmpty() || tarefas==null)
+			validator.checking(new Validations() {
+				{
+					that(false, "sem.tarefa.cadastrada",
+							"sem.tarefa.cadastrada");
+				}
+			});
+		
 		for (Tarefa tarefa : tarefas) {
 			if (!tarefa.isFluxoIdealPreenchido()) {
-				// TODO Tem Tarefas sem o fluxo preenchido
+				final Tarefa tarefaAux = tarefa;
+				validator.checking(new Validations() {
+					{
+						that(false, "tarefa.sem.fluxo.ideal",
+								"tarefa.sem.fluxo.ideal", tarefaAux.getNome());
+					}
+				});
 			}
 		}
-		 if (EmailUtils.BASEURL == null) {
-				String header = request.getHeader("Host");
-				header = header + request.getContextPath();
-				EmailUtils.BASEURL = header;
-			}
+		validator.onErrorRedirectTo(this).passo4(idTeste);
+		BaseUrl.getInstance(request);
 		EmailUtils email = new EmailUtils();
 
 		for (Usuario usuario : usuarios) {
@@ -341,11 +358,15 @@ public class TesteController {
 	public void realizarTeste() {
 		// TODO analisar se é pra deletar metodo
 	}
+
 	@Logado
-	public void meusProjetos(){
-		Paginacao<Teste> testesParticipados = testeRepository.getTestesParticipados(usuarioLogado.getUsuario().getId(),1,50);
-		result.include("testesParticipados",testesParticipados.getListObjects());
-		result.include("testesParticipadosCount",testesParticipados.getCount());
-		}
+	public void meusProjetos() {
+		Paginacao<Teste> testesParticipados = testeRepository
+				.getTestesParticipados(usuarioLogado.getUsuario().getId(), 1,
+						50);
+		result.include("testesParticipados",
+				testesParticipados.getListObjects());
+		result.include("testesParticipadosCount", testesParticipados.getCount());
+	}
 
 }

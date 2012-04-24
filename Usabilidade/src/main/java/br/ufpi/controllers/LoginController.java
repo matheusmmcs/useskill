@@ -14,6 +14,7 @@ import br.ufpi.annotation.Logado;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
+import br.ufpi.util.BaseUrl;
 import br.ufpi.util.Criptografa;
 import br.ufpi.util.EmailUtils;
 
@@ -155,12 +156,7 @@ public class LoginController {
 			String novaSenha = geradorSenha(usuario);
 			String senha = Criptografa.criptografar(novaSenha);
 			usuario.setSenha(senha);
-			if (EmailUtils.BASEURL == null) {
-				String header = request.getHeader("Host");
-				header = header + request.getContextPath();
-				EmailUtils.BASEURL = header;
-				System.out.println("BASE URL "+EmailUtils.BASEURL);
-			}
+			BaseUrl.getInstance(request);
 			EmailUtils emailUtils = new EmailUtils();
 			emailUtils.enviarNovaSenha(usuario, novaSenha);
 			usuarioRepository.update(usuario);
@@ -187,17 +183,12 @@ public class LoginController {
 
 	@Post("usuario/reenviar/email")
 	public void reenviaEmailConfirmacaoCompleto(String email) {
-		
+
 		if (email != null) {
 			Usuario usuario = usuarioRepository.findEmail(email);
 			if (usuario != null) {
 				if (usuario.getConfirmacaoEmail() != null) {
-					if (EmailUtils.BASEURL == null) {
-						String header = request.getHeader("Host");
-						header = header + request.getContextPath();
-						EmailUtils.BASEURL = header;
-						System.out.println("BASE URL "+EmailUtils.BASEURL);
-					}
+					BaseUrl.getInstance(request);
 					EmailUtils emailUtils = new EmailUtils();
 					emailUtils.enviarEmailConfirmacao(usuario);
 					result.include("email", email);

@@ -31,6 +31,8 @@ import br.ufpi.repositories.ConvidadoRepositoryImpl;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
+import br.ufpi.util.BaseUrl;
+import br.ufpi.util.EmailUtils;
 import br.ufpi.util.TarefaDetalhe;
 import br.ufpi.util.WebClientTester;
 
@@ -258,6 +260,10 @@ public class TarefaController {
 
 	}
 
+	/**
+	 * @param idTarefa
+	 * @return
+	 */
 	@Logado
 	@Get()
 	public TarefaDetalhe carregar(Long idTarefa) {
@@ -265,15 +271,17 @@ public class TarefaController {
 		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
 				idTarefa);
 		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
+		
+		String url = BaseUrl.getInstance(request);
 
-		System.out
-				.println("${String} = http://localhost:8080/Usabilidade/tarefa/visualizar?url="
-						+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
+		System.out.println("${String} =" + url
+				+ "/tarefa/visualizar?url=" + tarefa.getUrlInicial()
+				+ "&idTarefa=" + idTarefa);
 
 		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
-		tarefadetalhe
-				.setUrl("http://localhost:8080/Usabilidade/tarefa/visualizar?url="
-						+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
+
+		tarefadetalhe.setUrl(url + "/tarefa/visualizar?url="
+				+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
 		return tarefadetalhe;
 	}
 
@@ -305,7 +313,7 @@ public class TarefaController {
 
 		if (url != null) {
 			return WebClientTester.loadPage(
-					"http://localhost:8080/Usabilidade/tarefa/visualizar", url,
+					BaseUrl.getInstance(request)+"/tarefa/visualizar", url,
 					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
 					metodo);
 		} else {
@@ -320,21 +328,23 @@ public class TarefaController {
 		Long idTarefa = fluxoTarefa.getVez();
 		System.out.println(idTarefa + "Tarefa na vez");
 		if (idTarefa == 0) {
+			System.out.println("Tarefa igual a zero");
 			Convidado convidado = new Convidado(new UsuarioTestePK(
 					usuarioLogado.getUsuario(), usuarioLogado.getTeste()));
 			convidado.setRealizou(true);
 			convidadoRepository.update(convidado);
+			
 			result.redirectTo(LoginController.class).logado();
 		}
 
 		Tarefa tarefa = getTarefa(idTarefa);
-		// return "http://localhost:8080/Usabilidade/tarefa/acoes?url="+
+		// return BaseUrl.getInstance(request)+"/tarefa/acoes?url="+
 		// tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
 		System.out.println("TESTAR TAREFA" + tarefa);
 		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
 		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
 		tarefadetalhe
-				.setUrl("http://localhost:8080/Usabilidade/tarefa/acoes?url="
+				.setUrl(BaseUrl.getInstance(request)+"/tarefa/acoes?url="
 						+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
 		return tarefadetalhe;
 	}
@@ -375,12 +385,12 @@ public class TarefaController {
 
 		if (url != null) {
 			return WebClientTester.loadPage(
-					"http://localhost:8080/Usabilidade/tarefa/acoes", url,
+					BaseUrl.getInstance(request)+"/tarefa/acoes", url,
 					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
 					metodo);
 		} else {
 			return WebClientTester.loadPage(
-					"http://localhost:8080/Usabilidade/tarefa/acoes",
+					BaseUrl.getInstance(request)+"/tarefa/acoes",
 					tarefa.getUrlInicial(),
 					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
 					metodo);
@@ -431,7 +441,7 @@ public class TarefaController {
 	}
 
 	/**
-	 * Analisa se um determinado Teste pertence ao usuario
+	 * Analisa se um determinado Teste não liberado pertence ao usuario
 	 * 
 	 * @param idTeste
 	 *            Identificador do Teste a ser procurado
