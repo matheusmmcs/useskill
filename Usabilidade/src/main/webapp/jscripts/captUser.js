@@ -201,11 +201,10 @@
 														// verificar se o botao
 														// clicado é o de
 														// finalizar
-														if (capt(e.target)
-																.attr("id") == "concluir12qz3") {
-															enviaJson(
-																	getResultadoJson(),
-																	true)
+														if (capt(e.target).attr("id") == "concluir12qz3") {
+															e.preventDefault()
+															enviaJson(getResultadoJson(),true)
+															location.href="/Usabilidade/tarefa/testar"
 														} else {
 															enviaJson(
 																	getResultadoJson(),
