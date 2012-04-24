@@ -1,4 +1,6 @@
 <head>
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/captTester.js"></script>
 <link rel="stylesheet" type="text/css"
 	href="${pageContext.request.contextPath}/css/bootstrap.css" />
 <link rel="stylesheet" type="text/css"

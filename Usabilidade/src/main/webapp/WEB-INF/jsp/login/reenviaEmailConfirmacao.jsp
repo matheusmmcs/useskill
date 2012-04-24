@@ -1,4 +1,4 @@
-<<fmt:message key="reenviar.email.confirmacao"/>
+<fmt:message key="reenviar.email.confirmacao"/>
 <form id="form_reenviar-confirmacao" action="${pageContext.request.contextPath}/usuario/reenviar/email" method="post">
 
     <label for="email">
