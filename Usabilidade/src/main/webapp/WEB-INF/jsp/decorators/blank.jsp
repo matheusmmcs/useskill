@@ -5,6 +5,7 @@
 
 <html>
 <head>
+<!-- decorator = blank -->
 <decorator:head />
 </head>
 <body>

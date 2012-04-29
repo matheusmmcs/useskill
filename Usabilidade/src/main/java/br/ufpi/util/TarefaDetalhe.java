@@ -1,5 +1,8 @@
 package br.ufpi.util;
 
+/*
+ * Classe utilizada para passar parametros sobre a tarefa para a view responsável por mostrar a página modificada
+ */
 public class TarefaDetalhe {
 
 	private String url, roteiro;

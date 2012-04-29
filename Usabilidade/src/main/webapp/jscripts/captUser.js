@@ -204,7 +204,6 @@
 														if (capt(e.target).attr("id") == "concluir12qz3") {
 															e.preventDefault()
 															enviaJson(getResultadoJson(),true)
-															location.href="/Usabilidade/tarefa/testar"
 														} else {
 															enviaJson(
 																	getResultadoJson(),
@@ -370,7 +369,7 @@
 									'tarefaId' : get_url_parameter("idTarefa")
 								},
 								success : function(json) {
-
+									alert(json)
 								},
 								error : function(e) {
 									console.log(e);

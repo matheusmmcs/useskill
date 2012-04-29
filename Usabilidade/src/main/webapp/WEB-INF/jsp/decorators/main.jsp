@@ -5,7 +5,7 @@
 <html>
     <head>
         
-        
+        <!-- decorator = main -->
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title><decorator:title default="Usabilitool"/></title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/reset.css"/>

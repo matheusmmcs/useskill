@@ -196,14 +196,14 @@ public class TarefaController {
 
 	@Logado
 	@Post("tarefa/save/fluxo/usuario")
-	public void saveFluxoUsuario(String dados, Boolean completo, Long tarefaId) {
+	public String saveFluxoUsuario(String dados, Boolean completo, Long tarefaId) {
 		System.out.println("Action: saveFluxoUsuario");
 		// System.out.println(dados + " - " + completo + " - " + tarefaId);
 		if (completo) {
 			System.out.println("Completo");
 		}
 		saveFluxo(dados, completo, tarefaId, false);
-
+		return "Teste";
 	}
 
 	/**
@@ -256,18 +256,24 @@ public class TarefaController {
 		fluxoUsuario.setAcoes(actions.getAcoes());
 		fluxoUsuarioRepository.create(fluxoUsuario);
 		fluxoTarefa.getProximo();
-		System.out.println("AGORA VEz esta" + fluxoTarefa.getVez());
-
+		System.out.println("AGORA vez esta" + fluxoTarefa.getVez());
+		if(fluxoTarefa.getVez()==0){
+			System.out.println("Tarefa = 0 -> redirecionar para teste/participar/termino");
+			result.redirectTo(TesteParticiparController.class).termino();
+		}
 	}
 
 	/**
-	 * @param idTarefa
+	 * Método que carrega uma página para realizar a tarefa. Nesta página, possui um iframe
+	 * onde são testadas as ações do TESTADOR. 
+	 * 
+	 * @param idTarefa = id que determina a tarefa que será realizada.
 	 * @return
 	 */
 	@Logado
 	@Get()
-	public TarefaDetalhe carregar(Long idTarefa) {
-		System.out.println("Action: Carregar");
+	public TarefaDetalhe loadtasktester(Long idTarefa) {
+		System.out.println("Action: loadTaskTester");
 		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
 				idTarefa);
 		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
@@ -275,30 +281,28 @@ public class TarefaController {
 		String url = BaseUrl.getInstance(request);
 
 		System.out.println("${String} =" + url
-				+ "/tarefa/visualizar?url=" + tarefa.getUrlInicial()
+				+ "/tarefa/loadactiontester?url=" + tarefa.getUrlInicial()
 				+ "&idTarefa=" + idTarefa);
 
 		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
 
-		tarefadetalhe.setUrl(url + "/tarefa/visualizar?url="
+		tarefadetalhe.setUrl(url + "/tarefa/loadactiontester?url="
 				+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
 		return tarefadetalhe;
 	}
 
 	/**
-	 * Utilizado para mostrar ao usuario a tarefa definida. Usado apenas para o
-	 * Testador
+	 * Método que carrega uma página e adaptada para a Usabilitool. Nesta página
+	 * serão armazeandas as ações do TESTADOR. 
 	 * 
-	 * @param idTarefa
-	 *            identicado da Tarefa a ser realizada
-	 * @param url
-	 *            url a ser exibida
+	 * @param idTarefa = identicador da Tarefa a ser realizada
+	 * @param url = url a ser adaptada
 	 * @return
 	 */
 	@Logado
 	@Get()
-	public String visualizar(Long idTarefa) {
-		System.out.println("visualizar");
+	public String loadactiontester(Long idTarefa) {
+		System.out.println("loadActionTester");
 		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
 				idTarefa);
 
@@ -313,7 +317,7 @@ public class TarefaController {
 
 		if (url != null) {
 			return WebClientTester.loadPage(
-					BaseUrl.getInstance(request)+"/tarefa/visualizar", url,
+					BaseUrl.getInstance(request)+"/tarefa/loadactiontester", url,
 					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
 					metodo);
 		} else {
@@ -321,10 +325,17 @@ public class TarefaController {
 		}
 	}
 
+	/**
+	 * Método que carrega uma página para realizar a tarefa. Nesta página, possui um iframe
+	 * onde são testadas as ações do USUÁRIO. O id da tarefa é recebido a partir da sessão
+	 * SessionFluxo. 
+	 * 
+	 * @return
+	 */
 	@Logado
 	@Get()
-	public TarefaDetalhe testar() {
-		System.out.println("Action: Testar");
+	public TarefaDetalhe loadtaskuser() {
+		System.out.println("Action: loadTaskUser");
 		Long idTarefa = fluxoTarefa.getVez();
 		System.out.println(idTarefa + "Tarefa na vez");
 		if (idTarefa == 0) {
@@ -338,29 +349,27 @@ public class TarefaController {
 		}
 
 		Tarefa tarefa = getTarefa(idTarefa);
-		// return BaseUrl.getInstance(request)+"/tarefa/acoes?url="+
+		// return BaseUrl.getInstance(request)+"/tarefa/loadactionuser?url="+
 		// tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
 		System.out.println("TESTAR TAREFA" + tarefa);
 		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
 		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
 		tarefadetalhe
-				.setUrl(BaseUrl.getInstance(request)+"/tarefa/acoes?url="
+				.setUrl(BaseUrl.getInstance(request)+"/tarefa/loadactionuser?url="
 						+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
 		return tarefadetalhe;
 	}
 
 	/**
-	 * Utilizado para mostrar ao usuario a tarefa definida. Usado apenas para os
-	 * usuarios Participantes
+	 * Método que carrega uma página e adaptada para a Usabilitool. Nesta página
+	 * serão armazeandas as ações do USUÁRIO. 
 	 * 
-	 * @param idTarefa
-	 *            identicado da Tarefa a ser realizada
 	 * @return
 	 */
 	@Logado
 	@Get
-	public String acoes() {
-		System.out.println("ACOES ");
+	public String loadactionuser() {
+		System.out.println("loadActionUser ");
 		Long idTarefa = fluxoTarefa.getVez();
 		if (idTarefa == 0) {
 			Convidado convidado = new Convidado(new UsuarioTestePK(
@@ -385,12 +394,12 @@ public class TarefaController {
 
 		if (url != null) {
 			return WebClientTester.loadPage(
-					BaseUrl.getInstance(request)+"/tarefa/acoes", url,
+					BaseUrl.getInstance(request)+"/tarefa/loadactionuser", url,
 					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
 					metodo);
 		} else {
 			return WebClientTester.loadPage(
-					BaseUrl.getInstance(request)+"/tarefa/acoes",
+					BaseUrl.getInstance(request)+"/tarefa/loadactionuser",
 					tarefa.getUrlInicial(),
 					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
 					metodo);
@@ -401,9 +410,9 @@ public class TarefaController {
 
 	private void gravaFluxoIdeal(Long tarefaId) {
 		System.out.println("Grava Fluxo IDEAL");
-
-		Tarefa tarefa = this.tarefaPertenceTeste(usuarioLogado.getTeste()
-				.getId(), tarefaId);
+		Long idTeste = usuarioLogado.getTeste().getId();
+		
+		Tarefa tarefa = this.tarefaPertenceTeste(idTeste, tarefaId);
 
 		FluxoIdeal fluxoIdeal = new FluxoIdeal();
 		fluxoIdeal.setUsuario(usuarioLogado.getUsuario());
@@ -415,10 +424,9 @@ public class TarefaController {
 		fluxoIdeal.setAcoes(acoes);
 		tarefa.setFluxoIdeal(fluxoIdeal);
 		tarefa.setFluxoIdealPreenchido(true);
+		System.out.println(tarefa);
 		tarefaRepository.update(tarefa);
-		result.redirectTo(TesteController.class).passo2(
-				usuarioLogado.getTeste().getId());
-
+		//result.redirectTo(TesteController.class).passo2(idTeste);
 	}
 
 	/**

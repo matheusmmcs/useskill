@@ -5,6 +5,7 @@
 
 <html>
 <head>
+<!-- decorator = teste -->
 <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/captTester.js"></script>
 <decorator:head />

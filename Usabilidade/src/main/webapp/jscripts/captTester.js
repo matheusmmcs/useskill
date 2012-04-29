@@ -196,15 +196,13 @@
 													href = capt(e.target).attr(
 															"href")
 													if (href != ""
-															&& href
-																	.indexOf("#") != 0) {
+															&& href.indexOf("#") != 0) {
 														// verificar se o botao
 														// clicado é o de
 														// finalizar
 														if (capt(e.target).attr("id") == "concluir12qz3") {
-															e.preventDefault()
+															//e.preventDefault()
 															enviaJson(getResultadoJson(),true)
-															location.href="/Usabilidade/tarefa/testar"
 														} else {
 															enviaJson(
 																	getResultadoJson(),

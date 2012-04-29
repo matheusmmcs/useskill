@@ -34,7 +34,7 @@
 					<div id="topocontrole">
 						<div class="direita">
 							<a class="btn btn-success concluir" id="concluir12qz3"
-								href="${pageContext.request.contextPath}/tarefa/testar"><span
+								href="${pageContext.request.contextPath}/tarefa/loadtaskuser"><span
 								class="icon-ok"></span> <fmt:message key="concluirTarefa" /> </a>
 						</div>
 						<div class="centro">
