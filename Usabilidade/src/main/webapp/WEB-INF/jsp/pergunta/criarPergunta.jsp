@@ -43,15 +43,20 @@
             <div class="controls">
                 <label class="radio" style="margin-top: -30px;"> 
                     <input type="radio" name="pergunta.tipoRespostaAlternativa" value="true" />
-                    Tipo 1
+                    <fmt:message key="pergunta.subjetiva"/>
                 </label>
                 <label class="radio">
                     <input type="radio" name="pergunta.tipoRespostaAlternativa" value="false"/>                    
-                    Tipo 2
+                    <fmt:message key="pergunta.objetiva"/>
                 </label>
             </div>
         </div>
-
+    <div class="alternativa-group">
+            <label class="control-label" for="input01"><fmt:message key="pergunta.texto" />*</label>
+            <div class="controls">
+                <textarea rows="10" cols="" name="pergunta.alternativas[].textoAlternativa" id="texto" class="input-xmlarge">${pergunta.texto}</textarea>
+            </div>
+        </div>
 
         <div class="form-actions">
             <input type="submit" name="pergunta.salvar" value="<fmt:message key="pergunta.salvar"/>" title="Criar Pergunta" class="btn btn-primary" style="float: right"/>

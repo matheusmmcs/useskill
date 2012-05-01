@@ -1,4 +1,4 @@
-package br.ufpi.repositories;
+package br.ufpi.repositories.Implement;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -9,6 +9,8 @@ import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
+import br.ufpi.repositories.PerguntaRepository;
+import br.ufpi.repositories.Repository;
 
 @Component
 public class PerguntaRepositoryImpl extends Repository<Pergunta, Long>

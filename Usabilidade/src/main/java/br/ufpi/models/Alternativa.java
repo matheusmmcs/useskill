@@ -58,4 +58,11 @@ public class Alternativa implements Serializable {
     public void setTextoAlternativa(String textoAlternativa) {
         this.textoAlternativa = textoAlternativa;
     }
+
+	@Override
+	public String toString() {
+		return "Alternativa [id=" + id + ", textoAlternativa="
+				+ textoAlternativa + ", pergunta=" + pergunta + "]";
+	}
+    
 }

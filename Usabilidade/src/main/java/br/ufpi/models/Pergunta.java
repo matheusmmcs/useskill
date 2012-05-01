@@ -13,7 +13,7 @@ import javax.persistence.*;
  * @author Cleiton
  */
 @NamedQueries({
-		@NamedQuery(name = "Pergunta.pertence.teste.usuario", query = "select p from Pergunta as p left join p.questionario left join p.questionario.teste left join p.questionario.teste.usuarioCriador where p.questionario.teste.id= :teste and  p.questionario.teste.usuarioCriador.id= :usuario and p.id= :pergunta "),
+		@NamedQuery(name = "Pergunta.pertence.teste.usuario", query = "select p from Pergunta as p left join p.questionario left join p.questionario.teste left join p.questionario.teste.usuarioCriador where p.questionario.teste.id= :teste and  p.questionario.teste.usuarioCriador.id= :usuario and p.id= :pergunta and p.questionario.teste.liberado=false"),
 		@NamedQuery(name = "Pertunta.getQuestionario", query = "select p.questionario from Pergunta as p left join p.questionario as Questionario where p.id= :pergunta") })
 @Entity
 public class Pergunta implements Serializable {
@@ -25,6 +25,9 @@ public class Pergunta implements Serializable {
 	private String titulo;
 	@Column(columnDefinition = "TEXT")
 	private String texto;
+	/**
+	 * True para pergunta objetiva
+	 */
 	private Boolean tipoRespostaAlternativa;
 	@OneToMany(mappedBy = "pergunta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Alternativa> alternativas;
@@ -109,4 +112,15 @@ public class Pergunta implements Serializable {
 		return pergunta;
 
 	}
+
+	@Override
+	public String toString() {
+		return "Pergunta [id=" + id + ", titulo=" + titulo + ", texto=" + texto
+				+ ", tipoRespostaAlternativa=" + tipoRespostaAlternativa
+				+ ", alternativas=" + alternativas + ", questionario="
+				+ questionario + ", respostaAlternativas="
+				+ respostaAlternativas + ", respostaEscritas="
+				+ respostaEscritas + "]";
+	}
+	
 }

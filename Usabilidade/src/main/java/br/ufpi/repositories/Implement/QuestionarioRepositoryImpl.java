@@ -2,10 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.ufpi.repositories;
+package br.ufpi.repositories.Implement;
 
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Questionario;
+import br.ufpi.repositories.QuestionarioRepository;
+import br.ufpi.repositories.Repository;
+
 import javax.persistence.EntityManager;
 
 /**

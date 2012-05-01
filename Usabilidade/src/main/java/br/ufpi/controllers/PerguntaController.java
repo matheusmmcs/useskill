@@ -8,25 +8,30 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.UsuarioLogado;
+import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.PerguntaRepository;
+import br.ufpi.repositories.TesteRepository;
 
 @Resource
 public class PerguntaController {
 
 	private final Result result;
 	private final PerguntaRepository perguntaRepository;
+	private final TesteRepository testeRepository;
 	private UsuarioLogado usuarioLogado;
 	private final Validator validator;
 
 	public PerguntaController(Result result,
-			PerguntaRepository perguntaRepository, UsuarioLogado usuarioLogado,
+			PerguntaRepository perguntaRepository,
+			TesteRepository testeRepository, UsuarioLogado usuarioLogado,
 			Validator validator) {
 		super();
 		this.result = result;
 		this.perguntaRepository = perguntaRepository;
+		this.testeRepository = testeRepository;
 		this.usuarioLogado = usuarioLogado;
 		this.validator = validator;
 	}
@@ -34,6 +39,7 @@ public class PerguntaController {
 	@Logado
 	@Get({ "teste/{testeId}/editar/passo2/criar/pergunta" })
 	public Pergunta criarPergunta(Long testeId) {
+		this.testeNaoLiberadoPertenceUsuarioLogado(testeId);
 		return new Pergunta();
 	}
 
@@ -46,10 +52,12 @@ public class PerguntaController {
 	 */
 	@Logado
 	@Get("teste/{testeId}/editar/passo2/editar/{pergunta.id}/pergunta")
-	public Pergunta criarPergunta(Long testeId, Pergunta pergunta) {
+	public Pergunta editarPergunta(Long testeId, Pergunta pergunta) {
 		return this.perguntaPertenceUsuario(pergunta.getId(), testeId);
 	}
-//TODO Fazer um metodo para percorrer todos os objetos e ir clonando alterando apenas o id
+
+	// TODO Fazer um metodo para percorrer todos os objetos e ir clonando
+	// alterando apenas o id
 	@Logado
 	@Post("teste/duplicar/pergunta")
 	public void duplicar(Long testeId, Long perguntaId) {
@@ -79,6 +87,18 @@ public class PerguntaController {
 			}
 			Questionario satisfacao = usuarioLogado.getTeste().getSatisfacao();
 			pergunta.setQuestionario(satisfacao);
+			boolean tipo= pergunta.getTipoRespostaAlternativa()==null?false:true;
+			if ( tipo
+					&& pergunta.getAlternativas() != null) {
+				System.out.println("Objetiva");
+				for (Alternativa alternativa : pergunta.getAlternativas()) {
+					alternativa.setPergunta(pergunta);
+				}
+			} else {
+				System.out.println("SUBJETIVA");
+				pergunta.setTipoRespostaAlternativa(false);
+				pergunta.setAlternativas(null);
+			}
 			perguntaRepository.create(pergunta);
 			result.redirectTo(TesteController.class).passo2(testeId);
 		} else {
@@ -106,27 +126,45 @@ public class PerguntaController {
 				validator.onErrorRedirectTo(TesteController.class).passo2(
 						testeId);
 			}
+
 			perguntaPertenceUsuario(pergunta.getId(), testeId);
 			pergunta.setQuestionario(perguntaRepository
 					.findQuestionario(pergunta.getId()));
-			perguntaRepository.update(pergunta);
+			boolean tipo= pergunta.getTipoRespostaAlternativa()==null?false:true;
+			if (tipo
+					&& pergunta.getAlternativas() != null) {
+				for (Alternativa alternativa : pergunta.getAlternativas()) {
+					alternativa.setPergunta(pergunta);
+				}
+			} else {
+				pergunta.setTipoRespostaAlternativa(false);
+				pergunta.setAlternativas(null);
+			}
+			Long idPergunta = pergunta.getId();
+			Pergunta pergunta2 = new Pergunta();
+			pergunta2.setId(idPergunta);
+			perguntaRepository.destroy(pergunta2);
+			pergunta.setId(null);
+			perguntaRepository.create(pergunta);
 			result.redirectTo(TesteController.class).passo2(testeId);
 		} else {
 			result.redirectTo(LoginController.class).logado();
 		}
 	}
-@Logado
+
+	@Logado
 	@Post("teste/apagar/pergunta")
-	public void deletarPergunta(Long testeId,Long perguntaId){
-	if (testeId != null && perguntaId!=null) {
-		Pergunta perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId, testeId);
-		perguntaRepository.destroy(perguntaPertenceUsuario);
-		result.redirectTo(TesteController.class).passo2(testeId);
+	public void deletarPergunta(Long testeId, Long perguntaId) {
+		if (testeId != null && perguntaId != null) {
+			Pergunta perguntaPertenceUsuario = perguntaPertenceUsuario(
+					perguntaId, testeId);
+			perguntaRepository.destroy(perguntaPertenceUsuario);
+			result.redirectTo(TesteController.class).passo2(testeId);
+		} else {
+			result.notFound();
+		}
 	}
-	else{
-		result.notFound();
-	}
-}
+
 	/**
 	 * Analisa se teste.id e pergunta.id pertencem ao usuarioLogado.
 	 * 
@@ -135,6 +173,7 @@ public class PerguntaController {
 	 * @return
 	 */
 	private Pergunta perguntaPertenceUsuario(Long perguntaId, Long testeId) {
+		testeNaoLiberadoPertenceUsuarioLogado(testeId);
 		Pergunta perguntaUsuario = perguntaRepository.perguntaPertenceUsuario(
 				usuarioLogado.getUsuario().getId(), testeId, perguntaId);
 		if (perguntaUsuario == null)
@@ -152,5 +191,28 @@ public class PerguntaController {
 	 */
 	private Pergunta perguntaPertenceUsuario(Pergunta pergunta, Teste teste) {
 		return perguntaPertenceUsuario(pergunta.getId(), teste.getId());
+	}
+
+	/**
+	 * * Analisa se o id do teste buscado pertence ao usuario logado e se o
+	 * teste ainda não foi liberado, se não pertencer ao usuario buscado sera
+	 * redirecionado para pagina 404.
+	 * 
+	 * @param idTeste
+	 *            buscado e analisado para ver se pertence ao usuario
+	 * 
+	 */
+	private void testeNaoLiberadoPertenceUsuarioLogado(Long idTeste) {
+		if (idTeste != null) {
+			Teste teste = testeRepository.getTestCriadoNaoLiberado(
+					usuarioLogado.getUsuario().getId(), idTeste);
+			if (teste != null) {
+				usuarioLogado.setTeste(teste);
+			} else {
+				result.notFound();
+			}
+		} else {
+			result.notFound();
+		}
 	}
 }

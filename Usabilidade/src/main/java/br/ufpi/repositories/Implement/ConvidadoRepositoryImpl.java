@@ -1,4 +1,4 @@
-package br.ufpi.repositories;
+package br.ufpi.repositories.Implement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,8 @@ import javax.persistence.Query;
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Convidado;
 import br.ufpi.models.Teste;
+import br.ufpi.repositories.ConvidadoRepository;
+import br.ufpi.repositories.Repository;
 
 @Component
 public class ConvidadoRepositoryImpl extends Repository<Convidado, Long>
