@@ -87,9 +87,9 @@ public class PerguntaController {
 			}
 			Questionario satisfacao = usuarioLogado.getTeste().getSatisfacao();
 			pergunta.setQuestionario(satisfacao);
-			boolean tipo= pergunta.getTipoRespostaAlternativa()==null?false:true;
-			if ( tipo
-					&& pergunta.getAlternativas() != null) {
+			boolean tipo = pergunta.getTipoRespostaAlternativa() == null ? false
+					: true;
+			if (tipo && pergunta.getAlternativas() != null) {
 				System.out.println("Objetiva");
 				for (Alternativa alternativa : pergunta.getAlternativas()) {
 					alternativa.setPergunta(pergunta);
@@ -117,6 +117,8 @@ public class PerguntaController {
 	@Logado
 	@Put("teste/{testeId}/editar/passo2/salvar/pergunta")
 	public void atualizarPergunta(Long testeId, Pergunta pergunta) {
+		// TODO Resolver problema de Alternativas tem que deleta elas e criar de
+		// novo
 		if (testeId != null) {
 			validator.validate(pergunta);
 			if (pergunta.getId() != null) {
@@ -126,26 +128,35 @@ public class PerguntaController {
 				validator.onErrorRedirectTo(TesteController.class).passo2(
 						testeId);
 			}
-
 			perguntaPertenceUsuario(pergunta.getId(), testeId);
 			pergunta.setQuestionario(perguntaRepository
 					.findQuestionario(pergunta.getId()));
-			boolean tipo= pergunta.getTipoRespostaAlternativa()==null?false:true;
-			if (tipo
-					&& pergunta.getAlternativas() != null) {
-				for (Alternativa alternativa : pergunta.getAlternativas()) {
-					alternativa.setPergunta(pergunta);
-				}
-			} else {
+			if (pergunta.getTipoRespostaAlternativa() == null) {
+
+			}
+			boolean objetiva = pergunta.getTipoRespostaAlternativa() == null ? true
+					: pergunta.getTipoRespostaAlternativa();
+			System.out
+					.println(objetiva == true ? "Objetiva 12" : "Subjetiva 2");
+			if (!objetiva) {
+				System.out.println("Subjetiva 1");
 				pergunta.setTipoRespostaAlternativa(false);
 				pergunta.setAlternativas(null);
+			} else {
+				if (pergunta.getAlternativas() != null) {
+					System.out.println("OBjetiva");
+					for (Alternativa alternativa : pergunta.getAlternativas()) {
+						alternativa.setPergunta(pergunta);
+					}
+				} else {
+					System.out.println("Subjetiva");
+					pergunta.setTipoRespostaAlternativa(false);
+					pergunta.setAlternativas(null);
+				}
+
 			}
-			Long idPergunta = pergunta.getId();
-			Pergunta pergunta2 = new Pergunta();
-			pergunta2.setId(idPergunta);
-			perguntaRepository.destroy(pergunta2);
-			pergunta.setId(null);
-			perguntaRepository.create(pergunta);
+			perguntaRepository.deleteAlternativas(pergunta.getId());
+			perguntaRepository.update(pergunta);
 			result.redirectTo(TesteController.class).passo2(testeId);
 		} else {
 			result.redirectTo(LoginController.class).logado();
@@ -180,17 +191,6 @@ public class PerguntaController {
 			result.notFound();
 		return perguntaUsuario;
 
-	}
-
-	/**
-	 * Analisa se PErgunta e teste pertencem ao usuarioLogado.
-	 * 
-	 * @param pergunta
-	 * @param teste
-	 * @return
-	 */
-	private Pergunta perguntaPertenceUsuario(Pergunta pergunta, Teste teste) {
-		return perguntaPertenceUsuario(pergunta.getId(), teste.getId());
 	}
 
 	/**

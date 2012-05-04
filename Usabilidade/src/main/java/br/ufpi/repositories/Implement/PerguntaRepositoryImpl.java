@@ -38,12 +38,26 @@ public class PerguntaRepositoryImpl extends Repository<Pergunta, Long>
 	public Questionario findQuestionario(Long idPergunta) {
 		try {
 			return (Questionario) entityManager
-					.createNamedQuery("Pertunta.getQuestionario")
+					.createNamedQuery("Pergunta.getQuestionario")
 					.setParameter("pergunta", idPergunta).getSingleResult();
 
 		} catch (NoResultException e) {
 			return null;
 		}
+
+	}
+
+	@Override
+	public boolean deleteAlternativas(Long idPergunta) {
+		try {
+			 entityManager
+					.createNamedQuery("Pergunta.delete.Alternativas")
+					.setParameter("pergunta", idPergunta).executeUpdate();
+
+		} catch (NoResultException e) {
+			return false;
+		}
+		return true;
 
 	}
 

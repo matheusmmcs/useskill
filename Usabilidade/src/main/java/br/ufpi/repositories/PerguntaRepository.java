@@ -45,6 +45,6 @@ public interface PerguntaRepository {
 	 */
 	Questionario findQuestionario(Long idPergunta);
 
-	
+	boolean deleteAlternativas(Long idPergunta);
 
 }
