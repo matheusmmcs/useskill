@@ -3,10 +3,10 @@
         <a href="${pageContext.request.contextPath}/usuario">Início</a> <span class="divider">/</span>
     </li>
     <li>
-        <a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo1">Editar Teste - Passo 1</a> <span class="divider">/</span>
+        <a href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo1">Editar Teste - Passo 1</a> <span class="divider">/</span>
     </li>
     <li>
-        <a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo2">Passo 2</a> <span class="divider">/</span>
+        <a href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo2">Passo 2</a> <span class="divider">/</span>
     </li>
     <li class="active">Editar Tarefa</li>
 </ul>
@@ -41,7 +41,7 @@
                 <input type="text" value="${tarefa.urlInicial }" name="tarefa.urlInicial" class="input-xmlarge"/> 
             </div>
         </div>
-
+	<input type="hidden" name=idTeste value=${testeView.teste.id }>
 
         <div class="form-actions">
             <input type="submit" value="<fmt:message key="tarefa.editar" />" name="criar tarefa" title="Criar Tarefa" class="btn btn-primary" style="float: right"/>

@@ -7,6 +7,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.ufpi.annotation.Logado;
+import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
@@ -19,17 +20,20 @@ import br.ufpi.repositories.TesteRepository;
 public class PerguntaController {
 
 	private final Result result;
+	private final TesteView testeView;
 	private final PerguntaRepository perguntaRepository;
 	private final TesteRepository testeRepository;
 	private UsuarioLogado usuarioLogado;
 	private final Validator validator;
 
-	public PerguntaController(Result result,
+
+	public PerguntaController(Result result, TesteView testeView,
 			PerguntaRepository perguntaRepository,
 			TesteRepository testeRepository, UsuarioLogado usuarioLogado,
 			Validator validator) {
 		super();
 		this.result = result;
+		this.testeView = testeView;
 		this.perguntaRepository = perguntaRepository;
 		this.testeRepository = testeRepository;
 		this.usuarioLogado = usuarioLogado;
@@ -56,7 +60,6 @@ public class PerguntaController {
 		return this.perguntaPertenceUsuario(pergunta.getId(), testeId);
 	}
 
-	// TODO Fazer um metodo para percorrer todos os objetos e ir clonando
 	// alterando apenas o id
 	@Logado
 	@Post("teste/duplicar/pergunta")
@@ -76,6 +79,7 @@ public class PerguntaController {
 	@Logado
 	@Post("teste/{testeId}/editar/passo2/salvar/pergunta")
 	public void salvarPergunta(Long testeId, Pergunta pergunta) {
+		testeNaoLiberadoPertenceUsuarioLogado(testeId);
 		if (testeId != null) {
 			validator.validate(pergunta);
 			if (pergunta.getId() != null) {
@@ -85,7 +89,7 @@ public class PerguntaController {
 				validator.onErrorRedirectTo(TesteController.class).passo2(
 						testeId);
 			}
-			Questionario satisfacao = usuarioLogado.getTeste().getSatisfacao();
+			Questionario satisfacao = testeView.getTeste().getSatisfacao();
 			pergunta.setQuestionario(satisfacao);
 			boolean tipo = pergunta.getTipoRespostaAlternativa() == null ? false
 					: true;
@@ -119,8 +123,10 @@ public class PerguntaController {
 	public void atualizarPergunta(Long testeId, Pergunta pergunta) {
 		// TODO Resolver problema de Alternativas tem que deleta elas e criar de
 		// novo
+		
 		if (testeId != null) {
 			validator.validate(pergunta);
+			testeNaoLiberadoPertenceUsuarioLogado(testeId);
 			if (pergunta.getId() != null) {
 				validator.onErrorRedirectTo(this).criarPergunta(
 						pergunta.getId());
@@ -207,7 +213,7 @@ public class PerguntaController {
 			Teste teste = testeRepository.getTestCriadoNaoLiberado(
 					usuarioLogado.getUsuario().getId(), idTeste);
 			if (teste != null) {
-				usuarioLogado.setTeste(teste);
+				testeView.setTeste(teste);
 			} else {
 				result.notFound();
 			}

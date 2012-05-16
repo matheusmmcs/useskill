@@ -18,6 +18,8 @@ import br.com.caelum.vraptor.Validator;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.SessionActions;
 import br.ufpi.componets.SessionFluxoTarefa;
+import br.ufpi.componets.TesteSession;
+import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Acao;
 import br.ufpi.models.Convidado;
@@ -30,9 +32,7 @@ import br.ufpi.repositories.ConvidadoRepository;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
-import br.ufpi.repositories.Implement.ConvidadoRepositoryImpl;
 import br.ufpi.util.BaseUrl;
-import br.ufpi.util.EmailUtils;
 import br.ufpi.util.TarefaDetalhe;
 import br.ufpi.util.WebClientTester;
 
@@ -40,36 +40,39 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 @Resource
-public class TarefaController {
+public class TarefaController extends BaseController {
 
-	private final Result result;
 	private final TarefaRepository tarefaRepository;
-	private UsuarioLogado usuarioLogado;
-	private final Validator validator;
 	private final TesteRepository testeRepository;
 	private final FluxoUsuarioRepository fluxoUsuarioRepository;
 	private final ConvidadoRepository convidadoRepository;
 	private SessionActions actions;
 	private final SessionFluxoTarefa fluxoTarefa;
 	private final HttpServletRequest request;
+	private final TesteSession testeSession;
 
-	public TarefaController(Result result, TarefaRepository tarefaRepository,
-			UsuarioLogado usuarioLogado, Validator validator,
-			TesteRepository testeRepository,
+	
+	
+
+
+	
+
+	public TarefaController(Result result, Validator validator,
+			TesteView testeView, UsuarioLogado usuarioLogado,
+			TarefaRepository tarefaRepository, TesteRepository testeRepository,
 			FluxoUsuarioRepository fluxoUsuarioRepository,
 			ConvidadoRepository convidadoRepository, SessionActions actions,
-			SessionFluxoTarefa fluxoTarefa, HttpServletRequest request) {
-		super();
-		this.result = result;
+			SessionFluxoTarefa fluxoTarefa, HttpServletRequest request,
+			TesteSession testeSession) {
+		super(result, validator, testeView, usuarioLogado);
 		this.tarefaRepository = tarefaRepository;
-		this.usuarioLogado = usuarioLogado;
-		this.validator = validator;
 		this.testeRepository = testeRepository;
 		this.fluxoUsuarioRepository = fluxoUsuarioRepository;
 		this.convidadoRepository = convidadoRepository;
 		this.actions = actions;
 		this.fluxoTarefa = fluxoTarefa;
 		this.request = request;
+		this.testeSession = testeSession;
 	}
 
 	/**
@@ -93,17 +96,54 @@ public class TarefaController {
 
 	@Logado
 	@Post("teste/salvar/tarefa")
-	public void salvarTarefa(Tarefa tarefa) {
+	public void salvarTarefa(Tarefa tarefa,Long idTeste) {
 		validator.validate(tarefa);
 		validator.onErrorRedirectTo(this).criarTarefa(
-				usuarioLogado.getTeste().getId(), tarefa);
-		Teste teste = usuarioLogado.getTeste();
+				idTeste, tarefa);
+		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
+		Teste teste = testeView.getTeste();
 		tarefa.setTeste(teste);
 		tarefaRepository.create(tarefa);
 		result.redirectTo(TesteController.class).passo2(
-				usuarioLogado.getTeste().getId());
+				testeView.getTeste().getId());
 	}
 
+	/**
+	 * Utilizado para alterar Tarefa
+	 * 
+	 * @param idTeste
+	 *            Procupar por teste com identificador
+	 * @param tarefa
+	 *            Tarefa a ser alterada
+	 *
+	 * @param isErro
+	 *            True para verificar se esta vindo de uma tentativa de alterar
+	 *            e ocorreu erro, neste caso não necessita pegar do banco e
+	 *            tambem ele tem que retorna a pergunta do modo que foi
+	 *            alterada.
+	 * @return
+	 */
+	@Logado
+	@Get()
+	@Path(value = "teste/{idTeste}/editar/passo2/editar/{tarefa.id}/tarefa")
+	public Tarefa editarTarefa(Long idTeste, Tarefa tarefa, boolean isErro) {
+		Teste teste= new Teste();
+		teste.setId(idTeste);
+		testeView.setTeste(teste);
+		if (idTeste != null && tarefa.getId() != null) {
+			if (isErro) {
+//				testeView.setTeste(.setId(idTeste));
+				System.out.println("isERRO");
+				return tarefa;
+			}
+			return this.tarefaPertenceTeste(idTeste, tarefa.getId());
+		} else {
+			result.notFound();
+			return null;
+		}
+	}
+
+	
 	/**
 	 * Pagina para editar Tarefa, se idTeste e TarefaId foor igual a null
 	 * redireciona para página 404
@@ -115,40 +155,12 @@ public class TarefaController {
 	 * @return
 	 */
 	@Logado
-	@Get()
-	@Path(value = "teste/{idTeste}/editar/passo2/editar/{tarefa.id}/tarefa")
-	public Tarefa editarTarefa(Long idTeste, Tarefa tarefa, boolean isErro) {
-		if (idTeste != null && tarefa.getId() != null) {
-			if (isErro) {
-				return tarefa;
-			}
-			return this.tarefaPertenceTeste(idTeste, tarefa.getId());
-		} else {
-			result.notFound();
-			return null;
-		}
-	}
-
-	/**
-	 * Utilizado para alterar Tarefa
-	 * 
-	 * @param idTeste
-	 *            Procupar por teste com identificador
-	 * @param tarefa
-	 *            Tarefa a ser alterada
-	 * @param isErro
-	 *            True para verificar se esta vindo de uma tentativa de alterar
-	 *            e ocorreu erro, neste caso não necessita pegar do banco e
-	 *            tambem ele tem que retorna a pergunta do modo que foi
-	 *            alterada.
-	 * @return
-	 */
-	@Logado
 	@Post("teste/tarefa/atualizar")
-	public void updateTarefa(Tarefa tarefa) {
+	public void updateTarefa(Tarefa tarefa,Long idTeste) {
 		validator.validate(tarefa);
 		validator.onErrorRedirectTo(this).editarTarefa(
-				usuarioLogado.getTeste().getId(), tarefa, true);
+				idTeste, tarefa, true);
+		this.tarefaPertenceTesteNaoRealizado(tarefa.getId(),idTeste);
 		Tarefa tarefaUpdate = tarefaRepository.find(tarefa.getId());
 		tarefaUpdate.setRoteiro(tarefa.getRoteiro());
 		tarefaUpdate.setNome(tarefa.getNome());
@@ -157,8 +169,7 @@ public class TarefaController {
 			tarefaUpdate.setUrlInicial(tarefa.getUrlInicial());
 		}
 		tarefaRepository.update(tarefaUpdate);
-		result.redirectTo(TesteController.class).passo2(
-				usuarioLogado.getTeste().getId());
+		result.redirectTo(TesteController.class).passo2(idTeste);
 
 	}
 
@@ -170,12 +181,12 @@ public class TarefaController {
 	 */
 	@Logado
 	@Post("teste/removed/tarefa")
-	public void removed(Long idTarefa) {
+	public void removed(Long idTarefa, Long idTeste) {
 		if (idTarefa != null) {
-			Tarefa tarefa = this.tarefaPertenceTesteNaoRealizado(idTarefa);
+			Tarefa tarefa = this.tarefaPertenceTesteNaoRealizado(idTarefa,idTeste);
 			tarefaRepository.destroy(tarefa);
 			result.redirectTo(TesteController.class).passo2(
-					usuarioLogado.getTeste().getId());
+					idTeste);
 		} else {
 			result.notFound();
 		}
@@ -274,7 +285,7 @@ public class TarefaController {
 	@Get()
 	public TarefaDetalhe loadtasktester(Long idTarefa) {
 		System.out.println("Action: loadTaskTester");
-		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
+		Tarefa tarefa = tarefaPertenceTeste(testeSession.getTeste().getId(),
 				idTarefa);
 		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
 		
@@ -303,7 +314,7 @@ public class TarefaController {
 	@Get()
 	public String loadactiontester(Long idTarefa) {
 		System.out.println("loadActionTester");
-		Tarefa tarefa = tarefaPertenceTeste(usuarioLogado.getTeste().getId(),
+		Tarefa tarefa = tarefaPertenceTeste(testeSession.getTeste().getId(),
 				idTarefa);
 
 		String url = request.getParameter("url");
@@ -341,7 +352,7 @@ public class TarefaController {
 		if (idTarefa == 0) {
 			System.out.println("Tarefa igual a zero");
 			Convidado convidado = new Convidado(new UsuarioTestePK(
-					usuarioLogado.getUsuario(), usuarioLogado.getTeste()));
+					usuarioLogado.getUsuario(), testeSession.getTeste()));
 			convidado.setRealizou(true);
 			convidadoRepository.update(convidado);
 			
@@ -373,7 +384,7 @@ public class TarefaController {
 		Long idTarefa = fluxoTarefa.getVez();
 		if (idTarefa == 0) {
 			Convidado convidado = new Convidado(new UsuarioTestePK(
-					usuarioLogado.getUsuario(), usuarioLogado.getTeste()));
+					usuarioLogado.getUsuario(), testeSession.getTeste()));
 			convidado.setRealizou(true);
 			convidadoRepository.update(convidado);
 			result.redirectTo(LoginController.class).logado();
@@ -410,7 +421,7 @@ public class TarefaController {
 
 	private void gravaFluxoIdeal(Long tarefaId) {
 		System.out.println("Grava Fluxo IDEAL");
-		Long idTeste = usuarioLogado.getTeste().getId();
+		Long idTeste = testeSession.getTeste().getId();
 		
 		Tarefa tarefa = this.tarefaPertenceTeste(idTeste, tarefaId);
 
@@ -458,7 +469,7 @@ public class TarefaController {
 		Teste teste = testeRepository.getTestCriadoNaoLiberado(usuarioLogado
 				.getUsuario().getId(), idTeste);
 		if (teste != null) {
-			usuarioLogado.setTeste(teste);
+			testeView.setTeste(teste);
 		} else {
 			result.notFound();
 		}
@@ -471,9 +482,9 @@ public class TarefaController {
 	 * @param tarefaId
 	 * @return
 	 */
-	private Tarefa tarefaPertenceTesteNaoRealizado(Long tarefaId) {
+	private Tarefa tarefaPertenceTesteNaoRealizado(Long tarefaId,Long idTeste) {
 		Tarefa tarefaRetorno = tarefaRepository.perteceTesteNaoRealizado(
-				tarefaId, usuarioLogado.getTeste().getId(), usuarioLogado
+				tarefaId, idTeste, usuarioLogado
 						.getUsuario().getId());
 		if (tarefaRetorno == null) {
 			result.notFound();

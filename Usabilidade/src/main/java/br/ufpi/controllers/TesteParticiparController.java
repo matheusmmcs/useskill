@@ -1,7 +1,5 @@
 package br.ufpi.controllers;
 
-import java.util.List;
-
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
@@ -10,12 +8,12 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.SessionFluxoTarefa;
+import br.ufpi.componets.TesteSession;
+import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Convidado;
-import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.ConvidadoRepository;
-import br.ufpi.repositories.TesteRepository;
 
 /**
  * @author Cleiton
@@ -23,23 +21,20 @@ import br.ufpi.repositories.TesteRepository;
  */
 @Path(value = "teste/participar")
 @Resource
-public class TesteParticiparController {
-	private final Result result;
-	private UsuarioLogado usuarioLogado;
-	private final Validator validator;
+public class TesteParticiparController extends BaseController{
 	private final ConvidadoRepository convidadoRepository;
 	private final SessionFluxoTarefa fluxoTarefa;
+	private final TesteSession testeSession;
 
-	public TesteParticiparController(Result result,
-			UsuarioLogado usuarioLogado, Validator validator,
+	
+	public TesteParticiparController(Result result, Validator validator,
+			TesteView testeView, UsuarioLogado usuarioLogado,
 			ConvidadoRepository convidadoRepository,
-			SessionFluxoTarefa fluxoTarefa) {
-		super();
-		this.result = result;
-		this.usuarioLogado = usuarioLogado;
-		this.validator = validator;
+			SessionFluxoTarefa fluxoTarefa, TesteSession testeSession) {
+		super(result, validator, testeView, usuarioLogado);
 		this.convidadoRepository = convidadoRepository;
 		this.fluxoTarefa = fluxoTarefa;
+		this.testeSession = testeSession;
 	}
 
 	@Logado
@@ -59,7 +54,7 @@ public class TesteParticiparController {
 	@Post
 	public void aceitar(Long testeId) {
 		usuarioConvidado(testeId);
-		Teste teste = usuarioLogado.getTeste();
+		Teste teste = testeSession.getTeste();
 		fluxoTarefa.criarLista(teste);
 		}
 
@@ -75,7 +70,7 @@ public class TesteParticiparController {
 			Teste testeConvidado = convidadoRepository.getTesteConvidado(
 					testeId, usuarioLogado.getUsuario().getId());
 			if (testeConvidado != null) {
-				usuarioLogado.setTeste(testeConvidado);
+				testeSession.setTeste(testeConvidado);
 			} else {
 				result.notFound();
 			}

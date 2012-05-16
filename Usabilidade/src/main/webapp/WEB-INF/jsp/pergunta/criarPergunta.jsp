@@ -3,10 +3,10 @@
         <a href="${pageContext.request.contextPath}/usuario">Início</a> <span class="divider">/</span>
     </li>
     <li>
-        <a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo1">Editar Teste - Passo 1</a> <span class="divider">/</span>
+        <a href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo1">Editar Teste - Passo 1</a> <span class="divider">/</span>
     </li>
     <li>
-        <a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo2">Passo 2</a> <span class="divider">/</span>
+        <a href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo2">Passo 2</a> <span class="divider">/</span>
     </li>
     <li class="active">Inserir Pergunta</li>
 </ul>
@@ -19,7 +19,7 @@
     </div>
 </c:if>
 
-<form class="form-horizontal form-layout w600" action="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/salvar/pergunta" method="POST">
+<form class="form-horizontal form-layout w600" action="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/salvar/pergunta" method="POST">
     <fieldset>
         <legend>Inserir Pergunta</legend>
         <c:if test="${not empty pergunta.id}">

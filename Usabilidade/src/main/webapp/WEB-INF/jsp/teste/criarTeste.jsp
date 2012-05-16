@@ -24,7 +24,7 @@
         <div class="control-group">
             <label class="control-label" for="input01"><fmt:message key="teste.titulo"/>*</label>
             <div class="controls">
-                <input type="text" name="titulo" value="${usuarioLogado.teste.titulo}" id="teste_titulo" class="input-xlarge"/> 
+                <input type="text" name="titulo" value="${testeView.teste.titulo}" id="teste_titulo" class="input-xlarge"/> 
             </div>
         </div>
 

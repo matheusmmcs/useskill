@@ -14,7 +14,6 @@ import br.ufpi.models.Teste;
 @SessionScoped
 public class SessionFluxoTarefa {
 	private List<Long> tarefas;
-	private Long primeiraVez;
 
 	public List<Long> getTarefas() {
 		return tarefas;

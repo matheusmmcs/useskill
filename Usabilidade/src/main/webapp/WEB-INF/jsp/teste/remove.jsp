@@ -7,6 +7,7 @@
 <form action="${pageContext.request.contextPath}/teste/removed" method="post" id="form_delete">
     <input type="hidden" name="_method" value="delete"/>
     <input type="password" name="senha" value="${senha}" id="senha" />
+    <input type="hidden" name=idTeste value=${testeView.teste.id }>
     <input type="submit" value="Confirmar"/>
 </form>
 <script type="text/javascript">

@@ -11,6 +11,7 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.annotation.Logado;
+import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
@@ -19,22 +20,18 @@ import br.ufpi.util.Criptografa;
 import br.ufpi.util.EmailUtils;
 
 @Resource
-public class LoginController {
+public class LoginController extends BaseController {
 
-	private final Result result;
+
 	private final UsuarioRepository usuarioRepository;
-	private UsuarioLogado usuarioLogado;
-	private final Validator validator;
 	private final HttpServletRequest request;
 
-	public LoginController(Result result, UsuarioRepository usuarioRepository,
-			UsuarioLogado usuarioLogado, Validator validator,
-			HttpServletRequest request) {
-		super();
-		this.result = result;
+
+	public LoginController(Result result, Validator validator,
+			TesteView testeView, UsuarioLogado usuarioLogado,
+			UsuarioRepository usuarioRepository, HttpServletRequest request) {
+		super(result, validator, testeView, usuarioLogado);
 		this.usuarioRepository = usuarioRepository;
-		this.usuarioLogado = usuarioLogado;
-		this.validator = validator;
 		this.request = request;
 	}
 
@@ -66,7 +63,7 @@ public class LoginController {
 		if (usuario != null) {
 			if (usuario.isEmailConfirmado()) {
 				usuarioLogado.setUsuario(usuario);
-				usuarioLogado.setTeste(null);
+//				usuarioLogado.setTeste(null);
 				result.redirectTo(this).logado();
 			} else {
 				result.forwardTo(this).reenviaEmailConfirmacao(

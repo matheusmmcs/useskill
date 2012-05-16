@@ -37,16 +37,16 @@ public class UsuarioLogado {
        @PreDestroy
 	public void logout() {
 		usuario = null;
-		setTeste(null);
+//		setTeste(null);
 	}
 
-	public Teste getTeste() {
-		return teste;
-	}
-
-	public void setTeste(Teste teste) {
-		this.teste = teste;
-	}
+//	public Teste getTeste() {
+//		return teste;
+//	}
+//
+//	public void setTeste(Teste teste) {
+//		this.teste = teste;
+//	}
 	
 
 }

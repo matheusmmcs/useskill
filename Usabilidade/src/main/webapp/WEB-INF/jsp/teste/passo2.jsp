@@ -3,7 +3,7 @@
         <a href="${pageContext.request.contextPath}/usuario"><fmt:message key="inicio" /></a> <span class="divider">/</span>
     </li>
     <li>
-        <a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo1">Editar Teste - Passo 1</a> <span class="divider">/</span>
+        <a href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo1">Editar Teste - Passo 1</a> <span class="divider">/</span>
     </li>
     <li class="active">Passo 2</li>
 </ul>
@@ -18,10 +18,10 @@
 
 <div class="span10 offset1">
     <ul class="nav nav-tabs" style="margin: 0 auto; width: 97%">
-        <li><a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo1">Passo1</a></li>
-        <li class="active"><a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo2">Passo2</a></li>
-        <li><a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo3">Passo3</a></li>
-        <li><a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo4">Passo4</a></li>
+        <li><a href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo1">Passo1</a></li>
+        <li class="active"><a href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo2">Passo2</a></li>
+        <li><a href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo3">Passo3</a></li>
+        <li><a href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo4">Passo4</a></li>
     </ul>
     <div class="form-horizontal form-layout">
         <c:if test="${not empty usuario.id}">
@@ -30,8 +30,8 @@
         </c:if>
         <div class="row show-grid">
             <div class="span4" style="margin: 10px 0px 0px 520px">
-                <a class="btn btn-primary" href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/criar/tarefa" style="padding: 4px 10px; margin-left: 35px">Inserir Tarefa</a> 
-                <a class="btn btn-primary" href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/criar/pergunta" style="margin-left: 5px">Inserir Pergunta</a>
+                <a class="btn btn-primary" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/criar/tarefa" style="padding: 4px 10px; margin-left: 35px">Inserir Tarefa</a> 
+                <a class="btn btn-primary" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/criar/pergunta" style="margin-left: 5px">Inserir Pergunta</a>
             </div>
         </div>
         <fieldset style="width: 750px; margin: -30px auto 0 auto">
@@ -57,7 +57,7 @@
                                 <c:forEach items="${tarefas}" var="tarefa">
                                     <tr>
                                         <td>
-                                            <a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">${tarefa.nome}</a>
+                                            <a href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">${tarefa.nome}</a>
                                         </td>
                                         <td width="100">
                                             <c:if test="${tarefa.fluxoIdealPreenchido == false}">
@@ -74,7 +74,7 @@
                                             </c:if>
                                         </td>
                                         <td width="100">
-                                            <a class="btn"  href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa" style="margin-left: 10px"><span class="icon-pencil"></span> <fmt:message key="editar" /></a>
+                                            <a class="btn"  href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa" style="margin-left: 10px"><span class="icon-pencil"></span> <fmt:message key="editar" /></a>
                                         </td>
                                         <td width="100">
                                             <form action="${pageContext.request.contextPath}/teste/removed/tarefa" method="post">
@@ -109,17 +109,17 @@
                                 <c:forEach items="${perguntas}" var="pergunta">
                                     <tr>
                                         <td>
-                                            <a href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta">${pergunta.titulo}</a>
+                                            <a href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta">${pergunta.titulo}</a>
                                         </td>
                                         <td width="100">
-                                            <a class="btn" href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta"><span class="icon-pencil"></span> Editar</a>
+                                            <a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta"><span class="icon-pencil"></span> Editar</a>
                                         </td>
                                         <td width="100">
                                             <form
                                                 action="${pageContext.request.contextPath}/teste/duplicar/pergunta"
                                                 method="post">
                                                 <input class="btn" type="submit" value="Duplicar"> 
-                                                <input type="hidden" name="testeId" value="${usuarioLogado.teste.id }"> 
+                                                <input type="hidden" name="testeId" value="${testeView.teste.id }"> 
                                                 <input type="hidden" name="perguntaId" value="${pergunta.id}" />
                                             </form>
                                         </td>
@@ -128,7 +128,7 @@
                                                 action="${pageContext.request.contextPath}/teste/apagar/pergunta"
                                                 method="post">
                                                 <input class="btn" type="submit" value="Deletar"> 
-                                                <input type="hidden" name="testeId" value="${usuarioLogado.teste.id }"> 
+                                                <input type="hidden" name="testeId" value="${testeView.teste.id }"> 
                                                 <input type="hidden" name="perguntaId" value="${pergunta.id}" />
                                             </form>
                                         </td>
@@ -141,7 +141,7 @@
             </div>
         </fieldset>        
         <div class="form-actions">
-            <form id="teste_passo1" action="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id }/editar/passo3" method="get">
+            <form id="teste_passo1" action="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo3" method="get">
                 <input type="submit" value="<fmt:message key="salvar.continuar" />" title="Próximo passo" class="btn btn-primary" style="float: right; width: 120px"/>
             </form>
         </div>
