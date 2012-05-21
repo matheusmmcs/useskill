@@ -10,24 +10,23 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.validator.constraints.NotBlank;
 
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.Criptografa;
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import org.hibernate.annotations.CollectionOfElements;
 
 /**
  * 

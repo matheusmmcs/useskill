@@ -61,14 +61,16 @@
                                         </td>
                                         <td width="100">
                                             <c:if test="${tarefa.fluxoIdealPreenchido == false}">
-                                                <form action="${pageContext.request.contextPath}/tarefa/loadtasktester" method="get">
+                                                <form action="${pageContext.request.contextPath}/tarefa/gravar" method="post">
                                                     <input type="hidden" value="${tarefa.id }" name="idTarefa">
+                                                    <input type="hidden" value="${testeView.teste.id}" name="idTeste">
                                                     <input class="btn"  type="submit" value="<fmt:message key="gravar" />" style="margin-left: 20px">
                                                 </form>
                                             </c:if> 
                                             <c:if test="${tarefa.fluxoIdealPreenchido == true}">
-                                               <form action="${pageContext.request.contextPath}/tarefa/loadtasktester" method="get">
+                                               <form action="${pageContext.request.contextPath}/tarefa/gravar" method="post">
                                                     <input type="hidden" value="${tarefa.id }" name="idTarefa">
+                                                    <input type="hidden" value="${testeView.teste.id}" name="idTeste">
                                                     <input class="btn"  type="submit" value="<fmt:message key="editarFluxo" />" style="margin-left: 20px">
                                                 </form>
                                             </c:if>
@@ -142,7 +144,7 @@
         </fieldset>        
         <div class="form-actions">
             <form id="teste_passo1" action="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo3" method="get">
-                <input type="submit" value="<fmt:message key="salvar.continuar" />" title="Próximo passo" class="btn btn-primary" style="float: right; width: 120px"/>
+                <input type="submit" value="<fmt:message key="salvar.continuar" />" title="PrÃ³ximo passo" class="btn btn-primary" style="float: right; width: 120px"/>
             </form>
         </div>
     </div>

@@ -4,8 +4,6 @@ import java.util.List;
 
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
-import br.ufpi.models.Teste;
-import br.ufpi.models.Usuario;
 
 public interface PerguntaRepository {
 	void create(Pergunta entity);

@@ -32,7 +32,7 @@
 	<div>
 		<div class="direita">
 			<a class="btn btn-success concluir" id="concluir12qz3"
-				href="${pageContext.request.contextPath}/teste/${usuarioLogado.teste.id}/editar/passo2"><span
+				href="${pageContext.request.contextPath}/teste/${testeSession.teste.id}/editar/passo2"><span
 				class="icon-ok"></span> <fmt:message key="concluirTarefa" /> </a>
 		</div>
 		<div class="centro">

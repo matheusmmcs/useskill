@@ -1,6 +1,5 @@
 package br.ufpi.repositories;
 
-import br.ufpi.models.Teste;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;

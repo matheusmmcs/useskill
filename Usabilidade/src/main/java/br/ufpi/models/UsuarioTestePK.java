@@ -2,13 +2,16 @@ package br.ufpi.models;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 @Embeddable
 public class UsuarioTestePK implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Usuario participante;
 	@ManyToOne(fetch = FetchType.LAZY)

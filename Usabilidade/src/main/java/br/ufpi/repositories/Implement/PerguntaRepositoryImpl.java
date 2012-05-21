@@ -7,8 +7,6 @@ import javax.persistence.Query;
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
-import br.ufpi.models.Teste;
-import br.ufpi.models.Usuario;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.Repository;
 

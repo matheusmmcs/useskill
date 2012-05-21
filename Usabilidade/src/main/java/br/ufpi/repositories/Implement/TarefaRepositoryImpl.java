@@ -1,14 +1,13 @@
 package br.ufpi.repositories.Implement;
 
-import br.com.caelum.vraptor.ioc.Component;
-import br.ufpi.models.Tarefa;
-import br.ufpi.models.Teste;
-import br.ufpi.repositories.Repository;
-import br.ufpi.repositories.TarefaRepository;
-
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+
+import br.com.caelum.vraptor.ioc.Component;
+import br.ufpi.models.Tarefa;
+import br.ufpi.repositories.Repository;
+import br.ufpi.repositories.TarefaRepository;
 
 @Component
 public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements

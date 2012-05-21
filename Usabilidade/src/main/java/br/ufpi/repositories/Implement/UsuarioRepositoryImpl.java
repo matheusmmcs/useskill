@@ -3,6 +3,7 @@ package br.ufpi.repositories.Implement;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import br.com.caelum.vraptor.ioc.Component;
@@ -10,8 +11,6 @@ import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.Repository;
 import br.ufpi.repositories.UsuarioRepository;
-
-import javax.persistence.NoResultException;
 
 @Component
 public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
@@ -54,7 +53,8 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 		query.setParameter("usuarioCriador", usuario);
 		try {
 
-			return (List<Teste>) query.getResultList();
+			List<Teste> list = query.getResultList();
+			return list;
 		} catch (NoResultException e) {
 			return null;
 		}
