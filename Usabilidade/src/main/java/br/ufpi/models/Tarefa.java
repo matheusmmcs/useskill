@@ -125,7 +125,12 @@ public class Tarefa implements Serializable {
 	@Override
 	public String toString() {
 		return "Tarefa [id=" + id + ", nome=" + nome + ", roteiro=" + roteiro
-				+ "]";
+				+ ", impressoes=" + impressoes + ", fluxoIdeal=" + fluxoIdeal
+				+ ", fluxoUsuario=" + fluxoUsuario + ", teste=" + teste
+				+ ", urlInicial=" + urlInicial + ", fluxoIdealPreenchido="
+				+ fluxoIdealPreenchido + "]";
 	}
+
+
 
 }

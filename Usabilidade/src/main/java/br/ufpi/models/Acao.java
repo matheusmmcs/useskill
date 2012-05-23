@@ -151,13 +151,23 @@ public class Acao implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Acao [id=" + id + ", fluxo=" + fluxo + ", tipoAcao=" + tipoAcao
+		/*
+		return "Acao [id=" + id + ", tipoAcao=" + tipoAcao
 				+ ", tempo=" + tempo + ", url=" + url + ", conteudo="
 				+ conteudo + ", tag=" + tag + ", tagId=" + tagId
 				+ ", tagClass=" + tagClass + ", tagName=" + tagName
 				+ ", tagValue=" + tagValue + ", posicaoPaginaY="
 				+ posicaoPaginaY + ", posicaoPaginaX=" + posicaoPaginaX
-				+ ", tagType=" + tagType + "]";
+				+ ", tagType=" + tagType + "]"+"<br/>";
+		 */
+		
+		return "<tr><td>" + id + "</td><td>" + tipoAcao
+				+ "</td><td>" + tempo + "</td><td>" + url.substring(url.length()-20) + "</td><td>"
+				+ conteudo.substring(conteudo.length()-20) + "</td><td>" + tag + "</td><td>" + tagId
+				+ "</td><td>" + tagClass + "</td><td>" + tagName
+				+ "</td><td>" + tagValue + "</td><td>"
+				+ posicaoPaginaY + "</td><td>" + posicaoPaginaX
+				+ "</td><td>" + tagType + "</td></tr>";
 	}
     
 }

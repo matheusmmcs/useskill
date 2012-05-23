@@ -14,6 +14,8 @@ import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
+import br.ufpi.models.Acao;
+import br.ufpi.models.FluxoUsuario;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
@@ -151,6 +153,7 @@ public class TesteController extends BaseController {
 				.getUsuariosConvidadosAll(idTeste);
 		if (usuarios.isEmpty() || usuarios == null) {
 			validator.checking(new Validations() {
+
 				{
 					that(false, "nenhum.usuario.convidado",
 							"nenhum.usuario.convidado");
@@ -160,18 +163,21 @@ public class TesteController extends BaseController {
 		}
 
 		List<Tarefa> tarefas = teste.getTarefas();
-		if (tarefas.isEmpty() || tarefas == null)
+		if (tarefas.isEmpty() || tarefas == null) {
 			validator.checking(new Validations() {
+
 				{
 					that(false, "sem.tarefa.cadastrada",
 							"sem.tarefa.cadastrada");
 				}
 			});
+		}
 
 		for (Tarefa tarefa : tarefas) {
 			if (!tarefa.isFluxoIdealPreenchido()) {
 				final Tarefa tarefaAux = tarefa;
 				validator.checking(new Validations() {
+
 					{
 						that(false, "tarefa.sem.fluxo.ideal",
 								"tarefa.sem.fluxo.ideal", tarefaAux.getNome());
@@ -204,13 +210,13 @@ public class TesteController extends BaseController {
 		if (idUsuarios != null && idTeste != null) {
 			this.testePertenceUsuarioLogado(idTeste);
 			convidadoRepository.convidarUsuarios(idUsuarios, idTeste);
-			if (!testeView.getTeste().isLiberado())
+			if (!testeView.getTeste().isLiberado()) {
 				result.redirectTo(this).passo3(testeView.getTeste().getId());
-			else {
+			} else {
 				result.redirectTo(this).convidar(testeView.getTeste().getId());
 			}
 		}
-		if(idUsuarios==null){
+		if (idUsuarios == null) {
 			result.redirectTo(this).passo3(idTeste);
 		}
 
@@ -229,18 +235,18 @@ public class TesteController extends BaseController {
 	@Logado
 	@Post("teste/desconvidar/usuario")
 	public void desconvidarUsuario(List<Long> idUsuarios, Long idTeste) {
-		
+
 		if (idUsuarios != null && idTeste != null) {
 			testePertenceUsuarioLogado(idTeste);
 			convidadoRepository.desconvidarUsuarios(idUsuarios, testeView
 					.getTeste().getId());
-			if (!testeView.getTeste().isLiberado())
+			if (!testeView.getTeste().isLiberado()) {
 				result.redirectTo(this).passo3(testeView.getTeste().getId());
-			else {
+			} else {
 				result.redirectTo(this).convidar(testeView.getTeste().getId());
 			}
 		}
-		if(idUsuarios==null){
+		if (idUsuarios == null) {
 			result.redirectTo(this).passo3(idTeste);
 		}
 
@@ -280,12 +286,11 @@ public class TesteController extends BaseController {
 	 * 
 	 */
 	private void testePertenceUsuarioLogado(Long idTeste) {
-		System.out.println("TESTE Pertence "+ idTeste);
 		if (idTeste != null) {
 			Teste teste = testeRepository.getTestCriado(usuarioLogado
 					.getUsuario().getId(), idTeste);
 			if (teste != null) {
-				System.out.println( teste);
+				System.out.println(teste);
 				testeView.setTeste(teste);
 			} else {
 				result.notFound();
@@ -303,9 +308,10 @@ public class TesteController extends BaseController {
 
 	@Delete()
 	@Logado
-	public void removed(final String senha,Long idTeste) {
+	public void removed(final String senha, Long idTeste) {
 		// TODO passar o id do teste e verificar se ele pertence ao usuario
 		validator.checking(new Validations() {
+
 			{
 				that(!senha.isEmpty(), "campo.obrigatorio",
 						"campo.obrigatorio", "senha");
@@ -314,7 +320,7 @@ public class TesteController extends BaseController {
 		validator.onErrorRedirectTo(this).remove(idTeste);
 		String senhaCriptografada = Criptografa.criptografar(senha);
 		if (senhaCriptografada.equals(usuarioLogado.getUsuario().getSenha())) {
-			System.out.println("IDTESTE"+idTeste);
+			System.out.println("IDTESTE" + idTeste);
 			this.testePertenceUsuarioLogado(idTeste);
 			testeRepository.destroy(testeView.getTeste());
 			result.redirectTo(LoginController.class).logado();
@@ -345,10 +351,11 @@ public class TesteController extends BaseController {
 	 *            true para testes liberados e false para testes não liberados
 	 */
 	private void addUsers(Long idTeste, boolean liberado) {
-		if (liberado)
+		if (liberado) {
 			this.testePertenceUsuarioLogado(idTeste);
-		else
+		} else {
 			this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
+		}
 		if (!liberado) {
 			Paginacao<Usuario> usuariosConvidados = testeRepository
 					.getUsuariosConvidados(idTeste, 1, 50);
@@ -380,4 +387,34 @@ public class TesteController extends BaseController {
 		result.include("testesParticipadosCount", testesParticipados.getCount());
 	}
 
+	@Get("exibir/{idTeste}")
+	public StringBuilder exibir(Long idTeste ) {
+		StringBuilder builder= new StringBuilder();
+		Teste teste = this.testeRepository.find(idTeste);
+		for (Tarefa tarefa : teste.getTarefas()) {
+			List<Acao> acoes = tarefa.getFluxoIdeal().getAcoes();
+			
+			//builder.append("-------------------------Fluxo PRINCIPAL------------------<br/>");
+			builder.append(acoes);
+			//builder.append("--------------------------Fluxo USUARIO--------------------<br/>");
+			int i= 0;
+			for (FluxoUsuario fluxo : tarefa.getFluxoUsuario()) {
+			//builder.append("Fluxo de Numero ");	
+			//builder.append(i++);
+			builder.append(fluxo.getAcoes());
+			}
+		}
+	return builder;	
+
+	}
+
+	@Get("exibir2")
+	public void exibir2() {
+		Teste teste = this.testeRepository.find(1l);
+		for (Tarefa tarefa : teste.getTarefas()) {
+			List<Acao> acoes = tarefa.getFluxoIdeal().getAcoes();
+			
+			System.out.println(acoes);
+		}
+	}
 }

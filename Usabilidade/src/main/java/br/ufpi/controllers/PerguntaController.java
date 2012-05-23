@@ -60,7 +60,6 @@ public class PerguntaController {
 		return this.perguntaPertenceUsuario(pergunta.getId(), testeId);
 	}
 
-	// alterando apenas o id
 	@Logado
 	@Post("teste/duplicar/pergunta")
 	public void duplicar(Long testeId, Long perguntaId) {

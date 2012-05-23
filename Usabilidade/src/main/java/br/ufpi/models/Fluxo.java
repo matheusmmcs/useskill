@@ -76,5 +76,11 @@ public class Fluxo implements Serializable {
         this.usuario = usuario;
     }
 
+	@Override
+	public String toString() {
+		return "Fluxo [id=" + id + ", dataInicio=" + dataInicio + ", dataFim="
+				+ dataFim + "]";
+	}
+
     
 }

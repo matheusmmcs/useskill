@@ -49,7 +49,7 @@ public class Pergunta implements Serializable {
 	private List<RespostaAlternativa> respostaAlternativas;
 	@OneToMany(mappedBy = "pergunta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<RespostaEscrita> respostaEscritas;
-
+	private boolean responderFim;
 	public Long getId() {
 		return id;
 	}
@@ -113,6 +113,14 @@ public class Pergunta implements Serializable {
 
 	public void setTitulo(String titulo) {
 		this.titulo = titulo;
+	}
+
+	public boolean isResponderFim() {
+		return responderFim;
+	}
+
+	public void setResponderFim(boolean responderFim) {
+		this.responderFim = responderFim;
 	}
 
 	public Pergunta clone() {
