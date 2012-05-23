@@ -43,21 +43,52 @@
 					class="input-xmlarge">${pergunta.texto}</textarea>
 			</div>
 		</div>
+
+		<div class="control-group">
+			<label class="control-label">Selecione</label>
+			<div class="controls">
+				<label class="radio" style="margin-top: -0px;"> <input
+					type="radio" name="pergunta.responderFim"
+					value="${pergunta.responderFim}"
+					<c:if test="${pergunta.responderFim== true}" >
+               checked
+                    </c:if> />
+					<fmt:message key="pergunta.responderFim" />
+				</label> <label class="radio" style="margin-top: -0px;"> <input
+					type="radio" name="pergunta.responderFim"
+					value="${pergunta.responderFim}"
+					<c:if test="${pergunta.responderFim== false}" >
+                 checked
+                    </c:if> />
+					<fmt:message key="pergunta.responderInicio" />
+				</label>
+			</div>
+		</div>
+
+
 		<div class="control-group">
 			<label class="control-label">Selecione</label>
 			<div class="controls">
 				<label class="radio" style="margin-top: -30px;"> <input
-					type="radio" name="pergunta.tipoRespostaAlternativa" value="true" />
+					type="radio" name="pergunta.tipoRespostaAlternativa" value="true"
+					<c:if test="${pergunta.tipoRespostaAlternativa== true}" >
+               checked
+                    </c:if> />
+
 					<fmt:message key="pergunta.subjetiva" />
 				</label> <label class="radio"> <input type="radio"
-					name="pergunta.tipoRespostaAlternativa" value="false" /> <fmt:message
-						key="pergunta.objetiva" />
+					name="pergunta.tipoRespostaAlternativa" value="false"
+					<c:if test="${pergunta.tipoRespostaAlternativa== false}" >
+               checked
+                    </c:if> />
+					<fmt:message key="pergunta.objetiva" />
 				</label>
 			</div>
 		</div>
-		
+
+
 		<c:forEach items="${pergunta.alternativas}" var="alternativa">
-		<div class="alternativa-group">
+			<div class="alternativa-group">
 				<label class="control-label" for="input01"><fmt:message
 						key="pergunta.alternativa" />*</label>
 				<div class="controls">
@@ -67,7 +98,7 @@
 				</div>
 			</div>
 
-		
+
 		</c:forEach>
 
 		<div class="form-actions">

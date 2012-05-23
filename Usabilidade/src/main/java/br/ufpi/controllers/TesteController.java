@@ -393,14 +393,8 @@ public class TesteController extends BaseController {
 		Teste teste = this.testeRepository.find(idTeste);
 		for (Tarefa tarefa : teste.getTarefas()) {
 			List<Acao> acoes = tarefa.getFluxoIdeal().getAcoes();
-			
-			//builder.append("-------------------------Fluxo PRINCIPAL------------------<br/>");
 			builder.append(acoes);
-			//builder.append("--------------------------Fluxo USUARIO--------------------<br/>");
-			int i= 0;
 			for (FluxoUsuario fluxo : tarefa.getFluxoUsuario()) {
-			//builder.append("Fluxo de Numero ");	
-			//builder.append(i++);
 			builder.append(fluxo.getAcoes());
 			}
 		}
@@ -408,13 +402,4 @@ public class TesteController extends BaseController {
 
 	}
 
-	@Get("exibir2")
-	public void exibir2() {
-		Teste teste = this.testeRepository.find(1l);
-		for (Tarefa tarefa : teste.getTarefas()) {
-			List<Acao> acoes = tarefa.getFluxoIdeal().getAcoes();
-			
-			System.out.println(acoes);
-		}
-	}
 }

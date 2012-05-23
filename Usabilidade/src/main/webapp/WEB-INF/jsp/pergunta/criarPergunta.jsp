@@ -37,16 +37,34 @@
             <div class="controls">
                 <textarea rows="10" cols="" name="pergunta.texto" id="texto" class="input-xmlarge">${pergunta.texto}</textarea>
             </div>
-        </div>
+            
+            
+            	<div class="control-group">
+			<label class="control-label">Selecione</label>
+			<div class="controls">
+		  <label class="radio" style="margin-top: -0px;"> 
+                    <input type="radio" name="pergunta.responderFim" value="${pergunta.responderFim}" />
+                    <fmt:message key="pergunta.responderFim"/>
+                </label>
+              <label class="radio" style="margin-top: -0px;"> 
+                    <input type="radio" name="pergunta.responderFim" value="${pergunta.responderFim}" checked/>
+                    <fmt:message key="pergunta.responderInicio" />
+                </label>
+			</div>
+		</div>    
+      
+      
         <div class="control-group">
             <label class="control-label">Selecione</label>
             <div class="controls">
+             
+            
                 <label class="radio" style="margin-top: -30px;"> 
                     <input type="radio" name="pergunta.tipoRespostaAlternativa" value="true" />
                     <fmt:message key="pergunta.subjetiva"/>
                 </label>
                 <label class="radio">
-                    <input type="radio" name="pergunta.tipoRespostaAlternativa" value="false"/>                    
+                    <input type="radio" name="pergunta.tipoRespostaAlternativa" value="false" checked/>                    
                     <fmt:message key="pergunta.objetiva"/>
                 </label>
             </div>
