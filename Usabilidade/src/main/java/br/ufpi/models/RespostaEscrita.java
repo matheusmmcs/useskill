@@ -18,7 +18,7 @@ public class RespostaEscrita implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     private Pergunta pergunta;
     @Column(columnDefinition="TINYTEXT")
     private String resposta;

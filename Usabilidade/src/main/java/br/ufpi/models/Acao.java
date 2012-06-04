@@ -162,8 +162,8 @@ public class Acao implements Serializable {
 		 */
 		
 		return "<tr><td>" + id + "</td><td>" + tipoAcao
-				+ "</td><td>" + tempo + "</td><td>" + url.substring(url.length()-20) + "</td><td>"
-				+ conteudo.substring(conteudo.length()-20) + "</td><td>" + tag + "</td><td>" + tagId
+				+ "</td><td>" + tempo + "</td><td>" + url + "</td><td>"
+				+ conteudo + "</td><td>" + tag + "</td><td>" + tagId
 				+ "</td><td>" + tagClass + "</td><td>" + tagName
 				+ "</td><td>" + tagValue + "</td><td>"
 				+ posicaoPaginaY + "</td><td>" + posicaoPaginaX

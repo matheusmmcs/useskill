@@ -24,7 +24,8 @@ import javax.persistence.OneToMany;
  * @author Cleiton
  */
 @NamedQueries({
-		@NamedQuery(name = "Pergunta.pertence.teste.usuario", query = "select p from Pergunta as p left join p.questionario left join p.questionario.teste left join p.questionario.teste.usuarioCriador where p.questionario.teste.id= :teste and  p.questionario.teste.usuarioCriador.id= :usuario and p.id= :pergunta and p.questionario.teste.liberado=false"),
+		@NamedQuery(name = "Pergunta.pertence.teste.usuario", query = "select p from Pergunta as p left join p.questionario left join p.questionario.teste left join p.questionario.teste.usuarioCriador where p.questionario.teste.id= :teste and  p.questionario.teste.usuarioCriador.id= :usuario and p.id= :pergunta"),
+		@NamedQuery(name = "Pergunta.pertence.teste.usuario.Liberado", query = "select p from Pergunta as p left join p.questionario left join p.questionario.teste left join p.questionario.teste.usuarioCriador where p.questionario.teste.id= :teste and  p.questionario.teste.usuarioCriador.id= :usuario and p.id= :pergunta and p.questionario.teste.liberado= :liberado"),
 		@NamedQuery(name = "Pergunta.delete.Alternativas", query = "delete Alternativa  a where a.pergunta.id= :pergunta"),
 		@NamedQuery(name = "Pergunta.getQuestionario", query = "select p.questionario from Pergunta as p left join p.questionario as Questionario where p.id= :pergunta") })
 @Entity

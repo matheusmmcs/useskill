@@ -17,17 +17,18 @@ public interface PerguntaRepository {
 	List<Pergunta> findAll();
 
 	/**
-	 * Procura se uma perguunta pertence a um determinado Teste e a um
+	 * Procura se uma pergunta pertence a um determinado Teste e a um
 	 * determinado Usuario
 	 * 
 	 * @param usuario
 	 * @param teste
 	 * @param pergunta
+	 * @param testeLiberado indica se o teste esta liberado ou não
 	 * @return Pergunta se obedecer todos os pre-requisitos e null se não
 	 *         encontra a pergunta
 	 */
 	Pergunta perguntaPertenceUsuario(Long usuarioId, Long testeId,
-			Long perguntaId);
+			Long perguntaId,Boolean testeLiberado);
 
 	/**
 	 * @param pergunta

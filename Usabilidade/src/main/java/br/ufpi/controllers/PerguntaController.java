@@ -13,6 +13,7 @@ import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Teste;
+import br.ufpi.models.exceptions.PerguntaException;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.TesteRepository;
 
@@ -25,7 +26,6 @@ public class PerguntaController {
 	private final TesteRepository testeRepository;
 	private UsuarioLogado usuarioLogado;
 	private final Validator validator;
-
 
 	public PerguntaController(Result result, TesteView testeView,
 			PerguntaRepository perguntaRepository,
@@ -57,18 +57,24 @@ public class PerguntaController {
 	@Logado
 	@Get("teste/{testeId}/editar/passo2/editar/{pergunta.id}/pergunta")
 	public Pergunta editarPergunta(Long testeId, Pergunta pergunta) {
-		return this.perguntaPertenceUsuario(pergunta.getId(), testeId);
+		try {
+			return this.perguntaPertenceUsuario(pergunta.getId(), testeId,
+					false);
+		} catch (PerguntaException e) {
+			result.redirectTo(LoginController.class).logado();
+			return null;
+		}
 	}
 
-	@Logado
-	@Post("teste/duplicar/pergunta")
-	public void duplicar(Long testeId, Long perguntaId) {
-		Pergunta pergunta = perguntaPertenceUsuario(perguntaId, testeId);
-		Pergunta perguntaCopia = new Pergunta();
-		perguntaCopia.setId(null);
-		perguntaRepository.create(perguntaCopia);
-		result.redirectTo(TesteController.class).passo2(testeId);
-	}
+	// @Logado
+	// @Post("teste/duplicar/pergunta")
+	// public void duplicar(Long testeId, Long perguntaId) {
+	// Pergunta pergunta = perguntaPertenceUsuario(perguntaId, testeId);
+	// Pergunta perguntaCopia = new Pergunta();
+	// perguntaCopia.setId(null);
+	// perguntaRepository.create(perguntaCopia);
+	// result.redirectTo(TesteController.class).passo2(testeId);
+	// }
 
 	/**
 	 * 
@@ -122,7 +128,6 @@ public class PerguntaController {
 	public void atualizarPergunta(Long testeId, Pergunta pergunta) {
 		// TODO Resolver problema de Alternativas tem que deleta elas e criar de
 		// novo
-		
 		if (testeId != null) {
 			validator.validate(pergunta);
 			testeNaoLiberadoPertenceUsuarioLogado(testeId);
@@ -133,7 +138,12 @@ public class PerguntaController {
 				validator.onErrorRedirectTo(TesteController.class).passo2(
 						testeId);
 			}
-			perguntaPertenceUsuario(pergunta.getId(), testeId);
+			try {
+				perguntaPertenceUsuario(pergunta.getId(), testeId, false);
+			} catch (PerguntaException e) {
+				result.redirectTo(LoginController.class).logado();
+				return;
+			}
 			pergunta.setQuestionario(perguntaRepository
 					.findQuestionario(pergunta.getId()));
 			if (pergunta.getTipoRespostaAlternativa() == null) {
@@ -172,10 +182,35 @@ public class PerguntaController {
 	@Post("teste/apagar/pergunta")
 	public void deletarPergunta(Long testeId, Long perguntaId) {
 		if (testeId != null && perguntaId != null) {
-			Pergunta perguntaPertenceUsuario = perguntaPertenceUsuario(
-					perguntaId, testeId);
+			Pergunta perguntaPertenceUsuario = null;
+			try {
+				perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId,
+						testeId, false);
+			} catch (PerguntaException e) {
+				result.redirectTo(LoginController.class).logado();
+				return ;
+			}
 			perguntaRepository.destroy(perguntaPertenceUsuario);
 			result.redirectTo(TesteController.class).passo2(testeId);
+		} else {
+			result.notFound();
+		}
+	}
+
+	@Logado
+	@Get("analise/teste/{testeId}/pergunta/{perguntaId}")
+	public void exibirRespostas(Long testeId, Long perguntaId) {
+		if (testeId != null && perguntaId != null) {
+			Pergunta pergunta = null;
+
+			try {
+				pergunta = perguntaPertenceUsuario(perguntaId, testeId, null);
+			} catch (PerguntaException e) {
+				result.redirectTo(LoginController.class).logado();
+				return;
+			}
+			result.include("teste", pergunta.getQuestionario().getTeste());
+			result.include("pergunta", pergunta);
 		} else {
 			result.notFound();
 		}
@@ -186,14 +221,22 @@ public class PerguntaController {
 	 * 
 	 * @param idTeste
 	 * @param idPergunta
+	 * @param testeLiberado
+	 *            se null ele vai mostrar perguntas de teste liberado e não
+	 *            liberado
 	 * @return
+	 * @throws PerguntaException
+	 *             Gerado quando não enconta a pergunta
 	 */
-	private Pergunta perguntaPertenceUsuario(Long perguntaId, Long testeId) {
-		testeNaoLiberadoPertenceUsuarioLogado(testeId);
+	private Pergunta perguntaPertenceUsuario(Long perguntaId, Long testeId,
+			Boolean testeLiberado) throws PerguntaException {
+		// testeNaoLiberadoPertenceUsuarioLogado(testeId);
 		Pergunta perguntaUsuario = perguntaRepository.perguntaPertenceUsuario(
-				usuarioLogado.getUsuario().getId(), testeId, perguntaId);
-		if (perguntaUsuario == null)
-			result.notFound();
+				usuarioLogado.getUsuario().getId(), testeId, perguntaId,
+				testeLiberado);
+		if (perguntaUsuario == null) {
+			throw new PerguntaException();
+		}
 		return perguntaUsuario;
 
 	}

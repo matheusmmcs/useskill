@@ -20,12 +20,23 @@ public class PerguntaRepositoryImpl extends Repository<Pergunta, Long>
 
 	@Override
 	public Pergunta perguntaPertenceUsuario(Long usuarioId, Long testeId,
-			Long perguntaId) {
-				Query query = entityManager
-				.createNamedQuery("Pergunta.pertence.teste.usuario");
-		query.setParameter("teste", testeId);
-		query.setParameter("usuario", usuarioId);
-		query.setParameter("pergunta", perguntaId);
+			Long perguntaId, Boolean testeLiberado) {
+		Query query = null;
+		if (testeLiberado == null) {
+			query = entityManager
+					.createNamedQuery("Pergunta.pertence.teste.usuario");
+			query.setParameter("teste", testeId);
+			query.setParameter("usuario", usuarioId);
+			query.setParameter("pergunta", perguntaId);
+		}else{
+			query = entityManager
+					.createNamedQuery("Pergunta.pertence.teste.usuario.Liberado");
+			query.setParameter("teste", testeId);
+			query.setParameter("usuario", usuarioId);
+			query.setParameter("pergunta", perguntaId);
+			query.setParameter("liberado", testeLiberado);
+		}
+
 		try {
 			return (Pergunta) query.getSingleResult();
 		} catch (NoResultException nre) {
@@ -48,8 +59,7 @@ public class PerguntaRepositoryImpl extends Repository<Pergunta, Long>
 	@Override
 	public boolean deleteAlternativas(Long idPergunta) {
 		try {
-			 entityManager
-					.createNamedQuery("Pergunta.delete.Alternativas")
+			entityManager.createNamedQuery("Pergunta.delete.Alternativas")
 					.setParameter("pergunta", idPergunta).executeUpdate();
 
 		} catch (NoResultException e) {
