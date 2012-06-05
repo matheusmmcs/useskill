@@ -7,7 +7,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.ufpi.annotation.Logado;
-import br.ufpi.componets.SessionFluxoTarefa;
+import br.ufpi.componets.FluxoComponente;
 import br.ufpi.componets.TesteSession;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
@@ -21,19 +21,18 @@ import br.ufpi.repositories.ConvidadoRepository;
  */
 @Path(value = "teste/participar")
 @Resource
-public class TesteParticiparController extends BaseController{
+public class TesteParticiparController extends BaseController {
 	private final ConvidadoRepository convidadoRepository;
-	private final SessionFluxoTarefa fluxoTarefa;
+	private final FluxoComponente fluxo;
 	private final TesteSession testeSession;
 
-	
 	public TesteParticiparController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ConvidadoRepository convidadoRepository,
-			SessionFluxoTarefa fluxoTarefa, TesteSession testeSession) {
+			FluxoComponente fluxoTarefa, TesteSession testeSession) {
 		super(result, validator, testeView, usuarioLogado);
 		this.convidadoRepository = convidadoRepository;
-		this.fluxoTarefa = fluxoTarefa;
+		this.fluxo = fluxoTarefa;
 		this.testeSession = testeSession;
 	}
 
@@ -49,19 +48,21 @@ public class TesteParticiparController extends BaseController{
 
 	/**
 	 * O Usuario aceita o Teste
+	 * 
 	 * @param testeId
 	 */
 	@Post
+	@Logado
 	public void aceitar(Long testeId) {
 		usuarioConvidado(testeId);
 		Teste teste = testeSession.getTeste();
-		fluxoTarefa.criarLista(teste);
-		}
+		fluxo.criarLista(teste);
+	}
 
 	@Logado
 	@Get
 	public void termino() {
-	
+
 	}
 
 	private void usuarioConvidado(Long testeId) {
@@ -75,6 +76,15 @@ public class TesteParticiparController extends BaseController{
 				result.notFound();
 			}
 		}
+	}
+
+	@Logado
+	public void responder() {
+	
+		//incluir proximo
+		//incluir tbm o que é pra responder
+		
+
 	}
 
 }

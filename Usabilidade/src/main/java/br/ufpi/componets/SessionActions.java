@@ -20,7 +20,7 @@ import br.ufpi.models.Acao;
 @Component
 public class SessionActions {
 	/**
-	 * Lista de ações de um determinado Fluxo
+	 * Lista de ações de um determinado FluxoComponente
 	 */
 	private List<Acao> acoes;
 	/**

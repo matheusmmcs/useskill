@@ -3,7 +3,6 @@ package br.ufpi.analise;
 import java.util.HashMap;
 import java.util.List;
 
-import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoUsuario;
 import br.ufpi.models.Tarefa;
 

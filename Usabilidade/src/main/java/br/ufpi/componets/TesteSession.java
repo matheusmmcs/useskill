@@ -5,7 +5,11 @@ import br.com.caelum.vraptor.ioc.SessionScoped;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import javax.annotation.PreDestroy;
-
+/**
+ * Usado para armazenar o Teste e a Tarefa que esta sendo gravada para não ficar passando como parametro
+ * @author Cleiton
+ *
+ */
 @SessionScoped
 @Component
 public class TesteSession {

@@ -17,7 +17,7 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.SessionActions;
-import br.ufpi.componets.SessionFluxoTarefa;
+import br.ufpi.componets.FluxoComponente;
 import br.ufpi.componets.TesteSession;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
@@ -47,7 +47,7 @@ public class TarefaController extends BaseController {
 	private final FluxoUsuarioRepository fluxoUsuarioRepository;
 	private final ConvidadoRepository convidadoRepository;
 	private SessionActions actions;
-	private final SessionFluxoTarefa fluxoTarefa;
+	private final FluxoComponente fluxo;
 	private final HttpServletRequest request;
 	private final TesteSession testeSession;
 
@@ -56,7 +56,7 @@ public class TarefaController extends BaseController {
 			TarefaRepository tarefaRepository, TesteRepository testeRepository,
 			FluxoUsuarioRepository fluxoUsuarioRepository,
 			ConvidadoRepository convidadoRepository, SessionActions actions,
-			SessionFluxoTarefa fluxoTarefa, HttpServletRequest request,
+			FluxoComponente fluxo, HttpServletRequest request,
 			TesteSession testeSession) {
 		super(result, validator, testeView, usuarioLogado);
 		this.tarefaRepository = tarefaRepository;
@@ -64,7 +64,7 @@ public class TarefaController extends BaseController {
 		this.fluxoUsuarioRepository = fluxoUsuarioRepository;
 		this.convidadoRepository = convidadoRepository;
 		this.actions = actions;
-		this.fluxoTarefa = fluxoTarefa;
+		this.fluxo = fluxo;
 		this.request = request;
 		this.testeSession = testeSession;
 	}
@@ -235,8 +235,8 @@ public class TarefaController extends BaseController {
 			if (fluxoIdeal) {
 				gravaFluxoIdeal(tarefaId);
 			} else {
-				System.out.println("Salva Fluxo Usuario");
-				gravaFluxoUSuario(this.fluxoTarefa.getVez());
+				System.out.println("Salva FluxoComponente Usuario");
+				gravaFluxoUSuario(this.fluxo.getTarefaVez());
 
 			}
 			actions.destroy();
@@ -245,7 +245,7 @@ public class TarefaController extends BaseController {
 	}
 
 	/**
-	 * Grava o fluxo de usuario de uma determinada Tarefa. Destroy o Fluxo de
+	 * Grava o fluxo de usuario de uma determinada Tarefa. Destroy o FluxoComponente de
 	 * ações.
 	 * 
 	 * @param tarefaId
@@ -260,9 +260,9 @@ public class TarefaController extends BaseController {
 		}
 		fluxoUsuario.setAcoes(actions.getAcoes());
 		fluxoUsuarioRepository.create(fluxoUsuario);
-		fluxoTarefa.getProximo();
-		System.out.println("AGORA vez esta" + fluxoTarefa.getVez());
-		if (fluxoTarefa.getVez() == 0) {
+		fluxo.getProximaTarefa();
+		System.out.println("AGORA vez esta" + fluxo.getTarefaVez());
+		if (fluxo.getTarefaVez() == 0) {
 			System.out
 					.println("Tarefa = 0 -> redirecionar para teste/participar/termino");
 			result.redirectTo(TesteParticiparController.class).termino();
@@ -352,14 +352,14 @@ public class TarefaController extends BaseController {
 	}
 
 	 /**
-	  * Metodo que carrega uma página para realizar a tarefa. Nest pagina, possui um iframe onde são testadas as ações do USUARIO. O id da tarefa é recebido a partir da sessão SessionFluxo
+	  * Metodo que carrega uma página para realizar a tarefa. Nest pagina, possui um iframe onde são testadas as ações do USUARIO. O id da tarefa é recebido a partir da sessão FluxoComponente
 	  * @return
 	  */
 	@Logado
 	@Get()
 	public TarefaDetalhe loadtaskuser() {
 		System.out.println("Action: loadTaskUser");
-		Long idTarefa = fluxoTarefa.getVez();
+		Long idTarefa = fluxo.getTarefaVez();
 		System.out.println(idTarefa + "Tarefa na vez");
 		if (idTarefa == 0) {
 			System.out.println("Tarefa igual a zero");
@@ -397,7 +397,7 @@ public class TarefaController extends BaseController {
 	@Get
 	public String loadactionuser() {
 		System.out.println("loadActionUser ");
-		Long idTarefa = fluxoTarefa.getVez();
+		Long idTarefa = fluxo.getTarefaVez();
 		if (idTarefa == 0) {
 			Convidado convidado = new Convidado(new UsuarioTestePK(
 					usuarioLogado.getUsuario(), testeSession.getTeste()));
@@ -435,7 +435,7 @@ public class TarefaController extends BaseController {
 	}
 
 	private void gravaFluxoIdeal(Long tarefaId) {
-		System.out.println("Grava Fluxo IDEAL");
+		System.out.println("Grava FluxoTarefa IDEAL");
 		Long idTeste = testeSession.getTeste().getId();
 
 		Tarefa tarefa = this.tarefaPertenceTeste(idTeste, tarefaId);
@@ -446,12 +446,12 @@ public class TarefaController extends BaseController {
 		for (Acao acao : acoes) {
 			acao.setFluxo(fluxoIdeal);
 		}
-
 		fluxoIdeal.setAcoes(acoes);
 		tarefa.setFluxoIdeal(fluxoIdeal);
 		tarefa.setFluxoIdealPreenchido(true);
-		System.out.println(tarefa);
+		tarefa.setNome("Tarefa alterada");
 		tarefaRepository.update(tarefa);
+		System.out.println("Tarefa é pra ter sido salva");
 		// result.redirectTo(TesteController.class).passo2(idTeste);
 	}
 

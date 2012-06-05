@@ -100,10 +100,12 @@ public class PerguntaController {
 					: true;
 			if (tipo && pergunta.getAlternativas() != null) {
 				System.out.println("Objetiva");
+				System.out.println("Responder em qual momento"+pergunta.isResponderFim());
 				for (Alternativa alternativa : pergunta.getAlternativas()) {
 					alternativa.setPergunta(pergunta);
 				}
 			} else {
+				System.out.println("Responder em qual momento"+pergunta.isResponderFim());
 				System.out.println("SUBJETIVA");
 				pergunta.setTipoRespostaAlternativa(false);
 				pergunta.setAlternativas(null);
@@ -230,7 +232,7 @@ public class PerguntaController {
 	 */
 	private Pergunta perguntaPertenceUsuario(Long perguntaId, Long testeId,
 			Boolean testeLiberado) throws PerguntaException {
-		// testeNaoLiberadoPertenceUsuarioLogado(testeId);
+		 testeNaoLiberadoPertenceUsuarioLogado(testeId);
 		Pergunta perguntaUsuario = perguntaRepository.perguntaPertenceUsuario(
 				usuarioLogado.getUsuario().getId(), testeId, perguntaId,
 				testeLiberado);

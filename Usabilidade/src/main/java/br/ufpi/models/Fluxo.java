@@ -78,7 +78,7 @@ public class Fluxo implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Fluxo [id=" + id + ", dataInicio=" + dataInicio + ", dataFim="
+		return "FluxoComponente [id=" + id + ", dataInicio=" + dataInicio + ", dataFim="
 				+ dataFim + "]";
 	}
 

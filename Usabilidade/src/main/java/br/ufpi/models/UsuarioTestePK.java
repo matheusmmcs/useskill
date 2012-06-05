@@ -38,7 +38,7 @@ public class UsuarioTestePK implements Serializable {
 	}
 
 	public void setTeste(Teste teste) {
-		teste = teste;
+		this.teste = teste;
 	}
 
 	@Override

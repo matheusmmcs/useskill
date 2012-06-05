@@ -53,6 +53,7 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 		query.setParameter("usuarioCriador", usuario);
 		try {
 
+			@SuppressWarnings("unchecked")
 			List<Teste> list = query.getResultList();
 			return list;
 		} catch (NoResultException e) {
@@ -100,6 +101,7 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Teste> findTesteNaoLiberadosOrdenadorData(Usuario usuario) {
 		Query query = entityManager
@@ -112,6 +114,7 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Teste> findTestesConvidados(Long idUsuario) {
 		Query query = entityManager.createNamedQuery("Convidado.Teste");
