@@ -22,7 +22,7 @@
 	action="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/salvar/pergunta"
 	method="POST">
 	<fieldset>
-		<legend>Inserir Pergunta</legend>
+		<legend>Editar Pergunta</legend>
 		<c:if test="${not empty pergunta.id}">
 			<input type="hidden" name="pergunta.id" value="${pergunta.id}" />
 			<input type="hidden" name="_method" value="put" />
@@ -49,14 +49,14 @@
 			<div class="controls">
 				<label class="radio" style="margin-top: -0px;"> <input
 					type="radio" name="pergunta.responderFim"
-					value="${pergunta.responderFim}"
+					value="true"
 					<c:if test="${pergunta.responderFim== true}" >
                checked
                     </c:if> />
 					<fmt:message key="pergunta.responderFim" />
 				</label> <label class="radio" style="margin-top: -0px;"> <input
 					type="radio" name="pergunta.responderFim"
-					value="${pergunta.responderFim}"
+					value="false"
 					<c:if test="${pergunta.responderFim== false}" >
                  checked
                     </c:if> />

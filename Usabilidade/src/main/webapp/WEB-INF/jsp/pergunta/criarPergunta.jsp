@@ -43,11 +43,11 @@
 			<label class="control-label">Selecione</label>
 			<div class="controls">
 		  <label class="radio" style="margin-top: -0px;"> 
-                    <input type="radio" name="pergunta.responderFim" value="${pergunta.responderFim}" />
+                    <input type="radio" name="pergunta.responderFim" value="true" />
                     <fmt:message key="pergunta.responderFim"/>
                 </label>
               <label class="radio" style="margin-top: -0px;"> 
-                    <input type="radio" name="pergunta.responderFim" value="${pergunta.responderFim}" checked/>
+                    <input type="radio" name="pergunta.responderFim" value="false" checked/>
                     <fmt:message key="pergunta.responderInicio" />
                 </label>
 			</div>
