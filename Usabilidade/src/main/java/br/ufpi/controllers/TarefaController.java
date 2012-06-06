@@ -264,8 +264,9 @@ public class TarefaController extends BaseController {
 		System.out.println("AGORA vez esta" + fluxo.getTarefaVez());
 		if (fluxo.getTarefaVez() == 0) {
 			System.out
-					.println("Tarefa = 0 -> redirecionar para teste/participar/termino");
-			result.redirectTo(TesteParticiparController.class).termino();
+					.println("Tarefa = 0 -> redirecionar para responder exibir");
+			fluxo.setRespondendoInicio(false);
+			result.redirectTo(RespostaController.class).exibir();
 		}
 	}
 
@@ -367,7 +368,6 @@ public class TarefaController extends BaseController {
 					usuarioLogado.getUsuario(), testeSession.getTeste()));
 			convidado.setRealizou(true);
 			convidadoRepository.update(convidado);
-
 			result.redirectTo(LoginController.class).logado();
 		}
 

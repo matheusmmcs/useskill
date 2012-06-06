@@ -1,4 +1,5 @@
 package br.ufpi.controllers;
+
 //TODO Validar se as perguntas estão sendo respondida e mostra uma mensagem
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
@@ -41,7 +42,7 @@ public class RespostaController {
 	}
 
 	@Logado
-	@Post
+	@Post("/teste/salvar/resposta/escrita")
 	public void salvarRespostaEscrita(String resposta) {
 		RespostaEscrita respostaEscrita = new RespostaEscrita();
 		respostaEscrita.setResposta(resposta);
@@ -54,7 +55,7 @@ public class RespostaController {
 	}
 
 	@Logado
-	@Post
+	@Post("/teste/salvar/resposta/alternativa")
 	public void salvarRespostaAlternativa(Alternativa alternativa) {
 		RespostaAlternativa respostaAlternativa = new RespostaAlternativa();
 		respostaAlternativa.setAlternativa(alternativa);
@@ -66,21 +67,22 @@ public class RespostaController {
 	}
 
 	@Logado
-	@Get
+	@Get("/teste/responder/pergunta")
 	public void exibir() {
 		Pergunta pergunta = getPerguntaExibir();
 		if (pergunta == null) {
-			// TODO Ver para onde redirecionar
-			// result.redirectTo(arg0);
-		} else {
-			result.include("pergunta", pergunta);
-		}
+			if (fluxoComponente.isRespondendoInicio())
+				result.redirectTo(TarefaController.class).loadtaskuser();
+			else
+				result.redirectTo(TesteParticiparController.class).termino();
+                }
+	result.include("pergunta", pergunta);
 	}
 
 	/**
 	 * Obtem a pergunta que vai ser exibida para ser respondida no momento
 	 * 
-	 * @return Null se não tiver pergunta para ser respondida no momento
+	 * @return Null se n�o tiver pergunta para ser respondida no momento
 	 */
 	private Pergunta getPerguntaExibir() {
 		Long vez;
