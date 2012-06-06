@@ -290,7 +290,6 @@ public class TesteController extends BaseController {
 			Teste teste = testeRepository.getTestCriado(usuarioLogado
 					.getUsuario().getId(), idTeste);
 			if (teste != null) {
-//				System.out.println(teste);
 				testeView.setTeste(teste);
 			} else {
 				result.notFound();

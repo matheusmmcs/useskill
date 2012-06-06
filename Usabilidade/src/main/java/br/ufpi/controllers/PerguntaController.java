@@ -9,6 +9,7 @@ import br.com.caelum.vraptor.Validator;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
+import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
@@ -26,11 +27,14 @@ public class PerguntaController {
 	private final TesteRepository testeRepository;
 	private UsuarioLogado usuarioLogado;
 	private final Validator validator;
+	private final ValidateComponente validateComponente;
+
+	
 
 	public PerguntaController(Result result, TesteView testeView,
 			PerguntaRepository perguntaRepository,
 			TesteRepository testeRepository, UsuarioLogado usuarioLogado,
-			Validator validator) {
+			Validator validator, ValidateComponente validateComponente) {
 		super();
 		this.result = result;
 		this.testeView = testeView;
@@ -38,6 +42,7 @@ public class PerguntaController {
 		this.testeRepository = testeRepository;
 		this.usuarioLogado = usuarioLogado;
 		this.validator = validator;
+		this.validateComponente = validateComponente;
 	}
 
 	@Logado
@@ -57,13 +62,7 @@ public class PerguntaController {
 	@Logado
 	@Get("teste/{testeId}/editar/passo2/editar/{pergunta.id}/pergunta")
 	public Pergunta editarPergunta(Long testeId, Pergunta pergunta) {
-		try {
-			return this.perguntaPertenceUsuario(pergunta.getId(), testeId,
-					false);
-		} catch (PerguntaException e) {
-			result.redirectTo(LoginController.class).logado();
-			return null;
-		}
+		return this.perguntaPertenceUsuario(pergunta.getId(), testeId);
 	}
 
 	// @Logado
@@ -100,12 +99,14 @@ public class PerguntaController {
 					: true;
 			if (tipo && pergunta.getAlternativas() != null) {
 				System.out.println("Objetiva");
-				System.out.println("Responder em qual momento"+pergunta.isResponderFim());
+				System.out.println("Responder em qual momento"
+						+ pergunta.isResponderFim());
 				for (Alternativa alternativa : pergunta.getAlternativas()) {
 					alternativa.setPergunta(pergunta);
 				}
 			} else {
-				System.out.println("Responder em qual momento"+pergunta.isResponderFim());
+				System.out.println("Responder em qual momento"
+						+ pergunta.isResponderFim());
 				System.out.println("SUBJETIVA");
 				pergunta.setTipoRespostaAlternativa(false);
 				pergunta.setAlternativas(null);
@@ -140,12 +141,7 @@ public class PerguntaController {
 				validator.onErrorRedirectTo(TesteController.class).passo2(
 						testeId);
 			}
-			try {
-				perguntaPertenceUsuario(pergunta.getId(), testeId, false);
-			} catch (PerguntaException e) {
-				result.redirectTo(LoginController.class).logado();
-				return;
-			}
+			perguntaPertenceUsuario(pergunta.getId(), testeId);
 			pergunta.setQuestionario(perguntaRepository
 					.findQuestionario(pergunta.getId()));
 			if (pergunta.getTipoRespostaAlternativa() == null) {
@@ -185,34 +181,10 @@ public class PerguntaController {
 	public void deletarPergunta(Long testeId, Long perguntaId) {
 		if (testeId != null && perguntaId != null) {
 			Pergunta perguntaPertenceUsuario = null;
-			try {
-				perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId,
-						testeId, false);
-			} catch (PerguntaException e) {
-				result.redirectTo(LoginController.class).logado();
-				return ;
-			}
+			perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId,
+					testeId);
 			perguntaRepository.destroy(perguntaPertenceUsuario);
 			result.redirectTo(TesteController.class).passo2(testeId);
-		} else {
-			result.notFound();
-		}
-	}
-
-	@Logado
-	@Get("analise/teste/{testeId}/pergunta/{perguntaId}")
-	public void exibirRespostas(Long testeId, Long perguntaId) {
-		if (testeId != null && perguntaId != null) {
-			Pergunta pergunta = null;
-
-			try {
-				pergunta = perguntaPertenceUsuario(perguntaId, testeId, null);
-			} catch (PerguntaException e) {
-				result.redirectTo(LoginController.class).logado();
-				return;
-			}
-			result.include("teste", pergunta.getQuestionario().getTeste());
-			result.include("pergunta", pergunta);
 		} else {
 			result.notFound();
 		}
@@ -230,15 +202,10 @@ public class PerguntaController {
 	 * @throws PerguntaException
 	 *             Gerado quando não enconta a pergunta
 	 */
-	private Pergunta perguntaPertenceUsuario(Long perguntaId, Long testeId,
-			Boolean testeLiberado) throws PerguntaException {
-		 testeNaoLiberadoPertenceUsuarioLogado(testeId);
+	private Pergunta perguntaPertenceUsuario(Long perguntaId, Long testeId) {
+		testeNaoLiberadoPertenceUsuarioLogado(testeId);
 		Pergunta perguntaUsuario = perguntaRepository.perguntaPertenceUsuario(
-				usuarioLogado.getUsuario().getId(), testeId, perguntaId,
-				testeLiberado);
-		if (perguntaUsuario == null) {
-			throw new PerguntaException();
-		}
+				usuarioLogado.getUsuario().getId(), testeId, perguntaId, false);
 		return perguntaUsuario;
 
 	}
@@ -258,11 +225,12 @@ public class PerguntaController {
 					usuarioLogado.getUsuario().getId(), idTeste);
 			if (teste != null) {
 				testeView.setTeste(teste);
-			} else {
-				result.notFound();
+				return;
 			}
-		} else {
-			result.notFound();
 		}
+		validateComponente.redirecionarHome("teste.nao.pertence.usuario");
+
 	}
+
+	
 }

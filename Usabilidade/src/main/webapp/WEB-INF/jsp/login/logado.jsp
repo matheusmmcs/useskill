@@ -1,4 +1,11 @@
 <body>
+<c:if test="${not empty errors}">
+            <div class="alert alert-error">
+                <c:forEach items="${errors}" var="error">
+                    ${error.message}<br />
+                </c:forEach>
+            </div>
+        </c:if>
     <ul class="breadcrumb">
         <li class="active"><fmt:message key="inicio" /></li>
     </ul>

@@ -6,13 +6,17 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.FluxoComponente;
+import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
+import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.RespostaAlternativa;
 import br.ufpi.models.RespostaEscrita;
+import br.ufpi.models.exceptions.PerguntaException;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.RespostaAlternativaRepository;
 import br.ufpi.repositories.RespostaEscritaRepository;
@@ -26,11 +30,28 @@ public class RespostaController {
 	private final PerguntaRepository perguntaRepository;
 	private final FluxoComponente fluxoComponente;
 	private final UsuarioLogado usuarioLogado;
+	private final TesteView testeView;
+	private final ValidateComponente validateComponente;
+
+	@Logado
+	@Post("/teste/salvar/resposta/escrita")
+	public void salvarRespostaEscrita(final String resposta) {
+		validaResposta(resposta);
+		RespostaEscrita respostaEscrita = new RespostaEscrita();
+		respostaEscrita.setResposta(resposta);
+		respostaEscrita.setUsuario(usuarioLogado.getUsuario());
+		Pergunta pergunta = instanciarPergunta(false);
+		respostaEscrita.setPergunta(pergunta);
+		escritaRepository.create(respostaEscrita);
+		proximaPergunta();
+		result.redirectTo(this).exibir();
+	}
 
 	public RespostaController(RespostaEscritaRepository escritaRepository,
 			RespostaAlternativaRepository alternativaRepository, Result result,
 			Validator validator, PerguntaRepository perguntaRepository,
-			FluxoComponente fluxoComponente, UsuarioLogado usuarioLogado) {
+			FluxoComponente fluxoComponente, UsuarioLogado usuarioLogado,
+			TesteView testeView, ValidateComponente validateComponente) {
 		super();
 		this.escritaRepository = escritaRepository;
 		this.alternativaRepository = alternativaRepository;
@@ -39,19 +60,24 @@ public class RespostaController {
 		this.perguntaRepository = perguntaRepository;
 		this.fluxoComponente = fluxoComponente;
 		this.usuarioLogado = usuarioLogado;
+		this.testeView = testeView;
+		this.validateComponente = validateComponente;
 	}
 
-	@Logado
-	@Post("/teste/salvar/resposta/escrita")
-	public void salvarRespostaEscrita(String resposta) {
-		RespostaEscrita respostaEscrita = new RespostaEscrita();
-		respostaEscrita.setResposta(resposta);
-		respostaEscrita.setUsuario(usuarioLogado.getUsuario());
-		Pergunta pergunta = instanciarPergunta();
-		respostaEscrita.setPergunta(pergunta);
-		escritaRepository.create(respostaEscrita);
-		proximaPergunta();
-		result.redirectTo(this).exibir();
+	/**
+	 * Valida a resposta escrita para saber se ela não esta vazia
+	 * 
+	 * @param resposta
+	 *            String a aser validada
+	 */
+	private void validaResposta(final String resposta) {
+		validator.checking(new Validations() {
+			{
+				that(!resposta.trim().isEmpty(), "campo.obrigatorio",
+						"campo.obrigatorio2");
+			}
+		});
+		validator.onErrorRedirectTo(this).exibir();
 	}
 
 	@Logado
@@ -59,11 +85,38 @@ public class RespostaController {
 	public void salvarRespostaAlternativa(Alternativa alternativa) {
 		RespostaAlternativa respostaAlternativa = new RespostaAlternativa();
 		respostaAlternativa.setAlternativa(alternativa);
-		Pergunta pergunta = instanciarPergunta();
+		Pergunta pergunta = instanciarPergunta(true);
+		alternaviaPertencePergunta(alternativa, pergunta);
 		respostaAlternativa.setPergunta(pergunta);
 		respostaAlternativa.setUsuario(usuarioLogado.getUsuario());
 		alternativaRepository.create(respostaAlternativa);
 		proximaPergunta();
+		result.redirectTo(this).exibir();
+	}
+
+	/**
+	 * Analisa se a alternativa passada pertence a pergunta respondida
+	 * 
+	 * @param alternativa
+	 * @param pergunta
+	 */
+	private void alternaviaPertencePergunta(Alternativa alternativa,
+			Pergunta pergunta) {
+		boolean alternativaPertencePergunta = false;
+		for (Alternativa alternativa2 : pergunta.getAlternativas()) {
+			if (alternativa2.getId().equals(alternativa.getId())) {
+				alternativaPertencePergunta = true;
+			}
+		}
+		if (!alternativaPertencePergunta) {
+			validator.checking(new Validations() {
+				{
+					that(false, "campo.obrigatorio", "campo.obrigatorio",
+							i18n("resposta"));
+				}
+			});
+			validator.onErrorRedirectTo(this).exibir();
+		}
 	}
 
 	@Logado
@@ -71,18 +124,24 @@ public class RespostaController {
 	public void exibir() {
 		Pergunta pergunta = getPerguntaExibir();
 		if (pergunta == null) {
-			if (fluxoComponente.isRespondendoInicio())
+			if (fluxoComponente.isRespondendoInicio()) {
+				System.out.println("è para redirecionar aqui");
 				result.redirectTo(TarefaController.class).loadtaskuser();
-			else
+				return;
+			} else {
 				result.redirectTo(TesteParticiparController.class).termino();
-                }
-	result.include("pergunta", pergunta);
+				return;
+			}
+		}
+		System.out.println("pergunta alternativa"
+				+ pergunta.getTipoRespostaAlternativa());
+		result.include("pergunta", pergunta);
 	}
 
 	/**
 	 * Obtem a pergunta que vai ser exibida para ser respondida no momento
 	 * 
-	 * @return Null se n�o tiver pergunta para ser respondida no momento
+	 * @return Null se não tiver pergunta para ser respondida no momento
 	 */
 	private Pergunta getPerguntaExibir() {
 		Long vez;
@@ -94,6 +153,7 @@ public class RespostaController {
 					.getPerguntasFim());
 
 		}
+		System.out.println("Vou exibir pergunta " + vez);
 		if (vez != 0)
 			return perguntaRepository.find(vez);
 		else {
@@ -119,15 +179,65 @@ public class RespostaController {
 	 * 
 	 * @return
 	 */
-	private Pergunta instanciarPergunta() {
-		Pergunta pergunta = new Pergunta();
-		if (fluxoComponente.isRespondendoInicio())
-			pergunta.setId(fluxoComponente.getPerguntaVez(fluxoComponente
-					.getPerguntasInicio()));
-		else
-			pergunta.setId(fluxoComponente.getPerguntaVez(fluxoComponente
-					.getPerguntasFim()));
-		return pergunta;
+	private Pergunta instanciarPergunta(boolean respostaAlternativa) {
+		if (!respostaAlternativa) {
+			Pergunta pergunta = new Pergunta();
+			if (fluxoComponente.isRespondendoInicio())
+				pergunta.setId(fluxoComponente.getPerguntaVez(fluxoComponente
+						.getPerguntasInicio()));
+			else
+				pergunta.setId(fluxoComponente.getPerguntaVez(fluxoComponente
+						.getPerguntasFim()));
+			return pergunta;
+		} else {
+			if (fluxoComponente.isRespondendoInicio())
+				return perguntaRepository.find(fluxoComponente
+						.getPerguntaVez(fluxoComponente.getPerguntasInicio()));
+			else
+				return perguntaRepository.find(fluxoComponente
+						.getPerguntaVez(fluxoComponente.getPerguntasFim()));
+		}
+
+	}
+
+	@Logado
+	@Get("analise/teste/{testeId}/pergunta/{perguntaId}")
+	public void exibirRespostas(Long testeId, Long perguntaId) {
+		if (testeId != null && perguntaId != null) {
+			Pergunta pergunta = perguntaPertenceUsuarioTesteLiberado(
+					perguntaId, testeId);
+			result.include("teste", pergunta.getQuestionario().getTeste());
+			result.include("pergunta", pergunta);
+
+		} else {
+			result.redirectTo(LoginController.class).logado();
+		}
+	}
+
+	/**
+	 * Analisa se pergunta pertence a usuario e se o teste que a pergunta
+	 * pertence jah esta liberado
+	 * 
+	 * @param perguntaId
+	 * @param testeId
+	 * @return
+	 */
+	private Pergunta perguntaPertenceUsuarioTesteLiberado(Long perguntaId,
+			Long testeId) {
+		Pergunta pergunta;
+		if (perguntaId != null && testeId != null) {
+			pergunta = perguntaRepository.perguntaPertenceUsuario(usuarioLogado
+					.getUsuario().getId(), testeId, perguntaId, true);
+			if (pergunta == null) {
+				validateComponente
+						.redirecionarHome("pergunta.nao.liberada.ou.nao.pertence.ao.usuario");
+			} else {
+				testeView.setTeste(pergunta.getQuestionario().getTeste());
+			}
+			return pergunta;
+		}
+		validateComponente.redirecionarHome("pergunta.nao.pertence.usuario");
+		return null;
 	}
 
 }

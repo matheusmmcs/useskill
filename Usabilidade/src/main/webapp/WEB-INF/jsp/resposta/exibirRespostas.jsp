@@ -1,4 +1,5 @@
-${teste.tituloPublico }
+${teste.tituloPublico}
+${pergunta.texto}
 
 <c:if
 	test="${pergunta.tipoRespostaAlternativa!=true}">
@@ -12,7 +13,7 @@ ${teste.tituloPublico }
 		<tbody>
 			<c:forEach items="${pergunta.respostaEscritas}" var="respostaEscria">
 				<tr>
-					<td>${respostaEscrita.resposta }</td>
+				<td>${respostaEscria.resposta}</td>
 				</tr>
 			</c:forEach>
 		</tbody>

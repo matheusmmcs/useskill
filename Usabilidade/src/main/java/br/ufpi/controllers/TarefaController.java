@@ -404,6 +404,7 @@ public class TarefaController extends BaseController {
 			convidado.setRealizou(true);
 			convidadoRepository.update(convidado);
 			result.redirectTo(LoginController.class).logado();
+			return null;
 		}
 
 		Tarefa tarefa = getTarefa(idTarefa);
