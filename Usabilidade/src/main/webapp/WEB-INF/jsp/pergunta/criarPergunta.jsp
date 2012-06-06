@@ -60,20 +60,18 @@
              
             
                 <label class="radio" style="margin-top: -30px;"> 
-                    <input type="radio" name="pergunta.tipoRespostaAlternativa" value="true" />
+                    <input id="respsub" type="radio" name="pergunta.tipoRespostaAlternativa" value="true"/>
                     <fmt:message key="pergunta.subjetiva"/>
                 </label>
                 <label class="radio">
-                    <input type="radio" name="pergunta.tipoRespostaAlternativa" value="false" checked/>                    
+                    <input id="respobj" type="radio" name="pergunta.tipoRespostaAlternativa" value="false" checked/>                    
                     <fmt:message key="pergunta.objetiva"/>
                 </label>
             </div>
         </div>
-    <div class="alternativa-group">
-            <label class="control-label" for="input01"><fmt:message key="pergunta.texto" />*</label>
-            <div class="controls">
-                <textarea rows="10" cols="" name="pergunta.alternativas[].textoAlternativa" id="texto" class="input-xmlarge">${pergunta.texto}</textarea>
-            </div>
+    	<div id="grupoalternativas" class="alternativa-group" style="display: none;">
+            <label class="control-label" for="input01"><fmt:message key="pergunta.alternativa" />* <a id="addalternativa" class="btn btn-info" href="www.google.com"><i class="icon-plus-sign icon-white"></i></a> </label>
+            
         </div>
 
         <div class="form-actions">
@@ -85,27 +83,64 @@
 
 
 <script type="text/javascript">
-    $(document)
-    .ready(
-    function() {
-   
-        $("#editUsuario_Form").validate({
-            rules : {
-                "usuario.nome" : {
-                    required : true
-                },
-                "usuario.email" : {
-                    required : true,
-                    email : true
-                },
-                "usuario.senha" : {
-                    required : true,
-                    minLength : 6
-                },
-                "confirmaSenha" : {
-                    required : true,
-                    minLength : 6
-                }
+(function($){
+	$(document).ready(function() {
+		var contalternativas = 0, maxalternativas = 5;
+		var $grupoalternativas = $("#grupoalternativas"), $addalternativa = $("#addalternativa");
+		
+		var alternativa = '<div class="controls campoalternativa"><textarea class="input-xmlarge alternativa" rows="2" cols="" name="pergunta.alternativas[].textoAlternativa" style="resize: none;">${pergunta.texto}</textarea><a class="btn btn-danger delalternativa" href="#"><i class="icon-trash icon-white"></i></a></div>';
+		
+		$(".delalternativa").live(
+			"click", function(e){
+				e.preventDefault();
+				if(contalternativas>1){
+					$(this).parent().remove();
+					contalternativas--;
+				}
+			}
+		)
+		
+		
+		$addalternativa.click(function(e){
+			e.preventDefault();
+			if(contalternativas<maxalternativas){
+				$grupoalternativas.append(alternativa);
+				contalternativas++;
+			}
+		})
+		
+		$("#respsub").click(function(){
+			$grupoalternativas.show();
+			$grupoalternativas.append(alternativa); 
+			contalternativas++;
+		})
+		
+		$("#respobj").click(function(){
+			$grupoalternativas.hide();
+			$grupoalternativas.children(".campoalternativa").remove();
+			contalternativas=0;
+		})
+		
+    	$("#editUsuario_Form").validate({
+        rules : {
+            "usuario.nome" : {
+                required : true
+            },
+            "usuario.email" : {
+                required : true,
+                email : true
+            },
+            "usuario.senha" : {
+                required : true,
+                minLength : 6
+            },
+            "confirmaSenha" : {
+                required : true,
+                minLength : 6
             }
-        });
+        }
+    });
+    
+	});
+})(jQuery);
 </script>
