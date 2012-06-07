@@ -15,6 +15,22 @@
     </head>
     <body> 
         
-        
+        <div class="span10 offset1">
+        	<div class="form-horizontal form-layout">
+        		<h1 style="text-align: center; font-size: 48px; margin-top: 20px">UseSkill</h1>
+        		<hr/>
+        		<h3>O que é a UseSkill?</h3>
+        		<br/>
+        		<p style="text-indent: 10px">Ferramenta para automação de testes de usabilidade. Para utilizar esta ferramenta, cadastre-se no link do menu acima.</p>
+        		<hr/>
+        		<h3>Como realizar um Teste de Usabilidade no UseSkill?</h3>
+        		<br/>
+        		<p style="text-indent: 10px">Ao acessar sua conta, crie um teste e defina tarefas e perguntas. Ao definir tarefas, selecione um usuário experiente para realizar a tarefa. Após isto, convide outros usuários da UseSkill para realizar o seu teste e aproveite todas as vantagens de um teste de usabilidade a um baixo custo.</p>
+        		<hr/>
+        		<h3>Quem Somos?</h3>
+        		<br/>
+        		<p style="text-indent: 10px">Pesquisadores na área de Engenharia de Software, especificamente em Testes de Usabilidade.</p>
+        	</div>
+        </div>
     </body>
 </html>

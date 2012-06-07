@@ -15,9 +15,9 @@
                 <li>
                     <a href="${pageContext.request.contextPath}/login"><fmt:message key="acessar.conta"/></a>
                 </li>
-                <li>
+                <!--<li>
                     <a href="${pageContext.request.contextPath}/usuarios">Usuários</a>
-                </li>
+                </li>-->
             </ul>
         </div>
     </div>

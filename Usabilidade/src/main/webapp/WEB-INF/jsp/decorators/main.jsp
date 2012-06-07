@@ -8,6 +8,8 @@
         <!-- decorator = main -->
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title><decorator:title default="Usabilitool"/></title>
+        <link href="${pageContext.request.contextPath}/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/reset.css"/>
         
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/bootstrap.css"/>
