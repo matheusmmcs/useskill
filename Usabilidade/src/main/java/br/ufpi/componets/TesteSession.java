@@ -34,6 +34,8 @@ public class TesteSession {
     }
     @PreDestroy
     public void garbateColection(){
+    System.out.println("Terminou minha section");	
+    	
     this.setTarefa(null);
     this.setTeste(null);
     }

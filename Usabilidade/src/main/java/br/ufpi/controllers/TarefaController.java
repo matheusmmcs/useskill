@@ -21,6 +21,7 @@ import br.ufpi.componets.FluxoComponente;
 import br.ufpi.componets.TesteSession;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
+import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Acao;
 import br.ufpi.models.Convidado;
 import br.ufpi.models.FluxoIdeal;
@@ -50,6 +51,7 @@ public class TarefaController extends BaseController {
 	private final FluxoComponente fluxo;
 	private final HttpServletRequest request;
 	private final TesteSession testeSession;
+	private final ValidateComponente validateComponente;
 
 	public TarefaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
@@ -57,7 +59,7 @@ public class TarefaController extends BaseController {
 			FluxoUsuarioRepository fluxoUsuarioRepository,
 			ConvidadoRepository convidadoRepository, SessionActions actions,
 			FluxoComponente fluxo, HttpServletRequest request,
-			TesteSession testeSession) {
+			TesteSession testeSession, ValidateComponente validateComponente) {
 		super(result, validator, testeView, usuarioLogado);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
@@ -67,6 +69,7 @@ public class TarefaController extends BaseController {
 		this.fluxo = fluxo;
 		this.request = request;
 		this.testeSession = testeSession;
+		this.validateComponente = validateComponente;
 	}
 
 	/**
@@ -245,8 +248,8 @@ public class TarefaController extends BaseController {
 	}
 
 	/**
-	 * Grava o fluxo de usuario de uma determinada Tarefa. Destroy o FluxoComponente de
-	 * ações.
+	 * Grava o fluxo de usuario de uma determinada Tarefa. Destroy o
+	 * FluxoComponente de ações.
 	 * 
 	 * @param tarefaId
 	 */
@@ -264,7 +267,7 @@ public class TarefaController extends BaseController {
 		System.out.println("AGORA vez esta" + fluxo.getTarefaVez());
 		if (fluxo.getTarefaVez() == 0) {
 			System.out
-					.println("Tarefa = 0 -> redirecionar para responder exibir");
+					.println("Tarefa = 0 -> redirecionar para responder as ultimas perguntas");
 			fluxo.setRespondendoInicio(false);
 			result.redirectTo(RespostaController.class).exibir();
 		}
@@ -352,10 +355,13 @@ public class TarefaController extends BaseController {
 		}
 	}
 
-	 /**
-	  * Metodo que carrega uma página para realizar a tarefa. Nest pagina, possui um iframe onde são testadas as ações do USUARIO. O id da tarefa é recebido a partir da sessão FluxoComponente
-	  * @return
-	  */
+	/**
+	 * Metodo que carrega uma página para realizar a tarefa. Nest pagina, possui
+	 * um iframe onde são testadas as ações do USUARIO. O id da tarefa é
+	 * recebido a partir da sessão FluxoComponente
+	 * 
+	 * @return
+	 */
 	@Logado
 	@Get()
 	public TarefaDetalhe loadtaskuser() {
@@ -368,7 +374,7 @@ public class TarefaController extends BaseController {
 					usuarioLogado.getUsuario(), testeSession.getTeste()));
 			convidado.setRealizou(true);
 			convidadoRepository.update(convidado);
-			result.redirectTo(LoginController.class).logado();
+			validateComponente.redirecionarTermino();
 		}
 
 		Tarefa tarefa = getTarefa(idTarefa);
@@ -403,8 +409,7 @@ public class TarefaController extends BaseController {
 					usuarioLogado.getUsuario(), testeSession.getTeste()));
 			convidado.setRealizou(true);
 			convidadoRepository.update(convidado);
-			result.redirectTo(LoginController.class).logado();
-			return null;
+			validateComponente.redirecionarTermino();
 		}
 
 		Tarefa tarefa = getTarefa(idTarefa);
@@ -503,7 +508,6 @@ public class TarefaController extends BaseController {
 				tarefaId, idTeste, usuarioLogado.getUsuario().getId());
 		if (tarefaRetorno == null) {
 			result.notFound();
-			return null;
 		}
 		return tarefaRetorno;
 	}
@@ -512,5 +516,5 @@ public class TarefaController extends BaseController {
 		return tarefaRepository.find(idTarefa);
 
 	}
-	
+
 }

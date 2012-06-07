@@ -111,8 +111,7 @@ public class RespostaController {
 		if (!alternativaPertencePergunta) {
 			validator.checking(new Validations() {
 				{
-					that(false, "campo.obrigatorio", "campo.obrigatorio",
-							i18n("resposta"));
+					that(false, "pergunta.alternativa.sem.resposta", "pergunta.alternativa.sem.resposta");
 				}
 			});
 			validator.onErrorRedirectTo(this).exibir();

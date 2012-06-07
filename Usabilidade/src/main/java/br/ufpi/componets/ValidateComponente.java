@@ -4,6 +4,7 @@ import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.controllers.LoginController;
+import br.ufpi.controllers.TesteParticiparController;
 
 /**
  * Usado para conter os redirects de objetos que o usuario tentar acessar e não
@@ -35,5 +36,16 @@ public class ValidateComponente {
 			}
 		});
 		validator.onErrorRedirectTo(LoginController.class).logado();
+	}
+/**
+ * Redireciona para termino de Teste
+ */
+	public void redirecionarTermino() {
+		validator.checking(new Validations() {
+			{
+				that(false, "termino", "termino");
+			}
+		});
+		validator.onErrorRedirectTo(TesteParticiparController.class).termino();
 	}
 }

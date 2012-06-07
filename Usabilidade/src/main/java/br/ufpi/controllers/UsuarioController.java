@@ -57,7 +57,7 @@ public class UsuarioController {
 		BaseUrl.getInstance(request);
 		EmailUtils emailUtils = new EmailUtils();
 		emailUtils.enviarEmailConfirmacao(usuario);
-		result.redirectTo(this).index();
+		result.redirectTo(LoginController.class).login(usuario.getEmail());
 	}
 
 	@Get("/usuarios/new")
