@@ -16,7 +16,7 @@ import br.ufpi.repositories.UsuarioRepository;
 public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 		UsuarioRepository {
 
-	UsuarioRepositoryImpl(EntityManager entityManager) {
+	public UsuarioRepositoryImpl(EntityManager entityManager) {
 		super(entityManager);
 	}
 
