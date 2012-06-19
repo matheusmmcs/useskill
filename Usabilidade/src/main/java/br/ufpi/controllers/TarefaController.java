@@ -16,8 +16,8 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.ufpi.annotation.Logado;
-import br.ufpi.componets.SessionActions;
 import br.ufpi.componets.FluxoComponente;
+import br.ufpi.componets.SessionActions;
 import br.ufpi.componets.TesteSession;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
@@ -51,16 +51,18 @@ public class TarefaController extends BaseController {
 	private final FluxoComponente fluxo;
 	private final HttpServletRequest request;
 	private final TesteSession testeSession;
-	private final ValidateComponente validateComponente;
+
+	
 
 	public TarefaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
+			ValidateComponente validateComponente,
 			TarefaRepository tarefaRepository, TesteRepository testeRepository,
 			FluxoUsuarioRepository fluxoUsuarioRepository,
 			ConvidadoRepository convidadoRepository, SessionActions actions,
 			FluxoComponente fluxo, HttpServletRequest request,
-			TesteSession testeSession, ValidateComponente validateComponente) {
-		super(result, validator, testeView, usuarioLogado);
+			TesteSession testeSession) {
+		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
 		this.fluxoUsuarioRepository = fluxoUsuarioRepository;
@@ -69,7 +71,6 @@ public class TarefaController extends BaseController {
 		this.fluxo = fluxo;
 		this.request = request;
 		this.testeSession = testeSession;
-		this.validateComponente = validateComponente;
 	}
 
 	/**
@@ -328,6 +329,7 @@ public class TarefaController extends BaseController {
 	 *            = url a ser adaptada
 	 * @return
 	 */
+	@SuppressWarnings({ "unused", "unchecked", "rawtypes" })
 	@Logado
 	@Get()
 	public String loadactiontester() {
@@ -399,6 +401,7 @@ public class TarefaController extends BaseController {
 	 *            = url a ser adaptada
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
 	@Logado
 	@Get
 	public String loadactionuser() {

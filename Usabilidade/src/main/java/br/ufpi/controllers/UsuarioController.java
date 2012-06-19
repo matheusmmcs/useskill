@@ -12,26 +12,26 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.validator.Validations;
+import br.ufpi.componets.TesteView;
+import br.ufpi.componets.UsuarioLogado;
+import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.BaseUrl;
 import br.ufpi.util.EmailUtils;
 
 @Resource
-public class UsuarioController {
+public class UsuarioController extends BaseController{
 
-	private final Result result;
 	private final UsuarioRepository usuarioRepository;
-	private final Validator validator;
 	private final HttpServletRequest request;
 
-	public UsuarioController(Result result,
-			UsuarioRepository usuarioRepository, Validator validator,
-			HttpServletRequest request) {
-		super();
-		this.result = result;
+	public UsuarioController(Result result, Validator validator,
+			TesteView testeView, UsuarioLogado usuarioLogado,
+			ValidateComponente validateComponente,
+			UsuarioRepository usuarioRepository, HttpServletRequest request) {
+		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.usuarioRepository = usuarioRepository;
-		this.validator = validator;
 		this.request = request;
 	}
 

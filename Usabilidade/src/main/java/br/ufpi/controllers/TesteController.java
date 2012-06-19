@@ -14,6 +14,7 @@ import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
+import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Acao;
 import br.ufpi.models.FluxoUsuario;
 import br.ufpi.models.Questionario;
@@ -33,17 +34,19 @@ public class TesteController extends BaseController {
 	private final TesteRepository testeRepository;
 	private final ConvidadoRepository convidadoRepository;
 	private final HttpServletRequest request;
-	private final TesteView testeView;
+
+	
 
 	public TesteController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
+			ValidateComponente validateComponente,
 			TesteRepository testeRepository,
-			ConvidadoRepository convidadoRepository, HttpServletRequest request) {
-		super(result, validator, testeView, usuarioLogado);
+			ConvidadoRepository convidadoRepository,
+			HttpServletRequest request, TesteView testeView2) {
+		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.testeRepository = testeRepository;
 		this.convidadoRepository = convidadoRepository;
 		this.request = request;
-		this.testeView = testeView;
 	}
 
 	/**

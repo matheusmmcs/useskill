@@ -66,6 +66,7 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Paginacao<Usuario> usuariosLivresParaPartciparTeste(Long testeId,
 			int numeroPagina, int quantidade) {
@@ -85,6 +86,7 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		return paginacao;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Paginacao<Usuario> getUsuariosConvidados(Long testeId,
 			int numeroPagina, int quantidade) {
@@ -102,6 +104,7 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		return paginacao;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Usuario> getUsuariosConvidadosAll(Long testeId) {
 		Query query = entityManager
@@ -111,6 +114,7 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Paginacao<Teste> getTestesParticipados(Long usuarioId,
 			int quantidade, int numeroPagina) {

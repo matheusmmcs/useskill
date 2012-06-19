@@ -11,6 +11,7 @@ import br.ufpi.componets.FluxoComponente;
 import br.ufpi.componets.TesteSession;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
+import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Convidado;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.ConvidadoRepository;
@@ -28,11 +29,12 @@ public class TesteParticiparController extends BaseController {
 
 	public TesteParticiparController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
-			ConvidadoRepository convidadoRepository,
-			FluxoComponente fluxoTarefa, TesteSession testeSession) {
-		super(result, validator, testeView, usuarioLogado);
+			ValidateComponente validateComponente,
+			ConvidadoRepository convidadoRepository, FluxoComponente fluxo,
+			TesteSession testeSession) {
+		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.convidadoRepository = convidadoRepository;
-		this.fluxo = fluxoTarefa;
+		this.fluxo = fluxo;
 		this.testeSession = testeSession;
 	}
 
@@ -80,10 +82,9 @@ public class TesteParticiparController extends BaseController {
 
 	@Logado
 	public void responder() {
-	
-		//incluir proximo
-		//incluir tbm o que é pra responder
-		
+
+		// incluir proximo
+		// incluir tbm o que é pra responder
 
 	}
 

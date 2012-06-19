@@ -22,6 +22,7 @@ public class TarefaAnaliseImpl implements TarefaAnalise {
 		return mapTempo;
 	}
 	
+	@SuppressWarnings("unused")
 	private void tempoConclusao(){
 		double somatorio=0,minimo=0,maximo=0;
 		int quantidadeFluxoUsuario=0;

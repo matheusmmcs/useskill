@@ -13,6 +13,7 @@ import br.ufpi.controllers.LoginController;
 public class LoginIntercerptor implements Interceptor {
 	private Result result;
 	private UsuarioLogado usuarioLogado;
+	
 
 	public LoginIntercerptor(Result result, UsuarioLogado usuarioLogado) {
 		super();

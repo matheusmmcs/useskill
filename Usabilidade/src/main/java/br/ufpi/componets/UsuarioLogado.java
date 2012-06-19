@@ -13,7 +13,6 @@ public class UsuarioLogado {
 	//TODO depois apagar UsuarioRepository aqui é apenas para não precisar fazer login
 	UsuarioRepository usuarioRepository;
 	private Usuario usuario;
-//	private Teste teste;
 
 	public UsuarioLogado( UsuarioRepository repository) {
 		this.usuarioRepository=repository;

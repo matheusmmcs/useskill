@@ -57,7 +57,8 @@ public class WebClientTester {
         return null;
     }
 
-    public static String getPageContent(String urlPagina, Integer idPergunta, HttpMethod method) {
+    @SuppressWarnings("unused")
+	public static String getPageContent(String urlPagina, Integer idPergunta, HttpMethod method) {
         try {
             //System.out.println("-----------------------------------FASE 2--------------------------------------");
             String paramsStr = mapToURLMap(params, idPergunta);

@@ -13,6 +13,7 @@ import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
+import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.BaseUrl;
@@ -27,10 +28,12 @@ public class LoginController extends BaseController {
 	private final HttpServletRequest request;
 
 
+	
 	public LoginController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
+			ValidateComponente validateComponente,
 			UsuarioRepository usuarioRepository, HttpServletRequest request) {
-		super(result, validator, testeView, usuarioLogado);
+		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.usuarioRepository = usuarioRepository;
 		this.request = request;
 	}

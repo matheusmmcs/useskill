@@ -98,12 +98,17 @@ public class EmailUtils {
 		email.attach(attachment);
 	}
 
+	/**
+	 * Envia email de Confirmação.
+	 * 
+	 * @param pessoa
+	 */
 	public void enviarEmailConfirmacao(Usuario pessoa) {
-		System.out.println("Enviar Email de Confirmação");
 		Mensagem mensagem = new Mensagem();
 		mensagem.setDestino(pessoa.getEmail());
-		mensagem.setTitulo("Teste");
-		mensagem.setMensagem(BaseUrl.BASEURL + "/confirmar/"
+		mensagem.setTitulo("Cadastro Useskill");
+		mensagem.setMensagem("Para Confirmar seu cadastro na Useskill acesse: "
+				+ BaseUrl.BASEURL + "/confirmar/"
 				+ pessoa.getConfirmacaoEmail());
 
 		try {
@@ -113,14 +118,18 @@ public class EmailUtils {
 		}
 	}
 
+	/**
+	 * Envia email com a nova senha para o usuario
+	 * 
+	 * @param pessoa
+	 * @param senha
+	 */
 	public void enviarNovaSenha(Usuario pessoa, String senha) {
-		// String header = request.getHeader("Host");
-		// header=header+request.getContextPath();
-		// System.out.println("header"+header);
 		Mensagem mensagem = new Mensagem();
 		mensagem.setDestino(pessoa.getEmail());
-		mensagem.setTitulo("Teste");
-		mensagem.setMensagem("Sua Nova senha:" + senha);
+		mensagem.setTitulo("Useskill");
+		mensagem.setMensagem("Sua senha foi redefinida na Useskill. "
+				+ "Sua Nova senha :" + senha);
 
 		try {
 			this.enviaEmail(mensagem);
@@ -129,10 +138,13 @@ public class EmailUtils {
 		}
 	}
 
+	/*
+	 * Envia email para os Usuarios selecionados para a realização de um teste
+	 */
 	public void enviarConviteTeste(Usuario pessoa, Teste teste) {
 		Mensagem mensagem = new Mensagem();
 		mensagem.setDestino(pessoa.getEmail());
-		mensagem.setTitulo("Você foi confidado para participar do Teste");
+		mensagem.setTitulo("Você foi confidado para participar do Teste da UseSkill");
 		mensagem.setMensagem("");
 
 		try {

@@ -16,22 +16,16 @@ import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.RespostaAlternativa;
 import br.ufpi.models.RespostaEscrita;
-import br.ufpi.models.exceptions.PerguntaException;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.RespostaAlternativaRepository;
 import br.ufpi.repositories.RespostaEscritaRepository;
 
 @Resource
-public class RespostaController {
+public class RespostaController extends BaseController{
 	private final RespostaEscritaRepository escritaRepository;
 	private final RespostaAlternativaRepository alternativaRepository;
-	private final Result result;
-	private final Validator validator;
 	private final PerguntaRepository perguntaRepository;
 	private final FluxoComponente fluxoComponente;
-	private final UsuarioLogado usuarioLogado;
-	private final TesteView testeView;
-	private final ValidateComponente validateComponente;
 
 	@Logado
 	@Post("/teste/salvar/resposta/escrita")
@@ -47,22 +41,25 @@ public class RespostaController {
 		result.redirectTo(this).exibir();
 	}
 
-	public RespostaController(RespostaEscritaRepository escritaRepository,
-			RespostaAlternativaRepository alternativaRepository, Result result,
-			Validator validator, PerguntaRepository perguntaRepository,
-			FluxoComponente fluxoComponente, UsuarioLogado usuarioLogado,
-			TesteView testeView, ValidateComponente validateComponente) {
-		super();
+	public RespostaController(Result result, Validator validator,
+			TesteView testeView, UsuarioLogado usuarioLogado,
+			ValidateComponente validateComponente,
+			RespostaEscritaRepository escritaRepository,
+			RespostaAlternativaRepository alternativaRepository,
+			PerguntaRepository perguntaRepository,
+			FluxoComponente fluxoComponente) {
+		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.escritaRepository = escritaRepository;
 		this.alternativaRepository = alternativaRepository;
-		this.result = result;
-		this.validator = validator;
 		this.perguntaRepository = perguntaRepository;
 		this.fluxoComponente = fluxoComponente;
-		this.usuarioLogado = usuarioLogado;
-		this.testeView = testeView;
-		this.validateComponente = validateComponente;
 	}
+
+
+
+
+
+
 
 	/**
 	 * Valida a resposta escrita para saber se ela não esta vazia

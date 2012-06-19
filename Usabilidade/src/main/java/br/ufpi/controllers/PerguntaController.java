@@ -19,30 +19,19 @@ import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.TesteRepository;
 
 @Resource
-public class PerguntaController {
+public class PerguntaController extends BaseController {
 
-	private final Result result;
-	private final TesteView testeView;
 	private final PerguntaRepository perguntaRepository;
 	private final TesteRepository testeRepository;
-	private UsuarioLogado usuarioLogado;
-	private final Validator validator;
-	private final ValidateComponente validateComponente;
 
-	
-
-	public PerguntaController(Result result, TesteView testeView,
+	public PerguntaController(Result result, Validator validator,
+			TesteView testeView, UsuarioLogado usuarioLogado,
+			ValidateComponente validateComponente,
 			PerguntaRepository perguntaRepository,
-			TesteRepository testeRepository, UsuarioLogado usuarioLogado,
-			Validator validator, ValidateComponente validateComponente) {
-		super();
-		this.result = result;
-		this.testeView = testeView;
+			TesteRepository testeRepository) {
+		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.perguntaRepository = perguntaRepository;
 		this.testeRepository = testeRepository;
-		this.usuarioLogado = usuarioLogado;
-		this.validator = validator;
-		this.validateComponente = validateComponente;
 	}
 
 	@Logado
@@ -232,5 +221,4 @@ public class PerguntaController {
 
 	}
 
-	
 }
