@@ -16,10 +16,10 @@
                 <li>
                     <a href="${pageContext.request.contextPath}/teste/criar"><fmt:message key="crie.seu.teste"/></a> 
                 </li>
-                <!-- <li>
-                     <a href="${pageContext.request.contextPath}/login">Acessar Conta</a>
+                <li>
+                     <a href="${pageContext.request.contextPath}/login"><fmt:message key="testes.Liberado"/></a>
                  </li>
-                 <li>
+                 <!-- <li>
                      <a href="${pageContext.request.contextPath}/usuarios">Usuários</a>
                  </li> !-->
             </ul>

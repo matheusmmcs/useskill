@@ -27,7 +27,7 @@
                 <div class="row show-grid" style="margin: 0px auto 0 auto">
                     <form class="form-horizontal" id="loginForm" action="${pageContext.request.contextPath}/conta" method="post">
                         <div class="span9">
-                            <h1>Meus Testes</h1>
+                            <h1><fmt:message key="testes.construcao" /></h1>
                         </div>
                         <div class="span9">
                             <table class="table table-striped table-bordered table-condensed" style="background-color: white">
