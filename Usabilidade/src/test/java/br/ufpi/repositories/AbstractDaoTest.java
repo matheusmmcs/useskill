@@ -1,5 +1,8 @@
 package br.ufpi.repositories;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -20,9 +23,9 @@ public abstract class AbstractDaoTest {
 
 	@BeforeClass
 	public static void prepare() {
-		entityManagerFactory= Persistence.createEntityManagerFactory("default");
-		entityManager=entityManagerFactory.createEntityManager();
-		
+		HashMap<String, String> configuracao= new HashMap<String,String>();
+		configuracao.put("hibernate.connection.url", "jdbc:mysql://localhost:3306/usabilidadeTest");
+		entityManagerFactory= Persistence.createEntityManagerFactory("default",configuracao);
 	}
 
 	@AfterClass
@@ -33,6 +36,7 @@ public abstract class AbstractDaoTest {
 	@Before
 	public void setUp() throws Exception {
 		mockery = new Mockery();
+		entityManager = entityManagerFactory.createEntityManager();
 		entityManager.getTransaction().begin();
 	}
 
@@ -41,6 +45,7 @@ public abstract class AbstractDaoTest {
 		entityManager.getTransaction().rollback();
 		entityManager.clear();
 		entityManager.close();
+	
 	}
 
 }
