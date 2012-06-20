@@ -11,10 +11,6 @@
 	<decorator name="testeUser" page="testeUser.jsp">
 		<pattern>/tarefa/loadactionuser</pattern>
 	</decorator>
-	<decorator name="logado" page="logado.jsp">
-		<pattern>/teste/*</pattern>
-		<pattern>/usuario</pattern>
-	</decorator>
 	<decorator name="main" page="main.jsp">
 		<pattern>/*</pattern>
 	</decorator>

@@ -4,14 +4,16 @@
         var widthSelecionado=0;
         var linksmenu = $('#menu_topo_centro > ul li a');
         var imagem = $('#menu_topo_centro > img.imagem_selected')
+        
         adicionarClassSelected();
         percorre()
-        widthSelecionado=centraliza(selecionado)
+        widthSelecionado = centraliza(selecionado)
         imagem.css("left",widthSelecionado)
 
         //funcao para percorrer todos os elementos gerando seus dados
         function percorre(){
             linksmenu.each(function(index, value){
+            	//inserir datas com key: href de cada link
                 $.data(value,"indice",index)
                 $.data(value,"width",$(this).css("width"))
                 $.data(value,"paddingE",$(this).css("padding-left"))
@@ -23,8 +25,10 @@
                 }
             });
         }
+        
         //funcao para retornar o centro do elementro
         function centraliza(indice){
+        	
             var total=0;
             var esse=0;
             for(var i=0;i<indice;i++){
@@ -34,11 +38,14 @@
                 total+=parseInt($.data(linksmenu[i],"marginE"))
                 total+=parseInt($.data(linksmenu[i],"marginD"))
             }
-            //alert(total)
+            
             esse+=parseInt($.data(linksmenu[indice],"width"))/2
             esse+=parseInt($.data(linksmenu[indice],"paddingE"))/2
             esse+=parseInt($.data(linksmenu[indice],"marginE"))/2
-            total+=esse
+            total+=esse;
+            total+=15;
+            
+            
             
             return total;
         }
@@ -67,9 +74,10 @@
         function adicionarClassSelected(){
             linksmenu.each(function(){
                 if(removeBarra($(this).attr("href"))==removeBarra(new String(location.pathname))){
-                    $(this).addClass("menu_selected")
+                    $(this).addClass("menu_selected");
                 }
             });
+            
         }
         
         function removeBarra(string){
