@@ -120,7 +120,9 @@ public class TesteController extends BaseController {
 	 * Passo para a escolha dos usuarios. Pode ser por questionario ou por
 	 * escolha de caracterização. A Escolha vai poder ser por uma lista de
 	 * Usuarios
-	 */
+         * 
+         * @param idTeste 
+         */
 	@Logado
 	@Get("teste/{idTeste}/editar/passo3")
 	public void passo3(Long idTeste) {
@@ -205,7 +207,8 @@ public class TesteController extends BaseController {
 	 * caso contrario para pagina passo3
 	 * 
 	 * @param idUsuarios
-	 *            Lista de Usuarios que foram marcados para participar do teste
+         *            Lista de Usuarios que foram marcados para participar do teste
+         * @param idTeste  
 	 */
 	@Logado
 	@Post("teste/convidar/usuario")
@@ -233,7 +236,8 @@ public class TesteController extends BaseController {
 	 * 
 	 * @param idUsuarios
 	 *            Lista de identificadores de usuarios que não participaram de
-	 *            um teste
+         *            um teste
+         * @param idTeste  
 	 */
 	@Logado
 	@Post("teste/desconvidar/usuario")

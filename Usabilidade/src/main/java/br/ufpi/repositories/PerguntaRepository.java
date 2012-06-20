@@ -20,10 +20,10 @@ public interface PerguntaRepository {
 	 * Procura se uma pergunta pertence a um determinado Teste e a um
 	 * determinado Usuario
 	 * 
-	 * @param usuario
-	 * @param teste
-	 * @param pergunta
-	 * @param testeLiberado indica se o teste esta liberado ou não
+         * @param usuarioId 
+         * @param testeId 
+         * @param perguntaId 
+         * @param testeLiberado indica se o teste esta liberado ou não
 	 * @return Pergunta se obedecer todos os pre-requisitos e null se não
 	 *         encontra a pergunta
 	 */

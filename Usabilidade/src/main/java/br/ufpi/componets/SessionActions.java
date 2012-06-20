@@ -65,11 +65,11 @@ public class SessionActions {
 		return this.acoes.addAll(actions);
 	}
 
-	public boolean isPrimeiraPagina() {
+        public boolean isPrimeiraPagina() {
 		return primeiraPagina;
 	}
 
-	public void setPrimeiraPagina(boolean primeiraPagina) {
+        public void setPrimeiraPagina(boolean primeiraPagina) {
 		this.primeiraPagina = primeiraPagina;
 	}
 

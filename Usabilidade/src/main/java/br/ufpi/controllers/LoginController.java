@@ -128,7 +128,9 @@ public class LoginController extends BaseController {
 	 * Pagina para o usuario recuperar a senha , onde vai conter apenas o campo
 	 * de email do usuario;
 	 * 
-	 */
+         * 
+         * @param email 
+         */
 	@Get("/usuario/recupera-senha")
 	public void recuperaSenha(String email) {
 		result.include("email", email);
@@ -139,7 +141,8 @@ public class LoginController extends BaseController {
 	 * 
 	 * @param email
 	 *            passou o email em que esta cadastrado e o aplicativo envia
-	 *            outra senha para o mesmo
+         *            outra senha para o mesmo
+         * @return  
 	 */
 	@Post("usuario/recupera-senha-completa")
 	public String recuperaSenhaCompleta(String email) {

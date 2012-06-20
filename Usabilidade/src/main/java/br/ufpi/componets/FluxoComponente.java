@@ -89,7 +89,10 @@ public class FluxoComponente {
 			return null;
 	}
 
-	@PreDestroy
+        /**
+         * 
+         */
+        @PreDestroy
 	public void destroy() {
 		this.tarefas = null;
 		this.perguntasFim = null;
@@ -129,7 +132,8 @@ public class FluxoComponente {
 	/**
 	 * Obtem a proxima pergunta que vai ser obtida
 	 * 
-	 * @return Identificador da pergunta que vai ser obtida
+         * @param pergunta 
+         * @return Identificador da pergunta que vai ser obtida
 	 */
 	public Long getProximaPergunta(List<Long> pergunta) {
 		System.out.print(" Pergunta MOMENTO: ");

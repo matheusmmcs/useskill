@@ -8,7 +8,8 @@ import br.ufpi.controllers.TesteParticiparController;
 
 /**
  * Usado para conter os redirects de objetos que o usuario tentar acessar e não
- * for dono e outros tipos de validação que sirva para a maioria dos Controllers
+ * for dono.
+ * E outros tipos de validação que sirva para a maioria dos Controllers
  * 
  * @author Cleiton
  * 
@@ -18,7 +19,11 @@ import br.ufpi.controllers.TesteParticiparController;
 public class ValidateComponente {
 	private final Validator validator;
 
-	public ValidateComponente(Validator validator) {
+        /**
+         * Instancia o validateComponent passando o validator do Vraptor
+         * @param validator
+         */
+        public ValidateComponente(Validator validator) {
 		super();
 		this.validator = validator;
 	}

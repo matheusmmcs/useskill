@@ -1,8 +1,7 @@
 package br.ufpi.repositories;
 
-import java.util.List;
-
 import br.ufpi.models.RespostaEscrita;
+import java.util.List;
 
 public interface RespostaEscritaRepository {
 

@@ -76,7 +76,11 @@ public class TarefaController extends BaseController {
 	/**
 	 * Usado para criar Tarefas analisa se o teste id passado não é igual a
 	 * null, caso seja redireciona para uma pagina 404
-	 */
+         * 
+         * @param testeId 
+         * @param tarefa
+         * @return  
+         */
 	@Logado
 	@Get("teste/{testeId}/editar/passo2/criar/tarefa")
 	public Tarefa criarTarefa(Long testeId, Tarefa tarefa) {
@@ -144,11 +148,9 @@ public class TarefaController extends BaseController {
 	 * Pagina para editar Tarefa, se idTeste e TarefaId foor igual a null
 	 * redireciona para página 404
 	 * 
-	 * @param idTeste
+         * @param tarefa 
+         * @param idTeste
 	 *            Identificador ao qual a tarefa pertence
-	 * @param tarefaId
-	 *            Identificador da tarefa a ser editada
-	 * @return
 	 */
 	@Logado
 	@Post("teste/tarefa/atualizar")
@@ -172,7 +174,8 @@ public class TarefaController extends BaseController {
 	 * Remove Tarefa caso tarefa não possa ser deletada vai pra 404.
 	 * 
 	 * @param idTarefa
-	 *            identificador da Tarefa a ser deletada
+         *            identificador da Tarefa a ser deletada
+         * @param idTeste  
 	 */
 	@Logado
 	@Post("teste/removed/tarefa")
@@ -296,8 +299,6 @@ public class TarefaController extends BaseController {
 	 * Método que carrega uma página para realizar a tarefa. Nesta página,
 	 * possui um iframe onde são testadas as ações do TESTADOR.
 	 * 
-	 * @param idTarefa
-	 *            = id que determina a tarefa que será realizada.
 	 * @return
 	 */
 	@Logado
@@ -323,10 +324,6 @@ public class TarefaController extends BaseController {
 	 * Método que carrega uma página e adaptada para a Usabilitool. Nesta página
 	 * serão armazeandas as ações do TESTADOR.
 	 * 
-	 * @param idTarefa
-	 *            = identicador da Tarefa a ser realizada
-	 * @param url
-	 *            = url a ser adaptada
 	 * @return
 	 */
 	@SuppressWarnings({ "unused", "unchecked", "rawtypes" })
@@ -395,10 +392,6 @@ public class TarefaController extends BaseController {
 	 * Método que carrega uma página e adaptada para a Usabilitool. Nesta página
 	 * serão armazeandas as ações do TESTADOR.
 	 * 
-	 * @param idTarefa
-	 *            = identicador da Tarefa a ser realizada
-	 * @param url
-	 *            = url a ser adaptada
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })

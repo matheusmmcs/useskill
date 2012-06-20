@@ -32,10 +32,11 @@ public class TesteSession {
     public void setTeste(Teste teste) {
         this.teste = teste;
     }
+    /**
+     * Quando terminar o tempo da sessão do Usuario sera setado os atributos como null
+     */
     @PreDestroy
     public void garbateColection(){
-    System.out.println("Terminou minha section");	
-    	
     this.setTarefa(null);
     this.setTeste(null);
     }

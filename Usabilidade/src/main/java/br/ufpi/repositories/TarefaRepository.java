@@ -1,22 +1,36 @@
 package br.ufpi.repositories;
 
+import br.ufpi.models.Tarefa;
 import java.util.List;
 
-import br.ufpi.models.Tarefa;
-
 public interface TarefaRepository {
-	void create(Tarefa entity);
 
-	Tarefa update(Tarefa entity);
+    void create(Tarefa entity);
 
-	void destroy(Tarefa entity);
+    Tarefa update(Tarefa entity);
 
-	Tarefa find(Long id);
+    void destroy(Tarefa entity);
 
-	List<Tarefa> findAll();
+    Tarefa find(Long id);
 
-	Tarefa pertenceTeste(Long idTarefa, Long idTeste, Long idUsuario);
+    List<Tarefa> findAll();
 
-	Tarefa perteceTesteNaoRealizado(Long idTarefa, Long idTeste, Long idUsuario);
+    /**
+     *Obtem a Tarefa caso ela pertença a um teste
+     * @param idTarefa Identificador da tarefa que esta procurando
+     * @param idTeste Identificador do teste ao qual a tarefa pertence
+     * @param idUsuario Identificador do usuario que é dono do teste
+     * @return
+     */
+    Tarefa pertenceTeste(Long idTarefa, Long idTeste, Long idUsuario);
 
+    /**
+     * Obtem a tarefa caso ela não pertença a um teste não realizado
+     *
+     * @param idTarefa Identificador da tarefa que esta procurando
+     * @param idTeste Identificador do teste ao qual a tarefa pertence e que ainda não tenha sido realizado
+     * @param idUsuario Identificador do usuario que é dono do teste
+     * @return
+     */
+    Tarefa perteceTesteNaoRealizado(Long idTarefa, Long idTeste, Long idUsuario);
 }

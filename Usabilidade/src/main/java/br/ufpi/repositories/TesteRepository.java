@@ -1,10 +1,9 @@
 package br.ufpi.repositories;
 
-import java.util.List;
-
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.util.Paginacao;
+import java.util.List;
 
 /**
  * @author Cleiton
@@ -49,7 +48,9 @@ public interface TesteRepository {
 	 * apenas os usuarios que ainda não forma convidados.
 	 * 
 	 * @param testeId
-	 * @return Lista de usuarios que podem participar do teste
+         * @param numeroPagina 
+         * @param quantidade 
+         * @return Lista de usuarios que podem participar do teste
 	 */
 	Paginacao<Usuario> usuariosLivresParaPartciparTeste(Long testeId, int numeroPagina,
 			int quantidade);

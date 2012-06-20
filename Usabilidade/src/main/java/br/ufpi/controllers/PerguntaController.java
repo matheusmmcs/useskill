@@ -45,7 +45,7 @@ public class PerguntaController extends BaseController {
 	 * Método utilizado para editar pergunta.
 	 * 
 	 * @param testeId
-	 * @param idPergunta
+         * @param pergunta 
 	 * @return
 	 */
 	@Logado

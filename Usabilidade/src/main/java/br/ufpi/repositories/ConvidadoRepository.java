@@ -1,10 +1,13 @@
 package br.ufpi.repositories;
 
-import java.util.List;
-
 import br.ufpi.models.Convidado;
 import br.ufpi.models.Teste;
+import java.util.List;
 
+/**
+ * Usado para 
+ * @author Cleiton
+ */
 public interface ConvidadoRepository {
 	void create(Convidado entity);
 
@@ -20,7 +23,9 @@ public interface ConvidadoRepository {
 	 * 
 	 * Salva uma lista de Usuarios caso ocorra algum problema não salva nenhum
 	 * da Lista de Convidados
-	 */
+         * 
+         * @param convidados Lista de convidados que sera salva
+         */
 	void salvarLista(List<Convidado> convidados);
 
 	/**
@@ -31,7 +36,6 @@ public interface ConvidadoRepository {
 	 *            teste
 	 * @param idTeste
 	 *            identificador do teste que os usuarios iram pertencer
-	 * @return True se adicionou todos os usuarios ao Teste
 	 */
 	void convidarUsuarios(List<Long> idUsuarios, Long idTeste);
 	/**
@@ -42,9 +46,14 @@ public interface ConvidadoRepository {
 	 *            Lista com identificadores dos usuarios que iram ser removidos do teste
 	 * @param idTeste
 	 *            identificador do teste que os usuarios iram desistir
-	 * @return True se adicionou todos os usuarios ao Teste
 	 */
 	void desconvidarUsuarios(List<Long> idUsuarios, Long idTeste);
 
-	Teste getTesteConvidado(Long testeId, Long usuarioId);
+        /**
+         * Obtem o teste em que o Usuario foi convidado
+         * @param testeId identificador do teste que o usuario foi convidado
+         * @param usuarioId identificador do usuario que vai realizar o teste
+         * @return caso o usuario nao tenha sido convidado retorna null
+         */
+        Teste getTesteConvidado(Long testeId, Long usuarioId);
 }

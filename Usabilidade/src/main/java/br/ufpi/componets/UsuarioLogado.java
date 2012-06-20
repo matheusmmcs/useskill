@@ -7,6 +7,10 @@ import br.com.caelum.vraptor.ioc.SessionScoped;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
 
+/**
+ * Usado para Colocar o usuario na sessão apos Logar na Aplicação
+ * @author Cleiton
+ */
 @Component
 @SessionScoped
 public class UsuarioLogado {
@@ -28,11 +32,18 @@ public class UsuarioLogado {
 		this.usuario = usuario;
 	}
 
-	public boolean islogado() {
+        /**
+         * Analisa se possui usuario na sessão
+         * @return
+         */
+        public boolean islogado() {
 		return usuario != null;
 	}
 
-       @PreDestroy
+        /**
+         * Quando terminar o tempo da sessão o usuario vai ser igual a null
+         */
+        @PreDestroy
 	public void logout() {
 		usuario = null;
 	}

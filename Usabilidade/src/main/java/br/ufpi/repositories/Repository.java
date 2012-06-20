@@ -3,7 +3,6 @@ package br.ufpi.repositories;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
