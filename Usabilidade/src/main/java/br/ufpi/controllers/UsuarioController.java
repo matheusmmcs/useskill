@@ -72,10 +72,7 @@ public class UsuarioController extends BaseController {
 		validate(usuario);
 		Usuario usuarioNovo = usuarioRepository.find(usuario.getId());
 		if (!usuario.getEmail().equals(usuarioNovo.getEmail())) {
-			System.out.println(usuario.getEmail()+ " Contem email "+usuarioRepository.isContainsEmail(usuario.getConfirmacaoEmail()));
-			usuarioNovo.setEmail(usuario.getEmail());
 			if (usuarioRepository.isContainsEmail(usuario.getEmail())) {
-				
 				validator.checking(new Validations() {
 					{
 						that(false, "email.cadastrado", "email.cadastrado");
@@ -109,8 +106,10 @@ public class UsuarioController extends BaseController {
 		return usuarioRepository.find(usuario.getId());
 	}
 
+	@Logado
 	@Delete("/usuarios/{usuario.id}")
 	public void destroy(Usuario usuario) {
+		validate(usuario);
 		usuarioRepository.destroy(usuarioRepository.find(usuario.getId()));
 		result.redirectTo(this).index();
 	}
@@ -122,8 +121,6 @@ public class UsuarioController extends BaseController {
 	 * @param usuario
 	 */
 	private void validate(Usuario usuario) {
-		System.out.println("Usuario Id " + usuario.getId());
-		System.out.println(usuarioLogado.getUsuario().getId());
 		if (usuario.getId() != usuarioLogado.getUsuario().getId())
 			validateComponente.redirecionarHome("usuario.nao.pertimidido");
 	}
