@@ -21,24 +21,34 @@ public class WebClientTester {
     private static Map<String, Object> params = new HashMap<String, Object>();
     private static Map<String, Object> headers = new HashMap<String, Object>();
 
+    
+    /**
+     *	Utilizado para determinar forma de passagem de parâmetros
+     */
     public static enum HttpMethod {
-
         POST,
         GET;
     }
 
+    /**
+     * Método que codifica uma String para um determinado charset, no caso utiliza-se UTF-8 como default
+     * @param component = String que será convertida
+     * @return String convertida para UTF-8
+     */
     private static String encodeURIComponent(String component) {
         try {
             return URLEncoder.encode(component, "UTF-8");
         } catch (Exception e) {
-            // Nothing
         }
-
         return component;
     }
 
-    //transformar os parametros passados para uma url: chave=valor&
-    private static String mapToURLMap(Map<String, Object> params, Integer idPergunta) {
+    /**
+     * Converte os parametros passados para uma String no tipo: chave=valor& 
+     * @param params = Mapa de parametros
+     * @return String com os parametros no formato chave=valor&
+     */
+    private static String mapToURLMap(Map<String, Object> params) {
         if (params != null && !params.isEmpty()) {
             StringBuilder str = new StringBuilder();
 
@@ -47,27 +57,27 @@ public class WebClientTester {
                 str.append("=");
                 str.append(encodeURIComponent(entry.getValue().toString()));
                 str.append("&");
-//                System.out.println(entry.getKey()+"="+encodeURIComponent(entry.getValue().toString()));
             }
-            //str.append("idPergunta="+idPergunta.toString());
             str.deleteCharAt(str.length() - 1);
             return str.toString().replaceAll("\\s", "+");
         }
-
         return null;
     }
 
-    @SuppressWarnings("unused")
-	public static String getPageContent(String urlPagina, Integer idPergunta, HttpMethod method) {
+    /**
+     * A partir de uma url, este metodo retorna o código HTML capturado.
+     * @param urlPagina = url da pagina desejada
+     * @param method = metodo utilizado para receber os conteudos de parametros
+     * @return String do conteudo capturado
+     */
+    public static String getPageContent(String urlPagina, HttpMethod method) {
         try {
-            //System.out.println("-----------------------------------FASE 2--------------------------------------");
-            String paramsStr = mapToURLMap(params, idPergunta);
+            String paramsStr = mapToURLMap(params);
             //se houver parametro a ser passado pelo metodo get
             if (method.equals(HttpMethod.GET) && paramsStr != null) {
                 urlPagina = urlPagina + "?" + paramsStr;
             }
 
-//            System.out.println("# Url Pagina(WebClient): "+urlPagina);
             URL url = new URL(urlPagina);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -75,41 +85,33 @@ public class WebClientTester {
                 conn.addRequestProperty(entry.getKey(), entry.getValue().toString());
             }
 
-            //System.out.println("## METHOD: " + method);
             if (method.equals(HttpMethod.POST)) {
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
                 writer.write(paramsStr);
-                //System.out.println("ParamsStr: " + paramsStr);
             }
 
-            //System.out.println("-----------------------------------FASE 3--------------------------------------");
             int responseCode = conn.getResponseCode();
-            //System.out.println("########################### RESPOSTA CODE: " + responseCode + " #######################");
             if (responseCode == 200) {
                 Map<String, List<String>> responseHeaders = conn.getHeaderFields();
                 if (responseHeaders.containsKey("Set-Cookie")) {
                     String setCookies = responseHeaders.get("Set-Cookie").get(0);
                     String[] parts = setCookies.split(";\\s+");
-//                    for (int i = 0; i < parts.length; i++) {
-//                        System.out.println("[PAGE CONTENT] SET-COOKIE <" + i + ">: " + parts[i]);
-//                    }
                     headers.put("Cookie", parts[0]);
                 }
                 if (responseHeaders.containsKey("Cookie")) {
                     String setCookies = responseHeaders.get("Cookie").get(0);
                     String[] parts = setCookies.split(";\\s+");
-//                    for (int i = 0; i < parts.length; i++) {
-//                        System.out.println("[PAGE CONTENT] COOKIE <" + i + ">: " + parts[i]);
-//                    }
                     headers.put("Cookie", parts[0]);
                 }
 
                 //imprimir todos os headers do servidor
+                /*
                 for (Map.Entry<String, Object> entry : headers.entrySet()) {
-                    //System.out.println("--------------HEADER-------------------" + entry.getKey() + " : " + entry.getValue().toString());
+                    System.out.println("--------------HEADER-------------------" + entry.getKey() + " : " + entry.getValue().toString());
                 }
+                */
 
                 StringBuilder str = new StringBuilder();
                 String line;
@@ -121,11 +123,9 @@ public class WebClientTester {
                 }
 
                 str.deleteCharAt(str.length() - 1);
-
-                //System.out.println("-----------------------------------FASE 4--------------------------------------");
                 return str.toString();
             } else {
-                throw new RuntimeException("HTTP ERROR: " + responseCode);
+                throw new RuntimeException("HTTP ERROR: <br/><br/>" + responseCode);
             }
         } catch (Exception ex) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -194,15 +194,22 @@ public class WebClientTester {
         return codigo.toString();
     }
 
+    /**
+     * Metodo que retorna uma string com o HTML editado de uma determinada pagina.
+     * 
+     * @param ferramenta = url da pagina da ferramenta
+     * @param url = url orginal a ser carregada
+     * @param idTarefa = id da tarefa a ser testada 
+     * @param parameters = parametros recebidos na requisicao
+     * @param method = metodo da requisicao
+     * 
+     * @return String = String da pagina modificada 
+     */
     public static String loadPage(String ferramenta, String url, Integer idTarefa, Map<String, String[]> parameters, String method) {
         Map<String, Object> parametros = new HashMap<String, Object>();
         
-
-        //percorrer o map de parametros
         String value = "";
-        //System.out.println("\n\n\n-----------------------------------FASE 1--------------------------------------");
         for (String key : parameters.keySet()) {
-            //percorrer a String[] com os valores
             List<String> wordList = Arrays.asList(parameters.get(key));
             for (String e : wordList) {
                 value += e;
@@ -211,7 +218,6 @@ public class WebClientTester {
             parametros.put(key, value);
             value = "";
         }
-        //System.out.println(method);
 
         page = url;
         params = parametros;
@@ -219,14 +225,13 @@ public class WebClientTester {
         headers.put("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0.2) Gecko/20100101 Firefox/10.0.2");
         headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         headers.put("Accept-Language", "pt-br,pt;q=0.8,en-us;q=0.5,en;q=0.3");
-//        headers.put("Host", "ticketscead.uapi.edu.br");
-//        headers.put("Referer", "http://ticketscead.uapi.edu.br/redmine/login");
+//      headers.put("Host", "ticketscead.uapi.edu.br");
+//      headers.put("Referer", "http://ticketscead.uapi.edu.br/redmine/login");
 //      headers.put("Cookie", "_redmine_session=BAh7CDoPc2Vzc2lvbl9pZCIlMmYzYmJjYzgxODc3MzI1M2MyZGEyNjY0Y2RhNDkxMjU6DHVzZXJfaWRpDToQX2NzcmZfdG9rZW4iMWZQZ3dzTDRnZzJCQUc5UDdUYS94S0lkcXdrZlpKSTZWc3JqNmNtL3RVZnc9--e7f5d354a3ed5199c3e04d3b971eec1e50b84d1e");
 
-        String html = getPageContent(page, idTarefa, HttpMethod.valueOf(method));
+        String html = getPageContent(page, HttpMethod.valueOf(method));
         html = prependLinks(html);
         html = converteLink(html, ferramenta + "?url=", idTarefa);
-        //html = converteLink(html, ferramenta);
         
         return html;
     }
