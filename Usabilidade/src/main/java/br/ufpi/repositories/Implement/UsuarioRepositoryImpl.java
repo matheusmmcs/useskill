@@ -119,7 +119,6 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 	public List<Teste> findTestesConvidados(Long idUsuario) {
 		Query query = entityManager.createNamedQuery("Convidado.Teste");
 		query.setParameter("usuario", idUsuario);
-//		query.setParameter("realizou", null);
 		return query.getResultList();
 	}
 

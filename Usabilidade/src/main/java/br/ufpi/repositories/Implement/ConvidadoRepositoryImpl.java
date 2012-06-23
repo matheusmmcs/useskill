@@ -17,7 +17,7 @@ import br.ufpi.repositories.Repository;
 public class ConvidadoRepositoryImpl extends Repository<Convidado, Long>
 		implements ConvidadoRepository {
 
-	protected ConvidadoRepositoryImpl(EntityManager entityManager) {
+	public ConvidadoRepositoryImpl(EntityManager entityManager) {
 		super(entityManager);
 	}
 

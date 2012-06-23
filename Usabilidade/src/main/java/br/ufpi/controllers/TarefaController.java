@@ -52,8 +52,6 @@ public class TarefaController extends BaseController {
 	private final HttpServletRequest request;
 	private final TesteSession testeSession;
 
-	
-
 	public TarefaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
@@ -76,24 +74,19 @@ public class TarefaController extends BaseController {
 	/**
 	 * Usado para criar Tarefas analisa se o teste id passado não é igual a
 	 * null, caso seja redireciona para uma pagina 404
-         * 
-         * @param testeId 
-         * @param tarefa
-         * @return  
-         */
+	 * 
+	 * @param testeId
+	 * @param tarefa
+	 * @return
+	 */
 	@Logado
 	@Get("teste/{testeId}/editar/passo2/criar/tarefa")
 	public Tarefa criarTarefa(Long testeId, Tarefa tarefa) {
-		if (testeId != null) {
-			this.testeNaoRealizadoPertenceUsuarioLogado(testeId);
-			if (tarefa == null) {
-				return new Tarefa();
-			}
-			return tarefa;
-		} else {
-			result.notFound();
-			return null;
+		this.testeNaoRealizadoPertenceUsuarioLogado(testeId);
+		if (tarefa == null) {
+			return new Tarefa();
 		}
+		return tarefa;
 	}
 
 	@Logado
@@ -148,8 +141,8 @@ public class TarefaController extends BaseController {
 	 * Pagina para editar Tarefa, se idTeste e TarefaId foor igual a null
 	 * redireciona para página 404
 	 * 
-         * @param tarefa 
-         * @param idTeste
+	 * @param tarefa
+	 * @param idTeste
 	 *            Identificador ao qual a tarefa pertence
 	 */
 	@Logado
@@ -174,8 +167,8 @@ public class TarefaController extends BaseController {
 	 * Remove Tarefa caso tarefa não possa ser deletada vai pra 404.
 	 * 
 	 * @param idTarefa
-         *            identificador da Tarefa a ser deletada
-         * @param idTeste  
+	 *            identificador da Tarefa a ser deletada
+	 * @param idTeste
 	 */
 	@Logado
 	@Post("teste/removed/tarefa")
@@ -260,12 +253,12 @@ public class TarefaController extends BaseController {
 	private void gravaFluxoUSuario(Long tarefaId) {
 		System.out.println("GRAVA FLUXO DE USUARIO");
 		FluxoUsuario fluxoUsuario = new FluxoUsuario();
-		fluxoUsuario.setUsuario(usuarioLogado.getUsuario());
+		fluxoUsuario.getFluxo().setUsuario(usuarioLogado.getUsuario());
 		List<Acao> acoes = actions.getAcoes();
 		for (Acao acao : acoes) {
-			acao.setFluxo(fluxoUsuario);
+			acao.setFluxo(fluxoUsuario.getFluxo());
 		}
-		fluxoUsuario.setAcoes(actions.getAcoes());
+		fluxoUsuario.getFluxo().setAcoes(actions.getAcoes());
 		fluxoUsuarioRepository.create(fluxoUsuario);
 		fluxo.getProximaTarefa();
 		System.out.println("AGORA vez esta" + fluxo.getTarefaVez());
@@ -443,12 +436,12 @@ public class TarefaController extends BaseController {
 		Tarefa tarefa = this.tarefaPertenceTeste(idTeste, tarefaId);
 
 		FluxoIdeal fluxoIdeal = new FluxoIdeal();
-		fluxoIdeal.setUsuario(usuarioLogado.getUsuario());
+		fluxoIdeal.getFluxo().setUsuario(usuarioLogado.getUsuario());
 		List<Acao> acoes = actions.getAcoes();
 		for (Acao acao : acoes) {
-			acao.setFluxo(fluxoIdeal);
+			acao.setFluxo(fluxoIdeal.getFluxo());
 		}
-		fluxoIdeal.setAcoes(acoes);
+		fluxoIdeal.getFluxo().setAcoes(acoes);
 		tarefa.setFluxoIdeal(fluxoIdeal);
 		tarefa.setFluxoIdealPreenchido(true);
 		tarefa.setNome("Tarefa alterada");
@@ -483,13 +476,12 @@ public class TarefaController extends BaseController {
 	 *            Identificador do Teste a ser procurado
 	 */
 	private void testeNaoRealizadoPertenceUsuarioLogado(Long idTeste) {
+		validateComponente.validarIdTeste(idTeste);
 		Teste teste = testeRepository.getTestCriadoNaoLiberado(usuarioLogado
 				.getUsuario().getId(), idTeste);
-		if (teste != null) {
-			testeView.setTeste(teste);
-		} else {
-			result.notFound();
-		}
+		validateComponente.validarObjeto(teste);
+		testeView.setTeste(teste);
+
 	}
 
 	/**
@@ -503,6 +495,11 @@ public class TarefaController extends BaseController {
 		Tarefa tarefaRetorno = tarefaRepository.perteceTesteNaoRealizado(
 				tarefaId, idTeste, usuarioLogado.getUsuario().getId());
 		if (tarefaRetorno == null) {
+			System.out.println("erro");
+			System.out.println("erro");
+			System.out.println("erro");
+			System.out.println("erro");
+			System.out.println("erro");
 			result.notFound();
 		}
 		return tarefaRetorno;

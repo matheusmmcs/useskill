@@ -37,15 +37,5 @@ public class BaseController {
         this.validateComponente = validateComponente;
     }
 
-    public final Result getResult() {
-        return result;
-    }
-
-    public final Validator getValidator() {
-        return validator;
-    }
-
-    public final TesteView getTesteView() {
-        return testeView;
-    }
+  
 }

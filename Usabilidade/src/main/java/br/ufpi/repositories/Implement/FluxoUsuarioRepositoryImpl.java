@@ -11,7 +11,7 @@ import br.ufpi.repositories.Repository;
 public class FluxoUsuarioRepositoryImpl extends Repository<FluxoUsuario, Long>
 		implements FluxoUsuarioRepository {
 
-	protected FluxoUsuarioRepositoryImpl(EntityManager entityManager) {
+	public FluxoUsuarioRepositoryImpl(EntityManager entityManager) {
 		super(entityManager);
 	}
 

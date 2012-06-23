@@ -35,14 +35,11 @@ public class TesteController extends BaseController {
 	private final ConvidadoRepository convidadoRepository;
 	private final HttpServletRequest request;
 
-	
-
 	public TesteController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
 			TesteRepository testeRepository,
-			ConvidadoRepository convidadoRepository,
-			HttpServletRequest request, TesteView testeView2) {
+			ConvidadoRepository convidadoRepository, HttpServletRequest request) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.testeRepository = testeRepository;
 		this.convidadoRepository = convidadoRepository;
@@ -56,45 +53,65 @@ public class TesteController extends BaseController {
 	@Get("teste/criar")
 	@Logado
 	public void criarTeste() {
-		// this.testeView.setTeste(new Teste());
-		// this.testeView.getTeste().setUsuarioCriador(
-		// usuarioLogado.getUsuario());
 	}
 
 	@Logado
 	@Post()
 	public void salvar(String titulo) {
-		if (titulo != null) {
-			Teste teste = new Teste();
-			teste.setUsuarioCriador(usuarioLogado.getUsuario());
-			teste.setTitulo(titulo);
-			Questionario questionario = new Questionario();
-			questionario.setTeste(teste);
-			teste.setSatisfacao(questionario);
-			if (teste.getId() == null) {
-				testeRepository.create(teste);
-			} else {
-				testeRepository.update(teste);
-			}
-			result.redirectTo(this).passo1(teste.getId());
-		} else {
-			criarTeste();
-		}
+		validateComponente.validarString(titulo, "titulo");
+		validator.onErrorRedirectTo(this).criarTeste();
+		Teste teste = new Teste();
+		teste.setUsuarioCriador(usuarioLogado.getUsuario());
+		teste.setTitulo(titulo);
+		Questionario questionario = new Questionario();
+		questionario.setTeste(teste);
+		teste.setSatisfacao(questionario);
+		testeRepository.create(teste);
+		result.redirectTo(this).passo1(teste.getId());
 	}
 
 	@Logado
 	@Get("teste/{id}/editar/passo1")
 	public void passo1(Long id) {
-		System.out.println("Identificador" + id);
 		this.testeNaoLiberadoPertenceUsuarioLogado(id);
+	}
 
+	/**
+	 * Usado para inserir os dados passados no passo2 que estavam com erros
+	 * 
+	 * @param idTeste
+	 *            Identificador do Teste que o usuario esta tentando alterar
+	 * @param titulo
+	 *            Titulo que o usuario colocou no teste
+	 * @param tituloPublico
+	 *            Titulo publico para ser mostrado para os usuarios que
+	 *            realizaram o teste
+	 * @param textoIndroducao
+	 *            Um breve texto que o usuario vai visualizar ao iniciar o teste
+	 */
+	private void passo1(Long idTeste, String titulo, String tituloPublico,
+			String textoIndroducao) {
+		Teste teste = testeView.getTeste();
+		teste.setTitulo(titulo);
+		teste.setTituloPublico(tituloPublico);
+		teste.setTextoIndroducao(textoIndroducao);
 	}
 
 	@Logado
 	@Post("teste/{idTeste}/editar/passo2")
 	public void passo2(Long idTeste, String titulo, String tituloPublico,
 			String textoIndroducao) {
+		validateComponente.validarIdTeste(idTeste);
 		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
+		validateComponente.validarString(titulo, "titulo");
+		validateComponente.validarString(tituloPublico, "teste.publico");
+		validateComponente.validarString(textoIndroducao,
+				"teste.textoIndroducao");
+		if (validator.hasErrors()) {
+			this.passo1(idTeste, titulo, tituloPublico, textoIndroducao);
+		}
+		validator.onErrorUsePageOf(this).passo1(idTeste);
+
 		Teste teste = testeView.getTeste();
 		teste.setTitulo(titulo);
 		teste.setTituloPublico(tituloPublico);
@@ -120,9 +137,9 @@ public class TesteController extends BaseController {
 	 * Passo para a escolha dos usuarios. Pode ser por questionario ou por
 	 * escolha de caracterização. A Escolha vai poder ser por uma lista de
 	 * Usuarios
-         * 
-         * @param idTeste 
-         */
+	 * 
+	 * @param idTeste
+	 */
 	@Logado
 	@Get("teste/{idTeste}/editar/passo3")
 	public void passo3(Long idTeste) {
@@ -207,8 +224,8 @@ public class TesteController extends BaseController {
 	 * caso contrario para pagina passo3
 	 * 
 	 * @param idUsuarios
-         *            Lista de Usuarios que foram marcados para participar do teste
-         * @param idTeste  
+	 *            Lista de Usuarios que foram marcados para participar do teste
+	 * @param idTeste
 	 */
 	@Logado
 	@Post("teste/convidar/usuario")
@@ -236,8 +253,8 @@ public class TesteController extends BaseController {
 	 * 
 	 * @param idUsuarios
 	 *            Lista de identificadores de usuarios que não participaram de
-         *            um teste
-         * @param idTeste  
+	 *            um teste
+	 * @param idTeste
 	 */
 	@Logado
 	@Post("teste/desconvidar/usuario")
@@ -262,26 +279,19 @@ public class TesteController extends BaseController {
 	/**
 	 * * Analisa se o id do teste buscado pertence ao usuario logado e se o
 	 * teste ainda não foi liberado, se não pertencer ao usuario buscado sera
-	 * redirecionado para pagina 404.
+	 * redirecionado para pagina Home
 	 * 
 	 * @param idTeste
 	 *            buscado e analisado para ver se pertence ao usuario
 	 * 
 	 */
 	private void testeNaoLiberadoPertenceUsuarioLogado(Long idTeste) {
-		System.out.println("USUARIO" + usuarioLogado.getUsuario().getId());
-		System.out.println("IDTESTE" + idTeste);
-		if (idTeste != null) {
-			Teste teste = testeRepository.getTestCriadoNaoLiberado(
-					usuarioLogado.getUsuario().getId(), idTeste);
-			if (teste != null) {
-				testeView.setTeste(teste);
-			} else {
-				result.notFound();
-			}
-		} else {
-			result.notFound();
-		}
+		validateComponente.validarIdTeste(idTeste);
+		Teste teste = testeRepository.getTestCriadoNaoLiberado(usuarioLogado
+				.getUsuario().getId(), idTeste);
+		validateComponente.validarObjeto(teste);
+		testeView.setTeste(teste);
+
 	}
 
 	/**
@@ -293,17 +303,12 @@ public class TesteController extends BaseController {
 	 * 
 	 */
 	private void testePertenceUsuarioLogado(Long idTeste) {
-		if (idTeste != null) {
-			Teste teste = testeRepository.getTestCriado(usuarioLogado
-					.getUsuario().getId(), idTeste);
-			if (teste != null) {
-				testeView.setTeste(teste);
-			} else {
-				result.notFound();
-			}
-		} else {
-			result.notFound();
-		}
+		validateComponente.validarIdTeste(idTeste);
+		Teste teste = testeRepository.getTestCriado(usuarioLogado.getUsuario()
+				.getId(), idTeste);
+		validateComponente.validarObjeto(teste);
+		testeView.setTeste(teste);
+
 	}
 
 	@Get("teste/{idTeste}/remover")
@@ -315,18 +320,10 @@ public class TesteController extends BaseController {
 	@Delete()
 	@Logado
 	public void removed(final String senha, Long idTeste) {
-		// TODO passar o id do teste e verificar se ele pertence ao usuario
-		validator.checking(new Validations() {
-
-			{
-				that(!senha.isEmpty(), "campo.obrigatorio",
-						"campo.obrigatorio", "senha");
-			}
-		});
+		validateComponente.validarString(senha, "senha");
 		validator.onErrorRedirectTo(this).remove(idTeste);
 		String senhaCriptografada = Criptografa.criptografar(senha);
 		if (senhaCriptografada.equals(usuarioLogado.getUsuario().getSenha())) {
-			System.out.println("IDTESTE" + idTeste);
 			this.testePertenceUsuarioLogado(idTeste);
 			testeRepository.destroy(testeView.getTeste());
 			result.redirectTo(LoginController.class).logado();
@@ -334,17 +331,23 @@ public class TesteController extends BaseController {
 			validator.checking(new Validations() {
 
 				{
-					that(!senha.isEmpty(), "senha.incorreta", "senha.incorreta");
+					that(false, "senha.incorreta", "senha.incorreta");
 				}
 			});
 			validator.onErrorRedirectTo(this).remove(idTeste);
 		}
 	}
 
+	/**
+	 * Usado para convidar usuarios de um teste apos este teste ter sido
+	 * liberado
+	 * 
+	 * @param idTeste Identificador do teste ao qual se quer adicionar novos convidados
+	 */
 	@Logado
-	@Get("teste/{idTeste}/convidar/usuarrios")
+	@Get("teste/{idTeste}/convidar/usuarios")
 	public void convidar(Long idTeste) {
-		addUsers(idTeste, false);
+		addUsers(idTeste, true);
 
 	}
 
@@ -394,17 +397,17 @@ public class TesteController extends BaseController {
 	}
 
 	@Get("exibir/{idTeste}")
-	public StringBuilder exibir(Long idTeste ) {
-		StringBuilder builder= new StringBuilder();
+	public StringBuilder exibir(Long idTeste) {
+		StringBuilder builder = new StringBuilder();
 		Teste teste = this.testeRepository.find(idTeste);
 		for (Tarefa tarefa : teste.getTarefas()) {
-			List<Acao> acoes = tarefa.getFluxoIdeal().getAcoes();
+			List<Acao> acoes = tarefa.getFluxoIdeal().getFluxo().getAcoes();
 			builder.append(acoes);
 			for (FluxoUsuario fluxo : tarefa.getFluxoUsuario()) {
-			builder.append(fluxo.getAcoes());
+				builder.append(fluxo.getFluxo().getAcoes());
 			}
 		}
-	return builder;	
+		return builder;
 
 	}
 

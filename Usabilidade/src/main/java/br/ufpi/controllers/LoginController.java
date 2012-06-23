@@ -23,12 +23,9 @@ import br.ufpi.util.EmailUtils;
 @Resource
 public class LoginController extends BaseController {
 
-
 	private final UsuarioRepository usuarioRepository;
 	private final HttpServletRequest request;
 
-
-	
 	public LoginController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
@@ -54,19 +51,18 @@ public class LoginController extends BaseController {
 		validator.checking(new Validations() {
 
 			{
-				that(!email.isEmpty(), "email", "campo.obrigatorio",
-						i18n("email"));
-				that(!senha.isEmpty(), "senha", "campo.obrigatorio",
-						i18n("senha"));
+				that(!email.isEmpty(), "campo.email.obrigatorio",
+						"campo.obrigatorio", i18n("email"));
+				that(!senha.isEmpty(), "campo.senha.obrigatorio",
+						"campo.obrigatorio", i18n("senha"));
 			}
 		});
-		validator.onErrorRedirectTo(this).login(senha);
+		validator.onErrorRedirectTo(this).login(email);
 		String senhaCriptografada = Criptografa.criptografar(senha);
 		Usuario usuario = usuarioRepository.logar(email, senhaCriptografada);
 		if (usuario != null) {
 			if (usuario.isEmailConfirmado()) {
 				usuarioLogado.setUsuario(usuario);
-//				usuarioLogado.setTeste(null);
 				result.redirectTo(this).logado();
 			} else {
 				result.forwardTo(this).reenviaEmailConfirmacao(
@@ -83,6 +79,10 @@ public class LoginController extends BaseController {
 		}
 	}
 
+	/**
+	 * ao logar mostra todos os teste que o usuario foi convidado e os testes
+	 * que ainda não foram liberados
+	 */
 	@Get("/usuario")
 	@Logado
 	public void logado() {
@@ -106,7 +106,7 @@ public class LoginController extends BaseController {
 	/**
 	 * Usuario ao receber o email acessara a pagina passada e esta action valida
 	 * a inscrição do usuario. Caso o email de confirmação não for encontrado é
-	 * gerado o resultado de página não encontrada.
+	 * redirecionado para a pagina de Login.
 	 * 
 	 * @param confirmacaoEmail
 	 */
@@ -120,7 +120,7 @@ public class LoginController extends BaseController {
 			usuarioRepository.update(usuario);
 			result.include(usuario);
 		} else {
-			result.notFound();
+			result.redirectTo(LoginController.class).login(null);
 		}
 	}
 
@@ -128,24 +128,31 @@ public class LoginController extends BaseController {
 	 * Pagina para o usuario recuperar a senha , onde vai conter apenas o campo
 	 * de email do usuario;
 	 * 
-         * 
-         * @param email 
-         */
+	 * 
+	 * @param email
+	 */
 	@Get("/usuario/recupera-senha")
 	public void recuperaSenha(String email) {
 		result.include("email", email);
 	}
 
 	/**
-	 * 
+	 * Realiza o processo de Reenvio de nova senha para o usuario
 	 * 
 	 * @param email
 	 *            passou o email em que esta cadastrado e o aplicativo envia
-         *            outra senha para o mesmo
-         * @return  
+	 *            outra senha para o mesmo
+	 * @return
 	 */
 	@Post("usuario/recupera-senha-completa")
-	public String recuperaSenhaCompleta(String email) {
+	public String recuperaSenhaCompleta(final String email) {
+		validator.checking(new Validations() {
+			{
+				that(!email.isEmpty(), "campo.email.obrigatorio",
+						"campo.obrigatorio", i18n("email"));
+			}
+		});
+		validator.onErrorForwardTo(this).recuperaSenha(email);
 		Usuario usuario = usuarioRepository.findEmail(email);
 		if (usuario == null) {
 			validator.checking(new Validations() {
@@ -169,9 +176,11 @@ public class LoginController extends BaseController {
 	}
 
 	/**
+	 * Gera a senha para o Usuario
 	 * 
-	 * @param string
-	 * @return
+	 * @param usuario
+	 *            Usuario ao qual vai ser gerado a senha
+	 * @return a senha de tamanho de 8 caracteres
 	 */
 	private String geradorSenha(Usuario usuario) {
 		return Criptografa.criptografar(
@@ -185,36 +194,29 @@ public class LoginController extends BaseController {
 	}
 
 	@Post("usuario/reenviar/email")
-	public void reenviaEmailConfirmacaoCompleto(String email) {
+	public void reenviaEmailConfirmacaoCompleto(final String email) {
+		validator.checking(new Validations() {
+			{
+				that(!email.isEmpty(), "campo.email.obrigatorio",
+						"campo.obrigatorio", i18n("email"));
+			}
+		});
+		validator.onErrorForwardTo(this).reenviaEmailConfirmacao(email);
+		Usuario usuario = usuarioRepository.findEmail(email);
+		if (usuario != null) {
+			if (usuario.getConfirmacaoEmail() != null) {
+				BaseUrl.getInstance(request);
+				EmailUtils emailUtils = new EmailUtils();
+				emailUtils.enviarEmailConfirmacao(usuario);
+				result.include("email", email);
+				result.include("isConfirmado", false);
 
-		if (email != null) {
-			Usuario usuario = usuarioRepository.findEmail(email);
-			if (usuario != null) {
-				if (usuario.getConfirmacaoEmail() != null) {
-					BaseUrl.getInstance(request);
-					EmailUtils emailUtils = new EmailUtils();
-					emailUtils.enviarEmailConfirmacao(usuario);
-					result.include("email", email);
-					result.include("isConfirmado", false);
-
-				} else {
-					result.include("email", email);
-					result.include("isConfirmado", true);
-
-				}
 			} else {
-				validator.checking(new Validations() {
-
-					{
-						that(false, "email.nao.cadastrado",
-								"email.nao.cadastrado");
-					}
-				});
-				validator.onErrorForwardTo(this).reenviaEmailConfirmacao(email);
+				result.include("email", email);
+				result.include("isConfirmado", true);
 			}
 		} else {
 			validator.checking(new Validations() {
-
 				{
 					that(false, "email.nao.cadastrado", "email.nao.cadastrado");
 				}

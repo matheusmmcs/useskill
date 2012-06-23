@@ -5,11 +5,13 @@ import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.controllers.LoginController;
 import br.ufpi.controllers.TesteParticiparController;
+import br.ufpi.models.Tarefa;
+import br.ufpi.models.Teste;
 
 /**
  * Usado para conter os redirects de objetos que o usuario tentar acessar e não
- * for dono.
- * E outros tipos de validação que sirva para a maioria dos Controllers
+ * for dono. E outros tipos de validação que sirva para a maioria dos
+ * Controllers
  * 
  * @author Cleiton
  * 
@@ -19,11 +21,12 @@ import br.ufpi.controllers.TesteParticiparController;
 public class ValidateComponente {
 	private final Validator validator;
 
-        /**
-         * Instancia o validateComponent passando o validator do Vraptor
-         * @param validator
-         */
-        public ValidateComponente(Validator validator) {
+	/**
+	 * Instancia o validateComponent passando o validator do Vraptor
+	 * 
+	 * @param validator
+	 */
+	public ValidateComponente(Validator validator) {
 		super();
 		this.validator = validator;
 	}
@@ -42,9 +45,10 @@ public class ValidateComponente {
 		});
 		validator.onErrorRedirectTo(LoginController.class).logado();
 	}
-/**
- * Redireciona para termino de Teste
- */
+
+	/**
+	 * Redireciona para termino de Teste
+	 */
 	public void redirecionarTermino() {
 		validator.checking(new Validations() {
 			{
@@ -53,4 +57,41 @@ public class ValidateComponente {
 		});
 		validator.onErrorRedirectTo(TesteParticiparController.class).termino();
 	}
+
+	public void validarString(final String valorCampo, final String nameCampo) {
+		validator.checking(new Validations() {
+
+			{
+				that((valorCampo!=null && !valorCampo.isEmpty() && !valorCampo.trim().equals("")), "campo." + nameCampo + ".obrigatorio",
+						"campo.obrigatorio", i18n(nameCampo));
+			}
+		});
+	}
+
+	public void validarIdTeste(final Long idTeste) {
+		validator.checking(new Validations() {
+
+			{
+				that((idTeste!=null ), "campo.form.alterado",
+						"campo.form.alterado");
+			}
+		});	
+		validator.onErrorRedirectTo(LoginController.class).logado();
+	}
+	/**
+	 * Apenas analisa se o teste não é nulo
+	 * @param teste Objeto a ser verificado
+	 */
+	public void validarObjeto(final Object teste) {
+		validator.checking(new Validations() {
+
+			{
+				that((teste!=null ), "campo.form.alterado",
+						"campo.form.alterado");
+			}
+		});	
+		validator.onErrorRedirectTo(LoginController.class).logado();
+	}
+	
+	
 }

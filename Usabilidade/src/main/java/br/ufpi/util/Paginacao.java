@@ -8,7 +8,6 @@ public class Paginacao<T> {
 
 	public Paginacao() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Paginacao(Long count, List<T> listObjects) {

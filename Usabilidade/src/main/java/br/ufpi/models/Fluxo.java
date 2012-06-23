@@ -14,13 +14,6 @@ import javax.persistence.*;
  * @author Cleiton
  */
 @Entity
-@Table(name = "fluxo")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(
-name = "tipo_fluxo",
-discriminatorType = DiscriminatorType.INTEGER
-)
-@DiscriminatorValue("0")
 public class Fluxo implements Serializable {
 
     private static final long serialVersionUID = 1L;

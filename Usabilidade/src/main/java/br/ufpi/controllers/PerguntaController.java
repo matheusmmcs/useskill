@@ -45,7 +45,7 @@ public class PerguntaController extends BaseController {
 	 * Método utilizado para editar pergunta.
 	 * 
 	 * @param testeId
-         * @param pergunta 
+	 * @param pergunta
 	 * @return
 	 */
 	@Logado
@@ -73,38 +73,32 @@ public class PerguntaController extends BaseController {
 	@Post("teste/{testeId}/editar/passo2/salvar/pergunta")
 	public void salvarPergunta(Long testeId, Pergunta pergunta) {
 		testeNaoLiberadoPertenceUsuarioLogado(testeId);
-		if (testeId != null) {
-			validator.validate(pergunta);
-			if (pergunta.getId() != null) {
-				validator.onErrorRedirectTo(this).criarPergunta(
-						pergunta.getId());
-			} else {
-				validator.onErrorRedirectTo(TesteController.class).passo2(
-						testeId);
-			}
-			Questionario satisfacao = testeView.getTeste().getSatisfacao();
-			pergunta.setQuestionario(satisfacao);
-			boolean tipo = pergunta.getTipoRespostaAlternativa() == null ? false
-					: true;
-			if (tipo && pergunta.getAlternativas() != null) {
-				System.out.println("Objetiva");
-				System.out.println("Responder em qual momento"
-						+ pergunta.isResponderFim());
-				for (Alternativa alternativa : pergunta.getAlternativas()) {
-					alternativa.setPergunta(pergunta);
-				}
-			} else {
-				System.out.println("Responder em qual momento"
-						+ pergunta.isResponderFim());
-				System.out.println("SUBJETIVA");
-				pergunta.setTipoRespostaAlternativa(false);
-				pergunta.setAlternativas(null);
-			}
-			perguntaRepository.create(pergunta);
-			result.redirectTo(TesteController.class).passo2(testeId);
+		validator.validate(pergunta);
+		if (pergunta.getId() != null) {
+			validator.onErrorRedirectTo(this).criarPergunta(pergunta.getId());
 		} else {
-			result.redirectTo(LoginController.class).logado();
+			validator.onErrorRedirectTo(TesteController.class).passo2(testeId);
 		}
+		Questionario satisfacao = testeView.getTeste().getSatisfacao();
+		pergunta.setQuestionario(satisfacao);
+		boolean tipo = pergunta.getTipoRespostaAlternativa() == null ? false
+				: true;
+		if (tipo && pergunta.getAlternativas() != null) {
+			System.out.println("Objetiva");
+			System.out.println("Responder em qual momento"
+					+ pergunta.isResponderFim());
+			for (Alternativa alternativa : pergunta.getAlternativas()) {
+				alternativa.setPergunta(pergunta);
+			}
+		} else {
+			System.out.println("Responder em qual momento"
+					+ pergunta.isResponderFim());
+			System.out.println("SUBJETIVA");
+			pergunta.setTipoRespostaAlternativa(false);
+			pergunta.setAlternativas(null);
+		}
+		perguntaRepository.create(pergunta);
+		result.redirectTo(TesteController.class).passo2(testeId);
 	}
 
 	/**
@@ -118,8 +112,6 @@ public class PerguntaController extends BaseController {
 	@Logado
 	@Put("teste/{testeId}/editar/passo2/salvar/pergunta")
 	public void atualizarPergunta(Long testeId, Pergunta pergunta) {
-		// TODO Resolver problema de Alternativas tem que deleta elas e criar de
-		// novo
 		if (testeId != null) {
 			validator.validate(pergunta);
 			testeNaoLiberadoPertenceUsuarioLogado(testeId);
@@ -168,15 +160,13 @@ public class PerguntaController extends BaseController {
 	@Logado
 	@Post("teste/apagar/pergunta")
 	public void deletarPergunta(Long testeId, Long perguntaId) {
-		if (testeId != null && perguntaId != null) {
-			Pergunta perguntaPertenceUsuario = null;
-			perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId,
-					testeId);
-			perguntaRepository.destroy(perguntaPertenceUsuario);
-			result.redirectTo(TesteController.class).passo2(testeId);
-		} else {
-			result.notFound();
-		}
+		validateComponente.validarObjeto(testeId);
+		validateComponente.validarObjeto(perguntaId);
+		Pergunta perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId,
+				testeId);
+		perguntaRepository.destroy(perguntaPertenceUsuario);
+		result.redirectTo(TesteController.class).passo2(testeId);
+
 	}
 
 	/**
@@ -202,22 +192,18 @@ public class PerguntaController extends BaseController {
 	/**
 	 * * Analisa se o id do teste buscado pertence ao usuario logado e se o
 	 * teste ainda não foi liberado, se não pertencer ao usuario buscado sera
-	 * redirecionado para pagina 404.
+	 * redirecionado para pagina Home
 	 * 
 	 * @param idTeste
 	 *            buscado e analisado para ver se pertence ao usuario
 	 * 
 	 */
 	private void testeNaoLiberadoPertenceUsuarioLogado(Long idTeste) {
-		if (idTeste != null) {
-			Teste teste = testeRepository.getTestCriadoNaoLiberado(
-					usuarioLogado.getUsuario().getId(), idTeste);
-			if (teste != null) {
-				testeView.setTeste(teste);
-				return;
-			}
-		}
-		validateComponente.redirecionarHome("teste.nao.pertence.usuario");
+		validateComponente.validarIdTeste(idTeste);
+		Teste teste = testeRepository.getTestCriadoNaoLiberado(usuarioLogado
+				.getUsuario().getId(), idTeste);
+		validateComponente.validarObjeto(teste);
+		testeView.setTeste(teste);
 
 	}
 
