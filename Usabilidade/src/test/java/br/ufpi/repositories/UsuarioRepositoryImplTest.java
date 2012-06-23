@@ -5,7 +5,6 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import br.ufpi.models.Usuario;
 import br.ufpi.repositories.Implement.UsuarioRepositoryImpl;
 
 public class UsuarioRepositoryImplTest extends AbstractDaoTest {
@@ -27,7 +26,7 @@ public class UsuarioRepositoryImplTest extends AbstractDaoTest {
 	}
 	@Test
 	public void naoContemEmail() throws Exception {
-		Assert.assertFalse(dao.isContainsEmail("cleitonmoura18@gmail.com"))
+		Assert.assertFalse(dao.isContainsEmail("cleitonmoura19@gmail.com"))
 		;
 	}
 }

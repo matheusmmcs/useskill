@@ -11,9 +11,10 @@ import org.junit.Test;
 
 import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
-import br.ufpi.controllers.procedure.UserTestProcedure;
+import br.ufpi.controllers.procedure.UsuarioTestProcedure;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.AbstractDaoTest;
+import br.ufpi.repositories.UsuarioRepository;
 
 /**
  * 
@@ -27,9 +28,10 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	@Test
 	public void testIndex() {
 		System.out.println("index");
-		UsuarioController instance = UserTestProcedure
+		UsuarioController instance = UsuarioTestProcedure
 				.newInstanceUsuarioController(entityManager);
-		assertEquals(5, instance.index().size());
+		UsuarioRepository usuarioRepository= UsuarioTestProcedure.newInstanceUsuarioRepository(entityManager);
+		assertEquals(usuarioRepository.findAll().size(), instance.index().size());
 	}
 
 	/**
@@ -39,9 +41,9 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	public void testCorrectCreate() {
 		System.out.println("create");
 
-		Usuario usuario = UserTestProcedure.newInstaceUsuario(entityManager,
+		Usuario usuario = UsuarioTestProcedure.newInstaceUsuario(entityManager,
 				"cleiton", "cleitonmoura19@hotmail.com", "cleiton");
-		UsuarioController instance = UserTestProcedure
+		UsuarioController instance = UsuarioTestProcedure
 				.newInstanceUsuarioController(entityManager);
 		int qAntes = instance.index().size();
 		instance.create(usuario);
@@ -52,9 +54,9 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	@Test
 	public void testEmailEqual() {
 		System.out.println("create email equal");
-		Usuario usuario = UserTestProcedure.newInstaceUsuario(entityManager,
+		Usuario usuario = UsuarioTestProcedure.newInstaceUsuario(entityManager,
 				"cleiton", "cleitonmoura18@hotmail.com", "cleiton");
-		UsuarioController instance = UserTestProcedure
+		UsuarioController instance = UsuarioTestProcedure
 				.newInstanceUsuarioController(entityManager);
 		try {
 			instance.create(usuario);
@@ -73,7 +75,7 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	@Test
 	public void testNewUsuario() {
 		System.out.println("newUsuario");
-		UsuarioController instance = UserTestProcedure
+		UsuarioController instance = UsuarioTestProcedure
 				.newInstanceUsuarioController(entityManager);
 		Usuario result = instance.newUsuario();
 		Assert.assertNotNull(result);
@@ -85,10 +87,10 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	@Test
 	public void testUpdate() {
 		System.out.println("update");
-		Usuario usuario = UserTestProcedure.newInstaceUsuario(entityManager,
-				"Cleiton Santos ", "cleitonmoura18@gmail.com", "moura");
+		Usuario usuario = UsuarioTestProcedure.newInstaceUsuario(entityManager,
+				"Cleiton Santos ", "cleitonmouraSilveste@gmail.com", "moura");
 		usuario.setId(1l);
-		UsuarioController instance = UserTestProcedure
+		UsuarioController instance = UsuarioTestProcedure
 				.newInstanceUsuarioController(entityManager);
 		try {
 			instance.update(usuario);
@@ -105,10 +107,10 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	@Test
 	public void testUpdateErro() {
 		System.out.println("update");
-		Usuario usuario = UserTestProcedure.newInstaceUsuario(entityManager,
+		Usuario usuario = UsuarioTestProcedure.newInstaceUsuario(entityManager,
 				"Cleiton Santos ", "cleitonmoura18@hotmail.com", "moura");
 		usuario.setId(1l);
-		UsuarioController instance = UserTestProcedure
+		UsuarioController instance = UsuarioTestProcedure
 				.newInstanceUsuarioController(entityManager);
 		try {
 			instance.update(usuario);
@@ -129,7 +131,7 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 		System.out.println("edit");
 		Usuario usuario = new Usuario();
 		usuario.setId(1l);
-		UsuarioController instance = UserTestProcedure
+		UsuarioController instance = UsuarioTestProcedure
 				.newInstanceUsuarioController(entityManager);
 		Usuario result = instance.edit(usuario);
 		assertEquals("cleiton", result.getNome());
@@ -143,7 +145,7 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 		System.out.println("edit");
 		Usuario usuario = new Usuario();
 		usuario.setId(2l);
-		UsuarioController instance = UserTestProcedure
+		UsuarioController instance = UsuarioTestProcedure
 				.newInstanceUsuarioController(entityManager);
 		try {
 			instance.edit(usuario);
@@ -168,7 +170,7 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 		System.out.println("show");
 		Usuario usuario = new Usuario();
 		usuario.setId(1l);
-		UsuarioController instance = UserTestProcedure.newInstanceUsuarioController(entityManager);
+		UsuarioController instance = UsuarioTestProcedure.newInstanceUsuarioController(entityManager);
 		Usuario result = instance.show(usuario);
 		assertEquals("cleiton", result.getNome());
 	}
@@ -180,8 +182,9 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	public void testDestroy() {
 		System.out.println("destroy");
 		Usuario usuario = new Usuario();
-		usuario.setId(1l);
-		UsuarioController instance =  UserTestProcedure.newInstanceUsuarioController(entityManager);
+		usuario.setId(6l);
+		UsuarioController instance =  UsuarioTestProcedure.newInstanceUsuarioController(entityManager);
+		instance.usuarioLogado.setUsuario(UsuarioTestProcedure.newInstanceUsuarioRepository(entityManager).find(6l));
 		int qAntes = instance.index().size();
 		instance.destroy(usuario);
 		Assert.assertEquals("Deveria ter um usuario a menos", qAntes-1,instance.index().size());

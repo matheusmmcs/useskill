@@ -4,130 +4,374 @@
  */
 package br.ufpi.controllers;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import br.com.caelum.vraptor.validator.ValidationException;
+import br.ufpi.controllers.procedure.LoginTestProcedure;
+import br.ufpi.controllers.procedure.UsuarioTestProcedure;
+import br.ufpi.models.Teste;
 import br.ufpi.repositories.AbstractDaoTest;
-import org.junit.*;
-import static org.junit.Assert.*;
+import br.ufpi.repositories.UsuarioRepository;
 
 /**
- *
+ * 
  * @author Cleiton
  */
-public class LoginControllerTest extends AbstractDaoTest{
-       /**
-     * Test of login method, of class LoginController.
-     */
-    @Test
-    public void testLogin() {
-        System.out.println("login");
-        String email = "";
-        LoginController instance = null;
-        instance.login(email);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+public class LoginControllerTest extends AbstractDaoTest {
+	/**
+	 * Test of login method, of class LoginController.
+	 */
+	@Test
+	public void testLogin() {
+		System.out.println("login");
+		String email = "cleitonmouraSilveste@gmail.com";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		instance.login(email);
+		Assert.assertEquals("O email deveria ser igual" + email, email, result
+				.included().get("email"));
 
-    /**
-     * Test of conta method, of class LoginController.
-     */
-    @Test
-    public void testConta() {
-        System.out.println("conta");
-        String email = "";
-        String senha = "";
-        LoginController instance = null;
-        instance.conta(email, senha);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	}
 
-    /**
-     * Test of logado method, of class LoginController.
-     */
-    @Test
-    public void testLogado() {
-        System.out.println("logado");
-        LoginController instance = null;
-        instance.logado();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of conta method, of class LoginController. Usuario não possui senha
+	 * confirmada se usuario possuir senha confirmada o objeto usuarioLogado
+	 * mudaria
+	 */
+	@Test
+	public void testConta() {
+		System.out.println("conta");
+		String email = "cleitonmoura18@hotmail.com";
+		String senha = "senha2";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		instance.conta(email, senha);
+		Assert.assertEquals("cleiton", instance.usuarioLogado.getUsuario()
+				.getNome());
 
-    /**
-     * Test of logout method, of class LoginController.
-     */
-    @Test
-    public void testLogout() {
-        System.out.println("logout");
-        LoginController instance = null;
-        instance.logout();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	}
 
-    /**
-     * Test of validarInscricao method, of class LoginController.
-     */
-    @Test
-    public void testValidarInscricao() {
-        System.out.println("validarInscricao");
-        String confirmacaoEmail = "";
-        LoginController instance = null;
-        instance.validarInscricao(confirmacaoEmail);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Usuario possui senha confirmada se usuario possuir senha confirmada o
+	 * objeto usuarioLogado muda.
+	 */
+	@Test
+	public void testContaEmailConfirmado() {
+		System.out.println("conta");
+		String email = "claudiamoura18@gmail.com";
+		String senha = "senha1";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		instance.conta(email, senha);
+		Assert.assertEquals("claudia", instance.usuarioLogado.getUsuario()
+				.getNome());
 
-    /**
-     * Test of recuperaSenha method, of class LoginController.
-     */
-    @Test
-    public void testRecuperaSenha() {
-        System.out.println("recuperaSenha");
-        String email = "";
-        LoginController instance = null;
-        instance.recuperaSenha(email);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	}
 
-    /**
-     * Test of recuperaSenhaCompleta method, of class LoginController.
-     */
-    @Test
-    public void testRecuperaSenhaCompleta() {
-        System.out.println("recuperaSenhaCompleta");
-        String email = "";
-        LoginController instance = null;
-        String expResult = "";
-        String result = instance.recuperaSenhaCompleta(email);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Testar fazer login sem entrar com uma conta de email
+	 */
+	@Test
+	public void testContaSemPassarEmail() {
+		System.out.println("conta");
+		String email = "";
+		String senha = "senha1";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		try {
+			instance.conta(email, senha);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals("campo.email.obrigatorio", validationException
+					.getErrors().get(0).getCategory());
+		}
+	}
 
-    /**
-     * Test of reenviaEmailConfirmacao method, of class LoginController.
-     */
-    @Test
-    public void testReenviaEmailConfirmacao() {
-        System.out.println("reenviaEmailConfirmacao");
-        String email = "";
-        LoginController instance = null;
-        instance.reenviaEmailConfirmacao(email);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Testar fazer com senha incorreta
+	 */
+	@Test
+	public void testContaComEmailSenhaErrada() {
+		System.out.println("conta");
+		String email = "claudiamoura18@gmail.com";
+		String senha = "sen";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		try {
+			instance.conta(email, senha);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals("email.senha.invalido", validationException
+					.getErrors().get(0).getCategory());
+		}
+	}
 
-    /**
-     * Test of reenviaEmailConfirmacaoCompleto method, of class LoginController.
-     */
-    @Test
-    public void testReenviaEmailConfirmacaoCompleto() {
-        System.out.println("reenviaEmailConfirmacaoCompleto");
-        String email = "";
-        LoginController instance = null;
-        instance.reenviaEmailConfirmacaoCompleto(email);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Testar fazer login sem entrar com uma conta de email
+	 */
+	@Test
+	public void testContaSemPassarEmailNemSenha() {
+		System.out.println("conta");
+		String email = "";
+		String senha = "";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		try {
+			instance.conta(email, senha);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals("campo.email.obrigatorio", validationException
+					.getErrors().get(0).getCategory());
+			Assert.assertEquals("campo.senha.obrigatorio", validationException
+					.getErrors().get(1).getCategory());
+		}
+	}
+
+	/**
+	 * Testar fazer login sem entrar com uma senha
+	 */
+	@Test
+	public void testContaSemPassarSenha() {
+		System.out.println("conta");
+		String email = "claudiamoura18@gmail.com";
+		String senha = "";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		try {
+			instance.conta(email, senha);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals("campo.senha.obrigatorio", validationException
+					.getErrors().get(0).getCategory());
+		}
+	}
+
+	/**
+	 * Test of logado method, of class LoginController.
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testLogado() {
+		System.out.println("logado");
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		instance.logado();
+		List<Teste> testesCriados = (List<Teste>) result.included().get(
+				"testesCriados");
+		List<Teste> testesConvidados = (List<Teste>) result.included().get(
+				"testesConvidados");
+		for (Teste teste : testesConvidados) {
+			if(teste.getId()==5){
+				Assert.assertTrue("Teste 5 ainda não foi liberado entao não e para o usuario ver este teste",false);
+			}
+		}
+		Assert.assertEquals("Usuario so foi convidado para um teste", 1,
+				testesConvidados.size());
+		Assert.assertEquals(
+				"Usuario so possui 2 teste criados e não liberados ", 2,
+				testesCriados.size());
+	}
+
+	/**
+	 * Test of logout method, of class LoginController.
+	 */
+	@Test
+	public void testLogout() {
+		System.out.println("logout");
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		instance.logout();
+		Assert.assertNull("Era pra ser nulo",
+				instance.usuarioLogado.getUsuario());
+	}
+
+	/**
+	 * Test of validarInscricao method, of class LoginController.
+	 */
+	@Test
+	public void testValidarInscricao() {
+		System.out.println("validarInscricao");
+		UsuarioRepository usuarioRepository = UsuarioTestProcedure
+				.newInstanceUsuarioRepository(entityManager);
+		String confirmacaoEmail = usuarioRepository.find(1l)
+				.getConfirmacaoEmail();
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		instance.validarInscricao(confirmacaoEmail);
+		Assert.assertNull("Apos confirmar a confirmação de email fica null",
+				usuarioRepository.find(1l).getConfirmacaoEmail());
+	}
+
+	/**
+	 * 
+	 * Valida a incrição de email passando confirmação de email inesistente Deve
+	 * retorna um result vazio pois ele nao adiciona usuario apenas redireciona
+	 * para outra view
+	 */
+	@Test
+	public void testValidarInscricaoPassandoConfirmacaoInexistente() {
+		System.out.println("validarInscricaoPassandoConfirmacaoInexistente");
+		String confirmacaoEmail = "naoExiste";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		instance.validarInscricao(confirmacaoEmail);
+		Assert.assertTrue(
+				"Deveria estar vazio o include pois ele não encoutrou o usuario",
+				result.included().isEmpty());
+	}
+
+	/**
+	 * Test of recuperaSenha method, of class LoginController.
+	 */
+	@Test
+	public void testRecuperaSenha() {
+		System.out.println("recuperaSenha");
+		String email = "cleitonmoura8@gmail.com";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		instance.recuperaSenha(email);
+		assertEquals(email, result.included().get("email"));
+	}
+
+	/**
+	 * Test of recuperaSenhaCompleta method, of class LoginController. Sem
+	 * passar o campo email
+	 */
+	@Test
+	public void testRecuperaSenhaCompletaSemPassarEmail() {
+		System.out.println("RecuperaSenhaCompletaSemPassarEmail");
+		String email = "";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		try {
+
+			instance.recuperaSenhaCompleta(email);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals("campo.email.obrigatorio", validationException
+					.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of recuperaSenhaCompleta method, of class LoginController.Passando
+	 * um email invalido
+	 */
+	@Test
+	public void testRecuperaSenhaCompletaEmailInvalido() {
+		System.out.println("RecuperaSenhaCompletaEmailInvalido");
+		String email = "cleiton@gtalk.com";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		try {
+			instance.recuperaSenhaCompleta(email);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals("email.nao.cadastrado", validationException
+					.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of recuperaSenhaCompleta method, of class LoginController.Passando
+	 * um email valido
+	 */
+	@Test
+	public void testRecuperaSenhaCompletaEmailValido() {
+		System.out.println("RecuperaSenhaCompletaEmailValido");
+		String email = "cleitonmouraSilveste@gmail.com";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		UsuarioRepository repository = UsuarioTestProcedure
+				.newInstanceUsuarioRepository(entityManager);
+		String senha = repository.find(1l).getSenha();
+		instance.recuperaSenhaCompleta(email);
+		Assert.assertFalse("As senhas deveria ser diferentes",
+				senha.equals(repository.find(1l).getSenha()));
+
+	}
+
+	/**
+	 * Test of reenviaEmailConfirmacao method, of class LoginController.
+	 */
+	@Test
+	public void testReenviaEmailConfirmacao() {
+		System.out.println("reenviaEmailConfirmacao");
+		String email = "cleitonmouraSilveste@gmail.com";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		instance.reenviaEmailConfirmacao(email);
+		Assert.assertEquals(email, result.included().get("email"));
+	}
+
+	/**
+	 * Test of reenviaEmailConfirmacaoCompleto method, of class LoginController.
+	 * Passando parametro de email vazio
+	 */
+	@Test
+	public void testReenviaEmailConfirmacaoCompleto() {
+		System.out.println("reenviaEmailConfirmacaoCompleto");
+		String email = "";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		try {
+			instance.reenviaEmailConfirmacaoCompleto(email);
+		} catch (ValidationException validationException) {
+
+			Assert.assertEquals("campo.email.obrigatorio", validationException
+					.getErrors().get(0).getCategory());
+		}
+	}
+
+	/**
+	 * Test of reenviaEmailConfirmacaoCompleto method, of class LoginController.
+	 * Passando parametro usuario com email ja confirmado
+	 */
+	@Test
+	public void testReenviaEmailConfirmacaoCompletoEmailJaConfirmado() {
+		System.out
+				.println("testReenviaEmailConfirmacaoCompletoEmailJaConfirmado");
+		String email = "claudiamoura18@gmail.com";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		instance.reenviaEmailConfirmacaoCompleto(email);
+		Assert.assertTrue("Email já esta confirmado", (Boolean) result
+				.included().get("isConfirmado"));
+	}
+
+	/**
+	 * Test of reenviaEmailConfirmacaoCompleto method, of class LoginController.
+	 * Passando parametro de email não existente no banco
+	 */
+	@Test
+	public void testReenviaEmailConfirmacaoCompletoEmailNaoExiste() {
+		System.out.println("reenviaEmailConfirmacaoCompleto");
+		String email = "cleiton@gmail.com";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		try {
+			instance.reenviaEmailConfirmacaoCompleto(email);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals("email.nao.cadastrado", validationException
+					.getErrors().get(0).getCategory());
+		}
+	}
+
+	/**
+	 * Test of reenviaEmailConfirmacaoCompleto method, of class LoginController.
+	 * Passando parametro de email existente no banco e ainda não confirmado
+	 * email(confirmação de email!=null)
+	 */
+	@Test
+	public void testReenviaEmailConfirmacaoCompletoEmailExiste() {
+		System.out.println("reenviaEmailConfirmacaoCompleto");
+		String email = "cleitonmouraSilveste@gmail.com";
+		LoginController instance = LoginTestProcedure
+				.newInstanceUsuarioController(entityManager, result);
+		instance.reenviaEmailConfirmacaoCompleto(email);
+		Assert.assertFalse("Email ainda não esta confirmado", (Boolean) result
+				.included().get("isConfirmado"));
+	}
+
 }

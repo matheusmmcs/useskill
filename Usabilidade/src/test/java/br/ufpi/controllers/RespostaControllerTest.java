@@ -4,35 +4,35 @@
  */
 package br.ufpi.controllers;
 
+import static org.junit.Assert.fail;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import br.ufpi.controllers.procedure.RespostaTestProcedure;
 import br.ufpi.models.Alternativa;
-import org.junit.*;
-import static org.junit.Assert.*;
+import br.ufpi.repositories.AbstractDaoTest;
+import br.ufpi.repositories.RespostaAlternativaRepository;
+import br.ufpi.repositories.RespostaEscritaRepository;
 
 /**
  *
  * @author Cleiton
  */
-public class RespostaControllerTest {
+public class RespostaControllerTest extends AbstractDaoTest{
     
-    public RespostaControllerTest() {
-    }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+	private RespostaAlternativaRepository repository;
+	private RespostaEscritaRepository escritaRepositoryImpl;
+	private RespostaController instance;
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
-
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+		repository = RespostaTestProcedure.newInstanceRespostaAlternativaRepository(entityManager);
+		escritaRepositoryImpl=RespostaTestProcedure.newInstanceRespostaEscritaRepositoryImpl(entityManager);
+		instance = RespostaTestProcedure.newInstanceTarefaController(entityManager, result);
+	}
     /**
      * Test of salvarRespostaEscrita method, of class RespostaController.
      */

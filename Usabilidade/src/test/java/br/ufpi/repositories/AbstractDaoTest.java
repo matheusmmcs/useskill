@@ -7,13 +7,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.jmock.Mockery;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import br.ufpi.controllers.procedure.UserTestProcedure;
+import br.com.caelum.vraptor.util.test.MockResult;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.Implement.UsuarioRepositoryImpl;
 
@@ -21,7 +20,7 @@ public abstract class AbstractDaoTest {
 
 	protected static EntityManagerFactory entityManagerFactory;
 	protected static EntityManager entityManager;
-	protected Mockery mockery;
+	protected MockResult result;
 
 	@BeforeClass
 	public static void prepare() {
@@ -40,7 +39,7 @@ public abstract class AbstractDaoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		mockery = new Mockery();
+		result = new MockResult();
 		entityManager = entityManagerFactory.createEntityManager();
 		entityManager.getTransaction().begin();
 	}
@@ -58,21 +57,15 @@ public abstract class AbstractDaoTest {
 				entityManager);
 		entityManager.getTransaction().begin();
 		List<Usuario> find = repositoryImpl.findAll();
-		if (find.size()==0) {
-			repositoryImpl.create(UserTestProcedure.newInstaceUsuario(
-					entityManager, "cleiton", "cleitonmoura18@gmail.com",
-					"senha1"));
-			repositoryImpl.create(UserTestProcedure.newInstaceUsuario(
-					entityManager, "cleiton moura",
-					"cleitonmoura18@hotmail.com", "senha2"));
-			repositoryImpl.create(UserTestProcedure.newInstaceUsuario(
-					entityManager, "clebert", "clebertmoura18@gmail.com",
-					"senha1"));
-			repositoryImpl.create(UserTestProcedure.newInstaceUsuario(
-					entityManager, "claudia", "claudiamoura18@gmail.com",
-					"senha1"));
-			repositoryImpl.create(UserTestProcedure.newInstaceUsuario(
-					entityManager, "Maria", "maria@gmail.com", "senha1"));
+		if (find.size() == 0) {
+			Populator.userPopulator(entityManager);
+			Populator.validarIncricao(entityManager, repositoryImpl.find(4l)
+					.getConfirmacaoEmail());
+			Populator.testPopulator(entityManager);
+			Populator.convidarUsuarios(entityManager);
+			Populator.criarPergunta(entityManager,2l);
+			Populator.criarPergunta(entityManager,4l);
+			Populator.criarTarefa(entityManager);
 			entityManager.getTransaction().commit();
 			entityManager.close();
 		}

@@ -4,245 +4,1060 @@
  */
 package br.ufpi.controllers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.List;
-import org.junit.*;
-import static org.junit.Assert.*;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import br.com.caelum.vraptor.validator.ValidationException;
+import br.ufpi.controllers.procedure.TesteTestProcedure;
+import br.ufpi.models.Convidado;
+import br.ufpi.models.Pergunta;
+import br.ufpi.models.Tarefa;
+import br.ufpi.models.Teste;
+import br.ufpi.repositories.AbstractDaoTest;
+import br.ufpi.repositories.TesteRepository;
 
 /**
- *
+ * 
  * @author Cleiton
  */
-public class TesteControllerTest {
-    
-    public TesteControllerTest() {
-    }
+public class TesteControllerTest extends AbstractDaoTest {
+	private TesteRepository repository;
+	private TesteController instance;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+		repository = TesteTestProcedure
+				.newInstanceTesteRepository(entityManager);
+		instance = TesteTestProcedure.newInstanceTesteController(
+				entityManager, result);
+	}
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
+	/**
+	 * Test of criarTeste method, of class TesteController.
+	 */
+	@Test
+	public void testCriarTeste() {
+		System.out.println("criarTeste");
+		instance.criarTeste();
+	}
 
-    /**
-     * Test of criarTeste method, of class TesteController.
-     */
-    @Test
-    public void testCriarTeste() {
-        System.out.println("criarTeste");
-        TesteController instance = null;
-        instance.criarTeste();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of salvar method, of class TesteController.
+	 */
+	@Test
+	public void testSalvar() {
+		System.out.println("salvar");
+		String titulo = "Novo Teste";
+		int qAntes = repository.findAll().size();
+		instance.salvar(titulo);
+		Assert.assertEquals(qAntes + 1, repository.findAll().size());
+	}
 
-    /**
-     * Test of salvar method, of class TesteController.
-     */
-    @Test
-    public void testSalvar() {
-        System.out.println("salvar");
-        String titulo = "";
-        TesteController instance = null;
-        instance.salvar(titulo);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of salvar method, of class TesteController. Tenta Salvar sem passar
+	 * um titulo
+	 */
+	@Test
+	public void testSalvarSemTitulo() {
+		System.out.println("salvar");
+		String titulo = "";
+		int qAntes = repository.findAll().size();
+		try {
+			instance.salvar(titulo);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals("Não pode deixar salvar pois campo esta vazio",
+					"campo.titulo.obrigatorio", validationException.getErrors()
+							.get(0).getCategory());
+		}
+		Assert.assertEquals(qAntes, repository.findAll().size());
+	}
 
-    /**
-     * Test of passo1 method, of class TesteController.
-     */
-    @Test
-    public void testPasso1() {
-        System.out.println("passo1");
-        Long id = null;
-        TesteController instance = null;
-        instance.passo1(id);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of salvar method, of class TesteController. Tenta Salvar sem passar
+	 * um titulo
+	 */
+	@Test
+	public void testSalvarTituloNulo() {
+		System.out.println("salvar");
+		String titulo = null;
+		int qAntes = repository.findAll().size();
+		try {
+			instance.salvar(titulo);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals("Não pode deixar salvar pois campo esta vazio",
+					"campo.titulo.obrigatorio", validationException.getErrors()
+							.get(0).getCategory());
+		}
+		Assert.assertEquals(qAntes, repository.findAll().size());
+	}
 
-    /**
-     * Test of passo2 method, of class TesteController.
-     */
-    @Test
-    public void testPasso2_4args() {
-        System.out.println("passo2");
-        Long idTeste = null;
-        String titulo = "";
-        String tituloPublico = "";
-        String textoIndroducao = "";
-        TesteController instance = null;
-        instance.passo2(idTeste, titulo, tituloPublico, textoIndroducao);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of passo4 method, of class TesteController. Usuario é o dono do
+	 * teste buscado
+	 */
+	@Test
+	public void testPasso4() {
+		System.out.println("passo1");
+		Long id = 2l;
+		instance.passo4(id);
+		Assert.assertEquals(
+				"Usuario é o criador do teste entao deveria retorna o mesmo valor do id passado",
+				id, instance.testeView.getTeste().getId());
 
-    /**
-     * Test of passo2 method, of class TesteController.
-     */
-    @Test
-    public void testPasso2_Long() {
-        System.out.println("passo2");
-        Long idTeste = null;
-        TesteController instance = null;
-        instance.passo2(idTeste);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	}
 
-    /**
-     * Test of passo3 method, of class TesteController.
-     */
-    @Test
-    public void testPasso3() {
-        System.out.println("passo3");
-        Long idTeste = null;
-        TesteController instance = null;
-        instance.passo3(idTeste);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of passo4 method, of class TesteController. Usuario não é o dono do
+	 * teste buscado
+	 */
+	@Test
+	public void testPasso4UsuarioNaoEDonoDoTeste() {
+		System.out.println("Passo1UsuarioNaoEDonoDoTeste");
+		Long id = 3l;
+		try {
+			instance.passo4(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
 
-    /**
-     * Test of passo4 method, of class TesteController.
-     */
-    @Test
-    public void testPasso4() {
-        System.out.println("passo4");
-        Long idTeste = null;
-        TesteController instance = null;
-        instance.passo4(idTeste);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	}
 
-    /**
-     * Test of liberarTeste method, of class TesteController.
-     */
-    @Test
-    public void testLiberarTeste() {
-        System.out.println("liberarTeste");
-        Long idTeste = null;
-        TesteController instance = null;
-        instance.liberarTeste(idTeste);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of passo4 method, of class TesteController. Usuario não passa o
+	 * idTeste
+	 */
+	@Test
+	public void testPasso4UsuarioNaoPassaIDTeste() {
+		System.out.println("Passo1UsuarioNaoPassaIDTeste");
+		Long id = null;
+		try {
+			instance.passo4(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
 
-    /**
-     * Test of convidarUsuario method, of class TesteController.
-     */
-    @Test
-    public void testConvidarUsuario() {
-        System.out.println("convidarUsuario");
-        List<Long> idUsuarios = null;
-        Long idTeste = null;
-        TesteController instance = null;
-        instance.convidarUsuario(idUsuarios, idTeste);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	}
 
-    /**
-     * Test of desconvidarUsuario method, of class TesteController.
-     */
-    @Test
-    public void testDesconvidarUsuario() {
-        System.out.println("desconvidarUsuario");
-        List<Long> idUsuarios = null;
-        Long idTeste = null;
-        TesteController instance = null;
-        instance.desconvidarUsuario(idUsuarios, idTeste);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario é o dono do
+	 * teste buscado, mas ele esta liberado
+	 */
+	@Test
+	public void testPasso4UsuarioEDonoDoTesteLiberado() {
+		System.out.println("passo1");
+		Long id = 4l;
+		try {
+			instance.passo4(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
 
-    /**
-     * Test of remove method, of class TesteController.
-     */
-    @Test
-    public void testRemove() {
-        System.out.println("remove");
-        Long idTeste = null;
-        TesteController instance = null;
-        instance.remove(idTeste);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	}
 
-    /**
-     * Test of removed method, of class TesteController.
-     */
-    @Test
-    public void testRemoved() {
-        System.out.println("removed");
-        String senha = "";
-        Long idTeste = null;
-        TesteController instance = null;
-        instance.removed(senha, idTeste);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario passou id do
+	 * teste não existente
+	 */
+	@Test
+	public void testPasso1UsuarioIDtesteNaoExiste() {
+		System.out.println("Passo1UsuarioIDtesteNaoExiste");
+		Long id = 5500l;
+		try {
+			instance.passo1(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
 
-    /**
-     * Test of convidar method, of class TesteController.
-     */
-    @Test
-    public void testConvidar() {
-        System.out.println("convidar");
-        Long idTeste = null;
-        TesteController instance = null;
-        instance.convidar(idTeste);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	}
 
-    /**
-     * Test of realizarTeste method, of class TesteController.
-     */
-    @Test
-    public void testRealizarTeste() {
-        System.out.println("realizarTeste");
-        TesteController instance = null;
-        instance.realizarTeste();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario é o dono do
+	 * teste buscado
+	 */
+	@Test
+	public void testPasso1() {
+		System.out.println("passo1");
+		Long id = 2l;
+		instance.passo1(id);
+		Assert.assertEquals(
+				"Usuario é o criador do teste entao deveria retorna o mesmo valor do id passado",
+				id, instance.testeView.getTeste().getId());
 
-    /**
-     * Test of meusProjetos method, of class TesteController.
-     */
-    @Test
-    public void testMeusProjetos() {
-        System.out.println("meusProjetos");
-        TesteController instance = null;
-        instance.meusProjetos();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	}
 
-    /**
-     * Test of exibir method, of class TesteController.
-     */
-    @Test
-    public void testExibir() {
-        System.out.println("exibir");
-        Long idTeste = null;
-        TesteController instance = null;
-        StringBuilder expResult = null;
-        StringBuilder result = instance.exibir(idTeste);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario não é o dono do
+	 * teste buscado
+	 */
+	@Test
+	public void testPasso1UsuarioNaoEDonoDoTeste() {
+		System.out.println("Passo1UsuarioNaoEDonoDoTeste");
+		Long id = 3l;
+		try {
+			instance.passo1(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario não passa o
+	 * idTeste
+	 */
+	@Test
+	public void testPasso1UsuarioNaoPassaIDTeste() {
+		System.out.println("Passo1UsuarioNaoPassaIDTeste");
+		Long id = null;
+		try {
+			instance.passo1(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario é o dono do
+	 * teste buscado, mas ele esta liberado
+	 */
+	@Test
+	public void testPasso1UsuarioEDonoDoTesteLiberado() {
+		System.out.println("passo1");
+		Long id = 4l;
+		try {
+			instance.passo1(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario passou id do
+	 * teste não existente
+	 */
+	@Test
+	public void testPasso4UsuarioIDtesteNaoExiste() {
+		System.out.println("Passo1UsuarioIDtesteNaoExiste");
+		Long id = 5500l;
+		try {
+			instance.passo4(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo2 method, of class TesteController.
+	 */
+	@Test
+	public void testPasso2_4args() {
+		System.out.println("passo2");
+		Long idTeste = 1l;
+		String titulo = "Novo Teste";
+		String tituloPublico = " titulo publico";
+		String textoIndroducao = "texto introdução";
+		Teste testeAntes = repository.find(idTeste);
+		instance.passo2(idTeste, titulo, tituloPublico, textoIndroducao);
+		Teste testeDepois = repository.find(idTeste);
+		Assert.assertEquals(
+				"Texto deveria ter mudado, pois o teste foi alterado",
+				textoIndroducao, testeDepois.getTextoIndroducao());
+		Assert.assertFalse("Texto deveria ter mudado", !testeAntes.getTitulo()
+				.equals(testeDepois.getTitulo()));
+	}
+
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario passou id do
+	 * teste não existente
+	 */
+	@Test
+	public void testPasso2_4argsUsuarioIDtesteNaoExiste() {
+		System.out.println("Passo2_4argsUsuarioIDtesteNaoExiste");
+		Long id = 5500l;
+		String titulo = "Novo Teste";
+		String tituloPublico = " titulo publico";
+		String textoIndroducao = "texto introdução";
+		try {
+			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo2_4args method, of class TesteController. Usuario não é o
+	 * dono do teste buscado
+	 */
+	@Test
+	public void testPasso2_4argsUsuarioNaoEDonoDoTeste() {
+		System.out.println("Passo1UsuarioNaoEDonoDoTeste");
+		Long id = 3l;
+		String titulo = "Novo Teste";
+		String tituloPublico = " titulo publico";
+		String textoIndroducao = "texto introdução";
+		try {
+			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario não passa o
+	 * idTeste
+	 */
+	@Test
+	public void testPasso2_4argsUsuarioNaoPassaIDTeste() {
+		System.out.println("Passo1UsuarioNaoPassaIDTeste");
+		Long id = null;
+		String titulo = "Novo Teste";
+		String tituloPublico = " titulo publico";
+		String textoIndroducao = "texto introdução";
+		try {
+			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo2_4args method, of class TesteController. Usuario é o dono
+	 * do teste buscado, mas ele esta liberado
+	 */
+	@Test
+	public void testPasso2_4argsUsuarioEDonoDoTesteLiberado() {
+		System.out.println("passo1");
+		Long id = 4l;
+		String titulo = "Novo Teste";
+		String tituloPublico = " titulo publico";
+		String textoIndroducao = "texto introdução";
+		try {
+			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo2_4args method, of class TesteController. Usuario é o dono
+	 * do teste buscado, mas passa titulo vazio
+	 */
+	@Test
+	public void testPasso2_4argsUsuarioPassaCampoTituloVazio() {
+		System.out.println("passo1");
+		Long id = 1l;
+		String titulo = "";
+		String tituloPublico = " titulo publico";
+		String textoIndroducao = "texto introdução";
+		Teste testeAntes = repository.find(1l);
+		try {
+			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario passou campo titulo vazio",
+					"campo.titulo.obrigatorio", validationException.getErrors()
+							.get(0).getCategory());
+		}
+		Teste testeDepois = repository.find(1l);
+		Assert.assertFalse(
+				"Texto antes tem que ser igual ao texto de depois pois não foi alterado o teste",
+				testeAntes.getTitulo().equals(testeDepois.getTextoIndroducao()));
+	}
+
+	/**
+	 * Test of passo2_4args method, of class TesteController. Usuario é o dono
+	 * do teste buscado, mas passa titulo introdução vazio
+	 */
+	@Test
+	public void testPasso2_4argsUsuarioPassaCampoTituloIntroducaoVazio() {
+		System.out.println("passo1");
+		Long id = 1l;
+		String titulo = "Testo";
+		String tituloPublico = " titulo titulo";
+		String textoIndroducao = "";
+		Teste testeAntes = repository.find(1l);
+
+		try {
+			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario passou campo titulo vazio",
+					"campo.teste.textoIndroducao.obrigatorio",
+					validationException.getErrors().get(0).getCategory());
+		}
+		Teste testeDepois = repository.find(1l);
+		Assert.assertFalse(
+				"Texto antes tem que ser igual ao texto de depois pois não foi alterado o teste",
+				testeAntes.getTitulo().equals(testeDepois.getTextoIndroducao()));
+
+	}
+
+	/**
+	 * Test of passo2_4args method, of class TesteController. Usuario é o dono
+	 * do teste buscado, mas passa titulo publico vazio
+	 */
+	@Test
+	public void testPasso2_4argsUsuarioPassaCampoTituloPublicoVazio() {
+		System.out.println("passo1");
+		Long id = 1l;
+		String titulo = "Preenchido";
+		String tituloPublico = "";
+		String textoIndroducao = "texto introdução";
+		Teste testeAntes = repository.find(1l);
+		try {
+			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario passou campo titulo publico vazio",
+					"campo.teste.publico.obrigatorio", validationException
+							.getErrors().get(0).getCategory());
+		}
+		Teste testeDepois = repository.find(1l);
+		Assert.assertFalse(
+				"Texto antes tem que ser igual ao texto de depois pois não foi alterado o teste",
+				testeAntes.getTitulo().equals(testeDepois.getTextoIndroducao()));
+	}
+
+	/**
+	 * Test of passo2_4args method, of class TesteController. Usuario é o dono
+	 * do teste buscado, mas passa todos os campos vazio
+	 */
+	@Test
+	public void testPasso2_4argsUsuarioPassaTodosCamposVazio() {
+		System.out.println("passo1");
+		Long id = 1l;
+		String titulo = "";
+		String tituloPublico = "";
+		String textoIndroducao = "";
+		Teste testeAntes = repository.find(1l);
+		try {
+			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario passou campo titulo publico vazio",
+					"campo.teste.publico.obrigatorio", validationException
+							.getErrors().get(1).getCategory());
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario passou campo titulo vazio",
+					"campo.teste.textoIndroducao.obrigatorio",
+					validationException.getErrors().get(2).getCategory());
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario passou campo titulo vazio",
+					"campo.titulo.obrigatorio", validationException.getErrors()
+							.get(0).getCategory());
+		}
+		Teste testeDepois = repository.find(1l);
+		
+		Assert.assertTrue(
+				"Texto antes tem que ser igual ao texto de depois pois não foi alterado o teste",
+				testeAntes.getTitulo().equals(testeDepois.getTitulo()));
+	}
+
+	/**
+	 * Test of passo2 method, of class TesteController. Usuario passou id do
+	 * teste não existente
+	 */
+	@Test
+	public void testPasso2UsuarioIDtesteNaoExiste() {
+		System.out.println("Passo1UsuarioIDtesteNaoExiste");
+		Long id = 5500l;
+		try {
+			instance.passo1(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo2 method, of class TesteController. Usuario é o dono do
+	 * teste buscado
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testPasso2_Long() {
+		// TODO Criar teste no populator que possua Tarefas e questionarios
+		// Cadastrados
+		System.out.println("passo1");
+		Long id = 2l;
+		instance.passo2(id);
+		Assert.assertEquals(
+				"Usuario é o criador do teste entao deveria retorna o mesmo valor do id passado",
+				id, instance.testeView.getTeste().getId());
+		List<Tarefa> tarefas = (List<Tarefa>) result.included().get("tarefas");
+		List<Pergunta> perguntas = (List<Pergunta>) result.included().get(
+				"perguntas");
+		Assert.assertTrue("O teste não é para possuir tarefas",
+				tarefas.isEmpty());
+		Assert.assertEquals("O teste  é para possuir 8 pergunta",8,
+				perguntas.size());
+	}
+
+	/**
+	 * Test of passo2 method, of class TesteController. Usuario não é o dono do
+	 * teste buscado
+	 */
+	@Test
+	public void testPasso2UsuarioNaoEDonoDoTeste() {
+		System.out.println("Passo1UsuarioNaoEDonoDoTeste");
+		Long id = 3l;
+		try {
+			instance.passo1(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo2 method, of class TesteController. Usuario não passa o
+	 * idTeste
+	 */
+	@Test
+	public void testPasso2UsuarioNaoPassaIDTeste() {
+		System.out.println("Passo1UsuarioNaoPassaIDTeste");
+		Long id = null;
+		try {
+			instance.passo1(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario é o dono do
+	 * teste buscado, mas ele esta liberado
+	 */
+	@Test
+	public void testPasso2UsuarioEDonoDoTesteLiberado() {
+		System.out.println("passo1");
+		Long id = 4l;
+		try {
+			instance.passo1(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of liberarTeste method, of class TesteController.
+	 */
+	@Test
+	public void testLiberarTeste() {
+		System.out.println("liberarTeste");
+		Long idTeste = null;
+		instance.liberarTeste(idTeste);
+		// TODO review the generated test code and remove the default call to
+		// fail.
+		fail("The test case is a prototype.");
+	}
+
+	/**
+	 * Test of convidarUsuario method, of class TesteController.
+	 */
+	@Test
+	public void testConvidarUsuario() {
+		System.out.println("convidarUsuario");
+		List<Long> idUsuarios = null;
+		Long idTeste = null;
+		instance.convidarUsuario(idUsuarios, idTeste);
+		// TODO review the generated test code and remove the default call to
+		// fail.
+		fail("The test case is a prototype.");
+	}
+
+	/**
+	 * Test of desconvidarUsuario method, of class TesteController.
+	 */
+	@Test
+	public void testDesconvidarUsuario() {
+		System.out.println("desconvidarUsuario");
+		List<Long> idUsuarios = null;
+		Long idTeste = null;
+		instance.desconvidarUsuario(idUsuarios, idTeste);
+		// TODO review the generated test code and remove the default call to
+		// fail.
+		fail("The test case is a prototype.");
+	}
+
+	/**
+	 * Test of remove method, of class TesteController.
+	 * 
+	 */
+	@Test
+	public void testRemove() {
+		System.out.println("passo1");
+		Long idTeste = 2l;
+		instance.remove(idTeste);
+		Assert.assertEquals(
+				"Usuario é o criador do teste entao deveria retorna o mesmo valor do id passado",
+				idTeste, instance.testeView.getTeste().getId());
+
+	}
+
+	/**
+	 * Test of remove method, of class TesteController.Usuario não é o dono do
+	 * teste buscado
+	 */
+	@Test
+	public void testRemoveUsuarioNaoEDonoDoTeste() {
+		System.out.println("Passo1UsuarioNaoEDonoDoTeste");
+		Long id = 3l;
+		try {
+			instance.passo1(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of remove method, of class TesteController. Usuario não passa o
+	 * idTeste
+	 */
+	@Test
+	public void testRemoveUsuarioNaoPassaIDTeste() {
+		System.out.println("Passo1UsuarioNaoPassaIDTeste");
+		Long id = null;
+		try {
+			instance.remove(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of remove method, of class TesteController. Usuario passou id do
+	 * teste não existente
+	 */
+	@Test
+	public void testRemoveUsuarioIDtesteNaoExiste() {
+		System.out.println("Passo1UsuarioIDtesteNaoExiste");
+		Long id = 5500l;
+		try {
+			instance.remove(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of removed method, of class TesteController.
+	 */
+	@Test
+	public void testRemoved() {
+		System.out.println("removed");
+		String senha = "senha1";
+		Long idTeste = 1l;
+		int qAntes = repository.findAll().size();
+		instance.removed(senha, idTeste);
+		int qDepois = repository.findAll().size();
+		Assert.assertEquals("Deveria possui um teste a menos", qAntes - 1,
+				qDepois);
+	}
+
+	/**
+	 * Test of testRemoved method, of class TesteController. Usuario não é o
+	 * dono do teste buscado
+	 */
+	@Test
+	public void testRemovedUsuarioNaoEDonoDoTeste() {
+		System.out.println("testRemoved1UsuarioNaoEDonoDoTeste");
+		Long id = 3l;
+		String senha = "senha1";
+		try {
+			instance.removed(senha, id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of Removed method, of class TesteController. Usuario não passa o
+	 * idTeste
+	 */
+	@Test
+	public void testRemovedUsuarioNaoPassaIDTeste() {
+		System.out.println("testRemovedUsuarioNaoPassaIDTeste");
+		Long id = null;
+
+		String senha = "senha1";
+		try {
+			instance.removed(senha, id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of Removed method, of class TesteController. Usuario é o dono do
+	 * teste buscado, mas ele esta liberado
+	 */
+	@Test
+	public void testRemovedUsuarioEDonoDoTesteLiberado() {
+		System.out.println("passo1");
+		Long id = 4l;
+		String senha = "senha1";
+		int qAntes = repository.findAll().size();
+		instance.removed(senha, id);
+		int qDepois = repository.findAll().size();
+		Assert.assertEquals("Deveria possui um teste a menos", qAntes - 1,
+				qDepois);
+
+	}
+
+	/**
+	 * Test of Removed method, of class TesteController. Usuario é o dono do
+	 * teste buscado, mas ele esta liberado
+	 */
+	@Test
+	public void testRemovedUsuarioEDonoDoTesteLiberadoSenhaErrada() {
+		System.out.println("passo1");
+		Long id = 4l;
+		String senha = "senha";
+		int qAntes = repository.findAll().size();
+		try {
+			instance.removed(senha, id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar deletar pois senha esta incorreta",
+					"senha.incorreta", validationException.getErrors().get(0)
+							.getCategory());
+		}
+		int qDepois = repository.findAll().size();
+		Assert.assertEquals("Deveria ter o mesmo numero de teste", qAntes,
+				qDepois);
+	}
+
+	/**
+	 * Test of Removed method, of class TesteController. Usuario é o dono do
+	 * teste buscado, mas ele esta liberado
+	 */
+	@Test
+	public void testRemovedUsuarioEDonoDoTesteLiberadoSenhaVazia() {
+		System.out.println("passo1");
+		Long id = 4l;
+		String senha = "";
+		int qAntes = repository.findAll().size();
+		try {
+			instance.removed(senha, id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar deletar pois senha esta vazia",
+					"campo.senha.obrigatorio", validationException.getErrors()
+							.get(0).getCategory());
+		}
+		int qDepois = repository.findAll().size();
+		Assert.assertEquals("Deveria ter o mesmo numero de teste", qAntes,
+				qDepois);
+	}
+
+	/**
+	 * Test of realizarTeste method, of class TesteController.
+	 */
+	@Test
+	public void testRealizarTeste() {
+		System.out.println("realizarTeste");
+		instance.realizarTeste();
+		// TODO review the generated test code and remove the default call to
+		// fail.
+		fail("The test case is a prototype.");
+	}
+
+	/**
+	 * Test of meusProjetos method, of class TesteController.
+	 */
+	@Test
+	public void testMeusProjetos() {
+		System.out.println("meusProjetos");
+		instance.meusProjetos();
+		// TODO review the generated test code and remove the default call to
+		// fail.
+		fail("The test case is a prototype.");
+	}
+
+	/**
+	 * Test of exibir method, of class TesteController.
+	 */
+	@Test
+	public void testExibir() {
+		System.out.println("exibir");
+		Long idTeste = null;
+		StringBuilder expResult = null;
+		StringBuilder result = instance.exibir(idTeste);
+		assertEquals(expResult, result);
+		// TODO review the generated test code and remove the default call to
+		// fail.
+		fail("The test case is a prototype.");
+	}
+
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario passou id do
+	 * teste não existente
+	 */
+	@Test
+	public void testPasso3UsuarioIDtesteNaoExiste() {
+		System.out.println("Passo1UsuarioIDtesteNaoExiste");
+		Long id = 5500l;
+		try {
+			instance.passo3(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario é o dono do
+	 * teste buscado
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testPasso3() {
+		System.out.println("passo1");
+		Long id = 2l;
+		instance.passo3(id);
+		List<Convidado> convidados = (List<Convidado>) result.included().get(
+				"usuariosEscolhidos");
+		Assert.assertTrue("Não possui usuarios Convidados",convidados.isEmpty());
+
+	}
+
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario não é o dono do
+	 * teste buscado
+	 */
+	@Test
+	public void testPasso3UsuarioNaoEDonoDoTeste() {
+		System.out.println("Passo1UsuarioNaoEDonoDoTeste");
+		Long id = 3l;
+		try {
+			instance.passo3(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario não passa o
+	 * idTeste
+	 */
+	@Test
+	public void testPasso3UsuarioNaoPassaIDTeste() {
+		System.out.println("Passo1UsuarioNaoPassaIDTeste");
+		Long id = null;
+		try {
+			instance.passo3(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+
+	/**
+	 * Test of passo3method, of class TesteController. Usuario é o dono do teste
+	 * buscado, mas ele esta liberado
+	 */
+	@Test
+	public void testPasso3UsuarioEDonoDoTesteLiberado() {
+		System.out.println("passo1");
+		Long id = 4l;
+		try {
+			instance.passo3(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+							.getErrors().get(0).getCategory());
+		}
+
+	}
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario passou id do
+	 * teste não existente
+	 */
+	@Test
+	public void testConvidarUsuarioUsuarioIDtesteNaoExiste() {
+		System.out.println("Passo3UsuarioIDtesteNaoExiste");
+		Long id = 5500l;
+		try {
+			instance.convidar(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+					.getErrors().get(0).getCategory());
+		}
+		
+	}
+	
+	/**
+	 * Test of ConvidarUsuario method, of class TesteController. Usuario é o dono do
+	 * teste buscado e o teste esta liberado
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testConvidarUsuarioTesteLiberado() {
+		System.out.println("passo1");
+		Long id = 4l;
+		instance.convidar(id);
+		List<Convidado> convidados = (List<Convidado>) result.included().get(
+				"usuariosEscolhidos");
+		List<Convidado> usuariosLivres = (List<Convidado>) result.included().get(
+				"usuariosLivres");
+		Assert.assertNull("Tem que ser Igual a nulo, pois este teste jah esta liberado",convidados);
+		Assert.assertFalse("Era pra possuir mais usuarios livres",usuariosLivres.isEmpty());
+		
+	}
+	
+	/**
+	 * Test of ConvidarUsuario method, of class TesteController. Usuario não é o dono do
+	 * teste buscado
+	 */
+	@Test
+	public void testConvidarUsuarioUsuarioNaoEDonoDoTeste() {
+		System.out.println("Passo1UsuarioNaoEDonoDoTeste");
+		Long id = 3l;
+		try {
+			instance.convidar(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+					.getErrors().get(0).getCategory());
+		}
+		
+	}
+	
+	/**
+	 * Test of passo1 method, of class TesteController. Usuario não passa o
+	 * idTeste
+	 */
+	@Test
+	public void testConvidarUsuarioUsuarioNaoPassaIDTeste() {
+		System.out.println("Passo1UsuarioNaoPassaIDTeste");
+		Long id = null;
+		try {
+			instance.convidar(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+					.getErrors().get(0).getCategory());
+		}
+		
+	}
+	
+	/**
+	 * Test of  ConvidarUsuario method, of class TesteController. Usuario é o dono do teste
+	 * buscado, mas ele esta liberado
+	 */
+	@Test
+	public void testConvidarUsuarioUsuarioEDonoDoTesteNaoLiberado() {
+		System.out.println("passo1");
+		Long id = 4l;
+		try {
+			instance.convidar(id);
+		} catch (ValidationException validationException) {
+			Assert.assertEquals(
+					"Não pode deixar convidar pois usuario nao é dono do Teste",
+					"campo.form.alterado", validationException
+					.getErrors().get(0).getCategory());
+		}
+		
+	}
+
 }

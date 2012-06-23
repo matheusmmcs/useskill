@@ -4,35 +4,35 @@
  */
 package br.ufpi.controllers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import br.ufpi.controllers.procedure.PerguntaTestProcedure;
+import br.ufpi.controllers.procedure.TarefaTestProcedure;
 import br.ufpi.models.Tarefa;
+import br.ufpi.repositories.AbstractDaoTest;
+import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.util.TarefaDetalhe;
-import org.junit.*;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author Cleiton
  */
-public class TarefaControllerTest {
+public class TarefaControllerTest  extends AbstractDaoTest {
     
-    public TarefaControllerTest() {
-    }
+	private TarefaRepository repository;
+	private TarefaController instance;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+		repository = TarefaTestProcedure.newInstanceTarefaRepository(entityManager);
+		instance = TarefaTestProcedure.newInstanceTarefaController(entityManager, result);
+	}
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of criarTarefa method, of class TarefaController.

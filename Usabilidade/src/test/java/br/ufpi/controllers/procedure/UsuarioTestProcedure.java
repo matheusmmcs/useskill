@@ -13,9 +13,12 @@ import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.UsuarioController;
 import br.ufpi.models.Usuario;
+import br.ufpi.repositories.ConvidadoRepository;
+import br.ufpi.repositories.UsuarioRepository;
+import br.ufpi.repositories.Implement.ConvidadoRepositoryImpl;
 import br.ufpi.repositories.Implement.UsuarioRepositoryImpl;
 
-public class UserTestProcedure {
+public class UsuarioTestProcedure {
 
 	public static UsuarioController newInstanceUsuarioController(
 			EntityManager entityManager) {
@@ -72,4 +75,13 @@ public class UserTestProcedure {
 		usuario.setSenha(senha);
 		return usuario;
 	}
+
+	public static UsuarioRepository newInstanceUsuarioRepository(
+			EntityManager entityManager) {
+		UsuarioRepository repository = new UsuarioRepositoryImpl(entityManager);
+		return repository;
+	}
+	public static ConvidadoRepository newInstanceConvidadoRepository(
+			EntityManager entityManager) {
+	return new ConvidadoRepositoryImpl(entityManager);	}
 }

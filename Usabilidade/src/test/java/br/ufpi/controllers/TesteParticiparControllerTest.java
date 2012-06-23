@@ -5,17 +5,16 @@
 package br.ufpi.controllers;
 
 import org.junit.*;
+
+import br.ufpi.repositories.AbstractDaoTest;
 import static org.junit.Assert.*;
 
 /**
  *
  * @author Cleiton
  */
-public class TesteParticiparControllerTest {
+public class TesteParticiparControllerTest extends AbstractDaoTest {
     
-    public TesteParticiparControllerTest() {
-    }
-
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
