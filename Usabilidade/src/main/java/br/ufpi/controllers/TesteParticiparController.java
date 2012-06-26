@@ -41,6 +41,7 @@ public class TesteParticiparController extends BaseController {
 	@Logado
 	@Post
 	public void negar(Long testeId) {
+		validateComponente.validarIdTeste(testeId);
 		Convidado convidado = new Convidado(usuarioLogado.getUsuario().getId(),
 				testeId);
 		convidado.setRealizou(false);

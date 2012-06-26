@@ -21,7 +21,7 @@ import br.ufpi.repositories.RespostaAlternativaRepository;
 import br.ufpi.repositories.RespostaEscritaRepository;
 
 @Resource
-public class RespostaController extends BaseController{
+public class RespostaController extends BaseController {
 	private final RespostaEscritaRepository escritaRepository;
 	private final RespostaAlternativaRepository alternativaRepository;
 	private final PerguntaRepository perguntaRepository;
@@ -30,7 +30,8 @@ public class RespostaController extends BaseController{
 	@Logado
 	@Post("/teste/salvar/resposta/escrita")
 	public void salvarRespostaEscrita(final String resposta) {
-		validaResposta(resposta);
+		validateComponente.validarString(resposta, "resposta");
+		validator.onErrorRedirectTo(this).exibir();
 		RespostaEscrita respostaEscrita = new RespostaEscrita();
 		respostaEscrita.setResposta(resposta);
 		respostaEscrita.setUsuario(usuarioLogado.getUsuario());
@@ -53,28 +54,6 @@ public class RespostaController extends BaseController{
 		this.alternativaRepository = alternativaRepository;
 		this.perguntaRepository = perguntaRepository;
 		this.fluxoComponente = fluxoComponente;
-	}
-
-
-
-
-
-
-
-	/**
-	 * Valida a resposta escrita para saber se ela não esta vazia
-	 * 
-	 * @param resposta
-	 *            String a aser validada
-	 */
-	private void validaResposta(final String resposta) {
-		validator.checking(new Validations() {
-			{
-				that(!resposta.trim().isEmpty(), "campo.obrigatorio",
-						"campo.obrigatorio2");
-			}
-		});
-		validator.onErrorRedirectTo(this).exibir();
 	}
 
 	@Logado
@@ -108,7 +87,8 @@ public class RespostaController extends BaseController{
 		if (!alternativaPertencePergunta) {
 			validator.checking(new Validations() {
 				{
-					that(false, "pergunta.alternativa.sem.resposta", "pergunta.alternativa.sem.resposta");
+					that(false, "pergunta.alternativa.sem.resposta",
+							"pergunta.alternativa.sem.resposta");
 				}
 			});
 			validator.onErrorRedirectTo(this).exibir();

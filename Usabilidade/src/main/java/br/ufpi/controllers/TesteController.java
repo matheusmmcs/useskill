@@ -170,7 +170,6 @@ public class TesteController extends BaseController {
 	public void liberarTeste(Long idTeste) {
 		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 		Teste teste = testeView.getTeste();
-		teste.setLiberado(true);
 		List<Usuario> usuarios = testeRepository
 				.getUsuariosConvidadosAll(idTeste);
 		if (usuarios.isEmpty() || usuarios == null) {
@@ -214,6 +213,7 @@ public class TesteController extends BaseController {
 		for (Usuario usuario : usuarios) {
 			email.enviarConviteTeste(usuario, teste);
 		}
+		teste.setLiberado(true);
 		testeRepository.update(teste);
 		this.result.redirectTo(LoginController.class).logado();
 	}
@@ -230,7 +230,8 @@ public class TesteController extends BaseController {
 	@Logado
 	@Post("teste/convidar/usuario")
 	public void convidarUsuario(List<Long> idUsuarios, Long idTeste) {
-		if (idUsuarios != null && idTeste != null) {
+		validateComponente.validarIdTeste(idTeste);
+		if (idUsuarios != null) {
 			this.testePertenceUsuarioLogado(idTeste);
 			convidadoRepository.convidarUsuarios(idUsuarios, idTeste);
 			if (!testeView.getTeste().isLiberado()) {
@@ -238,8 +239,7 @@ public class TesteController extends BaseController {
 			} else {
 				result.redirectTo(this).convidar(testeView.getTeste().getId());
 			}
-		}
-		if (idUsuarios == null) {
+		} else {
 			result.redirectTo(this).passo3(idTeste);
 		}
 
@@ -260,7 +260,8 @@ public class TesteController extends BaseController {
 	@Post("teste/desconvidar/usuario")
 	public void desconvidarUsuario(List<Long> idUsuarios, Long idTeste) {
 
-		if (idUsuarios != null && idTeste != null) {
+		validateComponente.validarIdTeste(idTeste);
+		if (idUsuarios != null) {
 			testePertenceUsuarioLogado(idTeste);
 			convidadoRepository.desconvidarUsuarios(idUsuarios, testeView
 					.getTeste().getId());
@@ -269,8 +270,7 @@ public class TesteController extends BaseController {
 			} else {
 				result.redirectTo(this).convidar(testeView.getTeste().getId());
 			}
-		}
-		if (idUsuarios == null) {
+		} else {
 			result.redirectTo(this).passo3(idTeste);
 		}
 
@@ -342,7 +342,9 @@ public class TesteController extends BaseController {
 	 * Usado para convidar usuarios de um teste apos este teste ter sido
 	 * liberado
 	 * 
-	 * @param idTeste Identificador do teste ao qual se quer adicionar novos convidados
+	 * @param idTeste
+	 *            Identificador do teste ao qual se quer adicionar novos
+	 *            convidados
 	 */
 	@Logado
 	@Get("teste/{idTeste}/convidar/usuarios")
