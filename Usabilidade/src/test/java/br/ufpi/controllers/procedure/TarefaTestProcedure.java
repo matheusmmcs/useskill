@@ -13,6 +13,8 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.TarefaController;
+import br.ufpi.models.Tarefa;
+import br.ufpi.models.Teste;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.UsuarioRepository;
@@ -84,6 +86,23 @@ public class TarefaTestProcedure {
 	public static FluxoUsuarioRepository newInstanceFluxoUsuarioRepository(
 			EntityManager entityManager) {
 		return new FluxoUsuarioRepositoryImpl(entityManager);
+	}
+	public static Tarefa newInstanceTarefa(String urlInicial, String roteiro, String nome, Teste teste){
+		Tarefa tarefa= new Tarefa();
+		tarefa.setNome(nome);
+		tarefa.setRoteiro(roteiro);
+		tarefa.setUrlInicial(urlInicial);
+		tarefa.setTeste(teste);
+		return tarefa;
+	}
+	public static Tarefa newInstanceTarefa(String urlInicial, String roteiro, String nome, Teste teste, boolean fluxoIdealPreenchido){
+		Tarefa tarefa= new Tarefa();
+		tarefa.setNome(nome);
+		tarefa.setRoteiro(roteiro);
+		tarefa.setUrlInicial(urlInicial);
+		tarefa.setTeste(teste);
+		tarefa.setFluxoIdealPreenchido(fluxoIdealPreenchido);
+		return tarefa;
 	}
 
 }

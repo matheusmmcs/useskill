@@ -39,28 +39,7 @@ public class TesteTestProcedure {
 				request);
 		return controller;
 	}
-	public static TesteController newInstanceTesteController(
-			EntityManager entityManager) {
-		HttpServletRequest request = new HttpRequestTest();
-		TesteView testeView = new TesteView();
-		MockValidator validator = new MockValidator();
-		UsuarioRepository usuarioRepositoryImpl = UsuarioTestProcedure
-				.newInstanceUsuarioRepository(entityManager);
-		UsuarioLogado usuarioLogado = new UsuarioLogado(usuarioRepositoryImpl);
-		ValidateComponente validateComponente = new ValidateComponente(
-				validator);
-		TesteController controller = new TesteController(
-				new MockResult(),
-				validator,
-				testeView,
-				usuarioLogado,
-				validateComponente,
-				newInstanceTesteRepository(entityManager),
-				UsuarioTestProcedure.newInstanceConvidadoRepository(entityManager),
-				request);
-		return controller;
-	}
-
+	
 	public static TesteRepository newInstanceTesteRepository(
 			EntityManager entityManager) {
 		return new TesteRepositoryImpl(entityManager);

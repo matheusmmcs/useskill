@@ -4,15 +4,16 @@
  */
 package br.ufpi.controllers;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.controllers.procedure.TesteTestProcedure;
 import br.ufpi.models.Convidado;
@@ -21,6 +22,7 @@ import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.AbstractDaoTest;
 import br.ufpi.repositories.TesteRepository;
+import br.ufpi.repositories.Implement.ConvidadoRepositoryImpl;
 
 /**
  * 
@@ -35,8 +37,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		super.setUp();
 		repository = TesteTestProcedure
 				.newInstanceTesteRepository(entityManager);
-		instance = TesteTestProcedure.newInstanceTesteController(
-				entityManager, result);
+		instance = TesteTestProcedure.newInstanceTesteController(entityManager,
+				result);
 	}
 
 	/**
@@ -126,8 +128,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -145,8 +147,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -164,8 +166,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -183,8 +185,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -217,8 +219,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -236,8 +238,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -255,8 +257,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -274,8 +276,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -316,8 +318,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -338,8 +340,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -360,8 +362,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -382,8 +384,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -497,7 +499,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 							.get(0).getCategory());
 		}
 		Teste testeDepois = repository.find(1l);
-		
+
 		Assert.assertTrue(
 				"Texto antes tem que ser igual ao texto de depois pois não foi alterado o teste",
 				testeAntes.getTitulo().equals(testeDepois.getTitulo()));
@@ -516,8 +518,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -529,8 +531,6 @@ public class TesteControllerTest extends AbstractDaoTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testPasso2_Long() {
-		// TODO Criar teste no populator que possua Tarefas e questionarios
-		// Cadastrados
 		System.out.println("passo1");
 		Long id = 2l;
 		instance.passo2(id);
@@ -540,9 +540,9 @@ public class TesteControllerTest extends AbstractDaoTest {
 		List<Tarefa> tarefas = (List<Tarefa>) result.included().get("tarefas");
 		List<Pergunta> perguntas = (List<Pergunta>) result.included().get(
 				"perguntas");
-		Assert.assertTrue("O teste não é para possuir tarefas",
-				tarefas.isEmpty());
-		Assert.assertEquals("O teste  é para possuir 8 pergunta",8,
+		Assert.assertEquals("O teste so é para possuir 3 tarefas", 3,
+				tarefas.size());
+		Assert.assertEquals("O teste  é para possuir 8 pergunta", 8,
 				perguntas.size());
 	}
 
@@ -559,8 +559,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -578,8 +578,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -597,23 +597,95 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
 
 	/**
-	 * Test of liberarTeste method, of class TesteController.
+	 * Test of liberarTeste method, of class TesteController. Não possui nenhum
+	 * usuario Convidado para o teste
 	 */
 	@Test
-	public void testLiberarTeste() {
+	public void testLiberarTesteSemUsuariosConvidados() {
 		System.out.println("liberarTeste");
-		Long idTeste = null;
+		Long idTeste = 2l;
+		Message message = null;
+		try {
+			instance.liberarTeste(idTeste);
+
+		} catch (ValidationException validationException) {
+			message = validationException.getErrors().get(0);
+
+		}
+		Assert.assertEquals("Nenhum usuario convidado",
+				"nenhum.usuario.convidado", message.getCategory());
+
+	}
+
+	/**
+	 * Test of liberarTeste method, of class TesteController. Não possui tarefas
+	 * cadastradas para o teste
+	 */
+	@Test
+	public void testLiberarTesteSemTarefas() {
+		System.out.println("liberarTeste");
+		Long idTeste = 7l;
+		Message message = null;
+		try {
+			instance.liberarTeste(idTeste);
+
+		} catch (ValidationException validationException) {
+			message = validationException.getErrors().get(0);
+
+		}
+		Assert.assertEquals("Nenhuma tarefa foi cadastrada",
+				"sem.tarefa.cadastrada", message.getCategory());
+
+	}
+
+	/**
+	 * Test of liberarTeste method, of class TesteController. Não possui Fluxo
+	 * Ideal cadastrado para as tarefas
+	 */
+	@Test
+	public void testLiberarTesteSemFluxoIdealGravado() {
+		System.out.println("liberarTeste");
+		Long idTeste = 8l;
+		Message message = null;
+		int numeroErros = 0;
+		try {
+			instance.liberarTeste(idTeste);
+
+		} catch (ValidationException validationException) {
+			message = validationException.getErrors().get(0);
+			numeroErros = validationException.getErrors().size();
+
+		}
+		Assert.assertEquals("Nenhuma tarefa foi cadastrada",
+				"tarefa.sem.fluxo.ideal", message.getCategory());
+		Assert.assertEquals(
+				"Numero de erros deveria ser o numero de tarefas do usuario",
+				3, numeroErros);
+
+	}
+
+	/**
+	 * Test of liberarTeste method, of class TesteController. possui Fluxo Ideal
+	 * cadastrado para as tarefas
+	 */
+	@Test
+	public void testLiberarTesteComFluxoIdealGravado() {
+		System.out.println("liberarTeste");
+		Long idTeste = 9l;
+		boolean liberado = repository.find(idTeste).isLiberado();
+		Assert.assertFalse("Teste deveria estar nao liberado", liberado);
 		instance.liberarTeste(idTeste);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
+
+		Assert.assertTrue("Teste deveria estar nao liberado",
+				repository.find(idTeste).isLiberado());
+
 	}
 
 	/**
@@ -622,12 +694,44 @@ public class TesteControllerTest extends AbstractDaoTest {
 	@Test
 	public void testConvidarUsuario() {
 		System.out.println("convidarUsuario");
-		List<Long> idUsuarios = null;
-		Long idTeste = null;
+		List<Long> idUsuarios = new ArrayList<Long>();
+		idUsuarios.add(4l);
+		idUsuarios.add(5l);
+		Long idTeste = 2l;
 		instance.convidarUsuario(idUsuarios, idTeste);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
+		ConvidadoRepositoryImpl convidadoRepositoryImpl = new ConvidadoRepositoryImpl(
+				entityManager);
+		Teste testeConvidado = convidadoRepositoryImpl.getTesteConvidado(idTeste,
+				idUsuarios.get(0));
+		System.out.println(testeConvidado.getId());
+		Assert.assertNotNull(
+				"Usuario foi convidado para o teste, mas não esta aparecendo",
+				testeConvidado);
+
+	}
+
+	/**
+	 * Test of convidarUsuario method, of class TesteController.
+	 */
+	@Test
+	public void testConvidarUsuarioNaoEDonoTeste() {
+		System.out.println("ConvidarUsuarioNaoEDonoTeste");
+		List<Long> idUsuarios = new ArrayList<Long>();
+		idUsuarios.add(4l);
+		idUsuarios.add(5l);
+		idUsuarios.add(6l);
+		Long idTeste = 3l;
+		Message message = null;
+		try {
+
+			instance.convidarUsuario(idUsuarios, idTeste);
+		} catch (ValidationException validationException) {
+			message = validationException.getErrors().get(0);
+
+		}
+		Assert.assertEquals(
+				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"campo.form.alterado", message.getCategory());
 	}
 
 	/**
@@ -672,8 +776,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -691,8 +795,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -710,8 +814,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -745,8 +849,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -766,8 +870,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -842,21 +946,24 @@ public class TesteControllerTest extends AbstractDaoTest {
 	public void testRealizarTeste() {
 		System.out.println("realizarTeste");
 		instance.realizarTeste();
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of meusProjetos method, of class TesteController.
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testMeusProjetos() {
 		System.out.println("meusProjetos");
 		instance.meusProjetos();
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
+		List<Teste> object = (List<Teste>) result.included().get(
+				"testesParticipados");
+		Assert.assertTrue("", object.isEmpty());
+		Long numeroTeste = (Long) result.included().get(
+				"testesParticipadosCount");
+		Long zero = 0l;
+		Assert.assertEquals("Este usuario nunca participou de um teste", zero,
+				numeroTeste);
 	}
 
 	/**
@@ -865,13 +972,9 @@ public class TesteControllerTest extends AbstractDaoTest {
 	@Test
 	public void testExibir() {
 		System.out.println("exibir");
-		Long idTeste = null;
-		StringBuilder expResult = null;
+		Long idTeste = 9l;
 		StringBuilder result = instance.exibir(idTeste);
-		assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
+		System.out.println(result);
 	}
 
 	/**
@@ -887,8 +990,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -905,7 +1008,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		instance.passo3(id);
 		List<Convidado> convidados = (List<Convidado>) result.included().get(
 				"usuariosEscolhidos");
-		Assert.assertTrue("Não possui usuarios Convidados",convidados.isEmpty());
+		Assert.assertTrue("Não possui usuarios Convidados",
+				convidados.isEmpty());
 
 	}
 
@@ -922,8 +1026,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -941,8 +1045,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
@@ -960,11 +1064,12 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-							.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
 
 	}
+
 	/**
 	 * Test of passo1 method, of class TesteController. Usuario passou id do
 	 * teste não existente
@@ -978,15 +1083,15 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-					.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
-		
+
 	}
-	
+
 	/**
-	 * Test of ConvidarUsuario method, of class TesteController. Usuario é o dono do
-	 * teste buscado e o teste esta liberado
+	 * Test of ConvidarUsuario method, of class TesteController. Usuario é o
+	 * dono do teste buscado e o teste esta liberado
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
@@ -996,16 +1101,19 @@ public class TesteControllerTest extends AbstractDaoTest {
 		instance.convidar(id);
 		List<Convidado> convidados = (List<Convidado>) result.included().get(
 				"usuariosEscolhidos");
-		List<Convidado> usuariosLivres = (List<Convidado>) result.included().get(
-				"usuariosLivres");
-		Assert.assertNull("Tem que ser Igual a nulo, pois este teste jah esta liberado",convidados);
-		Assert.assertFalse("Era pra possuir mais usuarios livres",usuariosLivres.isEmpty());
-		
+		List<Convidado> usuariosLivres = (List<Convidado>) result.included()
+				.get("usuariosLivres");
+		Assert.assertNull(
+				"Tem que ser Igual a nulo, pois este teste jah esta liberado",
+				convidados);
+		Assert.assertFalse("Era pra possuir mais usuarios livres",
+				usuariosLivres.isEmpty());
+
 	}
-	
+
 	/**
-	 * Test of ConvidarUsuario method, of class TesteController. Usuario não é o dono do
-	 * teste buscado
+	 * Test of ConvidarUsuario method, of class TesteController. Usuario não é o
+	 * dono do teste buscado
 	 */
 	@Test
 	public void testConvidarUsuarioUsuarioNaoEDonoDoTeste() {
@@ -1016,12 +1124,12 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-					.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
-		
+
 	}
-	
+
 	/**
 	 * Test of passo1 method, of class TesteController. Usuario não passa o
 	 * idTeste
@@ -1035,29 +1143,9 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"Não pode deixar salvar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-					.getErrors().get(0).getCategory());
+					"campo.form.alterado",
+					validationException.getErrors().get(0).getCategory());
 		}
-		
-	}
-	
-	/**
-	 * Test of  ConvidarUsuario method, of class TesteController. Usuario é o dono do teste
-	 * buscado, mas ele esta liberado
-	 */
-	@Test
-	public void testConvidarUsuarioUsuarioEDonoDoTesteNaoLiberado() {
-		System.out.println("passo1");
-		Long id = 4l;
-		try {
-			instance.convidar(id);
-		} catch (ValidationException validationException) {
-			Assert.assertEquals(
-					"Não pode deixar convidar pois usuario nao é dono do Teste",
-					"campo.form.alterado", validationException
-					.getErrors().get(0).getCategory());
-		}
-		
-	}
 
+	}
 }

@@ -40,20 +40,6 @@ public class UsuarioTestProcedure {
 	}
 
 	public static Usuario newInstaceUsuario(EntityManager entityManager,
-			String nome, String email, String senha, List<String> telefones,
-			String confirmacaoEmail) {
-		UsuarioRepositoryImpl repositoryImpl = new UsuarioRepositoryImpl(
-				entityManager);
-		Usuario usuario = new Usuario(repositoryImpl);
-		usuario.setEmail(email);
-		usuario.setNome(nome);
-		usuario.setSenha(senha);
-		usuario.setTelefones(telefones);
-		usuario.setConfirmacaoEmail(confirmacaoEmail);
-		return usuario;
-	}
-
-	public static Usuario newInstaceUsuario(EntityManager entityManager,
 			String nome, String email, String senha, List<String> telefones) {
 		UsuarioRepositoryImpl repositoryImpl = new UsuarioRepositoryImpl(
 				entityManager);

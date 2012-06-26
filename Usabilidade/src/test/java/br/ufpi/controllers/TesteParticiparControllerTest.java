@@ -15,21 +15,6 @@ import static org.junit.Assert.*;
  */
 public class TesteParticiparControllerTest extends AbstractDaoTest {
     
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of negar method, of class TesteParticiparController.
