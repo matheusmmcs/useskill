@@ -12,6 +12,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.validator.Validations;
+import br.ufpi.annotation.AcessoLivre;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
@@ -41,6 +42,7 @@ public class UsuarioController extends BaseController {
 		return usuarioRepository.findAll();
 	}
 
+	
 	@Post("/usuarios")
 	public void create(Usuario usuario) {
 		validator.validate(usuario);
@@ -60,7 +62,7 @@ public class UsuarioController extends BaseController {
 		emailUtils.enviarEmailConfirmacao(usuario);
 		result.redirectTo(LoginController.class).login(usuario.getEmail());
 	}
-
+	@AcessoLivre
 	@Get("/usuarios/new")
 	public Usuario newUsuario() {
 		return new Usuario();
