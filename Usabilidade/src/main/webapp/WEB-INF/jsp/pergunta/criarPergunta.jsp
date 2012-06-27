@@ -61,11 +61,11 @@
             
                 <label class="radio" style="margin-top: -30px;"> 
                     <input id="respsub" type="radio" name="pergunta.tipoRespostaAlternativa" value="true"/>
-                    <fmt:message key="pergunta.subjetiva"/>
+                    <fmt:message key="pergunta.objetiva"/>
                 </label>
                 <label class="radio">
                     <input id="respobj" type="radio" name="pergunta.tipoRespostaAlternativa" value="false" checked/>                    
-                    <fmt:message key="pergunta.objetiva"/>
+                    <fmt:message key="pergunta.subjetiva"/>
                 </label>
             </div>
         </div>

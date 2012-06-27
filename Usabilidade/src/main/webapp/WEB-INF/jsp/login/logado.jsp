@@ -70,7 +70,7 @@
                                 <tbody>
                                     <c:forEach items="${testesConvidados}" var="teste">
                                         <tr>
-                                            <td><a href="${pageContext.request.contextPath}/teste/${teste.id}/editar/passo1">${teste.titulo}</a></td>
+                                            <td>${teste.titulo}</td>
                                             <td width="200">${teste.usuarioCriador.nome}</td>
                                             <td width="100">
                                                 <form action="${pageContext.request.contextPath}/teste/participar/aceitar" method="post">

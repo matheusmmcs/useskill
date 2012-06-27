@@ -8,7 +8,8 @@
 
 <!-- decorator = main -->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title><decorator:title default="UseSkill" />
+<title>
+<decorator:title default="UseSkill" />
 </title>
 <link href="${pageContext.request.contextPath}/img/favicon.ico"
 	rel="shortcut icon" type="image/x-icon" />
