@@ -7,7 +7,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <!--<link type="text/css" rel="stylesheet" href="css/style.css"/>
                 <link type="text/css" rel="stylesheet" href="css/jquery.contextMenu.css"/>-->
-        <title>Protótipo</title>
         <script type="text/javascript"
         src="${pageContext.request.contextPath}/jscripts/jquery.js"></script>
         <script type="text/javascript"

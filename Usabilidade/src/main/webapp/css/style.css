@@ -4,118 +4,122 @@ azul claro: #eef3f6
 azul medio: #557cb5
 azul escuro: #4a5e78
 */
-
-body{
-    font-family: "Trebuchet MS", sans-serif;
-    color: #3f525e;
-    width: 100%;
-    height: 100%;
-    background: #eef3f6;
+body {
+	font-family: "Trebuchet MS", sans-serif;
+	color: #3f525e;
+	width: 100%;
+	height: 100%;
+	background: #eef3f6;
 }
 /*
                 TOPO
 */
-#topo{
-    position: relative;
-    width: 100%;
-    height: 140px;
-}
-#topo #topo_centro{
-    position: relative;
-    width: 980px;
-    height: 140px;
-    margin: 0px auto;
-}
-#topo #topo_direito{
-    float: right;
-    width: 200px;
-    height: 30px;
-    margin-top: 50px;
-}
-#topo #topo_direito #logout{
-    float: right;
-}
-#topo #topo_direito #nome{
-    float: right;
-    font-size: 14px;
-    margin: 6px 15px 0 0;
+#topo {
+	position: relative;
+	width: 100%;
+	height: 140px;
 }
 
-a#usabilitool{
-    position: absolute;
-    float: right;
-    top: 15px;
-    left: 0px;
-    width: 390px;
-    height: 60px;
-    background: url('../img/logo.png') no-repeat;
+#topo #topo_centro {
+	position: relative;
+	width: 980px;
+	height: 140px;
+	margin: 0px auto;
 }
-#menu_topo{
-    position: absolute;
-    float: left;
-    bottom: 0px;
-    left: 0px;
-    width: 100%;
-    height: 50px;
-    background: #4a5e78;
 
-    border-top: 2px solid #557cb5;
-    border-bottom: 2px solid #557cb5;
+#topo #topo_direito {
+	float: right;
+	width: 200px;
+	height: 30px;
+	margin-top: 50px;
+}
+
+#topo #topo_direito #logout {
+	float: right;
+}
+
+#topo #topo_direito #nome {
+	float: right;
+	font-size: 14px;
+	margin: 6px 15px 0 0;
+}
+
+a#usabilitool {
+	position: absolute;
+	float: right;
+	top: 15px;
+	left: 0px;
+	width: 390px;
+	height: 60px;
+	background: url('../img/logo.png') no-repeat;
+}
+
+#menu_topo {
+	position: absolute;
+	float: left;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+	height: 50px;
+	background: #4a5e78;
+	border-top: 2px solid #557cb5;
+	border-bottom: 2px solid #557cb5;
 }
 /*
                     CONTEUDO
 */
-#conteudo{
-    position: relative;
-    width: 980px;
-    height: 600px;
-    margin: 0px auto 20px auto;
-    background: #eef3f6;
-
-    -moz-box-shadow: 0 0 5px #b3bac4;
-    -webkit-box-shadow: 0 0 5px #b3bac4;
-    box-shadow: 0 0 5px #b3bac4;
+#conteudo {
+	position: relative;
+	width: 980px;
+	min-height: 550px; 
+	height : auto !important; 
+	height : 550px;
+	
+	margin: 0px auto 20px auto;
+	background: #eef3f6;
 }
-#conteudo #conteudo_interno{
-    padding: 15px;
 
+#conteudo #conteudo_interno {
+	padding: 15px;
 }
-input.error{
-    border: 1px solid #F9DD34;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
-    border-top-style: solid;
-    border-right-style: solid;
-    border-bottom-style: solid;
-    border-left-style: solid;
-    border-top-color: #F9DD34;
-    border-right-color: #F9DD34;
-    border-bottom-color: #F9DD34;
-    border-left-color: #F9DD34;
-    background-repeat-x: repeat;
-    background-repeat-y: no-repeat;
-    background-attachment: initial;
-    background-position-x: 50%;
-    background-position-y: 0%;
-    background-origin: initial;
-    background-clip: initial;
-    background-color: #FFEF8F;
-    color: #363636;
+
+input.error {
+	border: 1px solid #F9DD34;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: #F9DD34;
+	border-right-color: #F9DD34;
+	border-bottom-color: #F9DD34;
+	border-left-color: #F9DD34;
+	background-repeat-x: repeat;
+	background-repeat-y: no-repeat;
+	background-attachment: initial;
+	background-position-x: 50%;
+	background-position-y: 0%;
+	background-origin: initial;
+	background-clip: initial;
+	background-color: #FFEF8F;
+	color: #363636;
 }
 
 label {
-    display: block;
-    width: auto;
-    clear: left;
-    float: left;
-}
-input {
-    display: block;
-    float: left;
+	display: block;
+	width: auto;
+	clear: left;
+	float: left;
 }
 
-.campoalternativa{
-	margin-top:10px;
+input {
+	display: block;
+	float: left;
+}
+
+.campoalternativa {
+	margin-top: 10px;
 }
