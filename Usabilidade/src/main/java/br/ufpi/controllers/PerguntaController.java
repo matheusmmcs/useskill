@@ -112,7 +112,7 @@ public class PerguntaController extends BaseController {
 	@Logado
 	@Put("teste/{testeId}/editar/passo2/salvar/pergunta")
 	public void atualizarPergunta(Long testeId, Pergunta pergunta) {
-		validateComponente.validarIdTeste(testeId);
+		validateComponente.validarId(testeId);
 		validator.validate(pergunta);
 		System.out.println(pergunta.getId());
 		validateComponente.validarObjeto(perguntaPertenceUsuario(
@@ -183,7 +183,7 @@ public class PerguntaController extends BaseController {
 	 * 
 	 */
 	private void testeNaoLiberadoPertenceUsuarioLogado(Long idTeste) {
-		validateComponente.validarIdTeste(idTeste);
+		validateComponente.validarId(idTeste);
 		Teste teste = testeRepository.getTestCriadoNaoLiberado(usuarioLogado
 				.getUsuario().getId(), idTeste);
 		validateComponente.validarObjeto(teste);

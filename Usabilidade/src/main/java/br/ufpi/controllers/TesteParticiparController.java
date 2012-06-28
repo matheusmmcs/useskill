@@ -75,7 +75,7 @@ public class TesteParticiparController extends BaseController {
 	 * @return
 	 */
 	private Teste verificaSeUsuarioConvidado(Long idTeste) {
-		validateComponente.validarIdTeste(idTeste);
+		validateComponente.validarId(idTeste);
 		Teste testeConvidado = convidadoRepository.getTesteConvidado(idTeste,
 				usuarioLogado.getUsuario().getId());
 		validateComponente.validarObjeto(testeConvidado);

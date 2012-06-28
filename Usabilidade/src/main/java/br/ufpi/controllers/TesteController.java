@@ -100,7 +100,7 @@ public class TesteController extends BaseController {
 	@Post("teste/{idTeste}/editar/passo2")
 	public void passo2(Long idTeste, String titulo, String tituloPublico,
 			String textoIndroducao) {
-		validateComponente.validarIdTeste(idTeste);
+		validateComponente.validarId(idTeste);
 		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 		validateComponente.validarString(titulo, "titulo");
 		validateComponente.validarString(tituloPublico, "teste.publico");
@@ -229,7 +229,7 @@ public class TesteController extends BaseController {
 	@Logado
 	@Post("teste/convidar/usuario")
 	public void convidarUsuario(List<Long> idUsuarios, Long idTeste) {
-		validateComponente.validarIdTeste(idTeste);
+		validateComponente.validarId(idTeste);
 		if (idUsuarios != null && !idUsuarios.isEmpty()) {
 			this.testePertenceUsuarioLogado(idTeste);
 			try{
@@ -264,7 +264,7 @@ public class TesteController extends BaseController {
 	@Post("teste/desconvidar/usuario")
 	public void desconvidarUsuario(List<Long> idUsuarios, Long idTeste) {
 
-		validateComponente.validarIdTeste(idTeste);
+		validateComponente.validarId(idTeste);
 		if (idUsuarios != null && !idUsuarios.isEmpty()) {
 			testePertenceUsuarioLogado(idTeste);
 			convidadoRepository.desconvidarUsuarios(idUsuarios, testeView
@@ -290,7 +290,7 @@ public class TesteController extends BaseController {
 	 * 
 	 */
 	private void testeNaoLiberadoPertenceUsuarioLogado(Long idTeste) {
-		validateComponente.validarIdTeste(idTeste);
+		validateComponente.validarId(idTeste);
 		Teste teste = testeRepository.getTestCriadoNaoLiberado(usuarioLogado
 				.getUsuario().getId(), idTeste);
 		validateComponente.validarObjeto(teste);
@@ -307,7 +307,7 @@ public class TesteController extends BaseController {
 	 * 
 	 */
 	private void testePertenceUsuarioLogado(Long idTeste) {
-		validateComponente.validarIdTeste(idTeste);
+		validateComponente.validarId(idTeste);
 		Teste teste = testeRepository.getTestCriado(usuarioLogado.getUsuario()
 				.getId(), idTeste);
 		validateComponente.validarObjeto(teste);

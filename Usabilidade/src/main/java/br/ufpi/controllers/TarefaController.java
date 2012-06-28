@@ -73,7 +73,7 @@ public class TarefaController extends BaseController {
 
 	/**
 	 * Usado para criar Tarefas analisa se o teste id passado não é igual a
-	 * null, caso seja redireciona para uma pagina 404
+	 * null, caso seja redireciona para a pagina de login
 	 * 
 	 * @param testeId
 	 * @param tarefa
@@ -92,7 +92,10 @@ public class TarefaController extends BaseController {
 	@Logado
 	@Post("teste/salvar/tarefa")
 	public void salvarTarefa(Tarefa tarefa, Long idTeste) {
-		validator.validate(tarefa);
+		validateComponente.validarString(tarefa.getNome(), "tarefa.titulo");
+		validateComponente.validarString(tarefa.getRoteiro(), "tarefa.roteito");
+		validateComponente.validarString(tarefa.getUrlInicial(),
+				"tarefa.urlInicial");
 		validator.onErrorRedirectTo(this).criarTarefa(idTeste, tarefa);
 		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
 		Teste teste = testeView.getTeste();
@@ -124,17 +127,10 @@ public class TarefaController extends BaseController {
 		Teste teste = new Teste();
 		teste.setId(idTeste);
 		testeView.setTeste(teste);
-		if (idTeste != null && tarefa.getId() != null) {
-			if (isErro) {
-				// testeView.setTeste(.setId(idTeste));
-				System.out.println("isERRO");
-				return tarefa;
-			}
-			return this.tarefaPertenceTeste(idTeste, tarefa.getId());
-		} else {
-			result.notFound();
-			return null;
+		if (isErro) {
+			return tarefa;
 		}
+		return this.tarefaPertenceTeste(idTeste, tarefa.getId());
 	}
 
 	/**
@@ -148,7 +144,10 @@ public class TarefaController extends BaseController {
 	@Logado
 	@Post("teste/tarefa/atualizar")
 	public void updateTarefa(Tarefa tarefa, Long idTeste) {
-		validator.validate(tarefa);
+		validateComponente.validarString(tarefa.getNome(), "tarefa.titulo");
+		validateComponente.validarString(tarefa.getRoteiro(), "tarefa.roteito");
+		validateComponente.validarString(tarefa.getUrlInicial(),
+				"tarefa.urlInicial");
 		validator.onErrorRedirectTo(this).editarTarefa(idTeste, tarefa, true);
 		this.tarefaPertenceTesteNaoRealizado(tarefa.getId(), idTeste);
 		Tarefa tarefaUpdate = tarefaRepository.find(tarefa.getId());
@@ -173,14 +172,9 @@ public class TarefaController extends BaseController {
 	@Logado
 	@Post("teste/removed/tarefa")
 	public void removed(Long idTarefa, Long idTeste) {
-		if (idTarefa != null) {
-			Tarefa tarefa = this.tarefaPertenceTesteNaoRealizado(idTarefa,
-					idTeste);
-			tarefaRepository.destroy(tarefa);
-			result.redirectTo(TesteController.class).passo2(idTeste);
-		} else {
-			result.notFound();
-		}
+		Tarefa tarefa = this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
+		tarefaRepository.destroy(tarefa);
+		result.redirectTo(TesteController.class).passo2(idTeste);
 	}
 
 	@Logado
@@ -461,11 +455,11 @@ public class TarefaController extends BaseController {
 	 *         pois pagina é redirecionada para a página 404
 	 */
 	private Tarefa tarefaPertenceTeste(Long idTeste, Long idTarefa) {
+		validateComponente.validarId(idTeste);
+		validateComponente.validarId(idTarefa);
 		Tarefa tarefa = tarefaRepository.pertenceTeste(idTarefa, idTeste,
 				usuarioLogado.getUsuario().getId());
-		if (tarefa == null) {
-			result.notFound();
-		}
+		validateComponente.validarObjeto(tarefa);
 		return tarefa;
 	}
 
@@ -476,7 +470,7 @@ public class TarefaController extends BaseController {
 	 *            Identificador do Teste a ser procurado
 	 */
 	private void testeNaoRealizadoPertenceUsuarioLogado(Long idTeste) {
-		validateComponente.validarIdTeste(idTeste);
+		validateComponente.validarId(idTeste);
 		Teste teste = testeRepository.getTestCriadoNaoLiberado(usuarioLogado
 				.getUsuario().getId(), idTeste);
 		validateComponente.validarObjeto(teste);
@@ -492,16 +486,11 @@ public class TarefaController extends BaseController {
 	 * @return
 	 */
 	private Tarefa tarefaPertenceTesteNaoRealizado(Long tarefaId, Long idTeste) {
+		validateComponente.validarId(idTeste);
+		validateComponente.validarId(tarefaId);
 		Tarefa tarefaRetorno = tarefaRepository.perteceTesteNaoRealizado(
 				tarefaId, idTeste, usuarioLogado.getUsuario().getId());
-		if (tarefaRetorno == null) {
-			System.out.println("erro");
-			System.out.println("erro");
-			System.out.println("erro");
-			System.out.println("erro");
-			System.out.println("erro");
-			result.notFound();
-		}
+		validateComponente.validarObjeto(tarefaRetorno);
 		return tarefaRetorno;
 	}
 
