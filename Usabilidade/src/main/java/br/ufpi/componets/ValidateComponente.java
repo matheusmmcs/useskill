@@ -66,7 +66,7 @@ public class ValidateComponente {
 		});
 	}
 
-	public void validarIdTeste(final Long idTeste) {
+	public void validarId(final Long idTeste) {
 		validator.checking(new Validations() {
 
 			{

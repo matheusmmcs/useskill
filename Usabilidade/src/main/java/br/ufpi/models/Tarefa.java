@@ -20,10 +20,9 @@ import org.hibernate.validator.constraints.NotBlank;
 		@NamedQuery(name = "Tarefa.pertence.Teste.Usuario", query = "select t from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa and t.teste.usuarioCriador.id= :usuario "),
 		@NamedQuery(name = "Tarefa.pertence.Teste.Liberado.Usuario", query = "select t from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa and t.teste.usuarioCriador.id= :usuario and t.teste.liberado= false"),
 		/**
-		 * Usuario tem que ser dono do teste.
-		 * o teste não pode ser liberado.
+		 * Usuario tem que ser dono do teste. o teste não pode ser liberado.
 		 * Tarefa tem que pertencer ao teste.
-		 *
+		 * 
 		 */
 		@NamedQuery(name = "Tarefa.pertence.Teste.Nao.Liberado.Usuario", query = "select t from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa and t.teste.usuarioCriador.id= :usuario and t.teste.liberado=false") })
 public class Tarefa implements Serializable {
@@ -122,15 +121,6 @@ public class Tarefa implements Serializable {
 		this.urlInicial = urlInicial;
 	}
 
-	@Override
-	public String toString() {
-		return "Tarefa [id=" + id + ", nome=" + nome + ", roteiro=" + roteiro
-				+ ", impressoes=" + impressoes + ", fluxoIdeal=" + fluxoIdeal
-				+ ", fluxoUsuario=" + fluxoUsuario + ", teste=" + teste
-				+ ", urlInicial=" + urlInicial + ", fluxoIdealPreenchido="
-				+ fluxoIdealPreenchido + "]";
-	}
-
-
+	
 
 }
