@@ -100,6 +100,7 @@ public class Populator {
 		testUser10(entityManager);
 		testUser11(entityManager);
 		testUser12(entityManager);
+		testUser13(entityManager);
 		Populator.criarPergunta(entityManager, 5l);
 	}
 
@@ -388,6 +389,40 @@ public class Populator {
 		Convidado find = convidadoRepository.find(idTeste, 1l);
 		find.setRealizou(true);
 		convidadoRepository.update(find);
+		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
+		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
+				"http://www.globo.com", "Ir no site do Verdão",
+				"Procurar Campeão", teste, true);
+		Tarefa tarefa2 = TarefaTestProcedure.newInstanceTarefa(
+				"http://www.meionorte.com",
+				"visualizar blog do Efrem rsrsrsrs", "Procurar Campeão", teste,
+				true);
+		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
+				"http://www.cidadeverde.com", "visualizar blog de união",
+				"Procurar Campeão", teste, true);
+		repository.create(tarefa);
+		repository.create(tarefa2);
+		repository.create(tarefa3);
+		Populator.criarPergunta(entityManager, idTeste);
+	}
+	public static void testUser13(EntityManager entityManager) {
+		Long idTeste=13l;
+		UsuarioRepository usuarioRepository = UsuarioTestProcedure
+				.newInstanceUsuarioRepository(entityManager);
+		TesteRepository impl = TesteTestProcedure
+				.newInstanceTesteRepository(entityManager);
+		Usuario usuario1 = usuarioRepository.find(1l);
+		Teste teste = TesteTestProcedure
+				.newInstanceTeste(
+						"Teste 13 de usuario 1 com convidados liberado Com tarefas e sem fluxo Ideal",
+						usuario1,true);
+		impl.create(teste);
+		ConvidadoRepository convidadoRepository = new ConvidadoRepositoryImpl(
+				entityManager);
+		List<Long> idUsuarios = new ArrayList<Long>();
+		idUsuarios.add(1l);
+		idUsuarios.add(2l);
+		convidadoRepository.convidarUsuarios(idUsuarios,idTeste);
 		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
