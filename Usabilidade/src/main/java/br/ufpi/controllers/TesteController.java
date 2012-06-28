@@ -2,6 +2,7 @@ package br.ufpi.controllers;
 
 import java.util.List;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 
 import br.com.caelum.vraptor.Delete;
@@ -15,8 +16,6 @@ import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
-import br.ufpi.models.Acao;
-import br.ufpi.models.FluxoUsuario;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
@@ -231,9 +230,14 @@ public class TesteController extends BaseController {
 	@Post("teste/convidar/usuario")
 	public void convidarUsuario(List<Long> idUsuarios, Long idTeste) {
 		validateComponente.validarIdTeste(idTeste);
-		if (idUsuarios != null) {
+		if (idUsuarios != null && !idUsuarios.isEmpty()) {
 			this.testePertenceUsuarioLogado(idTeste);
-			convidadoRepository.convidarUsuarios(idUsuarios, idTeste);
+			try{
+			convidadoRepository.convidarUsuarios(idUsuarios, idTeste);}
+			catch (PersistenceException e) {
+				validateComponente.gerarErroCampoAlterado();
+				validator.onErrorForwardTo(this).convidar(idTeste);
+			}
 			if (!testeView.getTeste().isLiberado()) {
 				result.redirectTo(this).passo3(testeView.getTeste().getId());
 			} else {
@@ -261,7 +265,7 @@ public class TesteController extends BaseController {
 	public void desconvidarUsuario(List<Long> idUsuarios, Long idTeste) {
 
 		validateComponente.validarIdTeste(idTeste);
-		if (idUsuarios != null) {
+		if (idUsuarios != null && !idUsuarios.isEmpty()) {
 			testePertenceUsuarioLogado(idTeste);
 			convidadoRepository.desconvidarUsuarios(idUsuarios, testeView
 					.getTeste().getId());
@@ -398,19 +402,19 @@ public class TesteController extends BaseController {
 		result.include("testesParticipadosCount", testesParticipados.getCount());
 	}
 
-	@Get("exibir/{idTeste}")
-	public StringBuilder exibir(Long idTeste) {
-		StringBuilder builder = new StringBuilder();
-		Teste teste = this.testeRepository.find(idTeste);
-		for (Tarefa tarefa : teste.getTarefas()) {
-			List<Acao> acoes = tarefa.getFluxoIdeal().getFluxo().getAcoes();
-			builder.append(acoes);
-			for (FluxoUsuario fluxo : tarefa.getFluxoUsuario()) {
-				builder.append(fluxo.getFluxo().getAcoes());
-			}
-		}
-		return builder;
-
-	}
+//	@Get("exibir/{idTeste}")
+//	public StringBuilder exibir(Long idTeste) {
+//		StringBuilder builder = new StringBuilder();
+//		Teste teste = this.testeRepository.find(idTeste);
+//		for (Tarefa tarefa : teste.getTarefas()) {
+//			List<Acao> acoes = tarefa.getFluxoIdeal().getFluxo().getAcoes();
+//			builder.append(acoes);
+//			for (FluxoUsuario fluxo : tarefa.getFluxoUsuario()) {
+//				builder.append(fluxo.getFluxo().getAcoes());
+//			}
+//		}
+//		return builder;
+//
+//	}
 
 }

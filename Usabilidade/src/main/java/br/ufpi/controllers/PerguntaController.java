@@ -14,7 +14,6 @@ import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Teste;
-import br.ufpi.models.exceptions.PerguntaException;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.TesteRepository;
 
@@ -75,6 +74,7 @@ public class PerguntaController extends BaseController {
 		testeNaoLiberadoPertenceUsuarioLogado(testeId);
 		validator.validate(pergunta);
 		if (pergunta.getId() != null) {
+			validateComponente.gerarErroCampoAlterado();
 			validator.onErrorRedirectTo(this).criarPergunta(pergunta.getId());
 		} else {
 			validator.onErrorRedirectTo(TesteController.class).passo2(testeId);
@@ -112,49 +112,38 @@ public class PerguntaController extends BaseController {
 	@Logado
 	@Put("teste/{testeId}/editar/passo2/salvar/pergunta")
 	public void atualizarPergunta(Long testeId, Pergunta pergunta) {
-		if (testeId != null) {
-			validator.validate(pergunta);
-			testeNaoLiberadoPertenceUsuarioLogado(testeId);
-			if (pergunta.getId() != null) {
-				validator.onErrorRedirectTo(this).criarPergunta(
-						pergunta.getId());
-			} else {
-				validator.onErrorRedirectTo(TesteController.class).passo2(
-						testeId);
-			}
-			perguntaPertenceUsuario(pergunta.getId(), testeId);
-			pergunta.setQuestionario(perguntaRepository
-					.findQuestionario(pergunta.getId()));
-			if (pergunta.getTipoRespostaAlternativa() == null) {
+		validateComponente.validarIdTeste(testeId);
+		validator.validate(pergunta);
+		System.out.println(pergunta.getId());
+		validateComponente.validarObjeto(perguntaPertenceUsuario(
+				pergunta.getId(), testeId));
+		pergunta.setQuestionario(perguntaRepository.findQuestionario(pergunta
+				.getId()));
+		boolean objetiva = pergunta.getTipoRespostaAlternativa() == null ? true
+				: pergunta.getTipoRespostaAlternativa();
 
-			}
-			boolean objetiva = pergunta.getTipoRespostaAlternativa() == null ? true
-					: pergunta.getTipoRespostaAlternativa();
-			System.out
-					.println(objetiva == true ? "Objetiva 12" : "Subjetiva 2");
-			if (!objetiva) {
-				System.out.println("Subjetiva 1");
+		System.out.println(pergunta.getTipoRespostaAlternativa());
+		if (!objetiva) {
+			System.out.println("Subjetiva 1");
+			pergunta.setTipoRespostaAlternativa(false);
+			pergunta.setAlternativas(null);
+		} else {
+			if (pergunta.getAlternativas() != null) {
+				System.out.println("OBjetiva");
+				for (Alternativa alternativa : pergunta.getAlternativas()) {
+					alternativa.setPergunta(pergunta);
+				}
+			} else {
+				System.out.println("Subjetiva");
 				pergunta.setTipoRespostaAlternativa(false);
 				pergunta.setAlternativas(null);
-			} else {
-				if (pergunta.getAlternativas() != null) {
-					System.out.println("OBjetiva");
-					for (Alternativa alternativa : pergunta.getAlternativas()) {
-						alternativa.setPergunta(pergunta);
-					}
-				} else {
-					System.out.println("Subjetiva");
-					pergunta.setTipoRespostaAlternativa(false);
-					pergunta.setAlternativas(null);
-				}
-
 			}
-			perguntaRepository.deleteAlternativas(pergunta.getId());
-			perguntaRepository.update(pergunta);
-			result.redirectTo(TesteController.class).passo2(testeId);
-		} else {
-			result.redirectTo(LoginController.class).logado();
+
 		}
+		perguntaRepository.deleteAlternativas(pergunta.getId());
+		perguntaRepository.update(pergunta);
+		result.redirectTo(TesteController.class).passo2(testeId);
+
 	}
 
 	@Logado
@@ -164,6 +153,7 @@ public class PerguntaController extends BaseController {
 		validateComponente.validarObjeto(perguntaId);
 		Pergunta perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId,
 				testeId);
+		validateComponente.validarObjeto(perguntaPertenceUsuario);
 		perguntaRepository.destroy(perguntaPertenceUsuario);
 		result.redirectTo(TesteController.class).passo2(testeId);
 
@@ -172,20 +162,14 @@ public class PerguntaController extends BaseController {
 	/**
 	 * Analisa se teste.id e pergunta.id pertencem ao usuarioLogado.
 	 * 
-	 * @param idTeste
-	 * @param idPergunta
-	 * @param testeLiberado
-	 *            se null ele vai mostrar perguntas de teste liberado e não
-	 *            liberado
+	 * @param perguntaId
+	 * @param testeId
 	 * @return
-	 * @throws PerguntaException
-	 *             Gerado quando não enconta a pergunta
 	 */
 	private Pergunta perguntaPertenceUsuario(Long perguntaId, Long testeId) {
 		testeNaoLiberadoPertenceUsuarioLogado(testeId);
-		Pergunta perguntaUsuario = perguntaRepository.perguntaPertenceUsuario(
-				usuarioLogado.getUsuario().getId(), testeId, perguntaId, false);
-		return perguntaUsuario;
+		return perguntaRepository.perguntaPertenceUsuario(usuarioLogado
+				.getUsuario().getId(), testeId, perguntaId, false);
 
 	}
 

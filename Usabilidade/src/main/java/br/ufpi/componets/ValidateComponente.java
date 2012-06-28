@@ -5,8 +5,6 @@ import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.validator.Validations;
 import br.ufpi.controllers.LoginController;
 import br.ufpi.controllers.TesteParticiparController;
-import br.ufpi.models.Tarefa;
-import br.ufpi.models.Teste;
 
 /**
  * Usado para conter os redirects de objetos que o usuario tentar acessar e não
@@ -92,6 +90,17 @@ public class ValidateComponente {
 		});	
 		validator.onErrorRedirectTo(LoginController.class).logado();
 	}
-	
+	/**
+	 * Gera erro informando que campo forme foi alterado
+	 */
+	public void gerarErroCampoAlterado(){
+		validator.checking(new Validations() {
+
+			{
+				that(false, "campo.form.alterado",
+						"campo.form.alterado");
+			}
+		});	
+	}
 	
 }

@@ -70,5 +70,17 @@ public class ConvidadoRepositoryImpl extends Repository<Convidado, Long>
 		}
 
 	}
+	@Override
+	public Convidado find(Long testeId,Long usuarioId){
+		Query namedQuery = super.entityManager
+				.createNamedQuery("Convidado.find");
+		namedQuery.setParameter("teste", testeId);
+		namedQuery.setParameter("usuario", usuarioId);
+		try {
+			return (Convidado) namedQuery.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
 }

@@ -41,7 +41,7 @@ public class TesteParticiparController extends BaseController {
 	@Logado
 	@Post
 	public void negar(Long testeId) {
-		validateComponente.validarIdTeste(testeId);
+		verificaSeUsuarioConvidado(testeId);
 		Convidado convidado = new Convidado(usuarioLogado.getUsuario().getId(),
 				testeId);
 		convidado.setRealizou(false);
@@ -57,8 +57,8 @@ public class TesteParticiparController extends BaseController {
 	@Post
 	@Logado
 	public void aceitar(Long testeId) {
-		usuarioConvidado(testeId);
-		Teste teste = testeSession.getTeste();
+		Teste teste = verificaSeUsuarioConvidado(testeId);
+		testeSession.setTeste(teste);
 		fluxo.criarLista(teste);
 	}
 
@@ -68,17 +68,18 @@ public class TesteParticiparController extends BaseController {
 
 	}
 
-	private void usuarioConvidado(Long testeId) {
-		if (testeId != null) {
-			this.usuarioLogado.getUsuario();
-			Teste testeConvidado = convidadoRepository.getTesteConvidado(
-					testeId, usuarioLogado.getUsuario().getId());
-			if (testeConvidado != null) {
-				testeSession.setTeste(testeConvidado);
-			} else {
-				result.notFound();
-			}
-		}
+	/**
+	 * Verifica se o usuario foi convidado e se o teste já foi liberado
+	 * 
+	 * @param idTeste
+	 * @return
+	 */
+	private Teste verificaSeUsuarioConvidado(Long idTeste) {
+		validateComponente.validarIdTeste(idTeste);
+		Teste testeConvidado = convidadoRepository.getTesteConvidado(idTeste,
+				usuarioLogado.getUsuario().getId());
+		validateComponente.validarObjeto(testeConvidado);
+		return testeConvidado;
 	}
 
 	@Logado
