@@ -50,9 +50,26 @@ public class PerguntaTestProcedure {
 		pergunta.setTitulo(titulo);
 		return pergunta;
 	}
+	public static Pergunta newInstancePerguntaAlternativa( String texto, int numeroAlternativas, boolean responderFim, String titulo) {
+		Pergunta pergunta=new Pergunta();
+		pergunta.setResponderFim(responderFim);
+		pergunta.setTexto(texto);
+		pergunta.setTipoRespostaAlternativa(true);
+		pergunta.setAlternativas(newListAlternativas(numeroAlternativas, pergunta));
+		pergunta.setTitulo(titulo);
+		return pergunta;
+	}
 	public static Pergunta newInstancePerguntaEscrita(Teste teste, String texto, boolean responderFim, String titulo) {
 		Pergunta pergunta=new Pergunta();
 		pergunta.setQuestionario(teste.getSatisfacao());
+		pergunta.setResponderFim(responderFim);
+		pergunta.setTexto(texto);
+		pergunta.setTipoRespostaAlternativa(false);
+		pergunta.setTitulo(titulo);
+		return pergunta;
+	}
+	public static Pergunta newInstancePerguntaEscrita( String texto, boolean responderFim, String titulo) {
+		Pergunta pergunta=new Pergunta();
 		pergunta.setResponderFim(responderFim);
 		pergunta.setTexto(texto);
 		pergunta.setTipoRespostaAlternativa(false);
@@ -68,7 +85,7 @@ public class PerguntaTestProcedure {
 			alternativa.setPergunta(pergunta);
 			alternativas.add(alternativa);
 		}
-		return null;
+		return alternativas;
 	}
 
 }

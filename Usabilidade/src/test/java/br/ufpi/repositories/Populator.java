@@ -13,6 +13,7 @@ import br.ufpi.controllers.procedure.PerguntaTestProcedure;
 import br.ufpi.controllers.procedure.TarefaTestProcedure;
 import br.ufpi.controllers.procedure.TesteTestProcedure;
 import br.ufpi.controllers.procedure.UsuarioTestProcedure;
+import br.ufpi.models.Convidado;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
@@ -89,11 +90,17 @@ public class Populator {
 		impl.create(teste2);
 		impl.create(teste3);
 		impl.create(teste4);
+		
 		impl.create(teste5);
+		
 		impl.create(teste6);
 		testUser7(entityManager);
 		testUser8(entityManager);
 		testUser9(entityManager);
+		testUser10(entityManager);
+		testUser11(entityManager);
+		testUser12(entityManager);
+		Populator.criarPergunta(entityManager, 5l);
 	}
 
 	public static void convidarUsuarios(EntityManager entityManager) {
@@ -250,7 +257,7 @@ public class Populator {
 		Usuario usuario1 = usuarioRepository.find(1l);
 		Teste teste = TesteTestProcedure
 				.newInstanceTeste(
-						"Teste 8 de usuario 1 com convidados Não liberado Com tarefas e sem fluxo Ideal",
+						"Teste 9 de usuario 1 com convidados Não liberado Com tarefas e sem fluxo Ideal",
 						usuario1);
 		impl.create(teste);
 		ConvidadoRepository convidadoRepository = new ConvidadoRepositoryImpl(
@@ -280,6 +287,7 @@ public class Populator {
 	 * 
 	 */
 	public static void testUser10(EntityManager entityManager) {
+		Long idTeste=10l;
 		UsuarioRepository usuarioRepository = UsuarioTestProcedure
 				.newInstanceUsuarioRepository(entityManager);
 		TesteRepository impl = TesteTestProcedure
@@ -295,7 +303,7 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(5l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, 10l);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste);
 		
 		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
@@ -311,5 +319,89 @@ public class Populator {
 		repository.create(tarefa);
 		repository.create(tarefa2);
 		repository.create(tarefa3);
+		Populator.criarPergunta(entityManager, idTeste);
+		
+	}
+	/**
+	 * Criar teste Do usuario de id 1 com convidados,  liberado, Com Tarefas e
+	 * com flag fluxo ideal respondido
+	 * 
+	 */
+	public static void testUser11(EntityManager entityManager) {
+		Long idTeste=11l;
+		UsuarioRepository usuarioRepository = UsuarioTestProcedure
+				.newInstanceUsuarioRepository(entityManager);
+		TesteRepository impl = TesteTestProcedure
+				.newInstanceTesteRepository(entityManager);
+		Usuario usuario1 = usuarioRepository.find(1l);
+		Teste teste = TesteTestProcedure
+				.newInstanceTeste(
+						"Teste 11 de usuario 1 com convidados liberado Com tarefas e sem fluxo Ideal",
+						usuario1,true);
+		impl.create(teste);
+		ConvidadoRepository convidadoRepository = new ConvidadoRepositoryImpl(
+				entityManager);
+		List<Long> idUsuarios = new ArrayList<Long>();
+		idUsuarios.add(5l);
+		idUsuarios.add(2l);
+		convidadoRepository.convidarUsuarios(idUsuarios,idTeste);
+		
+		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
+		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
+				"http://www.globo.com", "Ir no site do Verdão",
+				"Procurar Campeão", teste, true);
+		Tarefa tarefa2 = TarefaTestProcedure.newInstanceTarefa(
+				"http://www.meionorte.com",
+				"visualizar blog do Efrem rsrsrsrs", "Procurar Campeão", teste,
+				true);
+		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
+				"http://www.cidadeverde.com", "visualizar blog de união",
+				"Procurar Campeão", teste, true);
+		repository.create(tarefa);
+		repository.create(tarefa2);
+		repository.create(tarefa3);
+		Populator.criarPergunta(entityManager, idTeste);
+	}
+	/**
+	 * Criar teste Do usuario de id 1 com convidados,  liberado, Com Tarefas e
+	 * com flag fluxo ideal respondido
+	 * 
+	 */
+	public static void testUser12(EntityManager entityManager) {
+		Long idTeste=12l;
+		UsuarioRepository usuarioRepository = UsuarioTestProcedure
+				.newInstanceUsuarioRepository(entityManager);
+		TesteRepository impl = TesteTestProcedure
+				.newInstanceTesteRepository(entityManager);
+		Usuario usuario1 = usuarioRepository.find(1l);
+		Teste teste = TesteTestProcedure
+				.newInstanceTeste(
+						"Teste 11 de usuario 1 com convidados liberado Com tarefas e sem fluxo Ideal",
+						usuario1,true);
+		impl.create(teste);
+		ConvidadoRepository convidadoRepository = new ConvidadoRepositoryImpl(
+				entityManager);
+		List<Long> idUsuarios = new ArrayList<Long>();
+		idUsuarios.add(1l);
+		idUsuarios.add(2l);
+		convidadoRepository.convidarUsuarios(idUsuarios,idTeste);
+		Convidado find = convidadoRepository.find(idTeste, 1l);
+		find.setRealizou(true);
+		convidadoRepository.update(find);
+		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
+		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
+				"http://www.globo.com", "Ir no site do Verdão",
+				"Procurar Campeão", teste, true);
+		Tarefa tarefa2 = TarefaTestProcedure.newInstanceTarefa(
+				"http://www.meionorte.com",
+				"visualizar blog do Efrem rsrsrsrs", "Procurar Campeão", teste,
+				true);
+		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
+				"http://www.cidadeverde.com", "visualizar blog de união",
+				"Procurar Campeão", teste, true);
+		repository.create(tarefa);
+		repository.create(tarefa2);
+		repository.create(tarefa3);
+		Populator.criarPergunta(entityManager, idTeste);
 	}
 }

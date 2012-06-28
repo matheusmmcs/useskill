@@ -35,7 +35,7 @@ public class RespostaTestProcedure {
 				fluxoComponente);
 	}
 
-	public static RespostaController newInstanceTarefaController(
+	public static RespostaController newInstanceRespostaController(
 			EntityManager entityManager, MockResult result,
 			FluxoComponente fluxoComponente) {
 		TesteView testeView = new TesteView();
