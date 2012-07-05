@@ -16,26 +16,7 @@ import br.ufpi.repositories.Implement.RespostaAlternativaRepositoryImpl;
 import br.ufpi.repositories.Implement.RespostaEscritaRepositoryImpl;
 
 public class RespostaTestProcedure {
-	public static RespostaController newInstanceTarefaController(
-			EntityManager entityManager, MockResult result) {
-		TesteView testeView = new TesteView();
-		MockValidator validator = new MockValidator();
-		UsuarioRepository usuarioRepositoryImpl = UsuarioTestProcedure
-				.newInstanceUsuarioRepository(entityManager);
-		UsuarioLogado usuarioLogado = new UsuarioLogado(usuarioRepositoryImpl);
-		ValidateComponente validateComponente = new ValidateComponente(
-				validator);
-		FluxoComponente fluxoComponente = null;
-		return new RespostaController(result, validator, testeView,
-				usuarioLogado, validateComponente,
-				newInstanceRespostaEscritaRepositoryImpl(entityManager),
-				newInstanceRespostaAlternativaRepository(entityManager),
-				PerguntaTestProcedure
-						.newInstancePerguntaRepository(entityManager),
-				fluxoComponente);
-	}
-
-	public static RespostaController newInstanceRespostaController(
+		public static RespostaController newInstanceRespostaController(
 			EntityManager entityManager, MockResult result,
 			FluxoComponente fluxoComponente) {
 		TesteView testeView = new TesteView();

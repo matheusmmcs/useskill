@@ -7,6 +7,7 @@ package br.ufpi.controllers;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import br.com.caelum.vraptor.validator.Message;
@@ -21,6 +22,18 @@ import br.ufpi.repositories.UsuarioRepository;
  * @author Cleiton
  */
 public class UsuarioControllerTest extends AbstractDaoTest {
+	private UsuarioRepository repository;
+	private UsuarioController instance;
+	private static Long usuarioLogado = 1l;
+
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+		repository = UsuarioTestProcedure
+				.newInstanceUsuarioRepository(entityManager);
+		instance = UsuarioTestProcedure
+				.newInstanceUsuarioController(entityManager);
+	}
 
 	/**
 	 * Test of index method, of class UsuarioController.
@@ -28,10 +41,10 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	@Test
 	public void testIndex() {
 		System.out.println("index");
-		UsuarioController instance = UsuarioTestProcedure
-				.newInstanceUsuarioController(entityManager);
-		UsuarioRepository usuarioRepository= UsuarioTestProcedure.newInstanceUsuarioRepository(entityManager);
-		assertEquals(usuarioRepository.findAll().size(), instance.index().size());
+		UsuarioRepository usuarioRepository = UsuarioTestProcedure
+				.newInstanceUsuarioRepository(entityManager);
+		assertEquals(usuarioRepository.findAll().size(), instance.index()
+				.size());
 	}
 
 	/**
@@ -43,8 +56,6 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 
 		Usuario usuario = UsuarioTestProcedure.newInstaceUsuario(entityManager,
 				"cleiton", "cleitonmoura19@hotmail.com", "cleiton");
-		UsuarioController instance = UsuarioTestProcedure
-				.newInstanceUsuarioController(entityManager);
 		int qAntes = instance.index().size();
 		instance.create(usuario);
 		assertEquals("Deveria ter um usuario a Mais", qAntes + 1, instance
@@ -56,8 +67,6 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 		System.out.println("create email equal");
 		Usuario usuario = UsuarioTestProcedure.newInstaceUsuario(entityManager,
 				"cleiton", "cleitonmoura18@hotmail.com", "cleiton");
-		UsuarioController instance = UsuarioTestProcedure
-				.newInstanceUsuarioController(entityManager);
 		try {
 			instance.create(usuario);
 		} catch (ValidationException validationExceptione) {
@@ -75,8 +84,6 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	@Test
 	public void testNewUsuario() {
 		System.out.println("newUsuario");
-		UsuarioController instance = UsuarioTestProcedure
-				.newInstanceUsuarioController(entityManager);
 		Usuario result = instance.newUsuario();
 		Assert.assertNotNull(result);
 	}
@@ -88,17 +95,15 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	public void testUpdate() {
 		System.out.println("update");
 		Usuario usuario = UsuarioTestProcedure.newInstaceUsuario(entityManager,
-				"Cleiton Santos ", "cleitonmouraSilveste@gmail.com", "moura");
+				"Cleiton Santos ", "cleitonmouraSilvesteas@gmail.com", "moura");
 		usuario.setId(1l);
-		UsuarioController instance = UsuarioTestProcedure
-				.newInstanceUsuarioController(entityManager);
 		try {
 			instance.update(usuario);
 		} catch (ValidationException validationException) {
 			Assert.assertTrue("Não era para gerar EXception", false);
 		}
 		Usuario show = instance.show(usuario);
-		assertEquals(usuario.getNome(), show.getNome());
+		assertEquals(usuario.getEmail(), show.getEmail());
 	}
 
 	/**
@@ -110,8 +115,6 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 		Usuario usuario = UsuarioTestProcedure.newInstaceUsuario(entityManager,
 				"Cleiton Santos ", "cleitonmoura18@hotmail.com", "moura");
 		usuario.setId(1l);
-		UsuarioController instance = UsuarioTestProcedure
-				.newInstanceUsuarioController(entityManager);
 		try {
 			instance.update(usuario);
 		} catch (ValidationException validationException) {
@@ -131,8 +134,6 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 		System.out.println("edit");
 		Usuario usuario = new Usuario();
 		usuario.setId(1l);
-		UsuarioController instance = UsuarioTestProcedure
-				.newInstanceUsuarioController(entityManager);
 		Usuario result = instance.edit(usuario);
 		assertEquals("cleiton", result.getNome());
 	}
@@ -145,15 +146,14 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 		System.out.println("edit");
 		Usuario usuario = new Usuario();
 		usuario.setId(2l);
-		UsuarioController instance = UsuarioTestProcedure
-				.newInstanceUsuarioController(entityManager);
 		try {
 			instance.edit(usuario);
 		} catch (ValidationException validationException) {
 			Message errors = validationException.getErrors().get(0);
-			Assert.assertEquals("Era para ter gerado mensagem de que o usuario não é dono da secao", "nao.proprietario",
-					errors.getCategory());
-			
+			Assert.assertEquals(
+					"Era para ter gerado mensagem de que o usuario não é dono da secao",
+					"nao.proprietario", errors.getCategory());
+
 			return;
 		}
 		Assert.assertFalse(
@@ -170,7 +170,6 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 		System.out.println("show");
 		Usuario usuario = new Usuario();
 		usuario.setId(1l);
-		UsuarioController instance = UsuarioTestProcedure.newInstanceUsuarioController(entityManager);
 		Usuario result = instance.show(usuario);
 		assertEquals("cleiton", result.getNome());
 	}
@@ -183,10 +182,24 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 		System.out.println("destroy");
 		Usuario usuario = new Usuario();
 		usuario.setId(6l);
-		UsuarioController instance =  UsuarioTestProcedure.newInstanceUsuarioController(entityManager);
-		instance.usuarioLogado.setUsuario(UsuarioTestProcedure.newInstanceUsuarioRepository(entityManager).find(6l));
+		instance.usuarioLogado.setUsuario(UsuarioTestProcedure
+				.newInstanceUsuarioRepository(entityManager).find(6l));
 		int qAntes = instance.index().size();
 		instance.destroy(usuario);
-		Assert.assertEquals("Deveria ter um usuario a menos", qAntes-1,instance.index().size());
+		Assert.assertEquals("Deveria ter um usuario a menos", qAntes - 1,
+				instance.index().size());
+	}
+
+	/**
+	 * Alterar senha sucesso
+	 */
+	@Test
+	public void testalterarSenha() {
+		System.out.println("Alterar senha sucesso");
+		String antiga = repository.find(usuarioLogado).getSenha();
+		instance.alterarSenha("senhaNova", "senhaNova", "senha1");
+		String nova = repository.find(usuarioLogado).getSenha();
+		Assert.assertFalse(nova.equals(antiga));
+
 	}
 }

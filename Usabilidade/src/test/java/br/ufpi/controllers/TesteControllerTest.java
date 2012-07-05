@@ -6,6 +6,7 @@ package br.ufpi.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -699,11 +700,12 @@ public class TesteControllerTest extends AbstractDaoTest {
 		idUsuarios.add(4l);
 		idUsuarios.add(5l);
 		Long idTeste = 2l;
-		 int qAntes = convidadoRepositoryImpl.findAll().size();
+		int qAntes = convidadoRepositoryImpl.findAll().size();
 		instance.convidarUsuario(idUsuarios, idTeste);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
-		Assert.assertEquals(qAntes+2, qDepois);
+		Assert.assertEquals(qAntes + 2, qDepois);
 	}
+
 	/**
 	 * Test of convidarUsuario já convidados.
 	 * 
@@ -719,17 +721,17 @@ public class TesteControllerTest extends AbstractDaoTest {
 		idUsuarios.add(5l);
 		idUsuarios.add(6l);
 		Long idTeste = 8l;
-		 int qAntes = convidadoRepositoryImpl.findAll().size();
-		 Message message=null;
+		int qAntes = convidadoRepositoryImpl.findAll().size();
+		Message message = null;
 		try {
-				instance.convidarUsuario(idUsuarios, idTeste);
-			} catch (ValidationException validationException) {
-				message = validationException.getErrors().get(0);
+			instance.convidarUsuario(idUsuarios, idTeste);
+		} catch (ValidationException validationException) {
+			message = validationException.getErrors().get(0);
 
-			}
-			Assert.assertEquals(
-					"Não pode deixar salvar pois Esta reconvidando usuario",
-					"campo.form.alterado", message.getCategory());
+		}
+		Assert.assertEquals(
+				"Não pode deixar salvar pois Esta reconvidando usuario",
+				"campo.form.alterado", message.getCategory());
 		int qDepois = convidadoRepositoryImpl.findAll().size();
 		Assert.assertEquals(qAntes, qDepois);
 	}
@@ -766,86 +768,96 @@ public class TesteControllerTest extends AbstractDaoTest {
 		System.out.println("desconvidarUsuario");
 		ConvidadoRepositoryImpl convidadoRepositoryImpl = new ConvidadoRepositoryImpl(
 				entityManager);
-		 int qAntes = convidadoRepositoryImpl.findAll().size();
+		int qAntes = convidadoRepositoryImpl.findAll().size();
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(2l);
 		idUsuarios.add(5l);
-		Long idTeste =7l;
+		Long idTeste = 7l;
 		instance.desconvidarUsuario(idUsuarios, idTeste);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
-		Assert.assertEquals("Era pra possuir dois testes a menos",qAntes, qDepois+2);
+		Assert.assertEquals("Era pra possuir dois testes a menos", qAntes,
+				qDepois + 2);
 	}
+
 	/**
-	 * Test of desconvidarUsuario method, of class TesteController.
-	 * Desconvidar usuarios que não estao convidados
+	 * Test of desconvidarUsuario method, of class TesteController. Desconvidar
+	 * usuarios que não estao convidados
 	 */
 	@Test
 	public void testDesconvidarUsuarioQueNaoEstaoConvidados() {
 		System.out.println("desconvidarUsuario");
 		ConvidadoRepositoryImpl convidadoRepositoryImpl = new ConvidadoRepositoryImpl(
 				entityManager);
-		 int qAntes = convidadoRepositoryImpl.findAll().size();
+		int qAntes = convidadoRepositoryImpl.findAll().size();
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(4l);
 		idUsuarios.add(3l);
-		Long idTeste =7l;
+		Long idTeste = 7l;
 		instance.desconvidarUsuario(idUsuarios, idTeste);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
-		Assert.assertEquals("é pra possuir o mesmo numero de teste",qAntes, qDepois);
+		Assert.assertEquals("é pra possuir o mesmo numero de teste", qAntes,
+				qDepois);
 	}
+
 	/**
-	 * Test of desconvidarUsuario method, of class TesteController.
-	 * Desconvidar usuarios que não estao convidados com usuarios convidados
+	 * Test of desconvidarUsuario method, of class TesteController. Desconvidar
+	 * usuarios que não estao convidados com usuarios convidados
 	 */
 	@Test
 	public void testDesconvidarUsuarioComUsuarioNaoConvidado() {
 		System.out.println("desconvidarUsuario");
 		ConvidadoRepositoryImpl convidadoRepositoryImpl = new ConvidadoRepositoryImpl(
 				entityManager);
-		 int qAntes = convidadoRepositoryImpl.findAll().size();
+		int qAntes = convidadoRepositoryImpl.findAll().size();
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(2l);
 		idUsuarios.add(3l);
 		idUsuarios.add(4l);
-		Long idTeste =7l;
+		Long idTeste = 7l;
 		instance.desconvidarUsuario(idUsuarios, idTeste);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
-		Assert.assertEquals("é pra possuir o mesmo numero de teste",qAntes, qDepois+1);
+		Assert.assertEquals("é pra possuir o mesmo numero de teste", qAntes,
+				qDepois + 1);
 	}
+
 	/**
-	 * Test of desconvidarUsuario method, of class TesteController.
-	 * Desconvidar usuarios de teste Liberado
+	 * Test of desconvidarUsuario method, of class TesteController. Desconvidar
+	 * usuarios de teste Liberado
 	 */
 	@Test
 	public void testDesconvidarUsuarioDeTesteLiberado() {
 		System.out.println("desconvidarUsuario");
 		ConvidadoRepositoryImpl convidadoRepositoryImpl = new ConvidadoRepositoryImpl(
 				entityManager);
-		 int qAntes = convidadoRepositoryImpl.findAll().size();
+		int qAntes = convidadoRepositoryImpl.findAll().size();
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(2l);
-		Long idTeste =11l;
+		Long idTeste = 11l;
 		instance.desconvidarUsuario(idUsuarios, idTeste);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
-		Assert.assertEquals("é pra possuir o mesmo numero de teste",qAntes, qDepois+1);
+		Assert.assertEquals("é pra possuir o mesmo numero de teste", qAntes,
+				qDepois + 1);
 	}
+
 	/**
-	 * Test of desconvidarUsuario method, of class TesteController.
-	 * Desconvidar usuarios com lista de usuarios vazia
+	 * Test of desconvidarUsuario method, of class TesteController. Desconvidar
+	 * usuarios com lista de usuarios vazia
 	 */
 	@Test
 	public void testDesconvidarUsuarioComListaDeUsuariosVazia() {
 		System.out.println("desconvidarUsuario");
 		ConvidadoRepositoryImpl convidadoRepositoryImpl = new ConvidadoRepositoryImpl(
 				entityManager);
-		 int qAntes = convidadoRepositoryImpl.findAll().size();
+		int qAntes = convidadoRepositoryImpl.findAll().size();
 		List<Long> idUsuarios = new ArrayList<Long>();
-		
-		Long idTeste =6l;
+
+		Long idTeste = 6l;
 		instance.desconvidarUsuario(idUsuarios, idTeste);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
-		Assert.assertEquals("é pra possuir o mesmo numero de teste",qAntes, qDepois);
+		Assert.assertEquals("é pra possuir o mesmo numero de teste", qAntes,
+				qDepois);
 	}
+
 	/**
 	 * Test of remove method, of class TesteController.
 	 * 
@@ -1053,17 +1065,16 @@ public class TesteControllerTest extends AbstractDaoTest {
 	@Test
 	public void testMeusProjetos() {
 		System.out.println("meusProjetos");
-		instance.meusProjetos();
+		instance.meusProjetos(1);
 		List<Teste> object = (List<Teste>) result.included().get(
 				"testesParticipados");
 		Assert.assertTrue("", object.isEmpty());
 		Long numeroTeste = (Long) result.included().get(
 				"testesParticipadosCount");
 		Long numeroTestesParticipados = 1l;
-		Assert.assertEquals("Este usuario nunca participou de um teste", numeroTestesParticipados,
-				numeroTeste);
+		Assert.assertEquals("Este usuario nunca participou de um teste",
+				numeroTestesParticipados, numeroTeste);
 	}
-
 
 	/**
 	 * Test of passo1 method, of class TesteController. Usuario passou id do
@@ -1234,6 +1245,14 @@ public class TesteControllerTest extends AbstractDaoTest {
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
+	}
 
+	@Test
+	public void testlistarTestesLiberados() {
+		instance.listarTestesLiberados(2);
+		Map<String, Object> included = result.included();
+		Assert.assertEquals(5l, included.get("testesLiberadosCount"));
+		List<Teste> testes = (List<Teste>) included.get("testesLiberados");
+		Assert.assertEquals(2, testes.size());
 	}
 }

@@ -166,10 +166,10 @@ public class LoginControllerTest extends AbstractDaoTest {
 				Assert.assertTrue("Teste 5 ainda não foi liberado entao não e para o usuario ver este teste",false);
 			}
 		}
-		Assert.assertEquals("Usuario so foi convidado para 2 teste",2,
+		Assert.assertEquals("Usuario so foi convidado para 4 teste",4,
 				testesConvidados.size());
 		Assert.assertEquals(
-				"Usuario so possui 2 teste criados e não liberados ", 6,
+				"Usuario so possui 7 teste criados e não liberados ", 7,
 				testesCriados.size());
 	}
 
