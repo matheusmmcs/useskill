@@ -393,9 +393,10 @@ public class TesteController extends BaseController {
 	}
 
 	@Logado
-	public void meusProjetos() {
+	public void meusProjetos(int numeroPagina) {
+		validateComponente.validarId((long) numeroPagina);
 		Paginacao<Teste> testesParticipados = testeRepository
-				.getTestesParticipados(usuarioLogado.getUsuario().getId(), 1,
+				.getTestesParticipados(usuarioLogado.getUsuario().getId(),numeroPagina ,
 						50);
 		result.include("testesParticipados",
 				testesParticipados.getListObjects());
@@ -416,5 +417,13 @@ public class TesteController extends BaseController {
 //		return builder;
 //
 //	}
+	@Logado
+	@Get("testes/liberados/pag/{numeroPagina}")
+	public void listarTestesLiberados(int numeroPagina){
+		validateComponente.validarId((long) numeroPagina);
+		Paginacao<Teste> testesCriadosLiberados = testeRepository.getTestesCriadosLiberados(usuarioLogado.getUsuario().getId(), 50,numeroPagina );
+		result.include("testesLiberados",testesCriadosLiberados.getListObjects());
+		result.include("testesLiberadosCount",testesCriadosLiberados.getCount());
+	}
 
 }

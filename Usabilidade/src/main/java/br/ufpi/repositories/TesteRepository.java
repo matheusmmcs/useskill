@@ -78,5 +78,14 @@ public interface TesteRepository {
 	 * @param numeroPagina numero da página que sera carregada
 	 */
 	
-	Paginacao<Teste> getTestesParticipados(Long usuarioId, int quantidade, int numeroPagina); 
+	Paginacao<Teste> getTestesParticipados(Long usuarioId, int quantidade, int numeroPagina);
+	/***
+	 * 
+	 * Lista todos os testes que um usuario já liberou
+	 * @param usuarioId identificador do usuario que quer seus testes
+	 * @param quantidade numero de Testes por paginas
+	 * @param numeroPagina numero da página que sera carregada
+	 * @return Lista de testes que o usuario liberou
+	 */
+	Paginacao<Teste> getTestesCriadosLiberados(Long usuarioId, int quantidade, int numeroPagina ); 
 }

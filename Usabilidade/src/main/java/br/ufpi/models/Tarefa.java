@@ -36,11 +36,11 @@ public class Tarefa implements Serializable {
 	@Column(columnDefinition = "TINYTEXT")
 	@NotBlank
 	private String roteiro;
-	@OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL,fetch=FetchType.LAZY)
 	private List<Impressao> impressoes;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL,fetch=FetchType.LAZY)
 	private FluxoIdeal fluxoIdeal;
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL,fetch=FetchType.LAZY)
 	private List<FluxoUsuario> fluxoUsuario;
 	@ManyToOne(cascade = CascadeType.REFRESH)
 	private Teste teste;

@@ -22,7 +22,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 		@NamedQuery(name = "Teste.findByTituloPublico", query = "SELECT t FROM Teste t WHERE t.tituloPublico = :tituloPublico"),
 		@NamedQuery(name = "Teste.Criado.NaoLiberado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.liberado=false"),
 		@NamedQuery(name = "Teste.Criado.Liberado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.liberado=true"),
-		@NamedQuery(name = "Teste.Criado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste"), })
+		@NamedQuery(name = "Teste.Criado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste"),
+		@NamedQuery(name = "Testes.Criados.Liberados", query = "SELECT t FROM Teste t WHERE t.usuarioCriador.id= :usuarioCriador AND t.liberado=true"),
+		@NamedQuery(name = "Testes.Criados.Liberados.Count", query = "SELECT count(*) FROM Teste t WHERE t.usuarioCriador.id= :usuarioCriador AND t.liberado=true"),
+		})
 @Entity
 public class Teste implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -33,7 +36,7 @@ public class Teste implements Serializable {
 	private List<Tarefa> tarefas;
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Questionario caracterizacao;
-	@OneToOne(cascade = CascadeType.ALL,fetch= FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Questionario satisfacao;
 	@ManyToMany
 	List<Usuario> usuariosParticipantes;
@@ -51,7 +54,7 @@ public class Teste implements Serializable {
 	private String tituloPublico;
 	@Column(columnDefinition = "TiNYTEXT")
 	private String textoIndroducao;
-		/**
+	/**
 	 * Indica se o Teste jah foi liberado para os usuarios responderem.
 	 * Diferença do realizao é que se liberado pode ser alterado.
 	 */
@@ -129,7 +132,6 @@ public class Teste implements Serializable {
 		this.titulo = titulo;
 	}
 
-	
 	@Override
 	public String toString() {
 		return "Teste [id=" + id + ", tarefas=" + tarefas + ", caracterizacao="

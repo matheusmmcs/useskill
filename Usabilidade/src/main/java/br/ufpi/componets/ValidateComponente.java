@@ -102,5 +102,16 @@ public class ValidateComponente {
 			}
 		});	
 	}
+
+	public void gerarErro(final String category, final String mensagem) {
+		validator.checking(new Validations() {
+
+			{
+				that(false, category,
+						mensagem);
+			}
+		});	
+		
+	}
 	
 }

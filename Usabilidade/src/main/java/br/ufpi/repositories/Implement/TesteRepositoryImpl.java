@@ -131,4 +131,22 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		paginacao.setCount((Long) count.getSingleResult());
 		return paginacao;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Paginacao<Teste> getTestesCriadosLiberados(Long usuarioId,
+			int quantidade, int numeroPagina) {
+		Paginacao<Teste> paginacao = new Paginacao<Teste>();
+		Query query = entityManager
+				.createNamedQuery("Testes.Criados.Liberados");
+		query.setParameter("usuarioCriador", usuarioId);
+		query.setFirstResult(quantidade * (numeroPagina - 1));
+		query.setMaxResults(quantidade);
+		paginacao.setListObjects(query.getResultList());
+		Query count = entityManager
+				.createNamedQuery("Testes.Criados.Liberados.Count");
+		count.setParameter("usuarioCriador", usuarioId);
+		paginacao.setCount((Long) count.getSingleResult());
+		return paginacao;
+	}
 }

@@ -6,6 +6,7 @@ package br.ufpi.models;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,7 +23,7 @@ public class FluxoIdeal implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private Fluxo fluxo;
 
 	public Fluxo getFluxo() {

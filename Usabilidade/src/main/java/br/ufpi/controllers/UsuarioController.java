@@ -20,6 +20,7 @@ import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.BaseUrl;
+import br.ufpi.util.Criptografa;
 import br.ufpi.util.EmailUtils;
 
 @Resource
@@ -42,8 +43,8 @@ public class UsuarioController extends BaseController {
 		return usuarioRepository.findAll();
 	}
 
-	
 	@Post("/usuarios")
+	@AcessoLivre
 	public void create(Usuario usuario) {
 		validator.validate(usuario);
 		if (usuarioRepository.isContainsEmail(usuario.getEmail())) {
@@ -62,6 +63,7 @@ public class UsuarioController extends BaseController {
 		emailUtils.enviarEmailConfirmacao(usuario);
 		result.redirectTo(LoginController.class).login(usuario.getEmail());
 	}
+
 	@AcessoLivre
 	@Get("/usuarios/new")
 	public Usuario newUsuario() {
@@ -85,6 +87,12 @@ public class UsuarioController extends BaseController {
 		validator.onErrorUsePageOf(this).edit(usuarioNovo);
 		usuarioNovo.setNome(usuario.getNome());
 		usuarioNovo.setTelefones(usuario.getTelefones());
+		if (!usuario.getEmail().equals(usuarioNovo.getEmail())) {
+			usuarioNovo.setEmail(usuario.getEmail());
+			usuario.criptografarSenhaGerarConfimacaoEmail();
+			EmailUtils emailUtils = new EmailUtils();
+			emailUtils.enviarEmailConfirmacao(usuario);
+		}
 		validator.validate(usuarioNovo);
 		validator.onErrorUsePageOf(this).edit(usuarioNovo);
 		usuarioRepository.update(usuarioNovo);
@@ -99,6 +107,35 @@ public class UsuarioController extends BaseController {
 		Usuario usuario1 = usuarioRepository.find(usuario.getId());
 		result.include("contador", usuario1.getTelefones().size());
 		return usuario1;
+	}
+
+	@Post
+	public void alterarSenha(String senha, String confirmacaoSenha,
+			String senhaAntiga) {
+		validateComponente.validarString(senha, "senhaNova");
+		validateComponente.validarString(confirmacaoSenha, "confirmacaoSenha");
+		validateComponente.validarString(senhaAntiga, "senhaAntiga");
+		if(senha.length()<6)
+			validateComponente.gerarErro("senha.curta", "senha.curta");
+		// validator.onErrorRedirectTo(controller)
+		if (senha.equals(confirmacaoSenha)) {
+			String senhaCriptografada = Criptografa.criptografar(senhaAntiga);
+			if (senhaCriptografada
+					.equals(usuarioLogado.getUsuario().getSenha())) {
+				Usuario usuarioAtualizar = usuarioRepository.find(usuarioLogado
+						.getUsuario().getId());
+				usuarioAtualizar.setSenha(senha);
+				usuarioRepository.update(usuarioAtualizar);
+				usuarioLogado.setUsuario(usuarioAtualizar);
+				// TODOGerar mensagem que o usuario conseguiu alterar senha com
+				// sucesso
+			} else {
+				// Gerar mensagem de senha antiga não esta igual
+				validateComponente.gerarErro("senha.diferente",
+						"senha.diferente");
+				// TODO validator.onErrorRedirectTo(controller);
+			}
+		}
 	}
 
 	@Logado
