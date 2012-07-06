@@ -175,6 +175,15 @@ public class WebClientTester {
 
         return html;
     }
+    
+    public static String injectCodeAtBody(String html, String code) {
+        int location = html.lastIndexOf("<body>");
+        location+=6;
+        System.out.println("INJECT AT BODY("+location+"): "+code);
+        html = html.substring(0, location) + code + html.substring(location);
+
+        return html;
+    }
 
     public static String converteLink(String html, String page, Integer idTarefa) {
         StringBuffer codigo = new StringBuffer();
@@ -232,7 +241,7 @@ public class WebClientTester {
         String html = getPageContent(page, HttpMethod.valueOf(method));
         html = prependLinks(html);
         html = converteLink(html, ferramenta + "?url=", idTarefa);
-        
+        //html = injectCodeAtBody(html, "");        
         return html;
     }
 }

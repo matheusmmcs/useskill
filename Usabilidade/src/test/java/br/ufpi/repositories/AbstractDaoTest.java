@@ -25,8 +25,8 @@ public abstract class AbstractDaoTest {
 	@BeforeClass
 	public static void prepare() {
 		HashMap<String, String> configuracao = new HashMap<String, String>();
-		configuracao.put("hibernate.connection.url",
-				"jdbc:mysql://localhost:3306/usabilidadeTest");
+//		configuracao.put("hibernate.connection.url",
+//				"jdbc:mysql://localhost:3306/usabilidadeTest");
 		entityManagerFactory = Persistence.createEntityManagerFactory(
 				"default", configuracao);
 		populator(entityManagerFactory.createEntityManager());

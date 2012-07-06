@@ -16,13 +16,11 @@ import org.junit.Test;
 import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.controllers.procedure.TarefaTestProcedure;
-import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.repositories.AbstractDaoTest;
 import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
-import br.ufpi.util.TarefaDetalhe;
 
 /**
  * Caso de Uso criar Tarefa</br> <li>Caso em que passa tarefa null</li> <li>Caso
@@ -537,7 +535,7 @@ Caso id de teste null
 		Long idTarefa = null;
 		Long idTeste = null;
 		TarefaController instance = null;
-		instance.iniciarGravacao(idTarefa, idTeste);
+		instance.iniciarGravacaoTester(idTarefa, idTeste);
 		// TODO review the generated test code and remove the default call to
 		// fail.
 		fail("The test case is a prototype.");
@@ -550,9 +548,9 @@ Caso id de teste null
 	public void testLoadtasktester() {
 		System.out.println("loadtasktester");
 		TarefaController instance = null;
-		TarefaDetalhe expResult = null;
-		TarefaDetalhe result = instance.loadtasktester();
-		assertEquals(expResult, result);
+//		TarefaDetalhe expResult = null;
+//		TarefaDetalhe result = instance.loadtasktester();
+//		assertEquals(expResult, result);
 		// TODO review the generated test code and remove the default call to
 		// fail.
 		fail("The test case is a prototype.");
@@ -580,9 +578,9 @@ Caso id de teste null
 	public void testLoadtaskuser() {
 		System.out.println("loadtaskuser");
 		TarefaController instance = null;
-		TarefaDetalhe expResult = null;
-		TarefaDetalhe result = instance.loadtaskuser();
-		assertEquals(expResult, result);
+////		TarefaDetalhe expResult = null;
+////		TarefaDetalhe result = instance.loadtaskuser();
+//		assertEquals(expResult, result);
 		// TODO review the generated test code and remove the default call to
 		// fail.
 		fail("The test case is a prototype.");

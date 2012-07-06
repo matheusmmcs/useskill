@@ -13,6 +13,7 @@ import br.com.caelum.vraptor.util.test.MockValidator;
 import br.ufpi.commons.HttpRequestTest;
 import br.ufpi.componets.FluxoComponente;
 import br.ufpi.componets.SessionActions;
+import br.ufpi.componets.TarefaDetalhe;
 import br.ufpi.componets.TesteSession;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
@@ -51,7 +52,7 @@ public class TarefaTestProcedure {
 				newInstanceFluxoUsuarioRepository(entityManager),
 				UsuarioTestProcedure
 						.newInstanceConvidadoRepository(entityManager),
-				actions, fluxo, request, testeSession);
+				actions, fluxo, request, testeSession,new TarefaDetalhe());
 		return controller;
 	}
 
@@ -75,7 +76,7 @@ public class TarefaTestProcedure {
 				newInstanceFluxoUsuarioRepository(entityManager),
 				UsuarioTestProcedure
 						.newInstanceConvidadoRepository(entityManager),
-				actions, fluxo, request, testeSession);
+				actions, fluxo, request, testeSession,null);
 		return controller;
 	}
 

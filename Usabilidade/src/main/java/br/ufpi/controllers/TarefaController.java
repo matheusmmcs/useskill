@@ -18,12 +18,14 @@ import br.com.caelum.vraptor.Validator;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.FluxoComponente;
 import br.ufpi.componets.SessionActions;
+import br.ufpi.componets.TarefaDetalhe;
 import br.ufpi.componets.TesteSession;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Acao;
 import br.ufpi.models.Convidado;
+import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.FluxoUsuario;
 import br.ufpi.models.Tarefa;
@@ -34,7 +36,6 @@ import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.BaseUrl;
-import br.ufpi.util.TarefaDetalhe;
 import br.ufpi.util.WebClientTester;
 
 import com.google.gson.Gson;
@@ -51,6 +52,7 @@ public class TarefaController extends BaseController {
 	private final FluxoComponente fluxo;
 	private final HttpServletRequest request;
 	private final TesteSession testeSession;
+	private final TarefaDetalhe tarefaDetalhe;
 
 	public TarefaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
@@ -59,7 +61,7 @@ public class TarefaController extends BaseController {
 			FluxoUsuarioRepository fluxoUsuarioRepository,
 			ConvidadoRepository convidadoRepository, SessionActions actions,
 			FluxoComponente fluxo, HttpServletRequest request,
-			TesteSession testeSession) {
+			TesteSession testeSession,TarefaDetalhe tarefaDetalhe) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
@@ -69,6 +71,7 @@ public class TarefaController extends BaseController {
 		this.fluxo = fluxo;
 		this.request = request;
 		this.testeSession = testeSession;
+		this.tarefaDetalhe=tarefaDetalhe;
 	}
 
 	/**
@@ -189,6 +192,9 @@ public class TarefaController extends BaseController {
 	public void saveFluxoIdeal(String dados, Boolean completo) {
 		Long tarefaId = this.testeSession.getTarefa().getId();
 		System.out.println("Action: saveFluxoIdeal");
+		if (completo) {
+			System.out.println("Completo");
+		}
 		System.out.println(dados + " - " + completo + " - " + tarefaId);
 		saveFluxo(dados, completo, tarefaId, true);
 	}
@@ -275,7 +281,7 @@ public class TarefaController extends BaseController {
 	@Logado
 	@Post()
 	@Path(value = "tarefa/gravar")
-	public void iniciarGravacao(Long idTarefa, Long idTeste) {
+	public void iniciarGravacaoTester(Long idTarefa, Long idTeste) {
 		this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
 		this.testeSession.setTeste(testeRepository.find(idTeste));
 		this.testeSession.setTarefa(tarefaRepository.find(idTarefa));
@@ -291,20 +297,14 @@ public class TarefaController extends BaseController {
 	@Logado
 	@Get()
 	@Post()
-	public TarefaDetalhe loadtasktester() {
+	public void loadtasktester() {
 		Long idTarefa = testeSession.getTarefa().getId();
 		System.out.println("Action: loadTaskTester");
-		Tarefa tarefa = tarefaPertenceTeste(testeSession.getTeste().getId(),
-				idTarefa);
-		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
+		Tarefa tarefa = tarefaPertenceTeste(testeSession.getTeste().getId(),idTarefa);
 		String url = BaseUrl.getInstance(request);
-		System.out.println("${String} =" + url
-				+ "/tarefa/loadactiontester?url=" + tarefa.getUrlInicial()
-				+ "&idTarefa=" + idTarefa);
-		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
-		tarefadetalhe.setUrl(url + "/tarefa/loadactiontester?url="
-				+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
-		return tarefadetalhe;
+		System.out.println("${String} =" + url + "/tarefa/loadactiontester?url=" + tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
+		tarefaDetalhe.setRoteiro(tarefa.getRoteiro());
+		tarefaDetalhe.setUrl(url + "/tarefa/loadactiontester?url="+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
 	}
 
 	/**
@@ -330,7 +330,8 @@ public class TarefaController extends BaseController {
 		while (headerNames.hasMoreElements()) {
 			String headerName = (String) headerNames.nextElement();
 		}
-
+		
+		
 		if (url != null) {
 			return WebClientTester.loadPage(BaseUrl.getInstance(request)
 					+ "/tarefa/loadactiontester", url,
@@ -366,7 +367,7 @@ public class TarefaController extends BaseController {
 		Tarefa tarefa = getTarefa(idTarefa);
 		// return BaseUrl.getInstance(request)+"/tarefa/loadactionuser?url="+
 		// tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
-		System.out.println("TESTAR TAREFA" + tarefa);
+//		System.out.println("TESTAR TAREFA" + tarefa);
 		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
 		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
 		tarefadetalhe.setUrl(BaseUrl.getInstance(request)
@@ -430,6 +431,7 @@ public class TarefaController extends BaseController {
 		Tarefa tarefa = this.tarefaPertenceTeste(idTeste, tarefaId);
 
 		FluxoIdeal fluxoIdeal = new FluxoIdeal();
+		fluxoIdeal.setFluxo(new Fluxo());
 		fluxoIdeal.getFluxo().setUsuario(usuarioLogado.getUsuario());
 		List<Acao> acoes = actions.getAcoes();
 		for (Acao acao : acoes) {
@@ -440,6 +442,7 @@ public class TarefaController extends BaseController {
 		tarefa.setFluxoIdealPreenchido(true);
 		tarefa.setNome("Tarefa alterada");
 		tarefaRepository.update(tarefa);
+		tarefaDetalhe.destroy();
 		System.out.println("Tarefa é pra ter sido salva");
 		// result.redirectTo(TesteController.class).passo2(idTeste);
 	}

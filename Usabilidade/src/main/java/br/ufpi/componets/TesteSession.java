@@ -16,7 +16,7 @@ public class TesteSession {
 
     private Teste teste;
     private Tarefa tarefa;
-
+    
     public Tarefa getTarefa() {
         return tarefa;
     }
@@ -25,7 +25,7 @@ public class TesteSession {
         this.tarefa = tarefa;
     }
 
-    public  Teste getTeste() {
+	public  Teste getTeste() {
         return teste;
     }
 
