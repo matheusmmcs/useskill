@@ -6,11 +6,20 @@
 <html>
 <head>
 <!-- decorator = teste -->
-<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/captTester.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/bootstrap-ex.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/webclient/loadaction.css" />
+
+	
+<!--  FANCYBOX -->
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugin/fancybox/jquery.fancybox.css" media="screen" />
+
 <decorator:head />
 </head>
 <body>
-	<decorator:body />
+	<%@include file="headerscript.jsp"%>
+	<div id="webclient-conteudo">
+		<decorator:body />
+	</div>
 </body>
 </html>

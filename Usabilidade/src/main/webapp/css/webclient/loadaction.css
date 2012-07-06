@@ -1,0 +1,63 @@
+@CHARSET "UTF-8";
+
+#webclient-topo{
+	width: 100%; 
+	top: 0px; 
+	height: 60px;
+	position: relative;
+	background: #EEF3F6;
+	border-bottom: 1px solid #007AA5;
+	z-index: 99999;
+}
+
+.concluir {
+	float: right;
+	margin: 15px 30px;
+	padding: 5px 30px;
+}
+
+.bom {
+	float: left;
+	margin: 15px 5px;
+	padding: 5px 20px;
+}
+
+.ruim {
+	float: left;
+	margin: 15px 5px;
+	padding: 5px 20px;
+}
+
+.comentario {
+	float: left;
+	margin: 15px 5px;
+	padding: 5px 20px;
+}
+
+#roteiro {
+	float: right;
+	margin: 15px 170px 15px 15px;
+	padding: 5px 30px;
+}
+
+.direita {
+	float: right;
+	width: 33%;
+	height: 60px;
+}
+
+.centro {
+	float: right;
+	width: 33%;
+	height: 60px;
+}
+
+.esquerda {
+	float: right;
+	width: 33%;
+	height: 60px;
+}
+
+webclient-conteudo{
+	top: 80px;
+}
