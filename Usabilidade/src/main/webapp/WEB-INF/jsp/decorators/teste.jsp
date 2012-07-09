@@ -7,7 +7,6 @@
 <head>
 <!-- decorator = teste -->
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/bootstrap-ex.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/webclient/loadaction.css" />
 
 	

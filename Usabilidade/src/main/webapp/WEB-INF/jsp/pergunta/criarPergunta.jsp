@@ -29,7 +29,8 @@
         <div class="control-group">
             <label class="control-label" for="input01"><fmt:message key="pergunta.titulo" />*</label>
             <div class="controls">
-                <input type="text" name="pergunta.titulo" value="${pergunta.titulo}" id="titulo" class="input-xmlarge"/> 
+                <input type="text" name="pergunta.titulo" value="${pergunta.titulo}" id="titulo" class="input-xmlarge"/>
+                <p class="help-block" style="float: left; margin-top: 3px"><fmt:message key="pergunta.info.titulo"/></p> 
             </div>
         </div>
         <div class="control-group">

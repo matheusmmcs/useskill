@@ -49,7 +49,7 @@ public class TarefaController extends BaseController {
 	private final FluxoUsuarioRepository fluxoUsuarioRepository;
 	private final ConvidadoRepository convidadoRepository;
 	private SessionActions actions;
-	private final FluxoComponente fluxo;
+	private final FluxoComponente fluxoComponente;
 	private final HttpServletRequest request;
 	private final TesteSession testeSession;
 	private final TarefaDetalhe tarefaDetalhe;
@@ -68,7 +68,7 @@ public class TarefaController extends BaseController {
 		this.fluxoUsuarioRepository = fluxoUsuarioRepository;
 		this.convidadoRepository = convidadoRepository;
 		this.actions = actions;
-		this.fluxo = fluxo;
+		this.fluxoComponente = fluxo;
 		this.request = request;
 		this.testeSession = testeSession;
 		this.tarefaDetalhe=tarefaDetalhe;
@@ -236,7 +236,7 @@ public class TarefaController extends BaseController {
 				gravaFluxoIdeal(tarefaId);
 			} else {
 				System.out.println("Salva FluxoComponente Usuario");
-				gravaFluxoUSuario(this.fluxo.getTarefaVez());
+				gravaFluxoUSuario(this.fluxoComponente.getTarefaVez());
 
 			}
 			actions.destroy();
@@ -253,19 +253,21 @@ public class TarefaController extends BaseController {
 	private void gravaFluxoUSuario(Long tarefaId) {
 		System.out.println("GRAVA FLUXO DE USUARIO");
 		FluxoUsuario fluxoUsuario = new FluxoUsuario();
-		fluxoUsuario.getFluxo().setUsuario(usuarioLogado.getUsuario());
+		Fluxo fluxo= new Fluxo();
+		fluxo.setUsuario(usuarioLogado.getUsuario());
+		fluxoUsuario.setFluxo(fluxo);
 		List<Acao> acoes = actions.getAcoes();
 		for (Acao acao : acoes) {
 			acao.setFluxo(fluxoUsuario.getFluxo());
 		}
 		fluxoUsuario.getFluxo().setAcoes(actions.getAcoes());
 		fluxoUsuarioRepository.create(fluxoUsuario);
-		fluxo.getProximaTarefa();
-		System.out.println("AGORA vez esta" + fluxo.getTarefaVez());
-		if (fluxo.getTarefaVez() == 0) {
+		fluxoComponente.getProximaTarefa();
+		System.out.println("AGORA vez esta" + fluxoComponente.getTarefaVez());
+		if (fluxoComponente.getTarefaVez() == 0) {
 			System.out
 					.println("Tarefa = 0 -> redirecionar para responder as ultimas perguntas");
-			fluxo.setRespondendoInicio(false);
+			fluxoComponente.setRespondendoInicio(false);
 			result.redirectTo(RespostaController.class).exibir();
 		}
 	}
@@ -353,7 +355,7 @@ public class TarefaController extends BaseController {
 	@Get()
 	public TarefaDetalhe loadtaskuser() {
 		System.out.println("Action: loadTaskUser");
-		Long idTarefa = fluxo.getTarefaVez();
+		Long idTarefa = fluxoComponente.getTarefaVez();
 		System.out.println(idTarefa + "Tarefa na vez");
 		if (idTarefa == 0) {
 			System.out.println("Tarefa igual a zero");
@@ -387,7 +389,7 @@ public class TarefaController extends BaseController {
 	@Get
 	public String loadactionuser() {
 		System.out.println("loadActionUser ");
-		Long idTarefa = fluxo.getTarefaVez();
+		Long idTarefa = fluxoComponente.getTarefaVez();
 		if (idTarefa == 0) {
 			Convidado convidado = new Convidado(new UsuarioTestePK(
 					usuarioLogado.getUsuario(), testeSession.getTeste()));

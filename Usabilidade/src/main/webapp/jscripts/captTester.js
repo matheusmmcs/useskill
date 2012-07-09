@@ -210,6 +210,8 @@
 															
 															if (capt(e.target).attr("id") == config.finish) {
 																	//e.preventDefault()
+																
+																window.location = capt(e.target).attr("href")
 																window.parent.location = capt(e.target).attr("href")
 																enviaJson(getResultadoJson(),true)
 															} else {
