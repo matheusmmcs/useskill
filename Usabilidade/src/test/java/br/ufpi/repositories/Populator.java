@@ -324,6 +324,13 @@ public class Populator {
 		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.cidadeverde.com", "visualizar blog de união",
 				"Procurar Campeão", teste, true);
+		FluxoRepository fluxoRepository= new FluxoRepositoryImpl(entityManager);
+		Fluxo fluxo = TarefaTestProcedure.newInstanceFluxo(usuario1);
+		fluxoRepository.create(fluxo);
+		FluxoIdeal fluxoIdeal = TarefaTestProcedure
+				.newInstanceFluxoIdeal(usuario1);
+		fluxoIdeal.setFluxo(fluxo);
+		tarefa.setFluxoIdeal(fluxoIdeal);
 		repository.create(tarefa);
 		repository.create(tarefa2);
 		repository.create(tarefa3);

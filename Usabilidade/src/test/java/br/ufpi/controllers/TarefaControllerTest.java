@@ -16,6 +16,7 @@ import org.junit.Test;
 import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.controllers.procedure.TarefaTestProcedure;
+import br.ufpi.models.Acao;
 import br.ufpi.models.Tarefa;
 import br.ufpi.repositories.AbstractDaoTest;
 import br.ufpi.repositories.FluxoRepository;
@@ -26,27 +27,20 @@ import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
  * Caso de Uso criar Tarefa</br> <li>Caso em que passa tarefa null</li> <li>Caso
  * em que passa tarefa preenchida</li> <li>Caso em que passa tarefa e id de
  * teste Não pertencente ao usuario</li> <li>Caso em que passa tarefa e id de
- * teste já liberado</li>
- * Caso para Salvar tarefa</br>
- * <li>Caso de Sucesso</li>
- * <li>Caso id de teste não pertence ao usuario</li>
- * <li>Caso id de teste null</li>
- * <li>Caso id de teste Liberado</li>
- * <li>Caso de Tarefa sem os campos preenchidos</li>
- * Faltando
- * Caso para Editar tarefa</br>
- * <li>Caso de Sucesso</li>
- * <li>Caso id de teste não pertence ao usuario</li>
- * <li>Caso id de teste null</li>
- * <li>Caso id de teste Liberado</li>
- * <li>Caso de Tarefa com id diferente do Teste passado</li>
- * Caso para Remover tarefa</br>
- * <li>Caso de Sucesso</li>
- * <li>Caso id de teste não pertence ao usuario</li>
- * <li>Caso id de teste null</li>
- * <li>Caso id de teste Liberado</li>
- * <li>Caso de Tarefa com id diferente do Teste passado</li>
- * <li>Caso de Teste com Fluxo ideal gravado</li>
+ * teste já liberado</li> Caso para Salvar tarefa</br> <li>Caso de Sucesso</li>
+ * <li>Caso id de teste não pertence ao usuario</li> <li>Caso id de teste null</li>
+ * <li>Caso id de teste Liberado</li> <li>Caso de Tarefa sem os campos
+ * preenchidos</li> Faltando Caso para Editar tarefa</br> <li>Caso de Sucesso</li>
+ * <li>Caso id de teste não pertence ao usuario</li> <li>Caso id de teste null</li>
+ * <li>Caso id de teste Liberado</li> <li>Caso de Tarefa com id diferente do
+ * Teste passado</li> Caso para Remover tarefa</br> <li>Caso de Sucesso</li> <li>
+ * Caso id de teste não pertence ao usuario</li> <li>Caso id de teste null</li>
+ * <li>Caso id de teste Liberado</li> <li>Caso de Tarefa com id diferente do
+ * Teste passado</li> <li>Caso de Teste com Fluxo ideal gravado</li> Caso para
+ * Update tarefa</br> <li>Caso de Sucesso sem fluxo ideal gravado</li> <li>Caso
+ * id de teste não pertence ao usuario</li> <li>Caso id de teste null</li> <li>
+ * Caso id de teste Liberado</li> <li>Caso de Tarefa com id diferente do Teste
+ * passado</li> <li>Caso de Teste com Fluxo ideal gravado</li>
  * 
  * @author Cleiton
  */
@@ -56,7 +50,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	private static Long testeLiberado = 11l;
 	private TarefaRepository repository;
 	private TarefaController instance;
-	private Long testeNaoPertenceUsuario2=14l;
+	private Long testeNaoPertenceUsuario2 = 14l;
 
 	@Before
 	public void setUp() throws Exception {
@@ -146,9 +140,10 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		int qDepois = repository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois - 1);
 	}
+
 	/**
-	 * Test of salvarTarefa method, of class TarefaController.
-	 Caso id de teste não pertence ao usuario
+	 * Test of salvarTarefa method, of class TarefaController. Caso id de teste
+	 * não pertence ao usuario
 	 */
 	@Test
 	public void testSalvarTarefaIdTesteNaoPertenceUsuario() {
@@ -158,7 +153,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 				"roteiro", "nome");
 		List<Message> errors = null;
 		try {
-		instance.salvarTarefa(tarefa, testeNaoPertenceUsuario);
+			instance.salvarTarefa(tarefa, testeNaoPertenceUsuario);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
@@ -168,9 +163,10 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		int qDepois = repository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois);
 	}
+
 	/**
-	 * Test of salvarTarefa method, of class TarefaController.
-	 Caso id de teste não pertence ao usuario
+	 * Test of salvarTarefa method, of class TarefaController. Caso id de teste
+	 * não pertence ao usuario
 	 */
 	@Test
 	public void testSalvarTarefaIdTesteJaLiberado() {
@@ -190,32 +186,31 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		int qDepois = repository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois);
 	}
+
 	/**
-	 * Test of salvarTarefa method, of class TarefaController.
-	 Caso id de teste não pertence ao usuario
+	 * Test of salvarTarefa method, of class TarefaController. Caso id de teste
+	 * não pertence ao usuario
 	 */
 	@Test
 	public void testSalvarTarefaCamposNaoPreenchido() {
 		System.out.println("salvarTarefa");
 		int qAntes = repository.findAll().size();
-		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa("",
-				"", "");
+		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa("", "", "");
 		List<Message> errors = null;
-		try{
+		try {
 			instance.salvarTarefa(tarefa, testePertenceUsuarioNaoLiberado);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 			System.out.println(errors);
 		}
-		Assert.assertEquals(
-				"Pra ter gerado 3 erros",
-				3, errors.size());
+		Assert.assertEquals("Pra ter gerado 3 erros", 3, errors.size());
 		int qDepois = repository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois);
 	}
+
 	/**
-	 * Test of salvarTarefa method, of class TarefaController.
-	Caso id de teste nul
+	 * Test of salvarTarefa method, of class TarefaController. Caso id de teste
+	 * nul
 	 */
 	@Test
 	public void testSalvarTarefaIdTesteNulo() {
@@ -242,30 +237,35 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	@Test
 	public void testEditarTarefa() {
 		System.out.println("editarTarefa");
-		Long idTarefa=7l;
+		Long idTarefa = 7l;
 		new TarefaTestProcedure();
-		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(idTarefa,"urlInicial", "roteiero", "nome");
+		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(idTarefa,
+				"urlInicial", "roteiero", "nome");
 		boolean isErro = false;
-		Tarefa result = instance.editarTarefa(testePertenceUsuarioNaoLiberado, tarefa, isErro);
+		Tarefa result = instance.editarTarefa(testePertenceUsuarioNaoLiberado,
+				tarefa, isErro);
 		Assert.assertNotNull(result);
 	}
+
 	/**
-	 * Test of editarTarefa method, of class TarefaController.
-	 * Caso id de teste não pertence ao usuario
+	 * Test of editarTarefa method, of class TarefaController. Caso id de teste
+	 * não pertence ao usuario
 	 */
 	@Test
 	public void testEditarTarefaTesteNaoPertenceUsuario() {
 		System.out.println("editarTarefa");
-		Long idTarefa=1l;
+		Long idTarefa = 1l;
 		new TarefaTestProcedure();
-		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(idTarefa,"urlInicial", "roteiero", "nome");
+		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(idTarefa,
+				"urlInicial", "roteiero", "nome");
 		boolean isErro = false;
 		Tarefa result = null;
 		List<Message> errors = null;
 
 		try {
-			
-			 result = instance.editarTarefa(testePertenceUsuarioNaoLiberado, tarefa, isErro);
+
+			result = instance.editarTarefa(testePertenceUsuarioNaoLiberado,
+					tarefa, isErro);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
@@ -275,22 +275,24 @@ public class TarefaControllerTest extends AbstractDaoTest {
 
 		Assert.assertNull(result);
 	}
+
 	/**
-	 * Test of editarTarefa method, of class TarefaController.
-Caso id de teste null
+	 * Test of editarTarefa method, of class TarefaController. Caso id de teste
+	 * null
 	 */
 	@Test
 	public void testEditarTarefaTesteIdNulo() {
 		System.out.println("editarTarefa");
-		Long idTarefa=7l;
+		Long idTarefa = 7l;
 		new TarefaTestProcedure();
-		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(idTarefa,"urlInicial", "roteiero", "nome");
+		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(idTarefa,
+				"urlInicial", "roteiero", "nome");
 		boolean isErro = false;
 		Tarefa result = null;
 		List<Message> errors = null;
-		
+
 		try {
-			
+
 			result = instance.editarTarefa(null, tarefa, isErro);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
@@ -298,79 +300,111 @@ Caso id de teste null
 		Assert.assertEquals(
 				"Não pode deixar salvar pois usuario nao é dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
-		
+
 		Assert.assertNull(result);
 	}
-	
+
 	/**
-	 * Test of editarTarefa method, of class TarefaController.
-Caso id de teste null
+	 * Test of editarTarefa method, of class TarefaController. Caso id de teste
+	 * null
 	 */
 	@Test
 	public void testEditarTarefaTesteIdDiferenteDaTarefa() {
 		System.out.println("editarTarefa");
-		Long idTarefa=4l;
+		Long idTarefa = 4l;
 		new TarefaTestProcedure();
-		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(idTarefa,"urlInicial", "roteiero", "nome");
+		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(idTarefa,
+				"urlInicial", "roteiero", "nome");
 		boolean isErro = false;
 		Tarefa result = null;
 		List<Message> errors = null;
-		
+
 		try {
-			
-			result = instance.editarTarefa(testePertenceUsuarioNaoLiberado, tarefa, isErro);
+
+			result = instance.editarTarefa(testePertenceUsuarioNaoLiberado,
+					tarefa, isErro);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
 				"Não pode deixar salvar pois usuario nao é dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
-		
+
 		Assert.assertNull(result);
 	}
-	
+
 	/**
-	 * Test of editarTarefa method, of class TarefaController.
-Caso id de teste null
+	 * Test of editarTarefa method, of class TarefaController. Caso id de teste
+	 * null
 	 */
 	@Test
 	public void testEditarTarefaIdNulo() {
 		System.out.println("editarTarefa");
 		new TarefaTestProcedure();
-		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa("urlInicial", "roteiero", "nome");
+		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa("urlInicial",
+				"roteiero", "nome");
 		boolean isErro = false;
 		Tarefa result = null;
 		List<Message> errors = null;
-		
+
 		try {
-			
-			result = instance.editarTarefa(testePertenceUsuarioNaoLiberado, tarefa, isErro);
+
+			result = instance.editarTarefa(testePertenceUsuarioNaoLiberado,
+					tarefa, isErro);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
 				"Não pode deixar salvar pois usuario nao é dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
-		
+
 		Assert.assertNull(result);
 	}
-	
 
 	/**
-	 * Test of updateTarefa method, of class TarefaController.
+	 * Test of updateTarefa method, of class TarefaController. Sem fluxo ideal
+	 * gravado
 	 */
 	@Test
 	public void testUpdateTarefa() {
 		System.out.println("updateTarefa");
-		Tarefa tarefa = null;
-		Long idTeste = null;
-		TarefaController instance = null;
-		instance.updateTarefa(tarefa, idTeste);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
+		Long tarefaId = 9l;
+		
+		String urlInicial="urlInicial";
+		String roteiro="roteiro";
+		String nome = "nome";
+		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(tarefaId,
+				urlInicial, roteiro, nome);
+			instance.updateTarefa(tarefa, testePertenceUsuarioNaoLiberado);
+		Tarefa tarefaFind = repository.find(tarefaId);
+		Assert.assertEquals(false, tarefaFind.isFluxoIdealPreenchido());
+		Assert.assertEquals(nome, tarefaFind.getNome());
+		Assert.assertEquals(roteiro, tarefaFind.getRoteiro());
+		Assert.assertEquals(urlInicial,tarefaFind.getUrlInicial());
 	}
-
+	/**
+	 * Test of updateTarefa method, of class TarefaController. Com fluxo ideal
+	 * gravado
+	 */
+	@Test
+	public void testUpdateTarefaComFluxoIdeal() {
+		System.out.println("updateTarefa");
+		Long tarefaId = 7l;
+		
+		String urlInicial="urlInicial2";
+		String roteiro="roteiro";
+		String nome = "nome";
+		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(tarefaId,
+				urlInicial, roteiro, nome);
+			instance.updateTarefa(tarefa, testePertenceUsuarioNaoLiberado);
+		Tarefa tarefaFind = repository.find(tarefaId);
+		List<Acao> acoes = tarefaFind.getFluxoIdeal().getFluxo().getAcoes();
+		Assert.assertNull(acoes);
+		Assert.assertEquals(false, tarefaFind.isFluxoIdealPreenchido());
+		Assert.assertEquals(nome, tarefaFind.getNome());
+		Assert.assertEquals(roteiro, tarefaFind.getRoteiro());
+		Assert.assertEquals(urlInicial,tarefaFind.getUrlInicial());
+	}
 	/**
 	 * Test of removed method, of class TarefaController.
 	 */
@@ -381,8 +415,9 @@ Caso id de teste null
 		int qAntes = repository.findAll().size();
 		instance.removed(idTarefa, testePertenceUsuarioNaoLiberado);
 		int qDepois = repository.findAll().size();
-		Assert.assertEquals(qAntes, qDepois+1);}
-	
+		Assert.assertEquals(qAntes, qDepois + 1);
+	}
+
 	/**
 	 * Test of removed method, of class TarefaController.
 	 */
@@ -390,41 +425,44 @@ Caso id de teste null
 	public void testRemovedComFluxoIdealGravado() {
 		System.out.println("removed");
 		Long idTarefa = 25l;
-		FluxoRepository fluxoRepository= new FluxoRepositoryImpl(entityManager);
+		FluxoRepository fluxoRepository = new FluxoRepositoryImpl(entityManager);
 		int qAntesFluxo = fluxoRepository.findAll().size();
 		int qAntes = repository.findAll().size();
 		instance.removed(idTarefa, 16l);
 		int qDepois = repository.findAll().size();
 		int qDepoisFluxo = fluxoRepository.findAll().size();
-		Assert.assertEquals(qAntes, qDepois+1);
-	Assert.assertEquals(qAntesFluxo, qDepoisFluxo+1);}
-	
+		Assert.assertEquals(qAntes, qDepois + 1);
+		Assert.assertEquals(qAntesFluxo, qDepoisFluxo + 1);
+	}
+
 	/**
-	 * Test of removed method, of class TarefaController.
-	 * Caso id de teste não pertence ao usuario
+	 * Test of removed method, of class TarefaController. Caso id de teste não
+	 * pertence ao usuario
 	 */
 	@Test
 	public void testRemovedTesteNaopertenceAoUsuario() {
 		System.out.println("removed");
 		Long idTarefa = 19l;
 		int qAntes = repository.findAll().size();
-	List<Message> errors = null;
-		
+		List<Message> errors = null;
+
 		try {
 			instance.removed(idTarefa, testeNaoPertenceUsuario2);
-			
+
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
 				"Não pode deixar salvar pois usuario nao é dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
-		
+
 		int qDepois = repository.findAll().size();
-		Assert.assertEquals(qAntes, qDepois);}
+		Assert.assertEquals(qAntes, qDepois);
+	}
+
 	/**
-	 * Test of removed method, of class TarefaController.
-	 * Caso id de teste Liberado
+	 * Test of removed method, of class TarefaController. Caso id de teste
+	 * Liberado
 	 */
 	@Test
 	public void testRemovedTesteComIDNulo() {
@@ -432,22 +470,24 @@ Caso id de teste null
 		Long idTarefa = 7l;
 		int qAntes = repository.findAll().size();
 		List<Message> errors = null;
-		
+
 		try {
 			instance.removed(idTarefa, null);
-			
+
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
 				"Não pode deixar salvar pois usuario nao é dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
-		
+
 		int qDepois = repository.findAll().size();
-		Assert.assertEquals(qAntes, qDepois);}
+		Assert.assertEquals(qAntes, qDepois);
+	}
+
 	/**
-	 * Test of removed method, of class TarefaController.
-	 * Caso de Tarefa com id diferente do Teste passado
+	 * Test of removed method, of class TarefaController. Caso de Tarefa com id
+	 * diferente do Teste passado
 	 */
 	@Test
 	public void testRemovedTesteComTarefaDeIdDiferenteDoTeste() {
@@ -455,23 +495,23 @@ Caso id de teste null
 		Long idTarefa = 15l;
 		int qAntes = repository.findAll().size();
 		List<Message> errors = null;
-		
+
 		try {
 			instance.removed(idTarefa, testeLiberado);
-			
+
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
 				"Não pode deixar salvar pois usuario nao é dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
-		
+
 		int qDepois = repository.findAll().size();
-		Assert.assertEquals(qAntes, qDepois);}
-	
+		Assert.assertEquals(qAntes, qDepois);
+	}
+
 	/**
-	 * Test of removed method, of class TarefaController.
-	 * Caso id de teste null
+	 * Test of removed method, of class TarefaController. Caso id de teste null
 	 */
 	@Test
 	public void testRemovedTesteLiberado() {
@@ -479,19 +519,20 @@ Caso id de teste null
 		Long idTarefa = 12l;
 		int qAntes = repository.findAll().size();
 		List<Message> errors = null;
-		
+
 		try {
 			instance.removed(idTarefa, testeLiberado);
-			
+
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
 				"Não pode deixar salvar pois usuario nao é dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
-		
+
 		int qDepois = repository.findAll().size();
-		Assert.assertEquals(qAntes, qDepois);}
+		Assert.assertEquals(qAntes, qDepois);
+	}
 
 	/**
 	 * Test of saveFluxoIdeal method, of class TarefaController.
@@ -548,9 +589,9 @@ Caso id de teste null
 	public void testLoadtasktester() {
 		System.out.println("loadtasktester");
 		TarefaController instance = null;
-//		TarefaDetalhe expResult = null;
-//		TarefaDetalhe result = instance.loadtasktester();
-//		assertEquals(expResult, result);
+		// TarefaDetalhe expResult = null;
+		// TarefaDetalhe result = instance.loadtasktester();
+		// assertEquals(expResult, result);
 		// TODO review the generated test code and remove the default call to
 		// fail.
 		fail("The test case is a prototype.");
@@ -578,9 +619,9 @@ Caso id de teste null
 	public void testLoadtaskuser() {
 		System.out.println("loadtaskuser");
 		TarefaController instance = null;
-////		TarefaDetalhe expResult = null;
-////		TarefaDetalhe result = instance.loadtaskuser();
-//		assertEquals(expResult, result);
+		// // TarefaDetalhe expResult = null;
+		// // TarefaDetalhe result = instance.loadtaskuser();
+		// assertEquals(expResult, result);
 		// TODO review the generated test code and remove the default call to
 		// fail.
 		fail("The test case is a prototype.");

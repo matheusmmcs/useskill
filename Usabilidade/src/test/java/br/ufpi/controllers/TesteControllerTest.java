@@ -1247,12 +1247,23 @@ public class TesteControllerTest extends AbstractDaoTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testlistarTestesLiberados() {
-		instance.listarTestesLiberados(2);
+		instance.listarTestesLiberados(1);
 		Map<String, Object> included = result.included();
 		Assert.assertEquals(5l, included.get("testesLiberadosCount"));
 		List<Teste> testes = (List<Teste>) included.get("testesLiberados");
-		Assert.assertEquals(2, testes.size());
+		List<Teste> all = repository.findAll();
+		Long usuarioId=instance.usuarioLogado.getUsuario().getId();
+		Integer numeroTestesLiberados=0;
+		for (Teste teste : all) {
+			if (teste.isLiberado() && teste.getUsuarioCriador().getId().equals(usuarioId)) {
+				numeroTestesLiberados++;
+			}
+		}
+		Integer size = testes.size();
+		System.out.println(size);
+		Assert.assertEquals(numeroTestesLiberados,size );
 	}
 }
