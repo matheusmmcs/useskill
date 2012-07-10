@@ -80,6 +80,7 @@
                                         </td>
                                         <td width="100">
                                             <form action="${pageContext.request.contextPath}/teste/removed/tarefa" method="post">
+                                                    <input type="hidden" value="${testeView.teste.id}" name="idTeste">
                                                 <input type="hidden" value="${tarefa.id }" name="idTarefa">
                                                 <input class="btn"  type="submit" value="<fmt:message key="remover" />" style="margin-left: 15px" class="ancora">
                                             </form>
