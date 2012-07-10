@@ -211,9 +211,7 @@
 															if (capt(e.target).attr("id") == config.finish) {
 																	//e.preventDefault()
 																
-																window.location = capt(e.target).attr("href")
-																window.parent.location = capt(e.target).attr("href")
-																enviaJson(getResultadoJson(),true)
+																enviaJson(getResultadoJson(),true,capt(e.target).attr("href"))
 															} else {
 																enviaJson(getResultadoJson(),false)
 															}
@@ -369,9 +367,8 @@
 								return dif / seg;
 							}
 
-							function enviaJson(dados, bool) {
-								capt
-										.ajax({
+							function enviaJson(dados, bool, nextUrl) {
+								capt.ajax({
 											url : config.url,
 											type : config.type,
 											dataType : 'json',
@@ -381,10 +378,22 @@
 												'tarefaId' : get_url_parameter("idTarefa")
 											},
 											success : function(json) {
-												
+												//alert("S: "+bool)
+												if(bool){
+													console.log("SUCCESS")
+													console.log(json)
+													window.location = nextUrl;
+													window.parent.location = nextUrl;
+												}
 											},
 											error : function(e) {
-												console.log(e);
+												//alert("E: "+bool)
+												if(bool){
+													console.log("ERROR")
+													console.log(e)
+													window.location = nextUrl;
+													window.parent.location = nextUrl;
+												}
 											},
 											statusCode : {
 												404 : function() {

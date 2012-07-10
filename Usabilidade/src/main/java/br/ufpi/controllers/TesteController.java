@@ -420,10 +420,13 @@ public class TesteController extends BaseController {
 	@Logado
 	@Get("testes/liberados/pag/{numeroPagina}")
 	public void listarTestesLiberados(int numeroPagina){
+		int qtdTestesPagina = 50;
 		validateComponente.validarId((long) numeroPagina);
-		Paginacao<Teste> testesCriadosLiberados = testeRepository.getTestesCriadosLiberados(usuarioLogado.getUsuario().getId(), 50,numeroPagina );
-		result.include("testesLiberados",testesCriadosLiberados.getListObjects());
-		result.include("testesLiberadosCount",testesCriadosLiberados.getCount());
+		Paginacao<Teste> testesCriadosLiberados = testeRepository.getTestesCriadosLiberados(usuarioLogado.getUsuario().getId(), qtdTestesPagina, numeroPagina );
+		Long qtdTestesLiberados = testesCriadosLiberados.getCount();
+		result.include("testesLiberados", testesCriadosLiberados.getListObjects());
+		result.include("testesLiberadosCount", qtdTestesLiberados);
+		result.include("qtdTestesPagina", qtdTestesLiberados/qtdTestesPagina);
 	}
 
 }
