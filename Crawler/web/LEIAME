@@ -1,7 +1,0 @@
-1 - Resolver problema de conflito entre jquery's (~ok)
-2 - Problemas com charset (~ok)
-3 - Problema com quantidade de barras (~ok)
-
-0 - Implementar captura de cookie (formulario e login)
-4 - Problema com alterar links e ancoras inseridas dinamicamente (javascript)
-5 - Problema ao carregar pagina que redireciona (domain e upperDomain)
