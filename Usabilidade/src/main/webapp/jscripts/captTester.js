@@ -1,4 +1,9 @@
 (function(capt) {
+//(function(win) {
+//	var window = {};
+	
+	/* codigo jquery */
+	
 	capt.webclientCapt = function(settings) {
 		capt(document).ready(function() {
 							var config = {
@@ -372,6 +377,7 @@
 											url : config.url,
 											type : config.type,
 											dataType : 'json',
+											async : false,
 											data : {
 												'dados' : dados,
 												'completo' : bool,
@@ -397,7 +403,7 @@
 											},
 											statusCode : {
 												404 : function() {
-													alert('page not found');
+													console.log('page not found');
 												}
 											}
 										});
@@ -418,4 +424,5 @@
 
 	}// FIM PLUGIN
 
+//})(window);
 })(jQuery);
