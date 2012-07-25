@@ -61,7 +61,7 @@ public class TarefaController extends BaseController {
 			FluxoUsuarioRepository fluxoUsuarioRepository,
 			ConvidadoRepository convidadoRepository, SessionActions actions,
 			FluxoComponente fluxo, HttpServletRequest request,
-			TesteSession testeSession,TarefaDetalhe tarefaDetalhe) {
+			TesteSession testeSession, TarefaDetalhe tarefaDetalhe) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
@@ -156,9 +156,10 @@ public class TarefaController extends BaseController {
 		Tarefa tarefaUpdate = tarefaRepository.find(tarefa.getId());
 		tarefaUpdate.setRoteiro(tarefa.getRoteiro());
 		tarefaUpdate.setNome(tarefa.getNome());
-		if (!tarefaUpdate.getUrlInicial().equals(tarefa.getUrlInicial())) {
+		if (!tarefaUpdate.getUrlInicial().equals(tarefa.getUrlInicial().trim())) {
 			tarefaUpdate.setFluxoIdealPreenchido(false);
 			tarefaUpdate.setUrlInicial(tarefa.getUrlInicial());
+			tarefaUpdate.getFluxoIdeal().getFluxo().setAcoes(null);
 		}
 		tarefaRepository.update(tarefaUpdate);
 		result.redirectTo(TesteController.class).passo2(idTeste);
@@ -267,7 +268,6 @@ public class TarefaController extends BaseController {
 		if (fluxoComponente.getTarefaVez() == 0) {
 			System.out
 					.println("Tarefa = 0 -> redirecionar para responder as ultimas perguntas");
-			fluxoComponente.setRespondendoInicio(false);
 			result.redirectTo(RespostaController.class).exibir();
 		}
 	}
@@ -304,9 +304,12 @@ public class TarefaController extends BaseController {
 		System.out.println("Action: loadTaskTester");
 		Tarefa tarefa = tarefaPertenceTeste(testeSession.getTeste().getId(),idTarefa);
 		String url = BaseUrl.getInstance(request);
-		System.out.println("${String} =" + url + "/tarefa/loadactiontester?url=" + tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
+		System.out.println("${String} =" + url
+				+ "/tarefa/loadactiontester?url=" + tarefa.getUrlInicial()
+				+ "&idTarefa=" + idTarefa);
 		tarefaDetalhe.setRoteiro(tarefa.getRoteiro());
-		tarefaDetalhe.setUrl(url + "/tarefa/loadactiontester?url="+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
+		tarefaDetalhe.setUrl(url + "/tarefa/loadactiontester?url="
+				+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
 	}
 
 	/**
@@ -333,8 +336,6 @@ public class TarefaController extends BaseController {
 		while (headerNames.hasMoreElements()) {
 			String headerName = (String) headerNames.nextElement();
 		}
-		
-		
 		if (url != null) {
 			return WebClientTester.loadPage(BaseUrl.getInstance(request)
 					+ "/tarefa/loadactiontester", url,
@@ -365,13 +366,15 @@ public class TarefaController extends BaseController {
 					usuarioLogado.getUsuario(), testeSession.getTeste()));
 			convidado.setRealizou(true);
 			convidadoRepository.update(convidado);
-			validateComponente.redirecionarTermino();
+			fluxoComponente.setRespondendoInicio(false);
+			result.redirectTo(RespostaController.class).exibir();
+			return null;
 		}
 
 		Tarefa tarefa = getTarefa(idTarefa);
 		// return BaseUrl.getInstance(request)+"/tarefa/loadactionuser?url="+
 		// tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
-//		System.out.println("TESTAR TAREFA" + tarefa);
+		// System.out.println("TESTAR TAREFA" + tarefa);
 		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
 		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
 		tarefadetalhe.setUrl(BaseUrl.getInstance(request)
@@ -397,7 +400,7 @@ public class TarefaController extends BaseController {
 					usuarioLogado.getUsuario(), testeSession.getTeste()));
 			convidado.setRealizou(true);
 			convidadoRepository.update(convidado);
-			validateComponente.redirecionarTermino();
+			return null;
 		}
 
 		Tarefa tarefa = getTarefa(idTarefa);
@@ -431,9 +434,7 @@ public class TarefaController extends BaseController {
 	private void gravaFluxoIdeal(Long tarefaId) {
 		System.out.println("Grava FluxoTarefa IDEAL");
 		Long idTeste = testeSession.getTeste().getId();
-
 		Tarefa tarefa = this.tarefaPertenceTeste(idTeste, tarefaId);
-
 		FluxoIdeal fluxoIdeal = new FluxoIdeal();
 		fluxoIdeal.setFluxo(new Fluxo());
 		fluxoIdeal.getFluxo().setUsuario(usuarioLogado.getUsuario());
@@ -444,11 +445,9 @@ public class TarefaController extends BaseController {
 		fluxoIdeal.getFluxo().setAcoes(acoes);
 		tarefa.setFluxoIdeal(fluxoIdeal);
 		tarefa.setFluxoIdealPreenchido(true);
-		tarefa.setNome("Tarefa alterada");
 		tarefaRepository.update(tarefa);
 		tarefaDetalhe.destroy();
 		System.out.println("Tarefa é pra ter sido salva");
-		// result.redirectTo(TesteController.class).passo2(idTeste);
 	}
 
 	/**
