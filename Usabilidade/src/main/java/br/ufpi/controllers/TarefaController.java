@@ -318,6 +318,7 @@ public class TarefaController extends BaseController {
 	@SuppressWarnings({ "unused", "unchecked", "rawtypes" })
 	@Logado
 	@Get()
+	@Post()
 	public String loadactiontester() {
 		Long idTarefa = testeSession.getTarefa().getId();
 		System.out.println("loadActionTester");
@@ -353,6 +354,7 @@ public class TarefaController extends BaseController {
 	 */
 	@Logado
 	@Get()
+	@Post()
 	public TarefaDetalhe loadtaskuser() {
 		System.out.println("Action: loadTaskUser");
 		Long idTarefa = fluxoComponente.getTarefaVez();

@@ -2,6 +2,7 @@ package br.ufpi.util;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
@@ -16,11 +17,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WebClientTester {
-
-	private static String domain = "", upperDomain = "", page = "",
-			ferramenta = "";
-	private static Map<String, Object> params = new HashMap<String, Object>();
-	private static Map<String, Object> headers = new HashMap<String, Object>();
 
 	/**
 	 * Utilizado para determinar forma de passagem de parâmetros
@@ -55,13 +51,14 @@ public class WebClientTester {
 	private static String mapToURLMap(Map<String, Object> params) {
 		if (params != null && !params.isEmpty()) {
 			StringBuilder str = new StringBuilder();
-
+			
 			for (Map.Entry<String, Object> entry : params.entrySet()) {
 				str.append(entry.getKey());
 				str.append("=");
 				str.append(encodeURIComponent(entry.getValue().toString()));
 				str.append("&");
 			}
+			
 			str.deleteCharAt(str.length() - 1);
 			return str.toString().replaceAll("\\s", "+");
 		}
@@ -77,7 +74,7 @@ public class WebClientTester {
 	 *            = metodo utilizado para receber os conteudos de parametros
 	 * @return String do conteudo capturado
 	 */
-	public static String getPageContent(String urlPagina, HttpMethod method) {
+	public static String getPageContent(String urlPagina, HttpMethod method, Map<String, Object> params, Map<String, Object> headers) {
 		try {
 			String paramsStr = mapToURLMap(params);
 			// se houver parametro a ser passado pelo metodo get
@@ -145,17 +142,14 @@ public class WebClientTester {
 		}
 	}
 
-	public static String prependLinks(String html) {
-		domain = page;
-		int domainEnd = domain.indexOf("/", domain.indexOf("://") + 3);
-		if (domainEnd < 0) {
-			upperDomain = domain;
-		} else {
-			upperDomain = domain.substring(0, domainEnd);
-		}
-		if (upperDomain.endsWith("/")) {
-			upperDomain = upperDomain.substring(0, upperDomain.length() - 1);
-		}
+	/**
+	 * Método que modifica os links do código html passado, inserindo o dominio antes dos mesmos
+	 * @param html = html da página a ser modificada
+	 * @param domain = domínio que será inserido
+	 * @param upperDomain = 
+	 * @return
+	 */
+	public static String prependLinks(String html, String domain, String upperDomain) {
 		if (!domain.endsWith("/")) {
 			domain = domain + "/";
 		}
@@ -182,14 +176,14 @@ public class WebClientTester {
 		return codigo.toString();
 	}
 
-	public static String injectCodeAtHead(String html, String code) {
+	public String injectCodeAtHead(String html, String code) {
 		int location = html.lastIndexOf("</head>");
 		html = html.substring(0, location) + code + html.substring(location);
 
 		return html;
 	}
 
-	public static String injectCodeAtBody(String html, String code) {
+	public String injectCodeAtBody(String html, String code) {
 		int location = html.lastIndexOf("<body>");
 		location += 6;
 		System.out.println("INJECT AT BODY(" + location + "): " + code);
@@ -198,21 +192,19 @@ public class WebClientTester {
 		return html;
 	}
 
-	public static String converteLink(String html, String page, Integer idTarefa) {
+	public static String converteLink(String html, Integer idTarefa, String urlFerramenta, String upperDomain) {
+		String page = urlFerramenta + "?url=";
 		StringBuffer codigo = new StringBuffer();
 		String addr;
-		Matcher m = Pattern.compile(
-				"(?i)(<a.*?href=|<form.*?action=)(['\"]?)([^'#\"]+)(['\"]?)")
-				.matcher(html);
+		Matcher m = Pattern.compile("(?i)(<a.*?href=|<form.*?action=)(['\"]?)([^'#\"]+)(['\"]?)").matcher(html);
 
 		while (m.find()) {
 			addr = m.group(3);
 			if (addr.startsWith("http") || addr.startsWith("#")) {
-				m.appendReplacement(codigo, "$1$2" + page + "$3" + "&idTarefa="
-						+ idTarefa + "$4");
+				m.appendReplacement(codigo, "$1$2" + urlFerramenta + "?idTarefa="+ idTarefa + "&url=$3$4");
 			} else if (addr.startsWith("/")) {
-				m.appendReplacement(codigo, "$1$2" + ferramenta + "?url="
-						+ upperDomain + "&idTarefa=" + idTarefa + "$3$4");
+				//PROBLEMA NA INSERÇÃO DO ID DA TAREFA
+				m.appendReplacement(codigo, "$1$2" + urlFerramenta + "?idTarefa="+ idTarefa + "&url=" + upperDomain + "$3$4");
 			}
 		}
 		m.appendTail(codigo);
@@ -224,7 +216,7 @@ public class WebClientTester {
 	 * Metodo que retorna uma string com o HTML editado de uma determinada
 	 * pagina.
 	 * 
-	 * @param ferramenta
+	 * @param urlFerramenta
 	 *            = url da pagina da ferramenta
 	 * @param url
 	 *            = url orginal a ser carregada
@@ -237,8 +229,8 @@ public class WebClientTester {
 	 * 
 	 * @return String = String da pagina modificada
 	 */
-	public static String loadPage(String ferramenta, String url,
-			Integer idTarefa, Map<String, String[]> parameters, String method) {
+	public static String loadPage(String urlFerramenta, String url, Integer idTarefa, Map<String, String[]> parameters, String method) {
+		
 		Map<String, Object> parametros = new HashMap<String, Object>();
 
 		String value = "";
@@ -247,30 +239,43 @@ public class WebClientTester {
 			for (String e : wordList) {
 				value += e;
 			}
-			// System.out.println("chave: " + key + ", valor: " + value + ".");
 			parametros.put(key, value);
 			value = "";
 		}
+		
+		//definir o domain -> http://www.redmine.org/projects/redmine/roadmap
+		String domain = url;
 
-		page = url;
-		params = parametros;
+		//definir o upperDomain -> http://www.redmine.org
+		String upperDomain;
+		int domainEnd = domain.indexOf("/", domain.indexOf("://") + 3);
+		if (domainEnd < 0) {
+			upperDomain = domain;
+		} else {
+			upperDomain = domain.substring(0, domainEnd);
+		}
+		if (upperDomain.endsWith("/")) {
+			upperDomain = upperDomain.substring(0, upperDomain.length() - 1);
+		}
+		
+		System.out.println("DOMAIN: "+domain+" - UPPERDOMAIN: "+upperDomain);
+		String paramsPost = null;
+		if(method.equalsIgnoreCase("POST")){
+			paramsPost = mapToURLMap(parametros);
+			System.out.println("PARAMSPOST: "+paramsPost);
+		}
 
-		headers.put("User-Agent",
-				"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0.2) Gecko/20100101 Firefox/10.0.2");
-		headers.put("Accept",
-				"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-		headers.put("Accept-Language", "pt-br,pt;q=0.8,en-us;q=0.5,en;q=0.3");
-		// headers.put("Host", "ticketscead.uapi.edu.br");
-		// headers.put("Referer",
-		// "http://ticketscead.uapi.edu.br/redmine/login");
-		// headers.put("Cookie",
-		// "_redmine_session=BAh7CDoPc2Vzc2lvbl9pZCIlMmYzYmJjYzgxODc3MzI1M2MyZGEyNjY0Y2RhNDkxMjU6DHVzZXJfaWRpDToQX2NzcmZfdG9rZW4iMWZQZ3dzTDRnZzJCQUc5UDdUYS94S0lkcXdrZlpKSTZWc3JqNmNtL3RVZnc9--e7f5d354a3ed5199c3e04d3b971eec1e50b84d1e");
-
-		String html = getPageContent(page, HttpMethod.valueOf(method));
-		html = prependLinks(html);
-		html = converteLink(html, ferramenta + "?url=", idTarefa);
-		// html = injectCodeAtBody(html, "");
-		return html;
+		String html;
+		try {
+			html = CookieManager.getContent(url, upperDomain, new CookieManager(), paramsPost);
+			html = prependLinks(html, domain, upperDomain);
+			html = converteLink(html, idTarefa, urlFerramenta, upperDomain);
+			return html;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return e.getMessage();
+		}
 	}
 	
 	public static void main(String[] args) throws Exception {

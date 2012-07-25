@@ -40,6 +40,8 @@ public class CookieManager {
 	public void setCookies(String cookieString, String defaultHost) {
 		List<HttpCookie> novosCookies = HttpCookie.parse(cookieString);
 		
+		System.out.println("SETCOOKIES -> COOKIESTR: "+cookieString+" /nDEFAULTHOST: "+defaultHost);
+		
 		for (int i = 0, max = COOKIES.size(); i < max; i++) {
 			for (Iterator<HttpCookie> iterator = novosCookies.iterator(); iterator.hasNext();) {
 				HttpCookie httpCookie = iterator.next();
@@ -78,27 +80,27 @@ public class CookieManager {
 		return COOKIES;
 	}
 	
-	private static final int REDIRECT_LIMIT = 50;
+	private static final int REDIRECT_LIMIT = 5;
 	private static final int[] REDIRECT_RESPONSE_CODES = { HttpURLConnection.HTTP_MOVED_PERM, HttpURLConnection.HTTP_MOVED_TEMP };
 	private static final String REDIRECT_HEADER = "Location";
 	
-	public static String getContent(String url, CookieManager cookieManager) throws IOException {
-		return getContent(url, cookieManager, null, null, 0);
+	public static String getContent(String url, String upperDomain, CookieManager cookieManager) throws IOException {
+		return getContent(url, upperDomain, cookieManager, null, null, 0);
 	}
 	
-	public static String getContent(String url, CookieManager cookieManager, String postParams) throws IOException {
-		return getContent(url, cookieManager, postParams, null, 0);
+	public static String getContent(String url, String upperDomain, CookieManager cookieManager, String postParams) throws IOException {
+		return getContent(url, upperDomain, cookieManager, postParams, null, 0);
 	}
 	
-	public static String getContent(String url, CookieManager cookieManager, Map<String, String> headers) throws IOException {
-		return getContent(url, cookieManager, null, headers, 0);
+	public static String getContent(String url, String upperDomain, CookieManager cookieManager, Map<String, String> headers) throws IOException {
+		return getContent(url, upperDomain, cookieManager, null, headers, 0);
 	}
 	
-	public static String getContent(String url, CookieManager cookieManager, String postParams, Map<String, String> headers) throws IOException {
-		return getContent(url, cookieManager, postParams, headers, 0);
+	public static String getContent(String url, String upperDomain, CookieManager cookieManager, String postParams, Map<String, String> headers) throws IOException {
+		return getContent(url, upperDomain, cookieManager, postParams, headers, 0);
 	}
 	
-	private static String getContent(String url, CookieManager cookieManager, String postParams, Map<String, String> headers, int redirects) throws IOException {
+	private static String getContent(String url, String upperDomain, CookieManager cookieManager, String postParams, Map<String, String> headers, int redirects) throws IOException {
 		if (redirects == REDIRECT_LIMIT) {
 			throw new IOException("Limite de redirecionamentos excedido: " + REDIRECT_LIMIT);
 		}
@@ -107,7 +109,6 @@ public class CookieManager {
 		
 		URL urlObj = new URL(url);
 		HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
-		
 		if (cookieManager != null) {
 			List<HttpCookie> cookies = cookieManager.getCookies();
 			
@@ -124,27 +125,27 @@ public class CookieManager {
 			}
 		}
 		
+		//inserindo os headers da requisição
 		if (headers != null && !headers.isEmpty()) {
 			for (Entry<String, String> entry : headers.entrySet()) {
 				conn.addRequestProperty(entry.getKey(), entry.getValue());
 			}
 		}
 		
+		//inserindo parametros POST
 		if (postParams != null && postParams.trim().length() > 0) {
+			conn.setRequestMethod("POST");
+			conn.setUseCaches(false);
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
 			OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
 			writer.write(postParams);
+			writer.flush();
+			writer.close();
 			System.out.println("adicionados post params -> " + postParams);
 		}
 		
-		int responseCode = conn.getResponseCode();
-		for (int redirectResponseCode : REDIRECT_RESPONSE_CODES) {
-			if (responseCode == redirectResponseCode) {
-				return getContent(conn.getHeaderField(REDIRECT_HEADER), cookieManager, postParams, headers, redirects + 1);
-			}
-		}
-		
+		//definir os cookies da requisição
 		if (cookieManager != null) {
 			String setCookies = conn.getHeaderField("Set-Cookie");
 			if (setCookies == null) {
@@ -155,6 +156,22 @@ public class CookieManager {
 			}
 		}
 		
+		int responseCode = conn.getResponseCode();
+		String urlConn;
+		for (int redirectResponseCode : REDIRECT_RESPONSE_CODES) {
+			//verifica se é uma das respostas de redirect para tentar carregar a página novamente
+			if (responseCode == redirectResponseCode) {
+				//verificar se a url começa com um protocolo, ou apenas o /, faltando inserir o upperDomain
+				urlConn = conn.getHeaderField(REDIRECT_HEADER);
+				if(urlConn.startsWith("/")){
+					urlConn=upperDomain+urlConn;
+				}
+				System.out.println("REDIRECT TO: "+urlConn);
+				return getContent(urlConn, upperDomain, cookieManager, postParams, headers, redirects + 1);
+			}
+		}
+		
+		//resposta do HTML
 		String line;
 		StringBuilder str = new StringBuilder();
 		BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -163,7 +180,8 @@ public class CookieManager {
 			str.append(line);
 			str.append("\n");
 		}
-		
+		str.deleteCharAt(str.length() - 1);
+				
 		return str.toString();
 	}
 	
@@ -171,26 +189,46 @@ public class CookieManager {
 		CookieManager manager = new CookieManager();
 		
 		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("username", "matheus");
-		paramMap.put("password", "Eng2@2012");
+		paramMap.put("login", "matheus@weborn.com.br");
+		paramMap.put("senha", "novasenha");
+		paramMap.put("Entrar", "Entrar");
 		
-		String conteudo = getContent("http://ticketscead.uapi.edu.br/redmine/login", manager, mapToURLMap(paramMap));
 		
-		String strLookup = "<input name=\"authenticity_token\" type=\"hidden\" value=\"";
-		int index = conteudo.indexOf(strLookup) + strLookup.length();
-		String token = conteudo.substring(index, conteudo.indexOf("\"", index + 1));
-		System.out.println("TOKEN = " + token);
+		String conteudo = getContent("http://127.0.0.1:8888/CRQ18/public/sysmanage/index/login/", "http://127.0.0.1:8888", manager, mapToURLMap(paramMap));
+		//String conteudo = getContent("http://127.0.0.1:8888/CRQ18/public/", manager);
+		
 		System.out.println("------------------------------");
 		System.out.println("Cookies = " + manager.getCookies());
 		System.out.println("------------------------------");
 		
-		paramMap.put("authenticity_token", token);
-		
-		System.out.println(getContent("http://ticketscead.uapi.edu.br/redmine/login", manager, mapToURLMap(paramMap)));
+		System.out.println(conteudo);
 		System.out.println("------------------------------");
 		System.out.println("Cookies = " + manager.getCookies());
 	}
 	
+	/**
+	 * Método que codifica uma String para um determinado charset, no caso
+	 * utiliza-se UTF-8 como default
+	 * 
+	 * @param component
+	 *            = String que será convertida
+	 * @return String convertida para UTF-8
+	 */
+	private static String encodeURIComponent(String component) {
+		try {
+			return URLEncoder.encode(component, "UTF-8");
+		} catch (Exception e) {
+		}
+		return component;
+	}
+
+	/**
+	 * Converte os parametros passados para uma String no tipo: chave=valor&
+	 * 
+	 * @param params
+	 *            = Mapa de parametros
+	 * @return String com os parametros no formato chave=valor&
+	 */
 	private static String mapToURLMap(Map<String, Object> params) {
 		if (params != null && !params.isEmpty()) {
 			StringBuilder str = new StringBuilder();
@@ -205,16 +243,6 @@ public class CookieManager {
 			str.deleteCharAt(str.length() - 1);
 			return str.toString().replaceAll("\\s", "+");
 		}
-		
 		return null;
-	}
-	
-	private static String encodeURIComponent(String component) {
-		try {
-			return URLEncoder.encode(component, "UTF-8");
-		} catch (Exception e) {
-		}
-		
-		return component;
 	}
 }
