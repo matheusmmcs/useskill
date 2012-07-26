@@ -32,10 +32,12 @@ import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.UsuarioTestePK;
 import br.ufpi.repositories.ConvidadoRepository;
+import br.ufpi.repositories.FluxoIdealRepository;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.BaseUrl;
+import br.ufpi.util.CookieManager;
 import br.ufpi.util.WebClientTester;
 
 import com.google.gson.Gson;
@@ -47,31 +49,36 @@ public class TarefaController extends BaseController {
 	private final TarefaRepository tarefaRepository;
 	private final TesteRepository testeRepository;
 	private final FluxoUsuarioRepository fluxoUsuarioRepository;
+	private final FluxoIdealRepository fluxoIdealRepository;
 	private final ConvidadoRepository convidadoRepository;
 	private SessionActions actions;
 	private final FluxoComponente fluxoComponente;
 	private final HttpServletRequest request;
 	private final TesteSession testeSession;
 	private final TarefaDetalhe tarefaDetalhe;
+	private final CookieManager cookieManager;
 
 	public TarefaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
 			TarefaRepository tarefaRepository, TesteRepository testeRepository,
 			FluxoUsuarioRepository fluxoUsuarioRepository,
+			FluxoIdealRepository fluxoIdealRepository,
 			ConvidadoRepository convidadoRepository, SessionActions actions,
-			FluxoComponente fluxo, HttpServletRequest request,
-			TesteSession testeSession, TarefaDetalhe tarefaDetalhe) {
+			FluxoComponente fluxoComponente, HttpServletRequest request,
+			TesteSession testeSession, TarefaDetalhe tarefaDetalhe, CookieManager cookieManager) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
 		this.fluxoUsuarioRepository = fluxoUsuarioRepository;
+		this.fluxoIdealRepository = fluxoIdealRepository;
 		this.convidadoRepository = convidadoRepository;
 		this.actions = actions;
-		this.fluxoComponente = fluxo;
+		this.fluxoComponente = fluxoComponente;
 		this.request = request;
 		this.testeSession = testeSession;
-		this.tarefaDetalhe=tarefaDetalhe;
+		this.tarefaDetalhe = tarefaDetalhe;
+		this.cookieManager=cookieManager;
 	}
 
 	/**
@@ -156,12 +163,18 @@ public class TarefaController extends BaseController {
 		Tarefa tarefaUpdate = tarefaRepository.find(tarefa.getId());
 		tarefaUpdate.setRoteiro(tarefa.getRoteiro());
 		tarefaUpdate.setNome(tarefa.getNome());
+
+		FluxoIdeal fluxoIdeal = tarefaUpdate.getFluxoIdeal();
+		tarefaUpdate.setFluxoIdeal(null);
 		if (!tarefaUpdate.getUrlInicial().equals(tarefa.getUrlInicial().trim())) {
 			tarefaUpdate.setFluxoIdealPreenchido(false);
 			tarefaUpdate.setUrlInicial(tarefa.getUrlInicial());
-			tarefaUpdate.getFluxoIdeal().getFluxo().setAcoes(null);
 		}
 		tarefaRepository.update(tarefaUpdate);
+		if (fluxoIdeal != null) {
+			fluxoIdealRepository.destroy(fluxoIdeal);
+
+		}
 		result.redirectTo(TesteController.class).passo2(idTeste);
 
 	}
@@ -249,12 +262,12 @@ public class TarefaController extends BaseController {
 	 * Grava o fluxo de usuario de uma determinada Tarefa. Destroy o
 	 * FluxoComponente de ações.
 	 * 
-	 * @param tarefaId
+	 * @param tarefaId O identificador da tarefa que tera o fluxo gravado
 	 */
 	private void gravaFluxoUSuario(Long tarefaId) {
 		System.out.println("GRAVA FLUXO DE USUARIO");
 		FluxoUsuario fluxoUsuario = new FluxoUsuario();
-		Fluxo fluxo= new Fluxo();
+		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
 		fluxoUsuario.setFluxo(fluxo);
 		List<Acao> acoes = actions.getAcoes();
@@ -302,7 +315,8 @@ public class TarefaController extends BaseController {
 	public void loadtasktester() {
 		Long idTarefa = testeSession.getTarefa().getId();
 		System.out.println("Action: loadTaskTester");
-		Tarefa tarefa = tarefaPertenceTeste(testeSession.getTeste().getId(),idTarefa);
+		Tarefa tarefa = tarefaPertenceTeste(testeSession.getTeste().getId(),
+				idTarefa);
 		String url = BaseUrl.getInstance(request);
 		System.out.println("${String} =" + url
 				+ "/tarefa/loadactiontester?url=" + tarefa.getUrlInicial()
@@ -340,7 +354,7 @@ public class TarefaController extends BaseController {
 			return WebClientTester.loadPage(BaseUrl.getInstance(request)
 					+ "/tarefa/loadactiontester", url,
 					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
-					metodo);
+					metodo,cookieManager);
 		} else {
 			return "erro";
 		}
@@ -415,20 +429,10 @@ public class TarefaController extends BaseController {
 			// System.out.println(headerName);
 			// System.out.println("HN(HN): " + request.getHeader(headerName));
 		}
-
-		if (url != null) {
-			return WebClientTester.loadPage(BaseUrl.getInstance(request)
-					+ "/tarefa/loadactionuser", url,
-					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
-					metodo);
-		} else {
-			return WebClientTester.loadPage(BaseUrl.getInstance(request)
-					+ "/tarefa/loadactionuser", tarefa.getUrlInicial(),
-					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
-					metodo);
-
-		}
-
+		if (url == null) {
+			url = tarefa.getUrlInicial();
+		} 
+		return WebClientTester.loadPage(BaseUrl.getInstance(request)+"/tarefa/loadactionuser", url,Integer.parseInt(idTarefa.toString()), parametrosRecebidos,metodo,cookieManager);
 	}
 
 	private void gravaFluxoIdeal(Long tarefaId) {

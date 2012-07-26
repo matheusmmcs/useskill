@@ -229,7 +229,7 @@ public class WebClientTester {
 	 * 
 	 * @return String = String da pagina modificada
 	 */
-	public static String loadPage(String urlFerramenta, String url, Integer idTarefa, Map<String, String[]> parameters, String method) {
+	public static String loadPage(String urlFerramenta, String url, Integer idTarefa, Map<String, String[]> parameters, String method, CookieManager cookieManager) {
 		
 		Map<String, Object> parametros = new HashMap<String, Object>();
 
@@ -258,16 +258,16 @@ public class WebClientTester {
 			upperDomain = upperDomain.substring(0, upperDomain.length() - 1);
 		}
 		
-		System.out.println("DOMAIN: "+domain+" - UPPERDOMAIN: "+upperDomain);
+		//System.out.println("DOMAIN: "+domain+" - UPPERDOMAIN: "+upperDomain);
 		String paramsPost = null;
 		if(method.equalsIgnoreCase("POST")){
 			paramsPost = mapToURLMap(parametros);
-			System.out.println("PARAMSPOST: "+paramsPost);
+			//System.out.println("PARAMSPOST: "+paramsPost);
 		}
 
 		String html;
 		try {
-			html = CookieManager.getContent(url, upperDomain, new CookieManager(), paramsPost);
+			html = CookieManager.getContent(url, upperDomain, cookieManager, paramsPost);
 			html = prependLinks(html, domain, upperDomain);
 			html = converteLink(html, idTarefa, urlFerramenta, upperDomain);
 			return html;

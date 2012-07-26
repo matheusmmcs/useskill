@@ -125,6 +125,7 @@ public class TesteController extends BaseController {
 	@Logado
 	@Get("teste/{idTeste}/editar/passo2")
 	public void passo2(Long idTeste) {
+		System.out.println("Passo 2 Chegou primeiro");
 		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 		result.include("tarefas", testeView.getTeste().getTarefas());
 		result.include("perguntas", testeView.getTeste().getSatisfacao()

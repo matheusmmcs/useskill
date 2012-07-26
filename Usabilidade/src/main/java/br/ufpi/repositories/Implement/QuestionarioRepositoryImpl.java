@@ -4,12 +4,12 @@
  */
 package br.ufpi.repositories.Implement;
 
+import javax.persistence.EntityManager;
+
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Questionario;
 import br.ufpi.repositories.QuestionarioRepository;
 import br.ufpi.repositories.Repository;
-
-import javax.persistence.EntityManager;
 
 /**
  *

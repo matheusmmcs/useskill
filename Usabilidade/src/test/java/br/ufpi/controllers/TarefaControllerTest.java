@@ -7,6 +7,7 @@ package br.ufpi.controllers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
@@ -17,11 +18,18 @@ import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.controllers.procedure.TarefaTestProcedure;
 import br.ufpi.models.Acao;
+import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.Tarefa;
 import br.ufpi.repositories.AbstractDaoTest;
+import br.ufpi.repositories.AcaoRepository;
+import br.ufpi.repositories.FluxoIdealRepository;
 import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.TarefaRepository;
+import br.ufpi.repositories.Implement.AcaoRepositoryImpl;
+import br.ufpi.repositories.Implement.FluxoIdealRepositoryImpl;
 import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
+
+import com.google.gson.Gson;
 
 /**
  * Caso de Uso criar Tarefa</br> <li>Caso em que passa tarefa null</li> <li>Caso
@@ -362,27 +370,6 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of updateTarefa method, of class TarefaController. Sem fluxo ideal
-	 * gravado
-	 */
-	@Test
-	public void testUpdateTarefa() {
-		System.out.println("updateTarefa");
-		Long tarefaId = 9l;
-		
-		String urlInicial="urlInicial";
-		String roteiro="roteiro";
-		String nome = "nome";
-		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(tarefaId,
-				urlInicial, roteiro, nome);
-			instance.updateTarefa(tarefa, testePertenceUsuarioNaoLiberado);
-		Tarefa tarefaFind = repository.find(tarefaId);
-		Assert.assertEquals(false, tarefaFind.isFluxoIdealPreenchido());
-		Assert.assertEquals(nome, tarefaFind.getNome());
-		Assert.assertEquals(roteiro, tarefaFind.getRoteiro());
-		Assert.assertEquals(urlInicial,tarefaFind.getUrlInicial());
-	}
-	/**
 	 * Test of updateTarefa method, of class TarefaController. Com fluxo ideal
 	 * gravado
 	 */
@@ -390,21 +377,27 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	public void testUpdateTarefaComFluxoIdeal() {
 		System.out.println("updateTarefa");
 		Long tarefaId = 7l;
-		
-		String urlInicial="urlInicial2";
-		String roteiro="roteiro";
+
+		String urlInicial = "urlInicial2";
+		String roteiro = "roteiro";
 		String nome = "nome";
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(tarefaId,
 				urlInicial, roteiro, nome);
-			instance.updateTarefa(tarefa, testePertenceUsuarioNaoLiberado);
+		int qAntes = this.getAcaoSize();
+		instance.updateTarefa(tarefa, testePertenceUsuarioNaoLiberado);
 		Tarefa tarefaFind = repository.find(tarefaId);
-		List<Acao> acoes = tarefaFind.getFluxoIdeal().getFluxo().getAcoes();
-		Assert.assertNull(acoes);
+		FluxoIdeal fluxoIdeal = tarefaFind.getFluxoIdeal();
+		
+		int qDepois = this.getAcaoSize();
+		Assert.assertEquals(qAntes, qDepois+10);
+		Assert.assertNull("Fluxo Ideal é para ter sido Removido", fluxoIdeal);
 		Assert.assertEquals(false, tarefaFind.isFluxoIdealPreenchido());
 		Assert.assertEquals(nome, tarefaFind.getNome());
 		Assert.assertEquals(roteiro, tarefaFind.getRoteiro());
-		Assert.assertEquals(urlInicial,tarefaFind.getUrlInicial());
+		Assert.assertEquals(urlInicial, tarefaFind.getUrlInicial());
 	}
+
+
 	/**
 	 * Test of removed method, of class TarefaController.
 	 */
@@ -539,14 +532,11 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	 */
 	@Test
 	public void testSaveFluxoIdeal() {
+	
 		System.out.println("saveFluxoIdeal");
-		String dados = "";
-		Boolean completo = null;
-		TarefaController instance = null;
+		String dados = getGSonDados();
+		Boolean completo = false;
 		instance.saveFluxoIdeal(dados, completo);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
 	}
 
 	/**
@@ -554,6 +544,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	 */
 	@Test
 	public void testSaveFluxoUsuario() {
+
 		System.out.println("saveFluxoUsuario");
 		String dados = "";
 		Boolean completo = null;
@@ -633,12 +624,43 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	@Test
 	public void testLoadactionuser() {
 		System.out.println("loadactionuser");
-		TarefaController instance = null;
 		String expResult = "";
 		String result = instance.loadactionuser();
 		assertEquals(expResult, result);
 		// TODO review the generated test code and remove the default call to
 		// fail.
 		fail("The test case is a prototype.");
+	}
+
+	private String getGSonDados() {
+		List<Acao> acaos = new ArrayList<Acao>();
+		for (int i = 0; i < 10; i++) {
+
+			Acao acao = new Acao();
+			acao.setConteudo("conteudo");
+			acao.setPosicaoPaginaX(i);
+			acao.setPosicaoPaginaY(i);
+			acao.setTag("tag");
+			acao.setTagClass("tagClass");
+			acao.setTagId("tagId");
+			acao.setTagName("tagName");
+			acao.setTagType("TagType");
+			acao.setTagValue("valeu");
+			acao.setTempo((double) i);
+			acao.setTipoAcao("click");
+			acao.setUrl("www.globo.com");
+			acaos.add(acao);
+		}
+		Gson gson = new Gson();
+		return gson.toJson(acaos);
+	}
+
+	private void initTestSession(long idTarefa, long idTeste) {
+		instance = TarefaTestProcedure.newInstanceTarefaController(
+				entityManager, result, idTarefa, idTeste);
+	}
+	private int getAcaoSize(){
+		AcaoRepository acaoRepository= new AcaoRepositoryImpl(entityManager);
+		return acaoRepository.findAll().size();
 	}
 }

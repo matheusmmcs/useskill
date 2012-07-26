@@ -25,11 +25,17 @@ import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
+import br.ufpi.repositories.ConvidadoRepository;
+import br.ufpi.repositories.FluxoIdealRepository;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
+import br.ufpi.repositories.TesteRepository;
 import br.ufpi.repositories.UsuarioRepository;
+import br.ufpi.repositories.Implement.FluxoIdealRepositoryImpl;
 import br.ufpi.repositories.Implement.FluxoUsuarioRepositoryImpl;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
+import br.ufpi.repositories.Implement.TesteRepositoryImpl;
+import br.ufpi.util.CookieManager;
 
 public class TarefaTestProcedure {
 	public static TarefaController newInstanceTarefaController(
@@ -42,23 +48,26 @@ public class TarefaTestProcedure {
 		UsuarioLogado usuarioLogado = new UsuarioLogado(usuarioRepositoryImpl);
 		ValidateComponente validateComponente = new ValidateComponente(
 				validator);
+		TarefaRepository tarefaRepository = newInstanceTarefaRepository(entityManager);
+		TesteRepository testeRepository = TesteTestProcedure
+				.newInstanceTesteRepository(entityManager);
+		FluxoUsuarioRepository fluxoUsuarioRepository = newInstanceFluxoUsuarioRepository(entityManager);
+		ConvidadoRepository convidadoRepository = UsuarioTestProcedure
+				.newInstanceConvidadoRepository(entityManager);
+		TarefaDetalhe tarefaDetalhe = new TarefaDetalhe();
+
+		FluxoIdealRepository fluxoIdealRepository= new FluxoIdealRepositoryImpl(entityManager);
 		TesteSession testeSession = null;
-		FluxoComponente fluxo = null;
 		SessionActions actions = null;
-		TarefaController controller = new TarefaController(result, validator,
-				testeView, usuarioLogado, validateComponente,
-				newInstanceTarefaRepository(entityManager),
-				TesteTestProcedure.newInstanceTesteRepository(entityManager),
-				newInstanceFluxoUsuarioRepository(entityManager),
-				UsuarioTestProcedure
-						.newInstanceConvidadoRepository(entityManager),
-				actions, fluxo, request, testeSession,new TarefaDetalhe());
+		FluxoComponente fluxoComponente = null;
+		CookieManager cookieManager= new CookieManager();
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoUsuarioRepository, fluxoIdealRepository, convidadoRepository, actions, fluxoComponente, request, testeSession, tarefaDetalhe, cookieManager);
 		return controller;
 	}
 
 	public static TarefaController newInstanceTarefaController(
-			EntityManager entityManager, MockResult result,
-			TesteSession testeSession) {
+			EntityManager entityManager, MockResult result, Long idTarefa,
+			Long idTeste) {
 		HttpServletRequest request = new HttpRequestTest();
 		TesteView testeView = new TesteView();
 		MockValidator validator = new MockValidator();
@@ -67,16 +76,21 @@ public class TarefaTestProcedure {
 		UsuarioLogado usuarioLogado = new UsuarioLogado(usuarioRepositoryImpl);
 		ValidateComponente validateComponente = new ValidateComponente(
 				validator);
-		FluxoComponente fluxo = null;
+		TesteSession testeSession = new TesteSession();
+		FluxoIdealRepository fluxoIdealRepository= new FluxoIdealRepositoryImpl(entityManager);
+		TarefaRepository tarefaRepository = new TarefaRepositoryImpl(
+				entityManager);
+		TesteRepository testeRepository = new TesteRepositoryImpl(entityManager);
+		testeSession.setTarefa(tarefaRepository.find(idTarefa));
+		testeSession.setTeste(testeRepository.find(idTeste));
+		FluxoUsuarioRepository fluxoUsuarioRepository = newInstanceFluxoUsuarioRepository(entityManager);
+		ConvidadoRepository convidadoRepository = UsuarioTestProcedure
+				.newInstanceConvidadoRepository(entityManager);
 		SessionActions actions = null;
-		TarefaController controller = new TarefaController(result, validator,
-				testeView, usuarioLogado, validateComponente,
-				newInstanceTarefaRepository(entityManager),
-				TesteTestProcedure.newInstanceTesteRepository(entityManager),
-				newInstanceFluxoUsuarioRepository(entityManager),
-				UsuarioTestProcedure
-						.newInstanceConvidadoRepository(entityManager),
-				actions, fluxo, request, testeSession,null);
+		TarefaDetalhe tarefaDetalhe = null;
+		FluxoComponente fluxoComponente = null;
+		CookieManager cookieManager= new CookieManager();
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoUsuarioRepository, fluxoIdealRepository, convidadoRepository, actions, fluxoComponente, request, testeSession, tarefaDetalhe,cookieManager);
 		return controller;
 	}
 
@@ -133,18 +147,18 @@ public class TarefaTestProcedure {
 
 	public static FluxoIdeal newInstanceFluxoIdeal(Usuario usuario) {
 		FluxoIdeal fluxoIdeal = new FluxoIdeal();
-//		fluxoIdeal.setFluxo(newInstanceFluxo(usuario));
+		// fluxoIdeal.setFluxo(newInstanceFluxo(usuario));
 		return fluxoIdeal;
 	}
 
 	public static Fluxo newInstanceFluxo(Usuario usuario) {
-		
+
 		Fluxo fluxo = new Fluxo();
 		fluxo.setDataInicio(new Date(System.currentTimeMillis()));
 		fluxo.setDataFim(new Date(System.currentTimeMillis()));
 		fluxo.setAcoes(newInstanceAcoes(fluxo));
 		fluxo.setUsuario(usuario);
-		
+
 		return fluxo;
 	}
 
