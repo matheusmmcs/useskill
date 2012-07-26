@@ -1,0 +1,45 @@
+1.	The UseSkill project was developed in the Eclipse IDE, then you will first need to get the Eclipse IDE.
+	Eclipse Indigo: www.eclipse.org/indigo
+
+2.	You will need to download a svn plugin for eclipse, I suggest Subversive.
+	Subversive: http://www.eclipse.org/subversive/
+   
+3.	You will need to download a Maven plugin for eclipse.
+	Maven: maven.apache.org
+
+4.	You will need to download a file synchronizer, I suggest the FileSync
+	FileSync: Put this url in "Install new software..." in eclipse: http://andrei.gmxhome.de/eclipse/
+	Choice Eclipse 3.5 -> FileSync. 
+	Uncheck all update ...
+	Install... Next... Next...
+
+5.	Ok, now we need our web server, you should download Apache Tomcat and Apache Maven
+	Apache Tomcat: http://tomcat.apache.org/download-70.cgi - Version: 7
+	Apache Maven:  http://maven.apache.org/download.html - Version: 3.0.4
+   
+	* Unzip to a folder of your choice, but that is easily accessible.
+
+6. Now to add the project to your workspace you'll have to check out a "trunk" (named Usabilidade) in the project 
+   that is in the url http://xp-dev.com/svn/usabilidade/Usabilidade.
+	
+7. Now that you have a project in your workspace you need to convert it into a design Maven. 
+   To do this just click the right mouse button on the project, go to the set menu and choose 
+   "Convert to Maven Project". All the dependencies will be automatically downloaded.
+   
+8. From this point the project is ready for use. To build the project and put it on an 
+   Apache Tomcat server you can use your own maven using the following procedure:
+   		5.1. You must configure the IP and port of your server implementation on the pom.xml file.
+   		5.2. Start the server
+   		5.3. Click the right mouse button on the project, go to the menu Run As, then select the 
+   		     Maven build. Goals in the field enter the following arguments: package clean tomcat:deploy
+
+9. If all previous steps were performed correctly the project will be builded in the webapps folder of 
+    tomcat that is running. Now you can configure your FileSync.
+    
+    Right-click the project and go to properties, find the tab FileSync there you can tell which folder 
+    you want to keep on synchronization. Just choose the folder and point to the webapp folder Usabilidade 
+    that is within your Tomcat webapps. Thus any change in view will be automatically synchronized and 
+    do not need to build the application again.
+    
+10. If you made changes to the back end application, you need to build the application again,
+	but now the parameters that are passed to Maven: package clean tomcat:redeploy

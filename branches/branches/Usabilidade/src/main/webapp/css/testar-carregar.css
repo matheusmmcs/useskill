@@ -1,0 +1,84 @@
+@CHARSET "ISO-8859-1";
+
+iframe {
+	height: 100%;
+	width: 100%;
+	min-height: 500px;
+}
+
+html {
+	height: 100%;
+	max-height: 100%;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	overflow: auto;
+	text-align: justify
+}
+
+body {
+	background-color: #EEF3F6;
+	height: 100%;
+	max-height: 100%;
+	overflow: auto;
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+
+#iframe{
+	width: 100%; 
+	top: 60px; 
+	bottom: 0px; 
+	position: fixed; 
+	background-color: white; 
+	border-top: 1px solid #007AA5;
+}
+
+.concluir {
+	float: right;
+	margin: 15px 30px;
+	padding: 5px 30px;
+}
+
+.bom {
+	float: left;
+	margin: 15px 5px;
+	padding: 5px 20px;
+}
+
+.ruim {
+	float: left;
+	margin: 15px 5px;
+	padding: 5px 20px;
+}
+
+.comentario {
+	float: left;
+	margin: 15px 5px;
+	padding: 5px 20px;
+}
+
+#roteiro {
+	float: right;
+	margin: 15px 170px 15px 15px;
+	padding: 5px 30px;
+}
+
+.direita {
+	float: right;
+	width: 33%;
+	height: 60px;
+}
+
+.centro {
+	float: right;
+	width: 33%;
+	height: 60px;
+}
+
+.esquerda {
+	float: right;
+	width: 33%;
+	height: 60px;
+}

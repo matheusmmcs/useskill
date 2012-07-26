@@ -1,0 +1,20 @@
+<table border="1px">
+<thead>
+<th>Acao</th>
+<th>tipoAcao</th>
+<th>tempo</th>
+<th>url</th>
+<th>conteudo</th>
+<th>tag</th>
+<th>tagId</th>
+<th>tagClass</th>
+<th>tagName</th>
+<th>tagValue</th>
+<th>posicaoPaginaY</th>
+<th>posicaoPaginaX</th>
+<th>tagType</th>
+</thead>
+<tbody>
+${stringBuilder}
+</tbody>
+</table>
