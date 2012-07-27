@@ -5,6 +5,8 @@ package br.ufpi.models;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
@@ -14,7 +16,7 @@ import javax.persistence.NamedQuery;
  */
 @Entity
 @NamedQueries({
-		@NamedQuery(name = "Convidado.UsuarioFoiConvidado", query = "SELECT c.chaveComposta.teste FROM Convidado AS c Where c.chaveComposta.participante.id= :usuario AND c.chaveComposta.teste.id= :teste And c.chaveComposta.teste.liberado= true And c.realizou= null"),
+		@NamedQuery(name = "Convidado.UsuarioFoiConvidado", query = "SELECT new br.ufpi.models.vo.ConvidadoVO(c.chaveComposta.teste,c.tipoConvidado) FROM Convidado AS c Where c.chaveComposta.participante.id= :usuario AND c.chaveComposta.teste.id= :teste And c.chaveComposta.teste.liberado= true And c.realizou= null"),
 		@NamedQuery(name = "Convidado.find", query = "SELECT c FROM Convidado AS c Where c.chaveComposta.participante.id= :usuario AND c.chaveComposta.teste.id= :teste"),
 		@NamedQuery(name = "Convidado.Teste", query = "SELECT c.chaveComposta.teste FROM Convidado AS c Where c.realizou is null  And c.chaveComposta.participante.id= :usuario And c.chaveComposta.teste.liberado= true"),
 		@NamedQuery(name = "Convidado.Teste.Participado", query = "SELECT c.chaveComposta.teste FROM Convidado AS c Where c.realizou is true  And c.chaveComposta.participante.id= :usuario And c.chaveComposta.teste.liberado= true"),
@@ -28,6 +30,8 @@ import javax.persistence.NamedQuery;
 public class Convidado {
 
 	private Boolean realizou;
+	@Enumerated(EnumType.STRING)
+	private TipoConvidado tipoConvidado;
 	@EmbeddedId
 	private UsuarioTestePK chaveComposta;
 	public Convidado() {
@@ -65,6 +69,12 @@ public class Convidado {
 	public String toString() {
 		return "Convidado [realizou=" + realizou + ", chaveComposta="
 				+ chaveComposta + "]";
+	}
+	public TipoConvidado getTipoConvidado() {
+		return tipoConvidado;
+	}
+	public void setTipoConvidado(TipoConvidado tipoConvidado) {
+		this.tipoConvidado = tipoConvidado;
 	}
 	
 }

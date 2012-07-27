@@ -32,6 +32,8 @@ public abstract class AbstractDaoTest {
 		populator(entityManagerFactory.createEntityManager());
 	}
 
+	
+
 	@AfterClass
 	public static void destroy() {
 		entityManagerFactory.close();
@@ -63,8 +65,8 @@ public abstract class AbstractDaoTest {
 					.getConfirmacaoEmail());
 			Populator.testPopulator(entityManager);
 			Populator.convidarUsuarios(entityManager);
-			Populator.criarPergunta(entityManager,2l);
-			Populator.criarPergunta(entityManager,4l);
+			Populator.criarPergunta(entityManager, 2l);
+			Populator.criarPergunta(entityManager, 4l);
 			Populator.criarTarefa(entityManager);
 			entityManager.getTransaction().commit();
 			entityManager.close();

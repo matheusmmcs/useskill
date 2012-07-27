@@ -1,8 +1,9 @@
 package br.ufpi.repositories;
 
-import br.ufpi.models.Convidado;
-import br.ufpi.models.Teste;
 import java.util.List;
+
+import br.ufpi.models.Convidado;
+import br.ufpi.models.vo.ConvidadoVO;
 
 /**
  * Usado para
@@ -62,7 +63,7 @@ public interface ConvidadoRepository {
 	 *            identificador do usuario que vai realizar o teste
 	 * @return caso o usuario nao tenha sido convidado retorna null
 	 */
-	Teste getTesteConvidado(Long testeId, Long usuarioId);
+	ConvidadoVO getTesteConvidado(Long testeId, Long usuarioId);
 
 	/**
 	 * Obtem uma entidade Convidado

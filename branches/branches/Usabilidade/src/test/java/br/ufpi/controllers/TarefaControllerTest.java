@@ -18,15 +18,12 @@ import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.controllers.procedure.TarefaTestProcedure;
 import br.ufpi.models.Acao;
-import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.Tarefa;
 import br.ufpi.repositories.AbstractDaoTest;
 import br.ufpi.repositories.AcaoRepository;
-import br.ufpi.repositories.FluxoIdealRepository;
 import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.Implement.AcaoRepositoryImpl;
-import br.ufpi.repositories.Implement.FluxoIdealRepositoryImpl;
 import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
 
 import com.google.gson.Gson;
@@ -386,11 +383,9 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		int qAntes = this.getAcaoSize();
 		instance.updateTarefa(tarefa, testePertenceUsuarioNaoLiberado);
 		Tarefa tarefaFind = repository.find(tarefaId);
-		FluxoIdeal fluxoIdeal = tarefaFind.getFluxoIdeal();
 		
 		int qDepois = this.getAcaoSize();
 		Assert.assertEquals(qAntes, qDepois+10);
-		Assert.assertNull("Fluxo Ideal é para ter sido Removido", fluxoIdeal);
 		Assert.assertEquals(false, tarefaFind.isFluxoIdealPreenchido());
 		Assert.assertEquals(nome, tarefaFind.getNome());
 		Assert.assertEquals(roteiro, tarefaFind.getRoteiro());

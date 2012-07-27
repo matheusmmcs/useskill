@@ -21,7 +21,7 @@ import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.Implement.ConvidadoRepositoryImpl;
-import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
+import br.ufpi.repositories.Implement.FluxoIdealRepositoryImpl;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 
 public class Populator {
@@ -324,13 +324,13 @@ public class Populator {
 		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.cidadeverde.com", "visualizar blog de união",
 				"Procurar Campeão", teste, true);
-		FluxoRepository fluxoRepository= new FluxoRepositoryImpl(entityManager);
+		FluxoIdealRepository fluxoRepository= new FluxoIdealRepositoryImpl(entityManager);
 		Fluxo fluxo = TarefaTestProcedure.newInstanceFluxo(usuario1);
-		fluxoRepository.create(fluxo);
 		FluxoIdeal fluxoIdeal = TarefaTestProcedure
 				.newInstanceFluxoIdeal(usuario1);
 		fluxoIdeal.setFluxo(fluxo);
-		tarefa.setFluxoIdeal(fluxoIdeal);
+		fluxoRepository.create(fluxoIdeal);
+		
 		repository.create(tarefa);
 		repository.create(tarefa2);
 		repository.create(tarefa3);
@@ -486,13 +486,13 @@ public class Populator {
 		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.cidadeverde.com", "visualizar blog de união",
 				"Procurar Campeão", teste, true);
-		FluxoRepository fluxoRepository= new FluxoRepositoryImpl(entityManager);
+		FluxoIdealRepository fluxoRepository= new FluxoIdealRepositoryImpl(entityManager);
 		Fluxo fluxo = TarefaTestProcedure.newInstanceFluxo(usuario1);
-		fluxoRepository.create(fluxo);
 		FluxoIdeal fluxoIdeal = TarefaTestProcedure
-		.newInstanceFluxoIdeal(usuario1);
+				.newInstanceFluxoIdeal(usuario1);
 		fluxoIdeal.setFluxo(fluxo);
-		tarefa.setFluxoIdeal(fluxoIdeal);
+		fluxoRepository.create(fluxoIdeal);
+
 		repository.create(tarefa);
 		repository.create(tarefa2);
 		repository.create(tarefa3);
@@ -527,13 +527,13 @@ public class Populator {
 		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.cidadeverde.com", "visualizar blog de união",
 				"Procurar Campeão", teste, true);
-		FluxoRepository fluxoRepository= new FluxoRepositoryImpl(entityManager);
+		FluxoIdealRepository fluxoRepository= new FluxoIdealRepositoryImpl(entityManager);
 		Fluxo fluxo = TarefaTestProcedure.newInstanceFluxo(usuario1);
-		fluxoRepository.create(fluxo);
 		FluxoIdeal fluxoIdeal = TarefaTestProcedure
 				.newInstanceFluxoIdeal(usuario1);
 		fluxoIdeal.setFluxo(fluxo);
-		tarefa.setFluxoIdeal(fluxoIdeal);
+		fluxoRepository.create(fluxoIdeal);
+
 		repository.create(tarefa);
 		repository.create(tarefa2);
 		repository.create(tarefa3);
@@ -568,13 +568,13 @@ public class Populator {
 		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.cidadeverde.com", "visualizar blog de união",
 				"Procurar Campeão", teste, true);
-		FluxoRepository fluxoRepository= new FluxoRepositoryImpl(entityManager);
+		FluxoIdealRepository fluxoRepository= new FluxoIdealRepositoryImpl(entityManager);
 		Fluxo fluxo = TarefaTestProcedure.newInstanceFluxo(usuario1);
-		fluxoRepository.create(fluxo);
 		FluxoIdeal fluxoIdeal = TarefaTestProcedure
 				.newInstanceFluxoIdeal(usuario1);
 		fluxoIdeal.setFluxo(fluxo);
-		tarefa.setFluxoIdeal(fluxoIdeal);
+		fluxoRepository.create(fluxoIdeal);
+
 		repository.create(tarefa);
 		repository.create(tarefa2);
 		repository.create(tarefa3);

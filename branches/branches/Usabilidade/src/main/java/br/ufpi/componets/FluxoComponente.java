@@ -11,6 +11,7 @@ import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
+import br.ufpi.models.TipoConvidado;
 
 /**
  * Classe usada para armazena o fluxo de qual tarefa esta sendo usada e tambem
@@ -25,9 +26,10 @@ public class FluxoComponente {
 	private List<Long> tarefas;
 	private List<Long> perguntasInicio;
 	private List<Long> perguntasFim;
+	private TipoConvidado tipoConvidado;
 	/**
-	 * Indica se o usuario esta respondendo as perguntas do inicio
-	 * True para perguntas do Inicio
+	 * Indica se o usuario esta respondendo as perguntas do inicio True para
+	 * perguntas do Inicio
 	 */
 	private boolean respondendoInicio;
 
@@ -37,7 +39,8 @@ public class FluxoComponente {
 	 * 
 	 * @param teste
 	 */
-	public void criarLista(Teste teste) {
+	public void criarLista(Teste teste, TipoConvidado tipoConvidado) {
+		this.tipoConvidado = tipoConvidado;
 		tarefas = new ArrayList<Long>();
 		if (teste.getTarefas() != null)
 			for (Tarefa tarefa : teste.getTarefas()) {
@@ -59,7 +62,7 @@ public class FluxoComponente {
 		perguntasInicio = new ArrayList<Long>();
 		perguntasFim = new ArrayList<Long>();
 		Questionario satisfacao = teste.getSatisfacao();
-		if ( satisfacao!= null) {
+		if (satisfacao != null) {
 			satisfacao = teste.getSatisfacao();
 			for (Pergunta pergunta : satisfacao.getPerguntas()) {
 				if (pergunta.isResponderFim()) {
@@ -89,10 +92,10 @@ public class FluxoComponente {
 			return null;
 	}
 
-        /**
+	/**
          * 
          */
-        @PreDestroy
+	@PreDestroy
 	public void destroy() {
 		this.tarefas = null;
 		this.perguntasFim = null;
@@ -132,8 +135,8 @@ public class FluxoComponente {
 	/**
 	 * Obtem a proxima pergunta que vai ser obtida
 	 * 
-         * @param pergunta 
-         * @return Identificador da pergunta que vai ser obtida
+	 * @param pergunta
+	 * @return Identificador da pergunta que vai ser obtida
 	 */
 	public Long getProximaPergunta(List<Long> pergunta) {
 		System.out.print(" Pergunta MOMENTO: ");
@@ -176,6 +179,14 @@ public class FluxoComponente {
 
 	public void setRespondendoInicio(boolean respondendoInicio) {
 		this.respondendoInicio = respondendoInicio;
+	}
+
+	public TipoConvidado getTipoConvidado() {
+		return tipoConvidado;
+	}
+
+	public void setTipoConvidado(TipoConvidado tipoConvidado) {
+		this.tipoConvidado = tipoConvidado;
 	}
 
 }
