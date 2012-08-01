@@ -32,7 +32,7 @@
             <legend>Passo 3</legend>
 
 
-            <form class="form-horizontal" id="loginForm" action="${pageContext.request.contextPath}/teste/convidar/usuario" method="post">
+            <form class="form-horizontal" id="listaUsuarios" action="${pageContext.request.contextPath}/teste/convidar/usuario" method="post">
                 <div class="span9" style="margin-top: 20px">
                     <h1>Lista de Usuários</h1>
                 </div>
@@ -54,8 +54,13 @@
                         </tbody>
                     </table>
                 </div>
-                <input type="hidden" name=idTeste value=${testeView.teste.id }>
-                <input type="submit" value="<fmt:message key="usuarios.add"/>" class="btn btn-primary" style="float: right;"/>
+                <input type="hidden" name="idTeste" value="${testeView.teste.id }"/>
+                
+                <input id="inputUser" type="button" value="<fmt:message key="usuarios.add"/>" class="btn btn-primary" style="float: right;"/>
+                <input id="inputTester" type="button" value="<fmt:message key="tester.add"/>" class="btn btn-primary" style="float: right;"/>
+                <input id="tipoConvidado" type="hidden" name=tipoConvidado value="true"/>
+                
+                <input type="submit" style="display:none"/>
             </form>
         </fieldset> 
 
@@ -73,10 +78,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach items="${usuariosEscolhidos}" var="usuario">
+                            <c:forEach items="${convidados}" var="convidado">
                                 <tr>
-                                    <td width="30"><input type="checkbox" name="idUsuarios[]" value="${usuario.id }"></td>
-                                    <td>${usuario.nome}</td>
+                                    <td width="30"><input type="checkbox" name="idUsuarios[]" value="${convidado.usuario.id }"></td>
+                                    <td>${convidado.usuario.nome}</td>
+                                    <td>${convidado.tipoConvidado}</td>
                                 </tr>
                             </c:forEach>
                         </tbody>
@@ -89,3 +95,23 @@
         </fieldset>
     </div>
 </div>
+
+<script>
+	(function($){
+		$(document).ready(function(){
+			var $formListaUsuarios = $('form#listaUsuarios'), $tipoConvidado = $('input#tipoConvidado');
+			
+			$('#inputUser').click(function(e){
+				e.preventDefault();
+				$tipoConvidado.val(true);
+				$formListaUsuarios.submit();
+			});
+			
+			$('#inputTester').click(function(e){
+				e.preventDefault();
+				$tipoConvidado.val(false);
+				$formListaUsuarios.submit();
+			});
+		});
+	})(jQuery);
+</script>
