@@ -17,14 +17,16 @@ import org.junit.Test;
 import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.controllers.procedure.TarefaTestProcedure;
-import br.ufpi.models.Acao;
+import br.ufpi.models.Action;
 import br.ufpi.models.Tarefa;
 import br.ufpi.repositories.AbstractDaoTest;
 import br.ufpi.repositories.AcaoRepository;
 import br.ufpi.repositories.FluxoRepository;
+import br.ufpi.repositories.QuestionarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.Implement.AcaoRepositoryImpl;
 import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
+import br.ufpi.repositories.Implement.QuestionarioRepositoryImpl;
 
 import com.google.gson.Gson;
 
@@ -54,6 +56,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	private static Long testeNaoPertenceUsuario = 5l;
 	private static Long testeLiberado = 11l;
 	private TarefaRepository repository;
+	private QuestionarioRepository questionarioRepository;
 	private TarefaController instance;
 	private Long testeNaoPertenceUsuario2 = 14l;
 
@@ -62,6 +65,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		super.setUp();
 		repository = TarefaTestProcedure
 				.newInstanceTarefaRepository(entityManager);
+		questionarioRepository= new QuestionarioRepositoryImpl(entityManager);
 		instance = TarefaTestProcedure.newInstanceTarefaController(
 				entityManager, result);
 	}
@@ -139,11 +143,14 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	public void testSalvarTarefa() {
 		System.out.println("salvarTarefa");
 		int qAntes = repository.findAll().size();
+		int numQuestionariosAntes= questionarioRepository.findAll().size();
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa("urlInicial",
 				"roteiro", "nome");
 		instance.salvarTarefa(tarefa, testePertenceUsuarioNaoLiberado);
 		int qDepois = repository.findAll().size();
+		int numQuestionariosDepois= questionarioRepository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois - 1);
+		Assert.assertEquals(numQuestionariosAntes, numQuestionariosDepois- 1);
 	}
 
 	/**
@@ -386,7 +393,6 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		
 		int qDepois = this.getAcaoSize();
 		Assert.assertEquals(qAntes, qDepois+10);
-		Assert.assertEquals(false, tarefaFind.isFluxoIdealPreenchido());
 		Assert.assertEquals(nome, tarefaFind.getNome());
 		Assert.assertEquals(roteiro, tarefaFind.getRoteiro());
 		Assert.assertEquals(urlInicial, tarefaFind.getUrlInicial());
@@ -628,22 +634,22 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	}
 
 	private String getGSonDados() {
-		List<Acao> acaos = new ArrayList<Acao>();
+		List<Action> acaos = new ArrayList<Action>();
 		for (int i = 0; i < 10; i++) {
 
-			Acao acao = new Acao();
-			acao.setConteudo("conteudo");
-			acao.setPosicaoPaginaX(i);
-			acao.setPosicaoPaginaY(i);
-			acao.setTag("tag");
-			acao.setTagClass("tagClass");
-			acao.setTagId("tagId");
-			acao.setTagName("tagName");
-			acao.setTagType("TagType");
-			acao.setTagValue("valeu");
-			acao.setTempo((double) i);
-			acao.setTipoAcao("click");
-			acao.setUrl("www.globo.com");
+			Action acao = new Action();
+			acao.setsContent("conteudo");
+			acao.setsPosX(i);
+			acao.setsPosY(i);
+			acao.setsTag("tag");
+			acao.setsTagClass("tagClass");
+			acao.setsTagId("tagId");
+			acao.setsTagName("sTagName");
+			acao.setsTagType("TagType");
+			acao.setsTagValue("valeu");
+			acao.setsTime((double) i);
+			acao.setsTagType("click");
+			acao.setsUrl("www.globo.com");
 			acaos.add(acao);
 		}
 		Gson gson = new Gson();

@@ -19,6 +19,7 @@ import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
+import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.Implement.ConvidadoRepositoryImpl;
 import br.ufpi.repositories.Implement.FluxoIdealRepositoryImpl;
@@ -116,8 +117,8 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(4l);
-		convidadoRepository.convidarUsuarios(idUsuarios, 6l);
-		convidadoRepository.convidarUsuarios(idUsuarios, 5l);
+		convidadoRepository.convidarUsuarios(idUsuarios, 6l, TipoConvidado.TESTER);
+		convidadoRepository.convidarUsuarios(idUsuarios, 5l,  TipoConvidado.USER);
 
 	}
 
@@ -212,7 +213,7 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(5l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, 7l);
+		convidadoRepository.convidarUsuarios(idUsuarios, 7l,TipoConvidado.TESTER);
 	}
 
 	/**
@@ -235,7 +236,7 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(5l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, 8l);
+		convidadoRepository.convidarUsuarios(idUsuarios, 8l,TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
@@ -272,7 +273,7 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(5l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, 9l);
+		convidadoRepository.convidarUsuarios(idUsuarios, 9l,TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
@@ -311,7 +312,7 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(5l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
 
 		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
@@ -360,7 +361,7 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(5l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
 
 		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
@@ -401,7 +402,7 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
 		Convidado find = convidadoRepository.find(idTeste, 1l);
 		find.setRealizou(true);
 		convidadoRepository.update(find);
@@ -439,7 +440,7 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
@@ -474,7 +475,7 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
@@ -515,7 +516,7 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
@@ -556,7 +557,7 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryImpl(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",

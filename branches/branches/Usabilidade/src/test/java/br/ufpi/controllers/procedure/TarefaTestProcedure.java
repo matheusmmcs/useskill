@@ -19,7 +19,7 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.TarefaController;
-import br.ufpi.models.Acao;
+import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.Tarefa;
@@ -143,7 +143,6 @@ public class TarefaTestProcedure {
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
 		tarefa.setTeste(teste);
-		tarefa.setFluxoIdealPreenchido(fluxoIdealPreenchido);
 		return tarefa;
 	}
 
@@ -164,16 +163,16 @@ public class TarefaTestProcedure {
 		return fluxo;
 	}
 
-	public static List<Acao> newInstanceAcoes(Fluxo fluxo) {
-		ArrayList<Acao> acoes = new ArrayList<Acao>();
+	public static List<Action> newInstanceAcoes(Fluxo fluxo) {
+		ArrayList<Action> acoes = new ArrayList<Action>();
 		for (int i = 0; i < 10; i++) {
-			Acao acao = new Acao();
-			acao.setConteudo("conteudo");
+			Action acao = new Action();
+			acao.setsContent("conteudo");
 			acao.setFluxo(fluxo);
-			acao.setPosicaoPaginaX(10 * i);
-			acao.setPosicaoPaginaY(10 * i);
-			acao.setTagName("tag");
-			acao.setUrl("www.globo.com");
+			acao.setsPosX(10 * i);
+			acao.setsPosY(10 * i);
+			acao.setsTagName("tag");
+			acao.setsUrl("www.globo.com");
 			acoes.add(acao);
 		}
 		return acoes;

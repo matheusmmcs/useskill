@@ -610,16 +610,9 @@ public class TesteControllerTest extends AbstractDaoTest {
 	public void testLiberarTesteSemUsuariosConvidados() {
 		System.out.println("liberarTeste");
 		Long idTeste = 2l;
-		Message message = null;
-		try {
-			instance.liberarTeste(idTeste);
-
-		} catch (ValidationException validationException) {
-			message = validationException.getErrors().get(0);
-
-		}
-		Assert.assertEquals("Nenhum usuario convidado",
-				"nenhum.usuario.convidado", message.getCategory());
+		instance.liberarTeste(idTeste);
+		Assert.assertTrue("Teste deveria ser liberado!",
+				repository.find(idTeste).isLiberado());
 
 	}
 
@@ -652,21 +645,10 @@ public class TesteControllerTest extends AbstractDaoTest {
 	public void testLiberarTesteSemFluxoIdealGravado() {
 		System.out.println("liberarTeste");
 		Long idTeste = 8l;
-		Message message = null;
-		int numeroErros = 0;
-		try {
-			instance.liberarTeste(idTeste);
-
-		} catch (ValidationException validationException) {
-			message = validationException.getErrors().get(0);
-			numeroErros = validationException.getErrors().size();
-
-		}
-		Assert.assertEquals("Nenhuma tarefa foi cadastrada",
-				"tarefa.sem.fluxo.ideal", message.getCategory());
-		Assert.assertEquals(
-				"Numero de erros deveria ser o numero de tarefas do usuario",
-				3, numeroErros);
+		instance.liberarTeste(idTeste);
+		Assert.assertTrue(
+				"Teste deveria esta liberado, pois nao precisa ter fluxo ideal gravado",
+				repository.find(idTeste).isLiberado());
 
 	}
 
@@ -701,7 +683,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		idUsuarios.add(5l);
 		Long idTeste = 2l;
 		int qAntes = convidadoRepositoryImpl.findAll().size();
-		instance.convidarUsuario(idUsuarios, idTeste);
+		instance.convidarUsuario(idUsuarios, idTeste,true);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
 		Assert.assertEquals(qAntes + 2, qDepois);
 	}
@@ -724,7 +706,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		int qAntes = convidadoRepositoryImpl.findAll().size();
 		Message message = null;
 		try {
-			instance.convidarUsuario(idUsuarios, idTeste);
+			instance.convidarUsuario(idUsuarios, idTeste, false);
 		} catch (ValidationException validationException) {
 			message = validationException.getErrors().get(0);
 
@@ -750,7 +732,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Message message = null;
 		try {
 
-			instance.convidarUsuario(idUsuarios, idTeste);
+			instance.convidarUsuario(idUsuarios, idTeste, false);
 		} catch (ValidationException validationException) {
 			message = validationException.getErrors().get(0);
 
@@ -1255,15 +1237,16 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Assert.assertEquals(5l, included.get("testesLiberadosCount"));
 		List<Teste> testes = (List<Teste>) included.get("testesLiberados");
 		List<Teste> all = repository.findAll();
-		Long usuarioId=instance.usuarioLogado.getUsuario().getId();
-		Integer numeroTestesLiberados=0;
+		Long usuarioId = instance.usuarioLogado.getUsuario().getId();
+		Integer numeroTestesLiberados = 0;
 		for (Teste teste : all) {
-			if (teste.isLiberado() && teste.getUsuarioCriador().getId().equals(usuarioId)) {
+			if (teste.isLiberado()
+					&& teste.getUsuarioCriador().getId().equals(usuarioId)) {
 				numeroTestesLiberados++;
 			}
 		}
 		Integer size = testes.size();
 		System.out.println(size);
-		Assert.assertEquals(numeroTestesLiberados,size );
+		Assert.assertEquals(numeroTestesLiberados, size);
 	}
 }
