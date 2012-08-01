@@ -84,16 +84,10 @@ public class PerguntaController extends BaseController {
 		boolean tipo = pergunta.getTipoRespostaAlternativa() == null ? false
 				: true;
 		if (tipo && pergunta.getAlternativas() != null) {
-			System.out.println("Objetiva");
-			System.out.println("Responder em qual momento"
-					+ pergunta.isResponderFim());
 			for (Alternativa alternativa : pergunta.getAlternativas()) {
 				alternativa.setPergunta(pergunta);
 			}
 		} else {
-			System.out.println("Responder em qual momento"
-					+ pergunta.isResponderFim());
-			System.out.println("SUBJETIVA");
 			pergunta.setTipoRespostaAlternativa(false);
 			pergunta.setAlternativas(null);
 		}

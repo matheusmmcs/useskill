@@ -24,7 +24,7 @@ import javax.persistence.NamedQuery;
 		@NamedQuery(name = "Convidado.Teste.Count", query = "SELECT count(*) FROM Convidado AS c Where c.realizou= :realizou  And c.chaveComposta.participante.id= :usuario And c.chaveComposta.teste.liberado= true"),
 		@NamedQuery(name = "Convidado.Usuarios.Nao.Convidados", query = "Select u From Usuario as u Where u.id not in(SELECT c.chaveComposta.participante FROM Convidado AS c Where c.chaveComposta.teste.id= :teste)"),
 		@NamedQuery(name = "Convidado.Usuarios.Nao.Convidados.Count", query = "Select count(*) From Usuario as u Where u.id not in(SELECT c.chaveComposta.participante FROM Convidado AS c Where c.chaveComposta.teste.id= :teste)"),
-		@NamedQuery(name = "Convidado.Usuarios.Convidados", query = "SELECT c.chaveComposta.participante FROM Convidado AS c Where c.chaveComposta.teste.id= :teste"),
+		@NamedQuery(name = "Convidado.Usuarios.Convidados", query = "SELECT new br.ufpi.models.vo.ConvidadoVO(c.chaveComposta.participante,c.tipoConvidado) FROM Convidado AS c Where c.chaveComposta.teste.id= :teste"),
 		@NamedQuery(name = "Convidado.Usuarios.Convidados.Count", query = "SELECT count(*) FROM Convidado AS c Where c.chaveComposta.teste.id= :teste"),
 		})
 public class Convidado {
@@ -49,7 +49,6 @@ public class Convidado {
 		teste.setId(testeId);
 		this.chaveComposta = new UsuarioTestePK(usuario,teste);
 	}
-
 	public Boolean isRealizou() {
 		return realizou;
 	}
@@ -65,10 +64,11 @@ public class Convidado {
 	public void setChaveComposta(UsuarioTestePK chaveComposta) {
 		this.chaveComposta = chaveComposta;
 	}
+	
 	@Override
 	public String toString() {
-		return "Convidado [realizou=" + realizou + ", chaveComposta="
-				+ chaveComposta + "]";
+		return "Convidado [realizou=" + realizou + ", tipoConvidado="
+				+ tipoConvidado + ", chaveComposta=" + chaveComposta + "]";
 	}
 	public TipoConvidado getTipoConvidado() {
 		return tipoConvidado;

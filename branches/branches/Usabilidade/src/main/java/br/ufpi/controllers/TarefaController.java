@@ -23,11 +23,12 @@ import br.ufpi.componets.TesteSession;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
-import br.ufpi.models.Acao;
+import br.ufpi.models.Action;
 import br.ufpi.models.Convidado;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.FluxoUsuario;
+import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.TipoConvidado;
@@ -112,6 +113,7 @@ public class TarefaController extends BaseController {
 		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
 		Teste teste = testeView.getTeste();
 		tarefa.setTeste(teste);
+		tarefa.setQuestionario(new Questionario());
 		tarefaRepository.create(tarefa);
 		result.redirectTo(TesteController.class).passo2(
 				testeView.getTeste().getId());
@@ -167,7 +169,6 @@ public class TarefaController extends BaseController {
 		tarefaUpdate.setNome(tarefa.getNome());
 
 		if (!tarefaUpdate.getUrlInicial().equals(tarefa.getUrlInicial().trim())) {
-			tarefaUpdate.setFluxoIdealPreenchido(false);
 			tarefaUpdate.setUrlInicial(tarefa.getUrlInicial());
 		}
 		// TODO Apaagar o fluxo que ja tinha sido gravado caso
@@ -237,10 +238,10 @@ public class TarefaController extends BaseController {
 	private void saveFluxo(String dados, Boolean completo, Long tarefaId,
 			TipoConvidado tipoConvidado) {
 		Gson gson = new Gson();
-		Type collectionType = new TypeToken<Collection<Acao>>() {
+		Type collectionType = new TypeToken<Collection<Action>>() {
 		}.getType();
-		Collection<Acao> ints2 = gson.fromJson(dados, collectionType);
-		List<Acao> acoes = new ArrayList<Acao>(ints2);
+		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
+		List<Action> acoes = new ArrayList<Action>(ints2);
 		this.actions.addAction(acoes);
 		if (completo) {
 			switch (tipoConvidado) {
@@ -272,8 +273,8 @@ public class TarefaController extends BaseController {
 		// System.out.println("GRAVA FLUXO DE USUARIO");
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
-		List<Acao> acoes = actions.getAcoes();
-		for (Acao acao : acoes) {
+		List<Action> acoes = actions.getAcoes();
+		for (Action acao : acoes) {
 			acao.setFluxo(fluxo);
 		}
 		fluxo.setAcoes(actions.getAcoes());

@@ -59,7 +59,6 @@ public class Tarefa implements Serializable {
 	@Column(nullable = false)
 	@NotBlank
 	private String urlInicial;
-	private boolean fluxoIdealPreenchido;
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
 	private Questionario questionario;
 
@@ -101,14 +100,6 @@ public class Tarefa implements Serializable {
 
 	public void setNome(String nome) {
 		this.nome = nome;
-	}
-
-	public boolean isFluxoIdealPreenchido() {
-		return fluxoIdealPreenchido;
-	}
-
-	public void setFluxoIdealPreenchido(boolean fluxoIdealPreenchido) {
-		this.fluxoIdealPreenchido = fluxoIdealPreenchido;
 	}
 
 	public String getUrlInicial() {

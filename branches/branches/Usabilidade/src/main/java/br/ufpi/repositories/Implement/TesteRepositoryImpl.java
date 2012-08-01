@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
+import br.ufpi.models.vo.ConvidadoVO;
 import br.ufpi.repositories.Repository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.Paginacao;
@@ -88,9 +89,9 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Paginacao<Usuario> getUsuariosConvidados(Long testeId,
+	public Paginacao<ConvidadoVO> getUsuariosConvidados(Long testeId,
 			int numeroPagina, int quantidade) {
-		Paginacao<Usuario> paginacao = new Paginacao<Usuario>();
+		Paginacao<ConvidadoVO> paginacao = new Paginacao<ConvidadoVO>();
 		Query query = entityManager
 				.createNamedQuery("Convidado.Usuarios.Convidados");
 		query.setParameter("teste", testeId);
@@ -106,7 +107,7 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Usuario> getUsuariosConvidadosAll(Long testeId) {
+	public List<ConvidadoVO> getUsuariosConvidadosAll(Long testeId) {
 		Query query = entityManager
 				.createNamedQuery("Convidado.Usuarios.Convidados");
 		query.setParameter("teste", testeId);

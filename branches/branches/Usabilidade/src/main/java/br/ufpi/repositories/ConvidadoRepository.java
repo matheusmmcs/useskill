@@ -3,6 +3,7 @@ package br.ufpi.repositories;
 import java.util.List;
 
 import br.ufpi.models.Convidado;
+import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.vo.ConvidadoVO;
 
 /**
@@ -39,8 +40,10 @@ public interface ConvidadoRepository {
 	 *            teste
 	 * @param idTeste
 	 *            identificador do teste que os usuarios iram pertencer
+	 * @param tipoConvidado
+	 * 				Informa o tipo de usuario em que o usuario foi convidado
 	 */
-	void convidarUsuarios(List<Long> idUsuarios, Long idTeste);
+	void convidarUsuarios(List<Long> idUsuarios, Long idTeste,TipoConvidado tipoConvidado);
 
 	/**
 	 * Remove o convite de uma lista de usuarios. Deletando o convite do banco

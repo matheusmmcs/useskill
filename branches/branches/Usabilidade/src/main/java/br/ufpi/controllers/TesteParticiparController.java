@@ -60,7 +60,7 @@ public class TesteParticiparController extends BaseController {
 		 ConvidadoVO convidado = verificaSeUsuarioConvidado(testeId);
 		 
 		testeSession.setTeste(convidado.getTeste());
-		fluxoComponente.criarLista(convidado.getTeste(),convidado.getConvidado());
+		fluxoComponente.criarLista(convidado.getTeste(),convidado.getTipoConvidado());
 	}
 
 	@Logado

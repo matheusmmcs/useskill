@@ -7,7 +7,7 @@ import javax.annotation.PreDestroy;
 
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.SessionScoped;
-import br.ufpi.models.Acao;
+import br.ufpi.models.Action;
 
 /**
  * Usado para gravação do fluxo. Quando terminar a gravação do fluxo deleta a
@@ -22,7 +22,7 @@ public class SessionActions {
 	/**
 	 * Lista de ações de um determinado FluxoComponente
 	 */
-	private List<Acao> acoes;
+	private List<Action> acoes;
 	/**
 	 * False se nao for a primeira vez que a pagina foi aberta True se for a
 	 * primeira vez.
@@ -47,11 +47,11 @@ public class SessionActions {
 		acoes = null;
 	}
 
-	public List<Acao> getAcoes() {
+	public List<Action> getAcoes() {
 		return acoes;
 	}
 
-	public void setAcoes(List<Acao> acoes) {
+	public void setAcoes(List<Action> acoes) {
 		this.acoes = acoes;
 	}
 
@@ -59,9 +59,9 @@ public class SessionActions {
 		primeiraPagina = true;
 	}
 
-	public boolean addAction(List<Acao> actions) {
+	public boolean addAction(List<Action> actions) {
 		if (acoes == null)
-			this.acoes = new ArrayList<Acao>();
+			this.acoes = new ArrayList<Action>();
 		return this.acoes.addAll(actions);
 	}
 
