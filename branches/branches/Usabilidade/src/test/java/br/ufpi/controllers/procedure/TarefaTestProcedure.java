@@ -22,6 +22,7 @@ import br.ufpi.controllers.TarefaController;
 import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoIdeal;
+import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
@@ -113,6 +114,7 @@ public class TarefaTestProcedure {
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
 		tarefa.setTeste(teste);
+		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 
@@ -122,6 +124,7 @@ public class TarefaTestProcedure {
 		tarefa.setNome(nome);
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
+		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 
@@ -133,6 +136,7 @@ public class TarefaTestProcedure {
 		tarefa.setId(id);
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
+		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 
@@ -143,6 +147,7 @@ public class TarefaTestProcedure {
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
 		tarefa.setTeste(teste);
+		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 

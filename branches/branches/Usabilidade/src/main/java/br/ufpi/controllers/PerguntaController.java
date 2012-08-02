@@ -13,8 +13,10 @@ import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
+import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.PerguntaRepository;
+import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
 
 @Resource
@@ -22,21 +24,32 @@ public class PerguntaController extends BaseController {
 
 	private final PerguntaRepository perguntaRepository;
 	private final TesteRepository testeRepository;
+	private final TarefaRepository tarefaRepository;
 
 	public PerguntaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
 			PerguntaRepository perguntaRepository,
-			TesteRepository testeRepository) {
+			TesteRepository testeRepository, TarefaRepository tarefaRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.perguntaRepository = perguntaRepository;
 		this.testeRepository = testeRepository;
+		this.tarefaRepository = tarefaRepository;
 	}
 
 	@Logado
 	@Get({ "teste/{testeId}/editar/passo2/criar/pergunta" })
 	public Pergunta criarPergunta(Long testeId) {
 		this.testeNaoLiberadoPertenceUsuarioLogado(testeId);
+		return new Pergunta();
+	}
+
+	@Logado
+	@Get(value = "teste/{idTeste}/editar/passo2/editar/{idTarefa}/tarefa/questionario/criar/pergunta")
+	public Pergunta criarPerguntaTarefa(Long idTeste, Long idTarefa) {
+		Tarefa tarefa = this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
+		result.include(tarefa);
+		super.instanceIdTesteView(idTeste);
 		return new Pergunta();
 	}
 
@@ -53,25 +66,49 @@ public class PerguntaController extends BaseController {
 		return this.perguntaPertenceUsuario(pergunta.getId(), testeId);
 	}
 
-	// @Logado
-	// @Post("teste/duplicar/pergunta")
-	// public void duplicar(Long testeId, Long perguntaId) {
-	// Pergunta pergunta = perguntaPertenceUsuario(perguntaId, testeId);
-	// Pergunta perguntaCopia = new Pergunta();
-	// perguntaCopia.setId(null);
-	// perguntaRepository.create(perguntaCopia);
-	// result.redirectTo(TesteController.class).passo2(testeId);
-	// }
+	/**
+	 * Usado para salvar perguntas de uma determinada tarefa
+	 * 
+	 * @param idTeste
+	 *            identificador do teste que a pergunta pertence
+	 * @param pergunta
+	 *            pergunta a ser salva
+	 * @param idTarefa
+	 *            identificador da tarefa que a pergunta pertence
+	 */
+	@Logado
+	@Post("teste/{idTeste}/editar/passo2/editar/{idTarefa}/tarefa/questionario/salvar/pergunta")
+	public void salvarPergunta(Long idTeste, Pergunta pergunta, Long idTarefa) {
+		Tarefa tarefa = this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
+		salvar(pergunta, idTeste, tarefa.getQuestionario());
+		this.result.redirectTo(TarefaController.class).questionario(idTeste,
+				idTarefa);
+	}
 
 	/**
+	 * Usado para salvar as perguntas que são de um determinado teste
 	 * 
-	 * @param testeId
+	 * @param idTeste
 	 * @param pergunta
 	 */
 	@Logado
-	@Post("teste/{testeId}/editar/passo2/salvar/pergunta")
-	public void salvarPergunta(Long testeId, Pergunta pergunta) {
-		testeNaoLiberadoPertenceUsuarioLogado(testeId);
+	@Post("teste/{idTeste}/editar/passo2/salvar/pergunta")
+	public void salvarPergunta(Long idTeste, Pergunta pergunta) {
+		testeNaoLiberadoPertenceUsuarioLogado(idTeste);
+		this.salvar(pergunta, idTeste, null);
+		result.redirectTo(TesteController.class).passo2(idTeste);
+	}
+
+	/**
+	 * 
+	 * @param pergunta
+	 * @param testeId
+	 * @param questionario
+	 *            qunado o questionario for Null significa que ele esta salvando
+	 *            uma pergunta de um teste
+	 */
+	private void salvar(Pergunta pergunta, Long testeId,
+			Questionario questionario) {
 		validator.validate(pergunta);
 		if (pergunta.getId() != null) {
 			validateComponente.gerarErroCampoAlterado();
@@ -79,8 +116,10 @@ public class PerguntaController extends BaseController {
 		} else {
 			validator.onErrorRedirectTo(TesteController.class).passo2(testeId);
 		}
-		Questionario satisfacao = testeView.getTeste().getSatisfacao();
-		pergunta.setQuestionario(satisfacao);
+		if (questionario == null) {
+			questionario = testeView.getTeste().getSatisfacao();
+		}
+		pergunta.setQuestionario(questionario);
 		boolean tipo = pergunta.getTipoRespostaAlternativa() == null ? false
 				: true;
 		if (tipo && pergunta.getAlternativas() != null) {
@@ -92,7 +131,7 @@ public class PerguntaController extends BaseController {
 			pergunta.setAlternativas(null);
 		}
 		perguntaRepository.create(pergunta);
-		result.redirectTo(TesteController.class).passo2(testeId);
+
 	}
 
 	/**
@@ -106,9 +145,61 @@ public class PerguntaController extends BaseController {
 	@Logado
 	@Put("teste/{testeId}/editar/passo2/salvar/pergunta")
 	public void atualizarPergunta(Long testeId, Pergunta pergunta) {
+		this.atualizar(testeId, pergunta);
+		result.redirectTo(TesteController.class).passo2(testeId);
+
+	}
+
+	/**
+	 * Usado para salvar apenas perguntas de tarefas. Atualiza pergunta passada,
+	 * mas se o teste id passado for igual a null redireciona home do usuario.
+	 * Se o Caso o id da pergunta for invalido ele é redirecionado para criar a
+	 * pergunta.
+	 * 
+	 * @param idTeste
+	 * @param pergunta
+	 * @param idTarefa
+	 */
+	@Logado
+	@Put("teste/{idTeste}/editar/passo2/atualizar/{idTarefa}/tarefa/questionario/salvar/pergunta")
+	public void atualizarPergunta(Long idTeste, Pergunta pergunta, Long idTarefa) {
+		this.atualizar(idTeste, pergunta);
+		result.redirectTo(TarefaController.class).questionario(idTeste,
+				idTarefa);
+
+	}
+
+	@Logado
+	@Post("teste/apagar/pergunta")
+	public void deletarPergunta(Long testeId, Long perguntaId) {
+		delete(testeId, perguntaId);
+		result.redirectTo(TesteController.class).passo2(testeId);
+
+	}
+	@Logado
+	@Post("teste/apagar/tarefa/pergunta")
+	public void deletarPergunta(Long testeId, Long perguntaId,Long tarefaId) {
+		validateComponente.validarId(tarefaId);
+		delete(testeId, perguntaId);
+		result.redirectTo(TarefaController.class).questionario(testeId, tarefaId);	}
+
+	/**
+	 * @param testeId
+	 * @param perguntaId
+	 */
+	private void delete(Long testeId, Long perguntaId) {
+		validateComponente.validarObjeto(testeId);
+		validateComponente.validarObjeto(perguntaId);
+		
+		Pergunta perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId,
+				testeId);
+		validateComponente.validarObjeto(perguntaPertenceUsuario);
+		perguntaRepository.destroy(perguntaPertenceUsuario);
+	}
+
+	private void atualizar(Long testeId, Pergunta pergunta) {
 		validateComponente.validarId(testeId);
 		validator.validate(pergunta);
-		System.out.println(pergunta.getId());
 		validateComponente.validarObjeto(perguntaPertenceUsuario(
 				pergunta.getId(), testeId));
 		pergunta.setQuestionario(perguntaRepository.findQuestionario(pergunta
@@ -118,38 +209,20 @@ public class PerguntaController extends BaseController {
 
 		System.out.println(pergunta.getTipoRespostaAlternativa());
 		if (!objetiva) {
-			System.out.println("Subjetiva 1");
 			pergunta.setTipoRespostaAlternativa(false);
 			pergunta.setAlternativas(null);
 		} else {
 			if (pergunta.getAlternativas() != null) {
-				System.out.println("OBjetiva");
 				for (Alternativa alternativa : pergunta.getAlternativas()) {
 					alternativa.setPergunta(pergunta);
 				}
 			} else {
-				System.out.println("Subjetiva");
 				pergunta.setTipoRespostaAlternativa(false);
 				pergunta.setAlternativas(null);
 			}
-
 		}
 		perguntaRepository.deleteAlternativas(pergunta.getId());
 		perguntaRepository.update(pergunta);
-		result.redirectTo(TesteController.class).passo2(testeId);
-
-	}
-
-	@Logado
-	@Post("teste/apagar/pergunta")
-	public void deletarPergunta(Long testeId, Long perguntaId) {
-		validateComponente.validarObjeto(testeId);
-		validateComponente.validarObjeto(perguntaId);
-		Pergunta perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId,
-				testeId);
-		validateComponente.validarObjeto(perguntaPertenceUsuario);
-		perguntaRepository.destroy(perguntaPertenceUsuario);
-		result.redirectTo(TesteController.class).passo2(testeId);
 
 	}
 
@@ -185,4 +258,19 @@ public class PerguntaController extends BaseController {
 
 	}
 
+	/**
+	 * Analisa se uma determinada tarefa pertence a um teste ainda não
+	 * Realizado.
+	 * 
+	 * @param tarefaId
+	 * @return
+	 */
+	private Tarefa tarefaPertenceTesteNaoRealizado(Long tarefaId, Long idTeste) {
+		validateComponente.validarId(idTeste);
+		validateComponente.validarId(tarefaId);
+		Tarefa tarefaRetorno = tarefaRepository.perteceTesteNaoRealizado(
+				tarefaId, idTeste, usuarioLogado.getUsuario().getId());
+		validateComponente.validarObjeto(tarefaRetorno);
+		return tarefaRetorno;
+	}
 }

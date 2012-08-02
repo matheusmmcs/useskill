@@ -28,6 +28,7 @@ import br.ufpi.models.Convidado;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.FluxoUsuario;
+import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
@@ -113,7 +114,9 @@ public class TarefaController extends BaseController {
 		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
 		Teste teste = testeView.getTeste();
 		tarefa.setTeste(teste);
-		tarefa.setQuestionario(new Questionario());
+		Questionario questionario = new Questionario();
+		questionario.setTeste(teste);
+		tarefa.setQuestionario(questionario);
 		tarefaRepository.create(tarefa);
 		result.redirectTo(TesteController.class).passo2(
 				testeView.getTeste().getId());
@@ -138,14 +141,14 @@ public class TarefaController extends BaseController {
 	@Get()
 	@Path(value = "teste/{idTeste}/editar/passo2/editar/{tarefa.id}/tarefa")
 	public Tarefa editarTarefa(Long idTeste, Tarefa tarefa, boolean isErro) {
-		Teste teste = new Teste();
-		teste.setId(idTeste);
-		testeView.setTeste(teste);
+		this.instanceIdTesteView(idTeste);
 		if (isErro) {
 			return tarefa;
 		}
 		return this.tarefaPertenceTeste(idTeste, tarefa.getId());
 	}
+
+	
 
 	/**
 	 * Pagina para editar Tarefa, se idTeste e TarefaId foor igual a null
@@ -219,7 +222,7 @@ public class TarefaController extends BaseController {
 		if (completo) {
 			System.out.println("Completo");
 		}
-		saveFluxo(dados, completo, tarefaId,fluxoComponente.getTipoConvidado());
+		saveFluxo(dados, completo, tarefaId, fluxoComponente.getTipoConvidado());
 		return "Teste";
 	}
 
@@ -481,6 +484,16 @@ public class TarefaController extends BaseController {
 	// tarefaDetalhe.destroy();
 	// System.out.println("Tarefa é pra ter sido salva");
 	// }
+	@Logado
+	@Get(value = "teste/{idTeste}/editar/passo2/editar/{idTarefa}/tarefa/questionario")
+	public void questionario(Long idTeste, Long idTarefa) {
+		this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
+		Tarefa tarefa = tarefaRepository.find(idTarefa);
+		result.include(tarefa);
+		List<Pergunta> perguntas = tarefa.getQuestionario().getPerguntas();
+		result.include("perguntas", perguntas);
+		this.instanceIdTesteView(idTeste);
+	}
 
 	/**
 	 * Analisa se Tarefa pertence ao id do Teste passado.Caso ela pertence ao
