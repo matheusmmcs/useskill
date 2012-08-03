@@ -17,36 +17,35 @@ import org.junit.Test;
 import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.controllers.procedure.TarefaTestProcedure;
-import br.ufpi.models.Acao;
-import br.ufpi.models.FluxoIdeal;
+import br.ufpi.models.Action;
 import br.ufpi.models.Tarefa;
 import br.ufpi.repositories.AbstractDaoTest;
 import br.ufpi.repositories.AcaoRepository;
-import br.ufpi.repositories.FluxoIdealRepository;
 import br.ufpi.repositories.FluxoRepository;
+import br.ufpi.repositories.QuestionarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.Implement.AcaoRepositoryImpl;
-import br.ufpi.repositories.Implement.FluxoIdealRepositoryImpl;
 import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
+import br.ufpi.repositories.Implement.QuestionarioRepositoryImpl;
 
 import com.google.gson.Gson;
 
 /**
  * Caso de Uso criar Tarefa</br> <li>Caso em que passa tarefa null</li> <li>Caso
  * em que passa tarefa preenchida</li> <li>Caso em que passa tarefa e id de
- * teste Não pertencente ao usuario</li> <li>Caso em que passa tarefa e id de
- * teste já liberado</li> Caso para Salvar tarefa</br> <li>Caso de Sucesso</li>
- * <li>Caso id de teste não pertence ao usuario</li> <li>Caso id de teste null</li>
+ * teste NÃ£o pertencente ao usuario</li> <li>Caso em que passa tarefa e id de
+ * teste jÃ¡ liberado</li> Caso para Salvar tarefa</br> <li>Caso de Sucesso</li>
+ * <li>Caso id de teste nÃ£o pertence ao usuario</li> <li>Caso id de teste null</li>
  * <li>Caso id de teste Liberado</li> <li>Caso de Tarefa sem os campos
  * preenchidos</li> Faltando Caso para Editar tarefa</br> <li>Caso de Sucesso</li>
- * <li>Caso id de teste não pertence ao usuario</li> <li>Caso id de teste null</li>
+ * <li>Caso id de teste nÃ£o pertence ao usuario</li> <li>Caso id de teste null</li>
  * <li>Caso id de teste Liberado</li> <li>Caso de Tarefa com id diferente do
  * Teste passado</li> Caso para Remover tarefa</br> <li>Caso de Sucesso</li> <li>
- * Caso id de teste não pertence ao usuario</li> <li>Caso id de teste null</li>
+ * Caso id de teste nÃ£o pertence ao usuario</li> <li>Caso id de teste null</li>
  * <li>Caso id de teste Liberado</li> <li>Caso de Tarefa com id diferente do
  * Teste passado</li> <li>Caso de Teste com Fluxo ideal gravado</li> Caso para
  * Update tarefa</br> <li>Caso de Sucesso sem fluxo ideal gravado</li> <li>Caso
- * id de teste não pertence ao usuario</li> <li>Caso id de teste null</li> <li>
+ * id de teste nÃ£o pertence ao usuario</li> <li>Caso id de teste null</li> <li>
  * Caso id de teste Liberado</li> <li>Caso de Tarefa com id diferente do Teste
  * passado</li> <li>Caso de Teste com Fluxo ideal gravado</li>
  * 
@@ -57,6 +56,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	private static Long testeNaoPertenceUsuario = 5l;
 	private static Long testeLiberado = 11l;
 	private TarefaRepository repository;
+	private QuestionarioRepository questionarioRepository;
 	private TarefaController instance;
 	private Long testeNaoPertenceUsuario2 = 14l;
 
@@ -65,6 +65,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		super.setUp();
 		repository = TarefaTestProcedure
 				.newInstanceTarefaRepository(entityManager);
+		questionarioRepository= new QuestionarioRepositoryImpl(entityManager);
 		instance = TarefaTestProcedure.newInstanceTarefaController(
 				entityManager, result);
 	}
@@ -93,7 +94,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of criarTarefa method, of class TarefaController. Caso em que passa
-	 * tarefa e id de teste Não pertencente ao usuario
+	 * tarefa e id de teste NÃ£o pertencente ao usuario
 	 */
 	@Test
 	public void testCriarTarefaUsuarioNaoEDono() {
@@ -107,7 +108,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 
 		Assert.assertNull(result);
@@ -115,7 +116,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of criarTarefa method, of class TarefaController. Caso em que passa
-	 * tarefa e id de teste já liberado
+	 * tarefa e id de teste jÃ¡ liberado
 	 */
 	@Test
 	public void testCriarTarefaDeTesteJaLiberado() {
@@ -129,7 +130,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 
 		Assert.assertNull(result);
@@ -142,16 +143,19 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	public void testSalvarTarefa() {
 		System.out.println("salvarTarefa");
 		int qAntes = repository.findAll().size();
+		int numQuestionariosAntes= questionarioRepository.findAll().size();
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa("urlInicial",
 				"roteiro", "nome");
 		instance.salvarTarefa(tarefa, testePertenceUsuarioNaoLiberado);
 		int qDepois = repository.findAll().size();
+		int numQuestionariosDepois= questionarioRepository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois - 1);
+		Assert.assertEquals(numQuestionariosAntes, numQuestionariosDepois- 1);
 	}
 
 	/**
 	 * Test of salvarTarefa method, of class TarefaController. Caso id de teste
-	 * não pertence ao usuario
+	 * nÃ£o pertence ao usuario
 	 */
 	@Test
 	public void testSalvarTarefaIdTesteNaoPertenceUsuario() {
@@ -166,7 +170,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 		int qDepois = repository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois);
@@ -174,7 +178,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of salvarTarefa method, of class TarefaController. Caso id de teste
-	 * não pertence ao usuario
+	 * nÃ£o pertence ao usuario
 	 */
 	@Test
 	public void testSalvarTarefaIdTesteJaLiberado() {
@@ -189,7 +193,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 		int qDepois = repository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois);
@@ -197,7 +201,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of salvarTarefa method, of class TarefaController. Caso id de teste
-	 * não pertence ao usuario
+	 * nÃ£o pertence ao usuario
 	 */
 	@Test
 	public void testSalvarTarefaCamposNaoPreenchido() {
@@ -233,7 +237,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 		int qDepois = repository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois);
@@ -257,7 +261,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of editarTarefa method, of class TarefaController. Caso id de teste
-	 * não pertence ao usuario
+	 * nÃ£o pertence ao usuario
 	 */
 	@Test
 	public void testEditarTarefaTesteNaoPertenceUsuario() {
@@ -278,7 +282,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 
 		Assert.assertNull(result);
@@ -306,7 +310,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 
 		Assert.assertNull(result);
@@ -335,7 +339,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 
 		Assert.assertNull(result);
@@ -363,7 +367,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 
 		Assert.assertNull(result);
@@ -386,12 +390,9 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		int qAntes = this.getAcaoSize();
 		instance.updateTarefa(tarefa, testePertenceUsuarioNaoLiberado);
 		Tarefa tarefaFind = repository.find(tarefaId);
-		FluxoIdeal fluxoIdeal = tarefaFind.getFluxoIdeal();
 		
 		int qDepois = this.getAcaoSize();
 		Assert.assertEquals(qAntes, qDepois+10);
-		Assert.assertNull("Fluxo Ideal é para ter sido Removido", fluxoIdeal);
-		Assert.assertEquals(false, tarefaFind.isFluxoIdealPreenchido());
 		Assert.assertEquals(nome, tarefaFind.getNome());
 		Assert.assertEquals(roteiro, tarefaFind.getRoteiro());
 		Assert.assertEquals(urlInicial, tarefaFind.getUrlInicial());
@@ -429,7 +430,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of removed method, of class TarefaController. Caso id de teste não
+	 * Test of removed method, of class TarefaController. Caso id de teste nÃ£o
 	 * pertence ao usuario
 	 */
 	@Test
@@ -446,7 +447,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 
 		int qDepois = repository.findAll().size();
@@ -471,7 +472,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 
 		int qDepois = repository.findAll().size();
@@ -496,7 +497,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 
 		int qDepois = repository.findAll().size();
@@ -520,7 +521,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", errors.get(0).getCategory());
 
 		int qDepois = repository.findAll().size();
@@ -633,22 +634,22 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	}
 
 	private String getGSonDados() {
-		List<Acao> acaos = new ArrayList<Acao>();
+		List<Action> acaos = new ArrayList<Action>();
 		for (int i = 0; i < 10; i++) {
 
-			Acao acao = new Acao();
-			acao.setConteudo("conteudo");
-			acao.setPosicaoPaginaX(i);
-			acao.setPosicaoPaginaY(i);
-			acao.setTag("tag");
-			acao.setTagClass("tagClass");
-			acao.setTagId("tagId");
-			acao.setTagName("tagName");
-			acao.setTagType("TagType");
-			acao.setTagValue("valeu");
-			acao.setTempo((double) i);
-			acao.setTipoAcao("click");
-			acao.setUrl("www.globo.com");
+			Action acao = new Action();
+			acao.setsContent("conteudo");
+			acao.setsPosX(i);
+			acao.setsPosY(i);
+			acao.setsTag("tag");
+			acao.setsTagClass("tagClass");
+			acao.setsTagId("tagId");
+			acao.setsTagName("sTagName");
+			acao.setsTagType("TagType");
+			acao.setsTagValue("valeu");
+			acao.setsTime((double) i);
+			acao.setsTagType("click");
+			acao.setsUrl("www.globo.com");
 			acaos.add(acao);
 		}
 		Gson gson = new Gson();

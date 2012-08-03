@@ -73,7 +73,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		try {
 			instance.salvar(titulo);
 		} catch (ValidationException validationException) {
-			Assert.assertEquals("Não pode deixar salvar pois campo esta vazio",
+			Assert.assertEquals("NÃ£o pode deixar salvar pois campo esta vazio",
 					"campo.titulo.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
@@ -92,7 +92,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		try {
 			instance.salvar(titulo);
 		} catch (ValidationException validationException) {
-			Assert.assertEquals("Não pode deixar salvar pois campo esta vazio",
+			Assert.assertEquals("NÃ£o pode deixar salvar pois campo esta vazio",
 					"campo.titulo.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
@@ -100,7 +100,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo4 method, of class TesteController. Usuario é o dono do
+	 * Test of passo4 method, of class TesteController. Usuario Ã© o dono do
 	 * teste buscado
 	 */
 	@Test
@@ -109,13 +109,13 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long id = 2l;
 		instance.passo4(id);
 		Assert.assertEquals(
-				"Usuario é o criador do teste entao deveria retorna o mesmo valor do id passado",
+				"Usuario Ã© o criador do teste entao deveria retorna o mesmo valor do id passado",
 				id, instance.testeView.getTeste().getId());
 
 	}
 
 	/**
-	 * Test of passo4 method, of class TesteController. Usuario não é o dono do
+	 * Test of passo4 method, of class TesteController. Usuario nÃ£o Ã© o dono do
 	 * teste buscado
 	 */
 	@Test
@@ -126,7 +126,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo4(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -134,7 +134,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo4 method, of class TesteController. Usuario não passa o
+	 * Test of passo4 method, of class TesteController. Usuario nÃ£o passa o
 	 * idTeste
 	 */
 	@Test
@@ -145,7 +145,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo4(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -153,7 +153,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario é o dono do
+	 * Test of passo1 method, of class TesteController. Usuario Ã© o dono do
 	 * teste buscado, mas ele esta liberado
 	 */
 	@Test
@@ -164,7 +164,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo4(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -173,7 +173,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of passo1 method, of class TesteController. Usuario passou id do
-	 * teste não existente
+	 * teste nÃ£o existente
 	 */
 	@Test
 	public void testPasso1UsuarioIDtesteNaoExiste() {
@@ -183,7 +183,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo1(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -191,7 +191,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario é o dono do
+	 * Test of passo1 method, of class TesteController. Usuario Ã© o dono do
 	 * teste buscado
 	 */
 	@Test
@@ -200,13 +200,13 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long id = 2l;
 		instance.passo1(id);
 		Assert.assertEquals(
-				"Usuario é o criador do teste entao deveria retorna o mesmo valor do id passado",
+				"Usuario Ã© o criador do teste entao deveria retorna o mesmo valor do id passado",
 				id, instance.testeView.getTeste().getId());
 
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario não é o dono do
+	 * Test of passo1 method, of class TesteController. Usuario nÃ£o Ã© o dono do
 	 * teste buscado
 	 */
 	@Test
@@ -217,7 +217,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo1(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -225,7 +225,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario não passa o
+	 * Test of passo1 method, of class TesteController. Usuario nÃ£o passa o
 	 * idTeste
 	 */
 	@Test
@@ -236,7 +236,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo1(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -244,7 +244,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario é o dono do
+	 * Test of passo1 method, of class TesteController. Usuario Ã© o dono do
 	 * teste buscado, mas ele esta liberado
 	 */
 	@Test
@@ -255,7 +255,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo1(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -264,7 +264,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of passo1 method, of class TesteController. Usuario passou id do
-	 * teste não existente
+	 * teste nÃ£o existente
 	 */
 	@Test
 	public void testPasso4UsuarioIDtesteNaoExiste() {
@@ -274,7 +274,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo4(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -290,7 +290,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long idTeste = 1l;
 		String titulo = "Novo Teste";
 		String tituloPublico = " titulo publico";
-		String textoIndroducao = "texto introdução";
+		String textoIndroducao = "texto introduÃ§Ã£o";
 		Teste testeAntes = repository.find(idTeste);
 		instance.passo2(idTeste, titulo, tituloPublico, textoIndroducao);
 		Teste testeDepois = repository.find(idTeste);
@@ -303,7 +303,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of passo1 method, of class TesteController. Usuario passou id do
-	 * teste não existente
+	 * teste nÃ£o existente
 	 */
 	@Test
 	public void testPasso2_4argsUsuarioIDtesteNaoExiste() {
@@ -311,12 +311,12 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long id = 5500l;
 		String titulo = "Novo Teste";
 		String tituloPublico = " titulo publico";
-		String textoIndroducao = "texto introdução";
+		String textoIndroducao = "texto introduÃ§Ã£o";
 		try {
 			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -324,7 +324,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo2_4args method, of class TesteController. Usuario não é o
+	 * Test of passo2_4args method, of class TesteController. Usuario nÃ£o Ã© o
 	 * dono do teste buscado
 	 */
 	@Test
@@ -333,12 +333,12 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long id = 3l;
 		String titulo = "Novo Teste";
 		String tituloPublico = " titulo publico";
-		String textoIndroducao = "texto introdução";
+		String textoIndroducao = "texto introduÃ§Ã£o";
 		try {
 			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -346,7 +346,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario não passa o
+	 * Test of passo1 method, of class TesteController. Usuario nÃ£o passa o
 	 * idTeste
 	 */
 	@Test
@@ -355,12 +355,12 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long id = null;
 		String titulo = "Novo Teste";
 		String tituloPublico = " titulo publico";
-		String textoIndroducao = "texto introdução";
+		String textoIndroducao = "texto introduÃ§Ã£o";
 		try {
 			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -368,7 +368,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo2_4args method, of class TesteController. Usuario é o dono
+	 * Test of passo2_4args method, of class TesteController. Usuario Ã© o dono
 	 * do teste buscado, mas ele esta liberado
 	 */
 	@Test
@@ -377,12 +377,12 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long id = 4l;
 		String titulo = "Novo Teste";
 		String tituloPublico = " titulo publico";
-		String textoIndroducao = "texto introdução";
+		String textoIndroducao = "texto introduÃ§Ã£o";
 		try {
 			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -390,7 +390,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo2_4args method, of class TesteController. Usuario é o dono
+	 * Test of passo2_4args method, of class TesteController. Usuario Ã© o dono
 	 * do teste buscado, mas passa titulo vazio
 	 */
 	@Test
@@ -399,25 +399,25 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long id = 1l;
 		String titulo = "";
 		String tituloPublico = " titulo publico";
-		String textoIndroducao = "texto introdução";
+		String textoIndroducao = "texto introduÃ§Ã£o";
 		Teste testeAntes = repository.find(1l);
 		try {
 			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario passou campo titulo vazio",
+					"NÃ£o pode deixar salvar pois usuario passou campo titulo vazio",
 					"campo.titulo.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
 		Teste testeDepois = repository.find(1l);
 		Assert.assertFalse(
-				"Texto antes tem que ser igual ao texto de depois pois não foi alterado o teste",
+				"Texto antes tem que ser igual ao texto de depois pois nÃ£o foi alterado o teste",
 				testeAntes.getTitulo().equals(testeDepois.getTextoIndroducao()));
 	}
 
 	/**
-	 * Test of passo2_4args method, of class TesteController. Usuario é o dono
-	 * do teste buscado, mas passa titulo introdução vazio
+	 * Test of passo2_4args method, of class TesteController. Usuario Ã© o dono
+	 * do teste buscado, mas passa titulo introduÃ§Ã£o vazio
 	 */
 	@Test
 	public void testPasso2_4argsUsuarioPassaCampoTituloIntroducaoVazio() {
@@ -432,19 +432,19 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario passou campo titulo vazio",
+					"NÃ£o pode deixar salvar pois usuario passou campo titulo vazio",
 					"campo.teste.textoIndroducao.obrigatorio",
 					validationException.getErrors().get(0).getCategory());
 		}
 		Teste testeDepois = repository.find(1l);
 		Assert.assertFalse(
-				"Texto antes tem que ser igual ao texto de depois pois não foi alterado o teste",
+				"Texto antes tem que ser igual ao texto de depois pois nÃ£o foi alterado o teste",
 				testeAntes.getTitulo().equals(testeDepois.getTextoIndroducao()));
 
 	}
 
 	/**
-	 * Test of passo2_4args method, of class TesteController. Usuario é o dono
+	 * Test of passo2_4args method, of class TesteController. Usuario Ã© o dono
 	 * do teste buscado, mas passa titulo publico vazio
 	 */
 	@Test
@@ -453,24 +453,24 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long id = 1l;
 		String titulo = "Preenchido";
 		String tituloPublico = "";
-		String textoIndroducao = "texto introdução";
+		String textoIndroducao = "texto introduÃ§Ã£o";
 		Teste testeAntes = repository.find(1l);
 		try {
 			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario passou campo titulo publico vazio",
+					"NÃ£o pode deixar salvar pois usuario passou campo titulo publico vazio",
 					"campo.teste.publico.obrigatorio", validationException
 							.getErrors().get(0).getCategory());
 		}
 		Teste testeDepois = repository.find(1l);
 		Assert.assertFalse(
-				"Texto antes tem que ser igual ao texto de depois pois não foi alterado o teste",
+				"Texto antes tem que ser igual ao texto de depois pois nÃ£o foi alterado o teste",
 				testeAntes.getTitulo().equals(testeDepois.getTextoIndroducao()));
 	}
 
 	/**
-	 * Test of passo2_4args method, of class TesteController. Usuario é o dono
+	 * Test of passo2_4args method, of class TesteController. Usuario Ã© o dono
 	 * do teste buscado, mas passa todos os campos vazio
 	 */
 	@Test
@@ -485,28 +485,28 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo2(id, titulo, tituloPublico, textoIndroducao);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario passou campo titulo publico vazio",
+					"NÃ£o pode deixar salvar pois usuario passou campo titulo publico vazio",
 					"campo.teste.publico.obrigatorio", validationException
 							.getErrors().get(1).getCategory());
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario passou campo titulo vazio",
+					"NÃ£o pode deixar salvar pois usuario passou campo titulo vazio",
 					"campo.teste.textoIndroducao.obrigatorio",
 					validationException.getErrors().get(2).getCategory());
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario passou campo titulo vazio",
+					"NÃ£o pode deixar salvar pois usuario passou campo titulo vazio",
 					"campo.titulo.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
 		Teste testeDepois = repository.find(1l);
 
 		Assert.assertTrue(
-				"Texto antes tem que ser igual ao texto de depois pois não foi alterado o teste",
+				"Texto antes tem que ser igual ao texto de depois pois nÃ£o foi alterado o teste",
 				testeAntes.getTitulo().equals(testeDepois.getTitulo()));
 	}
 
 	/**
 	 * Test of passo2 method, of class TesteController. Usuario passou id do
-	 * teste não existente
+	 * teste nÃ£o existente
 	 */
 	@Test
 	public void testPasso2UsuarioIDtesteNaoExiste() {
@@ -516,7 +516,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo1(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -524,7 +524,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo2 method, of class TesteController. Usuario é o dono do
+	 * Test of passo2 method, of class TesteController. Usuario Ã© o dono do
 	 * teste buscado
 	 */
 	@SuppressWarnings("unchecked")
@@ -534,19 +534,19 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long id = 2l;
 		instance.passo2(id);
 		Assert.assertEquals(
-				"Usuario é o criador do teste entao deveria retorna o mesmo valor do id passado",
+				"Usuario Ã© o criador do teste entao deveria retorna o mesmo valor do id passado",
 				id, instance.testeView.getTeste().getId());
 		List<Tarefa> tarefas = (List<Tarefa>) result.included().get("tarefas");
 		List<Pergunta> perguntas = (List<Pergunta>) result.included().get(
 				"perguntas");
-		Assert.assertEquals("O teste so é para possuir 3 tarefas", 3,
+		Assert.assertEquals("O teste so Ã© para possuir 3 tarefas", 3,
 				tarefas.size());
-		Assert.assertEquals("O teste  é para possuir 8 pergunta", 8,
+		Assert.assertEquals("O teste  Ã© para possuir 8 pergunta", 8,
 				perguntas.size());
 	}
 
 	/**
-	 * Test of passo2 method, of class TesteController. Usuario não é o dono do
+	 * Test of passo2 method, of class TesteController. Usuario nÃ£o Ã© o dono do
 	 * teste buscado
 	 */
 	@Test
@@ -557,7 +557,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo1(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -565,7 +565,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo2 method, of class TesteController. Usuario não passa o
+	 * Test of passo2 method, of class TesteController. Usuario nÃ£o passa o
 	 * idTeste
 	 */
 	@Test
@@ -576,7 +576,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo1(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -584,7 +584,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario é o dono do
+	 * Test of passo1 method, of class TesteController. Usuario Ã© o dono do
 	 * teste buscado, mas ele esta liberado
 	 */
 	@Test
@@ -595,7 +595,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo1(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -603,28 +603,21 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of liberarTeste method, of class TesteController. Não possui nenhum
+	 * Test of liberarTeste method, of class TesteController. NÃ£o possui nenhum
 	 * usuario Convidado para o teste
 	 */
 	@Test
 	public void testLiberarTesteSemUsuariosConvidados() {
 		System.out.println("liberarTeste");
 		Long idTeste = 2l;
-		Message message = null;
-		try {
-			instance.liberarTeste(idTeste);
-
-		} catch (ValidationException validationException) {
-			message = validationException.getErrors().get(0);
-
-		}
-		Assert.assertEquals("Nenhum usuario convidado",
-				"nenhum.usuario.convidado", message.getCategory());
+		instance.liberarTeste(idTeste);
+		Assert.assertTrue("Teste deveria ser liberado!",
+				repository.find(idTeste).isLiberado());
 
 	}
 
 	/**
-	 * Test of liberarTeste method, of class TesteController. Não possui tarefas
+	 * Test of liberarTeste method, of class TesteController. NÃ£o possui tarefas
 	 * cadastradas para o teste
 	 */
 	@Test
@@ -645,28 +638,17 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of liberarTeste method, of class TesteController. Não possui Fluxo
+	 * Test of liberarTeste method, of class TesteController. NÃ£o possui Fluxo
 	 * Ideal cadastrado para as tarefas
 	 */
 	@Test
 	public void testLiberarTesteSemFluxoIdealGravado() {
 		System.out.println("liberarTeste");
 		Long idTeste = 8l;
-		Message message = null;
-		int numeroErros = 0;
-		try {
-			instance.liberarTeste(idTeste);
-
-		} catch (ValidationException validationException) {
-			message = validationException.getErrors().get(0);
-			numeroErros = validationException.getErrors().size();
-
-		}
-		Assert.assertEquals("Nenhuma tarefa foi cadastrada",
-				"tarefa.sem.fluxo.ideal", message.getCategory());
-		Assert.assertEquals(
-				"Numero de erros deveria ser o numero de tarefas do usuario",
-				3, numeroErros);
+		instance.liberarTeste(idTeste);
+		Assert.assertTrue(
+				"Teste deveria esta liberado, pois nao precisa ter fluxo ideal gravado",
+				repository.find(idTeste).isLiberado());
 
 	}
 
@@ -701,13 +683,13 @@ public class TesteControllerTest extends AbstractDaoTest {
 		idUsuarios.add(5l);
 		Long idTeste = 2l;
 		int qAntes = convidadoRepositoryImpl.findAll().size();
-		instance.convidarUsuario(idUsuarios, idTeste);
+		instance.convidarUsuario(idUsuarios, idTeste,true);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
 		Assert.assertEquals(qAntes + 2, qDepois);
 	}
 
 	/**
-	 * Test of convidarUsuario já convidados.
+	 * Test of convidarUsuario jÃ¡ convidados.
 	 * 
 	 */
 	@Test
@@ -724,13 +706,13 @@ public class TesteControllerTest extends AbstractDaoTest {
 		int qAntes = convidadoRepositoryImpl.findAll().size();
 		Message message = null;
 		try {
-			instance.convidarUsuario(idUsuarios, idTeste);
+			instance.convidarUsuario(idUsuarios, idTeste, false);
 		} catch (ValidationException validationException) {
 			message = validationException.getErrors().get(0);
 
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois Esta reconvidando usuario",
+				"NÃ£o pode deixar salvar pois Esta reconvidando usuario",
 				"campo.form.alterado", message.getCategory());
 		int qDepois = convidadoRepositoryImpl.findAll().size();
 		Assert.assertEquals(qAntes, qDepois);
@@ -750,13 +732,13 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Message message = null;
 		try {
 
-			instance.convidarUsuario(idUsuarios, idTeste);
+			instance.convidarUsuario(idUsuarios, idTeste, false);
 		} catch (ValidationException validationException) {
 			message = validationException.getErrors().get(0);
 
 		}
 		Assert.assertEquals(
-				"Não pode deixar salvar pois usuario nao é dono do Teste",
+				"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 				"campo.form.alterado", message.getCategory());
 	}
 
@@ -781,7 +763,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of desconvidarUsuario method, of class TesteController. Desconvidar
-	 * usuarios que não estao convidados
+	 * usuarios que nÃ£o estao convidados
 	 */
 	@Test
 	public void testDesconvidarUsuarioQueNaoEstaoConvidados() {
@@ -795,13 +777,13 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long idTeste = 7l;
 		instance.desconvidarUsuario(idUsuarios, idTeste);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
-		Assert.assertEquals("é pra possuir o mesmo numero de teste", qAntes,
+		Assert.assertEquals("Ã© pra possuir o mesmo numero de teste", qAntes,
 				qDepois);
 	}
 
 	/**
 	 * Test of desconvidarUsuario method, of class TesteController. Desconvidar
-	 * usuarios que não estao convidados com usuarios convidados
+	 * usuarios que nÃ£o estao convidados com usuarios convidados
 	 */
 	@Test
 	public void testDesconvidarUsuarioComUsuarioNaoConvidado() {
@@ -816,7 +798,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long idTeste = 7l;
 		instance.desconvidarUsuario(idUsuarios, idTeste);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
-		Assert.assertEquals("é pra possuir o mesmo numero de teste", qAntes,
+		Assert.assertEquals("Ã© pra possuir o mesmo numero de teste", qAntes,
 				qDepois + 1);
 	}
 
@@ -835,7 +817,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long idTeste = 11l;
 		instance.desconvidarUsuario(idUsuarios, idTeste);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
-		Assert.assertEquals("é pra possuir o mesmo numero de teste", qAntes,
+		Assert.assertEquals("Ã© pra possuir o mesmo numero de teste", qAntes,
 				qDepois + 1);
 	}
 
@@ -854,7 +836,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long idTeste = 6l;
 		instance.desconvidarUsuario(idUsuarios, idTeste);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
-		Assert.assertEquals("é pra possuir o mesmo numero de teste", qAntes,
+		Assert.assertEquals("Ã© pra possuir o mesmo numero de teste", qAntes,
 				qDepois);
 	}
 
@@ -868,13 +850,13 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long idTeste = 2l;
 		instance.remove(idTeste);
 		Assert.assertEquals(
-				"Usuario é o criador do teste entao deveria retorna o mesmo valor do id passado",
+				"Usuario Ã© o criador do teste entao deveria retorna o mesmo valor do id passado",
 				idTeste, instance.testeView.getTeste().getId());
 
 	}
 
 	/**
-	 * Test of remove method, of class TesteController.Usuario não é o dono do
+	 * Test of remove method, of class TesteController.Usuario nÃ£o Ã© o dono do
 	 * teste buscado
 	 */
 	@Test
@@ -885,7 +867,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo1(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -893,7 +875,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of remove method, of class TesteController. Usuario não passa o
+	 * Test of remove method, of class TesteController. Usuario nÃ£o passa o
 	 * idTeste
 	 */
 	@Test
@@ -904,7 +886,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.remove(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -913,7 +895,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of remove method, of class TesteController. Usuario passou id do
-	 * teste não existente
+	 * teste nÃ£o existente
 	 */
 	@Test
 	public void testRemoveUsuarioIDtesteNaoExiste() {
@@ -923,7 +905,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.remove(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -946,7 +928,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of testRemoved method, of class TesteController. Usuario não é o
+	 * Test of testRemoved method, of class TesteController. Usuario nÃ£o Ã© o
 	 * dono do teste buscado
 	 */
 	@Test
@@ -958,7 +940,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.removed(senha, id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -966,7 +948,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of Removed method, of class TesteController. Usuario não passa o
+	 * Test of Removed method, of class TesteController. Usuario nÃ£o passa o
 	 * idTeste
 	 */
 	@Test
@@ -979,7 +961,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.removed(senha, id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -987,7 +969,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of Removed method, of class TesteController. Usuario é o dono do
+	 * Test of Removed method, of class TesteController. Usuario Ã© o dono do
 	 * teste buscado, mas ele esta liberado
 	 */
 	@Test
@@ -1004,7 +986,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of Removed method, of class TesteController. Usuario é o dono do
+	 * Test of Removed method, of class TesteController. Usuario Ã© o dono do
 	 * teste buscado, mas ele esta liberado
 	 */
 	@Test
@@ -1017,7 +999,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.removed(senha, id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar deletar pois senha esta incorreta",
+					"NÃ£o pode deixar deletar pois senha esta incorreta",
 					"senha.incorreta", validationException.getErrors().get(0)
 							.getCategory());
 		}
@@ -1027,7 +1009,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of Removed method, of class TesteController. Usuario é o dono do
+	 * Test of Removed method, of class TesteController. Usuario Ã© o dono do
 	 * teste buscado, mas ele esta liberado
 	 */
 	@Test
@@ -1040,7 +1022,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.removed(senha, id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar deletar pois senha esta vazia",
+					"NÃ£o pode deixar deletar pois senha esta vazia",
 					"campo.senha.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
@@ -1078,7 +1060,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of passo1 method, of class TesteController. Usuario passou id do
-	 * teste não existente
+	 * teste nÃ£o existente
 	 */
 	@Test
 	public void testPasso3UsuarioIDtesteNaoExiste() {
@@ -1088,7 +1070,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo3(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -1096,7 +1078,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario é o dono do
+	 * Test of passo1 method, of class TesteController. Usuario Ã© o dono do
 	 * teste buscado
 	 */
 	@SuppressWarnings("unchecked")
@@ -1107,13 +1089,13 @@ public class TesteControllerTest extends AbstractDaoTest {
 		instance.passo3(id);
 		List<Convidado> convidados = (List<Convidado>) result.included().get(
 				"usuariosEscolhidos");
-		Assert.assertTrue("Não possui usuarios Convidados",
+		Assert.assertTrue("NÃ£o possui usuarios Convidados",
 				convidados.isEmpty());
 
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario não é o dono do
+	 * Test of passo1 method, of class TesteController. Usuario nÃ£o Ã© o dono do
 	 * teste buscado
 	 */
 	@Test
@@ -1124,7 +1106,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo3(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -1132,7 +1114,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario não passa o
+	 * Test of passo1 method, of class TesteController. Usuario nÃ£o passa o
 	 * idTeste
 	 */
 	@Test
@@ -1143,7 +1125,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo3(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -1151,7 +1133,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo3method, of class TesteController. Usuario é o dono do teste
+	 * Test of passo3method, of class TesteController. Usuario Ã© o dono do teste
 	 * buscado, mas ele esta liberado
 	 */
 	@Test
@@ -1162,7 +1144,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.passo3(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -1171,7 +1153,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of passo1 method, of class TesteController. Usuario passou id do
-	 * teste não existente
+	 * teste nÃ£o existente
 	 */
 	@Test
 	public void testConvidarUsuarioUsuarioIDtesteNaoExiste() {
@@ -1181,7 +1163,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.convidar(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -1189,7 +1171,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of ConvidarUsuario method, of class TesteController. Usuario é o
+	 * Test of ConvidarUsuario method, of class TesteController. Usuario Ã© o
 	 * dono do teste buscado e o teste esta liberado
 	 */
 	@SuppressWarnings("unchecked")
@@ -1211,7 +1193,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of ConvidarUsuario method, of class TesteController. Usuario não é o
+	 * Test of ConvidarUsuario method, of class TesteController. Usuario nÃ£o Ã© o
 	 * dono do teste buscado
 	 */
 	@Test
@@ -1222,7 +1204,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.convidar(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -1230,7 +1212,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario não passa o
+	 * Test of passo1 method, of class TesteController. Usuario nÃ£o passa o
 	 * idTeste
 	 */
 	@Test
@@ -1241,7 +1223,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 			instance.convidar(id);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
-					"Não pode deixar salvar pois usuario nao é dono do Teste",
+					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
 					"campo.form.alterado",
 					validationException.getErrors().get(0).getCategory());
 		}
@@ -1255,15 +1237,16 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Assert.assertEquals(5l, included.get("testesLiberadosCount"));
 		List<Teste> testes = (List<Teste>) included.get("testesLiberados");
 		List<Teste> all = repository.findAll();
-		Long usuarioId=instance.usuarioLogado.getUsuario().getId();
-		Integer numeroTestesLiberados=0;
+		Long usuarioId = instance.usuarioLogado.getUsuario().getId();
+		Integer numeroTestesLiberados = 0;
 		for (Teste teste : all) {
-			if (teste.isLiberado() && teste.getUsuarioCriador().getId().equals(usuarioId)) {
+			if (teste.isLiberado()
+					&& teste.getUsuarioCriador().getId().equals(usuarioId)) {
 				numeroTestesLiberados++;
 			}
 		}
 		Integer size = testes.size();
 		System.out.println(size);
-		Assert.assertEquals(numeroTestesLiberados,size );
+		Assert.assertEquals(numeroTestesLiberados, size);
 	}
 }

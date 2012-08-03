@@ -47,9 +47,49 @@
                         </div>
                     </form>
                 </div>
-
-        
             </fieldset>
         </div>
+        <div class="pagination">
+        <ul>      
+        	<c:choose>
+					<c:when test="${paginaAtual==1}">
+						<li class="disabled"><a href="#"> << </a></li>
+					</c:when>
+					<c:otherwise>
+						<li><a href="${pageContext.request.contextPath}/testes/liberados/pag/${paginaAtual-1}"> << </a></li>
+					</c:otherwise>
+			</c:choose>
+			<c:choose>
+				<c:when test="${paginaAtual-2>0}">
+					<li><a href="${pageContext.request.contextPath}/testes/liberados/pag/${paginaAtual-2}">${paginaAtual-2}</a></li>
+				</c:when>
+			</c:choose>
+			<c:choose>
+				<c:when test="${paginaAtual-1>0}">
+					<li><a href="${pageContext.request.contextPath}/testes/liberados/pag/${paginaAtual-1}">${paginaAtual-1}</a></li>
+				</c:when>
+			</c:choose>
+			<li><a class="active" href="${pageContext.request.contextPath}/testes/liberados/pag/${paginaAtual}">${paginaAtual}</a></li>
+			<c:choose>
+					<c:when test="${paginaAtual+1<=qtdPaginas}">
+						<li><a href="${pageContext.request.contextPath}/testes/liberados/pag/${paginaAtual+1}">${paginaAtual+1}</a></li>
+					</c:when>
+			</c:choose>
+			<c:choose>
+				<c:when test="${paginaAtual+2<=qtdPaginas}">
+					<li><a href="${pageContext.request.contextPath}/testes/liberados/pag/${paginaAtual+2}">${paginaAtual+2}</a></li>
+				</c:when>
+			</c:choose>
+			<c:choose>
+					<c:when test="${paginaAtual==qtdPaginas}">
+						<li class="disabled"><a href="#"> >> </a></li>
+					</c:when>
+					<c:otherwise>
+						<li><a href="${pageContext.request.contextPath}/testes/liberados/pag/${paginaAtual+1}"> >> </a></li>
+					</c:otherwise>
+			</c:choose>
+          
+        </ul>
+      </div>
     </div>
 </body>

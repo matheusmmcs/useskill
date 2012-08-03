@@ -10,8 +10,8 @@ import br.com.caelum.vraptor.ioc.SessionScoped;
 import br.ufpi.models.Action;
 
 /**
- * Usado para gravaÃ§Ã£o do fluxo. Quando terminar a gravaÃ§Ã£o do fluxo deleta a
- * seÃ§Ã£o.
+ * Usado para gravação do fluxo. Quando terminar a gravação do fluxo deleta a
+ * seção.
  * 
  * @author Cleiton
  * 
@@ -20,7 +20,7 @@ import br.ufpi.models.Action;
 @Component
 public class SessionActions {
 	/**
-	 * Lista de aÃ§Ãµes de um determinado FluxoComponente
+	 * Lista de ações de um determinado FluxoComponente
 	 */
 	private List<Action> acoes;
 	/**

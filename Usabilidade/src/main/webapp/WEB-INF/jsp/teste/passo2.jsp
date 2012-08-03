@@ -47,7 +47,7 @@
                         <thead>
                             <tr>
                                 <th><fmt:message key="tarefa.nome" /></th>
-                                <th><fmt:message key="tarefa.fluxoIdeal.criado" /></th>
+                                <th><fmt:message key="tarefa.pergunta" /></th>
                                 <th><fmt:message key="editar" /></th>
                                 <th><fmt:message key="remover" /></th>
                             </tr>
@@ -59,21 +59,8 @@
                                         <td>
                                             <a href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">${tarefa.nome}</a>
                                         </td>
-                                        <td width="100">
-                                            <c:if test="${tarefa.fluxoIdealPreenchido == false}">
-                                                <form action="${pageContext.request.contextPath}/tarefa/gravar" method="post">
-                                                    <input type="hidden" value="${tarefa.id }" name="idTarefa">
-                                                    <input type="hidden" value="${testeView.teste.id}" name="idTeste">
-                                                    <input class="btn"  type="submit" value="<fmt:message key="gravar" />" style="margin-left: 20px">
-                                                </form>
-                                            </c:if> 
-                                            <c:if test="${tarefa.fluxoIdealPreenchido == true}">
-                                               <form action="${pageContext.request.contextPath}/tarefa/gravar" method="post">
-                                                    <input type="hidden" value="${tarefa.id }" name="idTarefa">
-                                                    <input type="hidden" value="${testeView.teste.id}" name="idTeste">
-                                                    <input class="btn"  type="submit" value="<fmt:message key="editarFluxo" />" style="margin-left: 20px">
-                                                </form>
-                                            </c:if>
+                                      <td width="100">
+                                            <a class="btn"  href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa/questionario" style="margin-left: 10px"><span class="icon-pencil"></span> <fmt:message key="tarefa.pergunta" /></a>
                                         </td>
                                         <td width="100">
                                             <a class="btn"  href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa" style="margin-left: 10px"><span class="icon-pencil"></span> <fmt:message key="editar" /></a>
@@ -103,7 +90,6 @@
                             <tr>
                                 <th><fmt:message key="pergunta.titulo" /></th>
                                 <th><fmt:message key="editar" /></th>
-                                <th><fmt:message key="duplicar" /></th>
                                 <th><fmt:message key="remover" /></th>
                             </tr>
                         </thead>
@@ -116,15 +102,6 @@
                                         </td>
                                         <td width="100">
                                             <a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta"><span class="icon-pencil"></span> Editar</a>
-                                        </td>
-                                        <td width="100">
-                                            <form
-                                                action="${pageContext.request.contextPath}/teste/duplicar/pergunta"
-                                                method="post">
-                                                <input class="btn" type="submit" value="Duplicar"> 
-                                                <input type="hidden" name="testeId" value="${testeView.teste.id }"> 
-                                                <input type="hidden" name="perguntaId" value="${pergunta.id}" />
-                                            </form>
                                         </td>
                                         <td width="100">
                                             <form
