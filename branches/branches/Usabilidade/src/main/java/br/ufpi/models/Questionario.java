@@ -22,8 +22,6 @@ public class Questionario implements Serializable {
     @OneToMany(mappedBy = "questionario",cascade=CascadeType.ALL)
     private List<Pergunta> perguntas;
     
-    @OneToOne(cascade=CascadeType.REFRESH)
-    private Teste teste;
 
     public Long getId() {
         return id;
@@ -41,12 +39,5 @@ public class Questionario implements Serializable {
         this.perguntas = perguntas;
     }
 
-    public Teste getTeste() {
-        return teste;
-    }
-
-    public void setTeste(Teste teste) {
-        this.teste = teste;
-    }
 
 }

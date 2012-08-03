@@ -64,9 +64,7 @@ public class TesteController extends BaseController {
 		Teste teste = new Teste();
 		teste.setUsuarioCriador(usuarioLogado.getUsuario());
 		teste.setTitulo(titulo);
-		Questionario questionario = new Questionario();
-		questionario.setTeste(teste);
-		teste.setSatisfacao(questionario);
+		teste.setSatisfacao(new Questionario());
 		testeRepository.create(teste);
 		result.redirectTo(this).passo1(teste.getId());
 	}

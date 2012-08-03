@@ -172,29 +172,48 @@ public class PerguntaController extends BaseController {
 	@Logado
 	@Post("teste/apagar/pergunta")
 	public void deletarPergunta(Long testeId, Long perguntaId) {
-		delete(testeId, perguntaId);
+		delete(testeId, perguntaId, null);
 		result.redirectTo(TesteController.class).passo2(testeId);
 
 	}
+
 	@Logado
 	@Post("teste/apagar/tarefa/pergunta")
-	public void deletarPergunta(Long testeId, Long perguntaId,Long tarefaId) {
+	public void deletarPergunta(Long testeId, Long perguntaId, Long tarefaId) {
 		validateComponente.validarId(tarefaId);
-		delete(testeId, perguntaId);
-		result.redirectTo(TarefaController.class).questionario(testeId, tarefaId);	}
+		System.out.println(testeId);
+		System.out.println(tarefaId);
+		System.out.println(perguntaId);
+		delete(testeId, perguntaId, tarefaId);
+		result.redirectTo(TarefaController.class).questionario(testeId,
+				tarefaId);
+	}
 
 	/**
 	 * @param testeId
 	 * @param perguntaId
 	 */
-	private void delete(Long testeId, Long perguntaId) {
+	private void delete(Long testeId, Long perguntaId, Long tarefaId) {
 		validateComponente.validarObjeto(testeId);
 		validateComponente.validarObjeto(perguntaId);
-		
-		Pergunta perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId,
-				testeId);
-		validateComponente.validarObjeto(perguntaPertenceUsuario);
+		Pergunta perguntaPertenceUsuario = null;
+		if (tarefaId==null){
+			perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId,
+					testeId);
+		System.out.println("Nao era para ele entratr");	
+		}
+		else{
+			perguntaPertenceUsuario = perguntaPertenceTarefa(perguntaId,
+					testeId,tarefaId);
+			System.out.println("sql errada");
+		}validateComponente.validarObjeto(perguntaPertenceUsuario);
 		perguntaRepository.destroy(perguntaPertenceUsuario);
+	}
+
+	private Pergunta perguntaPertenceTarefa(Long perguntaId, Long testeId,Long tarefaId) {
+		testeNaoLiberadoPertenceUsuarioLogado(testeId);
+		return perguntaRepository.perguntaPertenceUsuarioETarefa(usuarioLogado
+				.getUsuario().getId(), testeId, perguntaId, tarefaId);
 	}
 
 	private void atualizar(Long testeId, Pergunta pergunta) {

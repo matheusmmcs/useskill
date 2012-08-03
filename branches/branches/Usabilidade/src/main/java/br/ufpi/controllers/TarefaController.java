@@ -115,7 +115,6 @@ public class TarefaController extends BaseController {
 		Teste teste = testeView.getTeste();
 		tarefa.setTeste(teste);
 		Questionario questionario = new Questionario();
-		questionario.setTeste(teste);
 		tarefa.setQuestionario(questionario);
 		tarefaRepository.create(tarefa);
 		result.redirectTo(TesteController.class).passo2(
