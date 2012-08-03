@@ -31,7 +31,7 @@ public class LivreIntercerptor implements Interceptor {
 		if (!usuarioLogado.islogado())
 			stack.next(method, resourceInstance);
 		else {
-			result.redirectTo(LoginController.class).logado();
+			result.redirectTo(LoginController.class).logado(1);
 		}
 
 	}

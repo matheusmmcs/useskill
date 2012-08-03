@@ -97,7 +97,7 @@ public class UsuarioController extends BaseController {
 		validator.onErrorUsePageOf(this).edit(usuarioNovo);
 		usuarioRepository.update(usuarioNovo);
 		usuarioLogado.setUsuario(usuarioNovo);
-		result.redirectTo(LoginController.class).logado();
+		result.redirectTo(LoginController.class).logado(1);
 	}
 
 	@Logado

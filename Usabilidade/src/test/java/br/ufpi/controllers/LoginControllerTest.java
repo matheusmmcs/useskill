@@ -156,7 +156,7 @@ public class LoginControllerTest extends AbstractDaoTest {
 		System.out.println("logado");
 		LoginController instance = LoginTestProcedure
 				.newInstanceUsuarioController(entityManager, result);
-		instance.logado();
+		instance.logado(1);
 		List<Teste> testesCriados = (List<Teste>) result.included().get(
 				"testesCriados");
 		List<Teste> testesConvidados = (List<Teste>) result.included().get(

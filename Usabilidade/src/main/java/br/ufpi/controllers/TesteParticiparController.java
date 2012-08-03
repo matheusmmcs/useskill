@@ -46,7 +46,7 @@ public class TesteParticiparController extends BaseController {
 				testeId);
 		convidado.setRealizou(false);
 		convidadoRepository.update(convidado);
-		result.redirectTo(LoginController.class).logado();
+		result.redirectTo(LoginController.class).logado(1);
 	}
 
 	/**

@@ -41,7 +41,7 @@ public class ValidateComponente {
 				that(false, "nao.proprietario", mensagem);
 			}
 		});
-		validator.onErrorRedirectTo(LoginController.class).logado();
+		validator.onErrorRedirectTo(LoginController.class).logado(1);
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class ValidateComponente {
 						"campo.form.alterado");
 			}
 		});	
-		validator.onErrorRedirectTo(LoginController.class).logado();
+		validator.onErrorRedirectTo(LoginController.class).logado(1);
 	}
 	/**
 	 * Apenas analisa se o teste não é nulo
@@ -88,7 +88,7 @@ public class ValidateComponente {
 						"campo.form.alterado");
 			}
 		});	
-		validator.onErrorRedirectTo(LoginController.class).logado();
+		validator.onErrorRedirectTo(LoginController.class).logado(1);
 	}
 	/**
 	 * Gera erro informando que campo forme foi alterado

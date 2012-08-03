@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
+import br.ufpi.util.Paginacao;
 
 public interface UsuarioRepository {
 	/*
@@ -67,7 +68,7 @@ public interface UsuarioRepository {
 	 * @param usuario
 	 * @return
 	 */
-	List<Teste> findTesteNaoLiberadosOrdenadorData(Usuario usuario);
+	Paginacao<Teste> findTesteNaoLiberadosOrdenadorData(Long idUsuario, int numeroPagina, int quantidade);
 
 	/**
 	 * Procura por todos os testes participados de um usuario
@@ -104,7 +105,7 @@ public interface UsuarioRepository {
 	 *            Teste
 	 * @return Retorna todos os testes que o usuario foi convidado a Participar
 	 */
-	List<Teste> findTestesConvidados(Long idUsuario);
+	Paginacao<Teste> findTestesConvidados(Long idUsuario, int numeroPagina, int quantidade);
 
 	
 

@@ -11,6 +11,7 @@ import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.Repository;
 import br.ufpi.repositories.UsuarioRepository;
+import br.ufpi.util.Paginacao;
 
 @Component
 public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
@@ -103,23 +104,36 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Teste> findTesteNaoLiberadosOrdenadorData(Usuario usuario) {
+	public Paginacao<Teste> findTesteNaoLiberadosOrdenadorData(Long idUsuario, int numeroPagina, int quantidade) {
+		Paginacao<Teste> paginacao= new Paginacao<Teste>();
 		Query query = entityManager
 				.createNamedQuery("Usuario.TesteCriado.Nao.Liberado.Organizado.Id");
-		query.setParameter("usuarioCriador", usuario);
-		try {
-			return (List<Teste>) query.getResultList();
-		} catch (NoResultException e) {
-			return null;
-		}
+		query.setParameter("usuarioCriador", idUsuario);
+		query.setFirstResult(quantidade * (numeroPagina - 1));
+		query.setMaxResults(quantidade);
+		paginacao.setListObjects((List<Teste>) query.getResultList());
+		Query count = entityManager
+				.createNamedQuery("Usuario.TesteCriado.Nao.Liberado.Organizado.Id.Count");
+		count.setParameter("usuarioCriador", idUsuario);
+		paginacao.setCount((Long) count.getSingleResult());
+		return paginacao;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Teste> findTestesConvidados(Long idUsuario) {
-		Query query = entityManager.createNamedQuery("Convidado.Teste");
+	public Paginacao<Teste> findTestesConvidados(Long idUsuario, int numeroPagina, int quantidade) {
+		Paginacao<Teste> paginacao = new Paginacao<Teste>();
+		Query query =  entityManager.createNamedQuery("Convidado.Teste");
 		query.setParameter("usuario", idUsuario);
-		return query.getResultList();
+		query.setFirstResult(quantidade * (numeroPagina - 1));
+		query.setMaxResults(quantidade);
+		paginacao.setListObjects((List<Teste>) query.getResultList());
+		Query count = entityManager
+				.createNamedQuery("Convidado.Teste.Count");
+		count.setParameter("usuario", idUsuario);
+		count.setParameter("realiza", null);
+		paginacao.setCount((Long) count.getSingleResult());
+		return paginacao;
 	}
 
 

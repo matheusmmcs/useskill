@@ -190,7 +190,7 @@ public class TesteController extends BaseController {
 		}
 		teste.setLiberado(true);
 		testeRepository.update(teste);
-		this.result.redirectTo(LoginController.class).logado();
+		this.result.redirectTo(LoginController.class).logado(1);
 	}
 
 	/**
@@ -313,7 +313,7 @@ public class TesteController extends BaseController {
 		if (senhaCriptografada.equals(usuarioLogado.getUsuario().getSenha())) {
 			this.testePertenceUsuarioLogado(idTeste);
 			testeRepository.destroy(testeView.getTeste());
-			result.redirectTo(LoginController.class).logado();
+			result.redirectTo(LoginController.class).logado(1);
 		} else {
 			validator.checking(new Validations() {
 

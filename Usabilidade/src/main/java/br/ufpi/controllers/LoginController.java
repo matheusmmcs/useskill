@@ -14,11 +14,13 @@ import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
+import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.BaseUrl;
 import br.ufpi.util.Criptografa;
 import br.ufpi.util.EmailUtils;
+import br.ufpi.util.Paginacao;
 
 @Resource
 public class LoginController extends BaseController {
@@ -63,7 +65,7 @@ public class LoginController extends BaseController {
 		if (usuario != null) {
 			if (usuario.isEmailConfirmado()) {
 				usuarioLogado.setUsuario(usuario);
-				result.redirectTo(this).logado();
+				result.redirectTo(this).logado(1);
 			} else {
 				result.forwardTo(this).reenviaEmailConfirmacao(
 						usuario.getEmail());
@@ -83,13 +85,19 @@ public class LoginController extends BaseController {
 	 * ao logar mostra todos os teste que o usuario foi convidado e os testes
 	 * que ainda não foram liberados
 	 */
-	@Get("/usuario")
+	@Get({"/usuario/pag/{numeroPagina}","/usuario"})
 	@Logado
-	public void logado() {
-		result.include("testesConvidados", usuarioRepository
-				.findTestesConvidados(usuarioLogado.getUsuario().getId()));
-		result.include("testesCriados", usuarioRepository
-				.findTesteNaoLiberadosOrdenadorData(usuarioLogado.getUsuario()));
+	public void logado(int numeroPagina) {
+		if( numeroPagina==0){
+			numeroPagina=1;
+		}
+		int quantidade = 2;
+		Paginacao<Teste> paginacao = usuarioRepository
+		 .findTesteNaoLiberadosOrdenadorData(usuarioLogado.getUsuario().getId(),numeroPagina,quantidade);
+		
+		result.include("testesCriados",paginacao.getListObjects()) ;
+		 Long qttObjetosNoBanco=paginacao.getCount();
+		paginacao.geraPaginacao(numeroPagina, quantidade, qttObjetosNoBanco, result);
 	}
 
 	/**

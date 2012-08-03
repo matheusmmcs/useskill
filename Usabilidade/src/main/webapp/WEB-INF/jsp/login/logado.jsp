@@ -55,41 +55,45 @@
 				</tbody>
 			</table>
 		</fieldset>
-
-		<fieldset>
-			<legend>
-				<hr />
-				<span> <fmt:message key="testes.convites" /> </span>
-				<hr />
-			</legend>
-			<table class="table table-striped table-bordered table-condensed">
-				<thead>
-					<tr>
-						<th><fmt:message key="titulo" />
-						</th>
-						<th><fmt:message key="criador" />
-						</th>
-						<th style="width: 85px"><fmt:message key="table.acoes" />
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach items="${testesConvidados}" var="teste">
-						<tr>
-							<td>${teste.titulo}</td>
-							<td>${teste.usuarioCriador.nome}</td>
-							<td><a class="btn btn-success"
-								href="${pageContext.request.contextPath}/teste/participar/aceitar/testeId/${teste.id}"
-								title="<fmt:message key="table.aceitar"/>"> <span
-									class="icon-ok icon-white"></span> </a> <a class="btn btn-primary"
-								href="${pageContext.request.contextPath}/teste/participar/negar/testeId/${teste.id}"
-								title="<fmt:message key="table.recusar"/>"> <span
-									class="icon-remove icon-white"></span> </a></td>
-						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
-		</fieldset>
-
-	</div>
+		 <div class="pagination">
+        <ul>      
+        	<c:choose>
+					<c:when test="${paginaAtual==1}">
+						<li class="disabled"><a href="#"> << </a></li>
+					</c:when>
+					<c:otherwise>
+						<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual-1}"> << </a></li>
+					</c:otherwise>
+			</c:choose>
+			<c:choose>
+				<c:when test="${paginaAtual-2>0}">
+					<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual-2}">${paginaAtual-2}</a></li>
+				</c:when>
+			</c:choose>
+			<c:choose>
+				<c:when test="${paginaAtual-1>0}">
+					<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual-1}">${paginaAtual-1}</a></li>
+				</c:when>
+			</c:choose>
+			<li><a class="active" href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual}">${paginaAtual}</a></li>
+			<c:choose>
+					<c:when test="${paginaAtual+1<=qtdPaginas}">
+						<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual+1}">${paginaAtual+1}</a></li>
+					</c:when>
+			</c:choose>
+			<c:choose>
+				<c:when test="${paginaAtual+2<=qtdPaginas}">
+					<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual+2}">${paginaAtual+2}</a></li>
+				</c:when>
+			</c:choose>
+			<c:choose>
+					<c:when test="${paginaAtual==qtdPaginas}">
+						<li class="disabled"><a href="#"> >> </a></li>
+					</c:when>
+					<c:otherwise>
+						<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual+1}"> >> </a></li>
+					</c:otherwise>
+			</c:choose>
+        </ul>
+      </div>
 </div>

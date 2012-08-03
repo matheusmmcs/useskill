@@ -191,7 +191,7 @@ public class RespostaController extends BaseController {
 			result.include("pergunta", pergunta);
 
 		} else {
-			result.redirectTo(LoginController.class).logado();
+			result.redirectTo(LoginController.class).logado(1);
 		}
 	}
 

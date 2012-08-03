@@ -81,8 +81,6 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		Query count = entityManager
 				.createNamedQuery("Convidado.Usuarios.Nao.Convidados.Count");
 		count.setParameter("teste", testeId);
-		count.setFirstResult(quantidade * (numeroPagina - 1));
-		count.setMaxResults(quantidade);
 		paginacao.setCount((Long) count.getSingleResult());
 		return paginacao;
 	}
