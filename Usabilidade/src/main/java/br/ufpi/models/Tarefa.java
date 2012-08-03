@@ -48,18 +48,19 @@ public class Tarefa implements Serializable {
 	@Column(columnDefinition = "TINYTEXT")
 	@NotBlank
 	private String roteiro;
-	@OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL,fetch=FetchType.LAZY)
+	@OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Impressao> impressoes;
-	@OneToOne(cascade = CascadeType.ALL,fetch=FetchType.LAZY)
-	private FluxoIdeal fluxoIdeal;
-	@OneToMany(cascade = CascadeType.ALL,fetch=FetchType.LAZY)
-	private List<FluxoUsuario> fluxoUsuario;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<FluxoIdeal> fluxoIdeais;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<FluxoUsuario> fluxoUsuarios;
 	@ManyToOne(cascade = CascadeType.REFRESH)
 	private Teste teste;
 	@Column(nullable = false)
 	@NotBlank
 	private String urlInicial;
-	private boolean fluxoIdealPreenchido;
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+	private Questionario questionario;
 
 	public Long getId() {
 		return id;
@@ -67,22 +68,6 @@ public class Tarefa implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public FluxoIdeal getFluxoIdeal() {
-		return fluxoIdeal;
-	}
-
-	public void setFluxoIdeal(FluxoIdeal fluxoIdeal) {
-		this.fluxoIdeal = fluxoIdeal;
-	}
-
-	public List<FluxoUsuario> getFluxoUsuario() {
-		return fluxoUsuario;
-	}
-
-	public void setFluxoUsuario(List<FluxoUsuario> fluxoUsuario) {
-		this.fluxoUsuario = fluxoUsuario;
 	}
 
 	public List<Impressao> getImpressoes() {
@@ -117,14 +102,6 @@ public class Tarefa implements Serializable {
 		this.nome = nome;
 	}
 
-	public boolean isFluxoIdealPreenchido() {
-		return fluxoIdealPreenchido;
-	}
-
-	public void setFluxoIdealPreenchido(boolean fluxoIdealPreenchido) {
-		this.fluxoIdealPreenchido = fluxoIdealPreenchido;
-	}
-
 	public String getUrlInicial() {
 		return urlInicial;
 	}
@@ -133,6 +110,35 @@ public class Tarefa implements Serializable {
 		this.urlInicial = urlInicial;
 	}
 
-	
+
+	/**
+	 * Usado para obeter a lista de perguntas de uma determinada Tarefa
+	 * 
+	 * @return Questionario da tarefa contendo todas as perguntas referente a
+	 *         tarefa
+	 */
+	public Questionario getQuestionario() {
+		return questionario;
+	}
+
+	public void setQuestionario(Questionario questionario) {
+		this.questionario = questionario;
+	}
+
+	public List<FluxoIdeal> getFluxoIdeais() {
+		return fluxoIdeais;
+	}
+
+	public void setFluxoIdeais(List<FluxoIdeal> fluxoIdeais) {
+		this.fluxoIdeais = fluxoIdeais;
+	}
+
+	public List<FluxoUsuario> getFluxoUsuarios() {
+		return fluxoUsuarios;
+	}
+
+	public void setFluxoUsuarios(List<FluxoUsuario> fluxoUsuarios) {
+		this.fluxoUsuarios = fluxoUsuarios;
+	}
 
 }

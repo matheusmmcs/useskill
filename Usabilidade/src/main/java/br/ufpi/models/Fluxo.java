@@ -25,7 +25,7 @@ public class Fluxo implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataFim;
     @OneToMany(mappedBy = "fluxo",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
-    private List<Acao> acoes;
+    private List<Action> acoes;
     @ManyToOne(optional = false, cascade = CascadeType.REFRESH,fetch=FetchType.LAZY)
     private Usuario usuario;
 
@@ -37,11 +37,11 @@ public class Fluxo implements Serializable {
         this.id = id;
     }
 
-    public List<Acao> getAcoes() {
+    public List<Action> getAcoes() {
         return acoes;
     }
 
-    public void setAcoes(List<Acao> acoes) {
+    public void setAcoes(List<Action> acoes) {
         this.acoes = acoes;
     }
 

@@ -24,8 +24,9 @@ import javax.persistence.OneToMany;
  * @author Cleiton
  */
 @NamedQueries({
-		@NamedQuery(name = "Pergunta.pertence.teste.usuario", query = "select p from Pergunta as p left join p.questionario left join p.questionario.teste left join p.questionario.teste.usuarioCriador where p.questionario.teste.id= :teste and  p.questionario.teste.usuarioCriador.id= :usuario and p.id= :pergunta"),
-		@NamedQuery(name = "Pergunta.pertence.teste.usuario.Liberado", query = "select p from Pergunta as p left join p.questionario left join p.questionario.teste left join p.questionario.teste.usuarioCriador where p.questionario.teste.id= :teste and  p.questionario.teste.usuarioCriador.id= :usuario and p.id= :pergunta and p.questionario.teste.liberado= :liberado"),
+		@NamedQuery(name = "Pergunta.pertence.teste.usuario", query = "select perguntas from Teste as t left join t.satisfacao lef join t.satisfacao.perguntas as perguntas where t.id= :teste and t.usuarioCriador.id= :usuario and perguntas.id= :pergunta"),
+//		@NamedQuery(name = "Pergunta.pertence.tarefa.usuario", query = "select perguntas from Teste as t lef join t.tarefas as tarefas lef join tarefas.questionario left join tarefas.questionario.perguntas as perguntas where t.id= :teste and t.usuarioCriador.id= :usuario and perguntas.id= :pergunta and tarefas.id= :tarefa and t.liberado= false"),
+		@NamedQuery(name = "Pergunta.pertence.teste.usuario.Liberado", query = "select perguntas from Teste as t left join t.satisfacao lef join t.satisfacao.perguntas as perguntas where t.id= :teste and t.usuarioCriador.id= :usuario and perguntas.id= :pergunta and t.liberado= :liberado"),
 		@NamedQuery(name = "Pergunta.delete.Alternativas", query = "delete Alternativa  a where a.pergunta.id= :pergunta"),
 		@NamedQuery(name = "Pergunta.getQuestionario", query = "select p.questionario from Pergunta as p left join p.questionario as Questionario where p.id= :pergunta") })
 @Entity
@@ -42,7 +43,7 @@ public class Pergunta implements Serializable {
 	 * True para pergunta objetiva
 	 */
 	private Boolean tipoRespostaAlternativa;
-	@OneToMany(mappedBy = "pergunta", cascade =CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "pergunta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Alternativa> alternativas;
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)
 	private Questionario questionario;
@@ -51,6 +52,7 @@ public class Pergunta implements Serializable {
 	@OneToMany(mappedBy = "pergunta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<RespostaEscrita> respostaEscritas;
 	private boolean responderFim;
+
 	public Long getId() {
 		return id;
 	}
@@ -129,7 +131,7 @@ public class Pergunta implements Serializable {
 		pergunta.setQuestionario(this.getQuestionario());
 		pergunta.setAlternativas(this.getAlternativas());
 		pergunta.setRespostaAlternativas(this.getRespostaAlternativas());
-		
+
 		return pergunta;
 
 	}
@@ -143,5 +145,5 @@ public class Pergunta implements Serializable {
 				+ respostaAlternativas + ", respostaEscritas="
 				+ respostaEscritas + "]";
 	}
-	
+
 }
