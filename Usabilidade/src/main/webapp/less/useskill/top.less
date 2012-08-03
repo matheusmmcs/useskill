@@ -1,0 +1,94 @@
+#topo {
+	position: relative;
+	width: 100%;
+	height: @USHeightTop;
+	
+	#topo_centro {
+		position: relative;
+		width: @USwidthContainer;
+		height: @USHeightTop;
+		margin: 0px auto;
+	}
+	#topo_direito {
+		float: right;
+		width: @USWidthTopRight;
+		height: @USHeightTopRight;
+		margin-top: 50px;
+		#btn-logout{
+			padding: 6px 4px;
+		}
+		#nome {
+			float: right;
+			font-size: @USFontTopName;
+			margin: 6px 15px 0 0;
+			color: @colorDarker;
+			
+		}
+	}
+} 
+a#logotipe {
+	position: absolute;
+	float: right;
+	top: 15px;
+	left: 20px;
+	width: @USWidthTopLogotipe;
+	height: @USHeightTopLogotipe;
+	background-image: url("@{USPathLogo}");
+  	background-repeat: no-repeat;
+}
+#menu_topo {
+	position: absolute;
+	float: left;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+	height: @USHeightTopMenu;
+	background: @UScolorMenuTopBack;
+	border-top: 2px solid @UScolorMenuTopBorder;
+	border-bottom: 2px solid @UScolorMenuTopBorder;
+	
+	#menu_topo_centro{
+    	position: relative;
+    	width: @USwidthContainer;
+    	height: @USHeightTopMenu;
+    	margin: 0px auto;
+    	#gradient > .radial(@color, @UScolorMenuTopBack);
+  		background-position: top center;
+  		img{
+    		position: relative;
+    		z-index: @USzindexImgTopMenu;
+    		left: 0px;
+    		top:-2px;
+		}
+	}
+	ul {
+		position: relative;
+    	list-style:none;
+    	font-family: @baseFontFamily;
+    	text-transform: uppercase;
+    	font-size: @USFontTopMenu;
+    	line-height: 1.2em;   
+    	height: @USHeightTopMenu;
+    	clear:both;
+    	margin: -20px 0 9px 0px;
+    	z-index: 1;
+    	li{
+    		float:left;
+    		a{
+    			display:block;
+    			text-decoration:none;
+    			padding: 20px 25px 5px 25px;
+    			width:auto;
+    			height: @USHeightTopMenuA;
+    			color: @colorWhite;
+    			background: none;
+    			background-position: top center;
+    			background-repeat: no-repeat;
+    			
+    			&:hover{
+    				color: @white;
+    			}
+			}
+		}
+	}
+}

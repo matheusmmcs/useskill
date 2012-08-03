@@ -16,6 +16,7 @@ if(!tem){
         var document = window.document,
         navigator = window.navigator,
         location = window.location;
+        
         var jQuery = (function() {
 
             // Define a local copy of jQuery

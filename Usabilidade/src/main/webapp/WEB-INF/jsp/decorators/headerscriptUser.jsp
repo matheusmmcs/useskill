@@ -1,6 +1,4 @@
-<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/jquery.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/captTester.js"></script>
-
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/capt.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/plugin/fancybox/jquery.fancybox.js"></script>
 <script type="text/javascript">
 (function($){

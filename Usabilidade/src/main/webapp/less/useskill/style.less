@@ -1,0 +1,129 @@
+@USWidthMinControlGroup:			80px;
+@USWidthMediumControlGroup:			120px;
+
+.container{
+	width: @USwidthContainer;
+	overflow: hidden;
+	.minHeight(400px);
+	margin: 15px auto;
+	background: @UScolorBackGround;
+	&-row{
+		width: @USwidthContainer;
+		margin: 0 auto;
+	}
+	&-left{
+		width: 230px;
+		margin-left: 20px;
+		.well{
+			.backWhiteWithShadow;
+			.nav-header a{
+				background: @colorLighter;
+				color: @colorDark;
+				&:hover{
+					background: @colorLight;
+				}
+			}
+			.nav-links > li > a:hover{
+				background: lighten(@colorLighter,7%);
+			}
+		}
+	}
+	&-right{
+		margin-left: 25px;
+		
+		.breadcrumb{
+			margin-bottom: 10px;
+		}
+		.nav.nav-tabs{
+			li:not(.active) a:hover{
+				background: @colorLighter;
+			}
+		}
+		.btn-toolbar{
+			.minHeight(30px);
+			a.btn{
+				padding: 5px 20px;
+			}
+		}
+	}
+}
+.form-layout{
+	.backWhiteWithShadow;
+	fieldset{
+		width: 100%;
+		legend{
+			padding: 5px 0;
+			font-size: 24px;
+			color: @colorDark;
+			border: none;
+			margin-bottom: 0px;
+			span{
+				padding: 0 20px;
+			}
+			hr{
+				margin: 2px 0 5px 0;
+			}
+		}
+		.form-actions{
+			background: lighten(@colorLighter,5%);
+			border-top: 1px solid @colorLighter;
+			border-bottom: 1px solid @colorLighter;
+		}
+		
+		.control-group-min{
+			.control-group;
+			.control-label{
+				width: @USWidthMinControlGroup;
+			}
+			.controls{
+				margin-left: @USWidthMinControlGroup + 20;
+			}
+		}
+		.control-group-medium{
+			.control-group;
+			.control-label{
+				width: @USWidthMediumControlGroup;
+			}
+			.controls{
+				margin-left: @USWidthMediumControlGroup + 20;
+			}
+		}
+		table{
+			padding-top: 5px;
+			width: 98%;
+			margin: 5px auto;
+			th{
+				text-align: center;
+			}
+		}
+	}
+}
+footer{
+	hr{
+		margin: 5px 0;
+		border-top: 1px solid @colorLighter;
+		border-bottom: 1px solid @white;		
+	}
+	#footer{
+		width: auto;
+		margin: 0 auto;
+		padding: 5px 0 20px 0;
+		text-align: center;
+	}
+}
+
+// Estilos de Visualização
+//	------------------------------
+.backWhiteWithShadow{
+	background: @white;
+	.border-radius(4px);
+	.box-shadow(@USShadowDefault);
+	border: 1px solid #d5d5d5;
+}
+.btn-gravar-regravar{
+	width: 85px;
+}
+.center{
+	float: none; 
+	margin: 0 auto;
+}

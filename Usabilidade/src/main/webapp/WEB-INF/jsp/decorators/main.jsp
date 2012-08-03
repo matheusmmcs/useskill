@@ -1,50 +1,40 @@
-<%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator"
-	prefix="decorator"%>
+<%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <html>
 <head>
-
 <!-- decorator = main -->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>
-<decorator:title default="UseSkill" />
-</title>
-<link href="${pageContext.request.contextPath}/img/favicon.ico"
-	rel="shortcut icon" type="image/x-icon" />
+<title><decorator:title default="UseSkill" /></title>
+<link href="${pageContext.request.contextPath}/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/css/reset.css" />
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.js"></script>
 
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/css/bootstrap.css" />
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/css/bootstrap-ex.css" />
 
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/css/menu.css" />
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/css/style.css" />
-
+<link rel="stylesheet/less" href="${pageContext.request.contextPath}/less/style.less" />
+<script src="${pageContext.request.contextPath}/jscripts/libs/less-1.3.0.min.js"></script>
+<script src="${pageContext.request.contextPath}/jscripts/libs/modernizr-2.5.3.js"></script>
 <decorator:head />
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/jscripts/jquery.js"></script>
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/jscripts/application.js"></script>
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/jscripts/jquery.validate.js"></script>
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/jscripts/jquery.easing1.3.js"></script>
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/jscripts/bootstrap.js" />
 </head>
 <body>
 	<%@include file="topo.jsp"%>
-	<div id="conteudo">
-		<div id="conteudo_interno">
+	<div class="container">
+		<div class="row container-row">
 			<decorator:body />
 		</div>
 	</div>
+	<footer>
+		<hr/>
+		<center>
+			<div id="footer">
+                <span><fmt:message key="footer.copyright"/></span>
+        	</div>
+    	</center>
+	</footer>
+
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/useskill.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.validate.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.easing1.3.js"></script>
 </body>
 </html>
