@@ -13,7 +13,7 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Convidado;
-import br.ufpi.models.Teste;
+import br.ufpi.models.vo.ConvidadoVO;
 import br.ufpi.repositories.ConvidadoRepository;
 
 /**
@@ -24,17 +24,17 @@ import br.ufpi.repositories.ConvidadoRepository;
 @Resource
 public class TesteParticiparController extends BaseController {
 	private final ConvidadoRepository convidadoRepository;
-	private final FluxoComponente fluxo;
+	private final FluxoComponente fluxoComponente;
 	private final TesteSession testeSession;
 
 	public TesteParticiparController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
-			ConvidadoRepository convidadoRepository, FluxoComponente fluxo,
+			ConvidadoRepository convidadoRepository, FluxoComponente fluxoComponente,
 			TesteSession testeSession) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.convidadoRepository = convidadoRepository;
-		this.fluxo = fluxo;
+		this.fluxoComponente = fluxoComponente;
 		this.testeSession = testeSession;
 	}
 
@@ -57,9 +57,10 @@ public class TesteParticiparController extends BaseController {
 	@Post
 	@Logado
 	public void aceitar(Long testeId) {
-		Teste teste = verificaSeUsuarioConvidado(testeId);
-		testeSession.setTeste(teste);
-		fluxo.criarLista(teste);
+		 ConvidadoVO convidado = verificaSeUsuarioConvidado(testeId);
+		 
+		testeSession.setTeste(convidado.getTeste());
+		fluxoComponente.criarLista(convidado.getTeste(),convidado.getTipoConvidado());
 	}
 
 	@Logado
@@ -74,12 +75,12 @@ public class TesteParticiparController extends BaseController {
 	 * @param idTeste
 	 * @return
 	 */
-	private Teste verificaSeUsuarioConvidado(Long idTeste) {
+	private ConvidadoVO verificaSeUsuarioConvidado(Long idTeste) {
 		validateComponente.validarId(idTeste);
-		Teste testeConvidado = convidadoRepository.getTesteConvidado(idTeste,
+	 ConvidadoVO convidadoVO = convidadoRepository.getTesteConvidado(idTeste,
 				usuarioLogado.getUsuario().getId());
-		validateComponente.validarObjeto(testeConvidado);
-		return testeConvidado;
+		validateComponente.validarObjeto(convidadoVO);
+		return convidadoVO;
 	}
 
 	@Logado

@@ -23,13 +23,16 @@ import br.ufpi.componets.TesteSession;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
-import br.ufpi.models.Acao;
+import br.ufpi.models.Action;
 import br.ufpi.models.Convidado;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.FluxoUsuario;
+import br.ufpi.models.Pergunta;
+import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
+import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.UsuarioTestePK;
 import br.ufpi.repositories.ConvidadoRepository;
 import br.ufpi.repositories.FluxoIdealRepository;
@@ -48,8 +51,8 @@ public class TarefaController extends BaseController {
 
 	private final TarefaRepository tarefaRepository;
 	private final TesteRepository testeRepository;
-	private final FluxoUsuarioRepository fluxoUsuarioRepository;
 	private final FluxoIdealRepository fluxoIdealRepository;
+	private final FluxoUsuarioRepository fluxoUsuarioRepository;
 	private final ConvidadoRepository convidadoRepository;
 	private SessionActions actions;
 	private final FluxoComponente fluxoComponente;
@@ -62,23 +65,24 @@ public class TarefaController extends BaseController {
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
 			TarefaRepository tarefaRepository, TesteRepository testeRepository,
-			FluxoUsuarioRepository fluxoUsuarioRepository,
 			FluxoIdealRepository fluxoIdealRepository,
+			FluxoUsuarioRepository fluxoUsuarioRepository,
 			ConvidadoRepository convidadoRepository, SessionActions actions,
 			FluxoComponente fluxoComponente, HttpServletRequest request,
-			TesteSession testeSession, TarefaDetalhe tarefaDetalhe, CookieManager cookieManager) {
+			TesteSession testeSession, TarefaDetalhe tarefaDetalhe,
+			CookieManager cookieManager) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
-		this.fluxoUsuarioRepository = fluxoUsuarioRepository;
 		this.fluxoIdealRepository = fluxoIdealRepository;
+		this.fluxoUsuarioRepository = fluxoUsuarioRepository;
 		this.convidadoRepository = convidadoRepository;
 		this.actions = actions;
 		this.fluxoComponente = fluxoComponente;
 		this.request = request;
 		this.testeSession = testeSession;
 		this.tarefaDetalhe = tarefaDetalhe;
-		this.cookieManager=cookieManager;
+		this.cookieManager = cookieManager;
 	}
 
 	/**
@@ -110,6 +114,8 @@ public class TarefaController extends BaseController {
 		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
 		Teste teste = testeView.getTeste();
 		tarefa.setTeste(teste);
+		Questionario questionario = new Questionario();
+		tarefa.setQuestionario(questionario);
 		tarefaRepository.create(tarefa);
 		result.redirectTo(TesteController.class).passo2(
 				testeView.getTeste().getId());
@@ -134,14 +140,14 @@ public class TarefaController extends BaseController {
 	@Get()
 	@Path(value = "teste/{idTeste}/editar/passo2/editar/{tarefa.id}/tarefa")
 	public Tarefa editarTarefa(Long idTeste, Tarefa tarefa, boolean isErro) {
-		Teste teste = new Teste();
-		teste.setId(idTeste);
-		testeView.setTeste(teste);
+		this.instanceIdTesteView(idTeste);
 		if (isErro) {
 			return tarefa;
 		}
 		return this.tarefaPertenceTeste(idTeste, tarefa.getId());
 	}
+
+	
 
 	/**
 	 * Pagina para editar Tarefa, se idTeste e TarefaId foor igual a null
@@ -164,17 +170,11 @@ public class TarefaController extends BaseController {
 		tarefaUpdate.setRoteiro(tarefa.getRoteiro());
 		tarefaUpdate.setNome(tarefa.getNome());
 
-		FluxoIdeal fluxoIdeal = tarefaUpdate.getFluxoIdeal();
-		tarefaUpdate.setFluxoIdeal(null);
 		if (!tarefaUpdate.getUrlInicial().equals(tarefa.getUrlInicial().trim())) {
-			tarefaUpdate.setFluxoIdealPreenchido(false);
 			tarefaUpdate.setUrlInicial(tarefa.getUrlInicial());
 		}
+		// TODO Apaagar o fluxo que ja tinha sido gravado caso
 		tarefaRepository.update(tarefaUpdate);
-		if (fluxoIdeal != null) {
-			fluxoIdealRepository.destroy(fluxoIdeal);
-
-		}
 		result.redirectTo(TesteController.class).passo2(idTeste);
 
 	}
@@ -210,7 +210,7 @@ public class TarefaController extends BaseController {
 			System.out.println("Completo");
 		}
 		System.out.println(dados + " - " + completo + " - " + tarefaId);
-		saveFluxo(dados, completo, tarefaId, true);
+		saveFluxo(dados, completo, tarefaId, TipoConvidado.TESTER);
 	}
 
 	@Logado
@@ -221,7 +221,7 @@ public class TarefaController extends BaseController {
 		if (completo) {
 			System.out.println("Completo");
 		}
-		saveFluxo(dados, completo, tarefaId, false);
+		saveFluxo(dados, completo, tarefaId, fluxoComponente.getTipoConvidado());
 		return "Teste";
 	}
 
@@ -238,19 +238,25 @@ public class TarefaController extends BaseController {
 	 *            True se for fluxo ideal
 	 */
 	private void saveFluxo(String dados, Boolean completo, Long tarefaId,
-			boolean fluxoIdeal) {
+			TipoConvidado tipoConvidado) {
 		Gson gson = new Gson();
-		Type collectionType = new TypeToken<Collection<Acao>>() {
+		Type collectionType = new TypeToken<Collection<Action>>() {
 		}.getType();
-		Collection<Acao> ints2 = gson.fromJson(dados, collectionType);
-		List<Acao> acoes = new ArrayList<Acao>(ints2);
+		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
+		List<Action> acoes = new ArrayList<Action>(ints2);
 		this.actions.addAction(acoes);
 		if (completo) {
-			if (fluxoIdeal) {
-				gravaFluxoIdeal(tarefaId);
-			} else {
-				System.out.println("Salva FluxoComponente Usuario");
-				gravaFluxoUSuario(this.fluxoComponente.getTarefaVez());
+			switch (tipoConvidado) {
+			case TESTER:
+				gravaFluxo(tarefaId, tipoConvidado);
+				break;
+			case USER:
+
+				gravaFluxo(this.fluxoComponente.getTarefaVez(), tipoConvidado);
+				break;
+
+			default:
+				break;
 
 			}
 			actions.destroy();
@@ -262,26 +268,48 @@ public class TarefaController extends BaseController {
 	 * Grava o fluxo de usuario de uma determinada Tarefa. Destroy o
 	 * FluxoComponente de ações.
 	 * 
-	 * @param tarefaId O identificador da tarefa que tera o fluxo gravado
+	 * @param tarefaId
+	 *            O identificador da tarefa que tera o fluxo gravado
 	 */
-	private void gravaFluxoUSuario(Long tarefaId) {
-		System.out.println("GRAVA FLUXO DE USUARIO");
-		FluxoUsuario fluxoUsuario = new FluxoUsuario();
+	private void gravaFluxo(Long tarefaId, TipoConvidado tipoConvidado) {
+		// System.out.println("GRAVA FLUXO DE USUARIO");
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
-		fluxoUsuario.setFluxo(fluxo);
-		List<Acao> acoes = actions.getAcoes();
-		for (Acao acao : acoes) {
-			acao.setFluxo(fluxoUsuario.getFluxo());
+		List<Action> acoes = actions.getAcoes();
+		for (Action acao : acoes) {
+			acao.setFluxo(fluxo);
 		}
-		fluxoUsuario.getFluxo().setAcoes(actions.getAcoes());
-		fluxoUsuarioRepository.create(fluxoUsuario);
+		fluxo.setAcoes(actions.getAcoes());
+		// fluxoRepository.create(fluxo);
+		saveTipoFluxo(tipoConvidado, fluxo);
 		fluxoComponente.getProximaTarefa();
-		System.out.println("AGORA vez esta" + fluxoComponente.getTarefaVez());
+		// System.out.println("AGORA vez esta" +
+		// fluxoComponente.getTarefaVez());
 		if (fluxoComponente.getTarefaVez() == 0) {
-			System.out
-					.println("Tarefa = 0 -> redirecionar para responder as ultimas perguntas");
+			// System.out
+			// .println("Tarefa = 0 -> redirecionar para responder as ultimas perguntas");
 			result.redirectTo(RespostaController.class).exibir();
+		}
+	}
+
+	/**
+	 * @param tipoConvidado
+	 * @param fluxo
+	 */
+	private void saveTipoFluxo(TipoConvidado tipoConvidado, Fluxo fluxo) {
+		switch (tipoConvidado) {
+		case TESTER:
+			FluxoIdeal fluxoIdeal = new FluxoIdeal();
+			fluxoIdeal.setFluxo(fluxo);
+			fluxoIdealRepository.create(fluxoIdeal);
+			break;
+		case USER:
+			FluxoUsuario fluxoUsuario = new FluxoUsuario();
+			fluxoUsuario.setFluxo(fluxo);
+			fluxoUsuarioRepository.create(fluxoUsuario);
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -354,7 +382,7 @@ public class TarefaController extends BaseController {
 			return WebClientTester.loadPage(BaseUrl.getInstance(request)
 					+ "/tarefa/loadactiontester", url,
 					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
-					metodo,cookieManager);
+					metodo, cookieManager);
 		} else {
 			return "erro";
 		}
@@ -431,27 +459,39 @@ public class TarefaController extends BaseController {
 		}
 		if (url == null) {
 			url = tarefa.getUrlInicial();
-		} 
-		return WebClientTester.loadPage(BaseUrl.getInstance(request)+"/tarefa/loadactionuser", url,Integer.parseInt(idTarefa.toString()), parametrosRecebidos,metodo,cookieManager);
+		}
+		return WebClientTester.loadPage(BaseUrl.getInstance(request)
+				+ "/tarefa/loadactionuser", url,
+				Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
+				metodo, cookieManager);
 	}
 
-	private void gravaFluxoIdeal(Long tarefaId) {
-		System.out.println("Grava FluxoTarefa IDEAL");
-		Long idTeste = testeSession.getTeste().getId();
-		Tarefa tarefa = this.tarefaPertenceTeste(idTeste, tarefaId);
-		FluxoIdeal fluxoIdeal = new FluxoIdeal();
-		fluxoIdeal.setFluxo(new Fluxo());
-		fluxoIdeal.getFluxo().setUsuario(usuarioLogado.getUsuario());
-		List<Acao> acoes = actions.getAcoes();
-		for (Acao acao : acoes) {
-			acao.setFluxo(fluxoIdeal.getFluxo());
-		}
-		fluxoIdeal.getFluxo().setAcoes(acoes);
-		tarefa.setFluxoIdeal(fluxoIdeal);
-		tarefa.setFluxoIdealPreenchido(true);
-		tarefaRepository.update(tarefa);
-		tarefaDetalhe.destroy();
-		System.out.println("Tarefa é pra ter sido salva");
+	// private void gravaFluxoIdeal(Long tarefaId) {
+	// System.out.println("Grava FluxoTarefa IDEAL");
+	// Long idTeste = testeSession.getTeste().getId();
+	// Tarefa tarefa = this.tarefaPertenceTeste(idTeste, tarefaId);
+	// Fluxo fluxoIdeal = new Fluxo();
+	// fluxoIdeal.setUsuario(usuarioLogado.getUsuario());
+	// List<Acao> acoes = actions.getAcoes();
+	// for (Acao acao : acoes) {
+	// acao.setFluxo(fluxoIdeal);
+	// }
+	// fluxoIdeal.setAcoes(acoes);
+	// tarefa.setFluxoIdeal(fluxoIdeal);
+	// tarefa.setFluxoIdealPreenchido(true);
+	// tarefaRepository.update(tarefa);
+	// tarefaDetalhe.destroy();
+	// System.out.println("Tarefa é pra ter sido salva");
+	// }
+	@Logado
+	@Get(value = "teste/{idTeste}/editar/passo2/editar/{idTarefa}/tarefa/questionario")
+	public void questionario(Long idTeste, Long idTarefa) {
+		this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
+		Tarefa tarefa = tarefaRepository.find(idTarefa);
+		result.include(tarefa);
+		List<Pergunta> perguntas = tarefa.getQuestionario().getPerguntas();
+		result.include("perguntas", perguntas);
+		this.instanceIdTesteView(idTeste);
 	}
 
 	/**

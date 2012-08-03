@@ -19,7 +19,9 @@ import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
+import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.Usuario;
+import br.ufpi.models.vo.ConvidadoVO;
 import br.ufpi.repositories.ConvidadoRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.BaseUrl;
@@ -62,9 +64,7 @@ public class TesteController extends BaseController {
 		Teste teste = new Teste();
 		teste.setUsuarioCriador(usuarioLogado.getUsuario());
 		teste.setTitulo(titulo);
-		Questionario questionario = new Questionario();
-		questionario.setTeste(teste);
-		teste.setSatisfacao(questionario);
+		teste.setSatisfacao(new Questionario());
 		testeRepository.create(teste);
 		result.redirectTo(this).passo1(teste.getId());
 	}
@@ -170,23 +170,9 @@ public class TesteController extends BaseController {
 	public void liberarTeste(Long idTeste) {
 		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 		Teste teste = testeView.getTeste();
-		List<Usuario> usuarios = testeRepository
-				.getUsuariosConvidadosAll(idTeste);
-		if (usuarios.isEmpty() || usuarios == null) {
-			validator.checking(new Validations() {
-
-				{
-					that(false, "nenhum.usuario.convidado",
-							"nenhum.usuario.convidado");
-				}
-			});
-			validator.onErrorRedirectTo(this).passo4(idTeste);
-		}
-
 		List<Tarefa> tarefas = teste.getTarefas();
 		if (tarefas.isEmpty() || tarefas == null) {
 			validator.checking(new Validations() {
-
 				{
 					that(false, "sem.tarefa.cadastrada",
 							"sem.tarefa.cadastrada");
@@ -194,24 +180,13 @@ public class TesteController extends BaseController {
 			});
 		}
 
-		for (Tarefa tarefa : tarefas) {
-			if (!tarefa.isFluxoIdealPreenchido()) {
-				final Tarefa tarefaAux = tarefa;
-				validator.checking(new Validations() {
-
-					{
-						that(false, "tarefa.sem.fluxo.ideal",
-								"tarefa.sem.fluxo.ideal", tarefaAux.getNome());
-					}
-				});
-			}
-		}
 		validator.onErrorRedirectTo(this).passo4(idTeste);
 		BaseUrl.getInstance(request);
 		EmailUtils email = new EmailUtils();
-
-		for (Usuario usuario : usuarios) {
-			email.enviarConviteTeste(usuario, teste);
+		 List<ConvidadoVO> convidadoVOs = testeRepository
+				.getUsuariosConvidadosAll(idTeste);
+		for (ConvidadoVO usuario : convidadoVOs) {
+			email.enviarConviteTeste(usuario.getUsuario(), teste);
 		}
 		teste.setLiberado(true);
 		testeRepository.update(teste);
@@ -226,16 +201,23 @@ public class TesteController extends BaseController {
 	 * @param idUsuarios
 	 *            Lista de Usuarios que foram marcados para participar do teste
 	 * @param idTeste
+	 * @param tipoConvidado
+	 *            True para USER e False para TESTER
 	 */
 	@Logado
 	@Post("teste/convidar/usuario")
-	public void convidarUsuario(List<Long> idUsuarios, Long idTeste) {
+	public void convidarUsuario(List<Long> idUsuarios, Long idTeste,
+			boolean tipoConvidado) {
+		System.out.println("Tipo Convidado " + tipoConvidado);
+		System.out.println("Teste id " + idTeste);
+		System.out.println("Identificador dos usuario " + idUsuarios);
 		validateComponente.validarId(idTeste);
 		if (idUsuarios != null && !idUsuarios.isEmpty()) {
 			this.testePertenceUsuarioLogado(idTeste);
-			try{
-			convidadoRepository.convidarUsuarios(idUsuarios, idTeste);}
-			catch (PersistenceException e) {
+			try {
+				convidadoRepository.convidarUsuarios(idUsuarios, idTeste,
+						TipoConvidado.parseTipoConvidado(tipoConvidado));
+			} catch (PersistenceException e) {
 				validateComponente.gerarErroCampoAlterado();
 				validator.onErrorForwardTo(this).convidar(idTeste);
 			}
@@ -367,21 +349,21 @@ public class TesteController extends BaseController {
 	 *            true para testes liberados e false para testes não liberados
 	 */
 	private void addUsers(Long idTeste, boolean liberado) {
+		int quantidade = 50;
+		int numeroPagina = 1;
 		if (liberado) {
 			this.testePertenceUsuarioLogado(idTeste);
 		} else {
 			this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
-		}
-		if (!liberado) {
-			Paginacao<Usuario> usuariosConvidados = testeRepository
+			Paginacao<ConvidadoVO> usuariosConvidados = testeRepository
 					.getUsuariosConvidados(idTeste, 1, 50);
-			result.include("usuariosEscolhidos",
+			result.include("convidados",
 					usuariosConvidados.getListObjects());
 			result.include("totalUsuariosEscolhidos",
 					usuariosConvidados.getCount());
 		}
 		Paginacao<Usuario> paginacaoUsuariosLivres = testeRepository
-				.usuariosLivresParaPartciparTeste(idTeste, 1, 50);
+				.usuariosLivresParaPartciparTeste(idTeste, numeroPagina,quantidade);
 		result.include("usuariosLivres",
 				paginacaoUsuariosLivres.getListObjects());
 		result.include("totalUsuarios", paginacaoUsuariosLivres.getCount());
@@ -397,37 +379,48 @@ public class TesteController extends BaseController {
 	public void meusProjetos(int numeroPagina) {
 		validateComponente.validarId((long) numeroPagina);
 		Paginacao<Teste> testesParticipados = testeRepository
-				.getTestesParticipados(usuarioLogado.getUsuario().getId(),numeroPagina ,
-						50);
+				.getTestesParticipados(usuarioLogado.getUsuario().getId(),
+						numeroPagina, 50);
 		result.include("testesParticipados",
 				testesParticipados.getListObjects());
 		result.include("testesParticipadosCount", testesParticipados.getCount());
 	}
 
-//	@Get("exibir/{idTeste}")
-//	public StringBuilder exibir(Long idTeste) {
-//		StringBuilder builder = new StringBuilder();
-//		Teste teste = this.testeRepository.find(idTeste);
-//		for (Tarefa tarefa : teste.getTarefas()) {
-//			List<Acao> acoes = tarefa.getFluxoIdeal().getFluxo().getAcoes();
-//			builder.append(acoes);
-//			for (FluxoUsuario fluxo : tarefa.getFluxoUsuario()) {
-//				builder.append(fluxo.getFluxo().getAcoes());
-//			}
-//		}
-//		return builder;
-//
-//	}
+	// @Get("exibir/{idTeste}")
+	// public StringBuilder exibir(Long idTeste) {
+	// StringBuilder builder = new StringBuilder();
+	// Teste teste = this.testeRepository.find(idTeste);
+	// for (Tarefa tarefa : teste.getTarefas()) {
+	// List<Acao> acoes = tarefa.getFluxoIdeal().getFluxo().getAcoes();
+	// builder.append(acoes);
+	// for (FluxoUsuario fluxo : tarefa.getFluxoUsuario()) {
+	// builder.append(fluxo.getFluxo().getAcoes());
+	// }
+	// }
+	// return builder;
+	//
+	// }
+
+	/**
+	 * Lista todos os testes liberados do usuario logado.
+	 * 
+	 * @param numeroPagina
+	 *            Numero da pagina que o usuario esta visualizando no momento
+	 */
+
 	@Logado
 	@Get("testes/liberados/pag/{numeroPagina}")
-	public void listarTestesLiberados(int numeroPagina){
-		int qtdTestesPagina = 50;
+	public void listarTestesLiberados(int numeroPagina) {
+		int qtdTestesPorPaginas = 2;
 		validateComponente.validarId((long) numeroPagina);
-		Paginacao<Teste> testesCriadosLiberados = testeRepository.getTestesCriadosLiberados(usuarioLogado.getUsuario().getId(), qtdTestesPagina, numeroPagina );
-		Long qtdTestesLiberados = testesCriadosLiberados.getCount();
-		result.include("testesLiberados", testesCriadosLiberados.getListObjects());
-		result.include("testesLiberadosCount", qtdTestesLiberados);
-		result.include("qtdTestesPagina", qtdTestesLiberados/qtdTestesPagina);
+		Paginacao<Teste> testesCriadosLiberados = testeRepository
+				.getTestesCriadosLiberados(usuarioLogado.getUsuario().getId(),
+						qtdTestesPorPaginas, numeroPagina);
+		Long qtdTestesTotais = testesCriadosLiberados.getCount();
+		result.include("testesLiberados",
+				testesCriadosLiberados.getListObjects());
+		testesCriadosLiberados.geraPaginacao(numeroPagina, qtdTestesPorPaginas,
+				qtdTestesTotais, result);
 	}
 
 }

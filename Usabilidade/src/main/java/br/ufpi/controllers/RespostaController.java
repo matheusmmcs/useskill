@@ -19,6 +19,7 @@ import br.ufpi.models.RespostaEscrita;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.RespostaAlternativaRepository;
 import br.ufpi.repositories.RespostaEscritaRepository;
+import br.ufpi.repositories.TesteRepository;
 
 @Resource
 public class RespostaController extends BaseController {
@@ -26,6 +27,23 @@ public class RespostaController extends BaseController {
 	private final RespostaAlternativaRepository alternativaRepository;
 	private final PerguntaRepository perguntaRepository;
 	private final FluxoComponente fluxoComponente;
+	private final TesteRepository testeRepository;
+
+	public RespostaController(Result result, Validator validator,
+			TesteView testeView, UsuarioLogado usuarioLogado,
+			ValidateComponente validateComponente,
+			RespostaEscritaRepository escritaRepository,
+			RespostaAlternativaRepository alternativaRepository,
+			PerguntaRepository perguntaRepository,
+			FluxoComponente fluxoComponente, TesteRepository testeRepository) {
+		super(result, validator, testeView, usuarioLogado, validateComponente);
+		this.escritaRepository = escritaRepository;
+		this.alternativaRepository = alternativaRepository;
+		this.perguntaRepository = perguntaRepository;
+		this.fluxoComponente = fluxoComponente;
+		this.testeRepository = testeRepository;
+	}
+
 
 	@Logado
 	@Post("/teste/salvar/resposta/escrita")
@@ -42,19 +60,6 @@ public class RespostaController extends BaseController {
 		result.redirectTo(this).exibir();
 	}
 
-	public RespostaController(Result result, Validator validator,
-			TesteView testeView, UsuarioLogado usuarioLogado,
-			ValidateComponente validateComponente,
-			RespostaEscritaRepository escritaRepository,
-			RespostaAlternativaRepository alternativaRepository,
-			PerguntaRepository perguntaRepository,
-			FluxoComponente fluxoComponente) {
-		super(result, validator, testeView, usuarioLogado, validateComponente);
-		this.escritaRepository = escritaRepository;
-		this.alternativaRepository = alternativaRepository;
-		this.perguntaRepository = perguntaRepository;
-		this.fluxoComponente = fluxoComponente;
-	}
 
 	@Logado
 	@Post("/teste/salvar/resposta/alternativa")
@@ -182,7 +187,7 @@ public class RespostaController extends BaseController {
 		if (testeId != null && perguntaId != null) {
 			Pergunta pergunta = perguntaPertenceUsuarioTesteLiberado(
 					perguntaId, testeId);
-			result.include("teste", pergunta.getQuestionario().getTeste());
+			result.include("teste", testeRepository.find(testeId));
 			result.include("pergunta", pergunta);
 
 		} else {
@@ -208,7 +213,7 @@ public class RespostaController extends BaseController {
 				validateComponente
 						.redirecionarHome("pergunta.nao.liberada.ou.nao.pertence.ao.usuario");
 			} else {
-				testeView.setTeste(pergunta.getQuestionario().getTeste());
+				testeView.setTeste(testeRepository.find(testeId));
 			}
 			return pergunta;
 		}
