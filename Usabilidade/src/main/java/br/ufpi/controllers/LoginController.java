@@ -91,13 +91,13 @@ public class LoginController extends BaseController {
 		if( numeroPagina==0){
 			numeroPagina=1;
 		}
-		int quantidade = 2;
+	
 		Paginacao<Teste> paginacao = usuarioRepository
-		 .findTesteNaoLiberadosOrdenadorData(usuarioLogado.getUsuario().getId(),numeroPagina,quantidade);
+		 .findTesteNaoLiberadosOrdenadorData(usuarioLogado.getUsuario().getId(),numeroPagina,Paginacao.OBJETOS_POR_PAGINA);
 		
 		result.include("testesCriados",paginacao.getListObjects()) ;
 		 Long qttObjetosNoBanco=paginacao.getCount();
-		paginacao.geraPaginacao(numeroPagina, quantidade, qttObjetosNoBanco, result);
+		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA, qttObjetosNoBanco, result);
 	}
 
 	/**

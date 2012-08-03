@@ -183,7 +183,7 @@ public class TesteController extends BaseController {
 		validator.onErrorRedirectTo(this).passo4(idTeste);
 		BaseUrl.getInstance(request);
 		EmailUtils email = new EmailUtils();
-		 List<ConvidadoVO> convidadoVOs = testeRepository
+		List<ConvidadoVO> convidadoVOs = testeRepository
 				.getUsuariosConvidadosAll(idTeste);
 		for (ConvidadoVO usuario : convidadoVOs) {
 			email.enviarConviteTeste(usuario.getUsuario(), teste);
@@ -357,13 +357,13 @@ public class TesteController extends BaseController {
 			this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 			Paginacao<ConvidadoVO> usuariosConvidados = testeRepository
 					.getUsuariosConvidados(idTeste, 1, 50);
-			result.include("convidados",
-					usuariosConvidados.getListObjects());
+			result.include("convidados", usuariosConvidados.getListObjects());
 			result.include("totalUsuariosEscolhidos",
 					usuariosConvidados.getCount());
 		}
 		Paginacao<Usuario> paginacaoUsuariosLivres = testeRepository
-				.usuariosLivresParaPartciparTeste(idTeste, numeroPagina,quantidade);
+				.usuariosLivresParaPartciparTeste(idTeste, numeroPagina,
+						quantidade);
 		result.include("usuariosLivres",
 				paginacaoUsuariosLivres.getListObjects());
 		result.include("totalUsuarios", paginacaoUsuariosLivres.getCount());
@@ -378,12 +378,14 @@ public class TesteController extends BaseController {
 	@Logado
 	public void meusProjetos(int numeroPagina) {
 		validateComponente.validarId((long) numeroPagina);
-		Paginacao<Teste> testesParticipados = testeRepository
-				.getTestesParticipados(usuarioLogado.getUsuario().getId(),
-						numeroPagina, 50);
-		result.include("testesParticipados",
-				testesParticipados.getListObjects());
-		result.include("testesParticipadosCount", testesParticipados.getCount());
+		Paginacao<Teste> paginacao = testeRepository.getTestesParticipados(
+				usuarioLogado.getUsuario().getId(), numeroPagina, 50);
+		result.include("testesParticipados", paginacao.getListObjects());
+		Long qttObjetosNoBanco = paginacao.getCount();
+//		result.include("testesParticipadosCount", qttObjetosNoBanco);
+		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA,
+				qttObjetosNoBanco, result);
+
 	}
 
 	// @Get("exibir/{idTeste}")
@@ -409,18 +411,20 @@ public class TesteController extends BaseController {
 	 */
 
 	@Logado
-	@Get("testes/liberados/pag/{numeroPagina}")
+	@Get({ "testes/liberados/pag/{numeroPagina}", "testes/liberados" })
 	public void listarTestesLiberados(int numeroPagina) {
-		int qtdTestesPorPaginas = 2;
+		if (numeroPagina == 0) {
+			numeroPagina = 1;
+		}
 		validateComponente.validarId((long) numeroPagina);
 		Paginacao<Teste> testesCriadosLiberados = testeRepository
 				.getTestesCriadosLiberados(usuarioLogado.getUsuario().getId(),
-						qtdTestesPorPaginas, numeroPagina);
+						Paginacao.OBJETOS_POR_PAGINA, numeroPagina);
 		Long qtdTestesTotais = testesCriadosLiberados.getCount();
 		result.include("testesLiberados",
 				testesCriadosLiberados.getListObjects());
-		testesCriadosLiberados.geraPaginacao(numeroPagina, qtdTestesPorPaginas,
-				qtdTestesTotais, result);
+		testesCriadosLiberados.geraPaginacao(numeroPagina,
+				Paginacao.OBJETOS_POR_PAGINA, qtdTestesTotais, result);
 	}
 
 }

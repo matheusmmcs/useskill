@@ -15,6 +15,7 @@ import br.com.caelum.vraptor.Result;
 public class Paginacao<T> {
 	private Long count;
 	private List<T> listObjects;
+	public static final int OBJETOS_POR_PAGINA=10;
 
 	public Paginacao() {
 		super();
