@@ -52,7 +52,6 @@ public class TesteTestProcedure {
 		teste.setTituloPublico("Titulo publico");
 		teste.setTextoIndroducao("Texto introdução");
 		Questionario questionario = new Questionario();
-		questionario.setTeste(teste);
 		teste.setSatisfacao(questionario);
 
 		return teste;

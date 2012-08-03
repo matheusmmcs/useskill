@@ -19,19 +19,22 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.TarefaController;
-import br.ufpi.models.Acao;
+import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoIdeal;
+import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.ConvidadoRepository;
 import br.ufpi.repositories.FluxoIdealRepository;
+import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.repositories.Implement.FluxoIdealRepositoryImpl;
+import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
 import br.ufpi.repositories.Implement.FluxoUsuarioRepositoryImpl;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 import br.ufpi.repositories.Implement.TesteRepositoryImpl;
@@ -51,17 +54,17 @@ public class TarefaTestProcedure {
 		TarefaRepository tarefaRepository = newInstanceTarefaRepository(entityManager);
 		TesteRepository testeRepository = TesteTestProcedure
 				.newInstanceTesteRepository(entityManager);
-		FluxoUsuarioRepository fluxoUsuarioRepository = newInstanceFluxoUsuarioRepository(entityManager);
 		ConvidadoRepository convidadoRepository = UsuarioTestProcedure
 				.newInstanceConvidadoRepository(entityManager);
 		TarefaDetalhe tarefaDetalhe = new TarefaDetalhe();
 
-		FluxoIdealRepository fluxoIdealRepository= new FluxoIdealRepositoryImpl(entityManager);
 		TesteSession testeSession = null;
 		SessionActions actions = null;
 		FluxoComponente fluxoComponente = null;
 		CookieManager cookieManager= new CookieManager();
-		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoUsuarioRepository, fluxoIdealRepository, convidadoRepository, actions, fluxoComponente, request, testeSession, tarefaDetalhe, cookieManager);
+		FluxoUsuarioRepository fluxoUsuarioRepository=new FluxoUsuarioRepositoryImpl(entityManager);
+		FluxoIdealRepository fluxoIdealRepository=new FluxoIdealRepositoryImpl(entityManager);
+		TarefaController controller=new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoIdealRepository, fluxoUsuarioRepository, convidadoRepository, actions, fluxoComponente, request, testeSession, tarefaDetalhe, cookieManager);
 		return controller;
 	}
 
@@ -77,20 +80,20 @@ public class TarefaTestProcedure {
 		ValidateComponente validateComponente = new ValidateComponente(
 				validator);
 		TesteSession testeSession = new TesteSession();
-		FluxoIdealRepository fluxoIdealRepository= new FluxoIdealRepositoryImpl(entityManager);
 		TarefaRepository tarefaRepository = new TarefaRepositoryImpl(
 				entityManager);
 		TesteRepository testeRepository = new TesteRepositoryImpl(entityManager);
 		testeSession.setTarefa(tarefaRepository.find(idTarefa));
 		testeSession.setTeste(testeRepository.find(idTeste));
-		FluxoUsuarioRepository fluxoUsuarioRepository = newInstanceFluxoUsuarioRepository(entityManager);
 		ConvidadoRepository convidadoRepository = UsuarioTestProcedure
 				.newInstanceConvidadoRepository(entityManager);
 		SessionActions actions = null;
 		TarefaDetalhe tarefaDetalhe = null;
 		FluxoComponente fluxoComponente = null;
 		CookieManager cookieManager= new CookieManager();
-		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoUsuarioRepository, fluxoIdealRepository, convidadoRepository, actions, fluxoComponente, request, testeSession, tarefaDetalhe,cookieManager);
+		FluxoUsuarioRepository fluxoUsuarioRepository=new FluxoUsuarioRepositoryImpl(entityManager);
+		FluxoIdealRepository fluxoIdealRepository=new FluxoIdealRepositoryImpl(entityManager);
+		TarefaController controller =new  TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoIdealRepository, fluxoUsuarioRepository, convidadoRepository, actions, fluxoComponente, request, testeSession, tarefaDetalhe, cookieManager);
 		return controller;
 	}
 
@@ -99,9 +102,9 @@ public class TarefaTestProcedure {
 		return new TarefaRepositoryImpl(entityManager);
 	}
 
-	public static FluxoUsuarioRepository newInstanceFluxoUsuarioRepository(
+	public static FluxoRepository newInstanceFluxoRepository(
 			EntityManager entityManager) {
-		return new FluxoUsuarioRepositoryImpl(entityManager);
+		return new FluxoRepositoryImpl(entityManager);
 	}
 
 	public static Tarefa newInstanceTarefa(String urlInicial, String roteiro,
@@ -111,6 +114,7 @@ public class TarefaTestProcedure {
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
 		tarefa.setTeste(teste);
+		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 
@@ -120,6 +124,7 @@ public class TarefaTestProcedure {
 		tarefa.setNome(nome);
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
+		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 
@@ -131,6 +136,7 @@ public class TarefaTestProcedure {
 		tarefa.setId(id);
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
+		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 
@@ -141,7 +147,7 @@ public class TarefaTestProcedure {
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
 		tarefa.setTeste(teste);
-		tarefa.setFluxoIdealPreenchido(fluxoIdealPreenchido);
+		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 
@@ -162,16 +168,16 @@ public class TarefaTestProcedure {
 		return fluxo;
 	}
 
-	public static List<Acao> newInstanceAcoes(Fluxo fluxo) {
-		ArrayList<Acao> acoes = new ArrayList<Acao>();
+	public static List<Action> newInstanceAcoes(Fluxo fluxo) {
+		ArrayList<Action> acoes = new ArrayList<Action>();
 		for (int i = 0; i < 10; i++) {
-			Acao acao = new Acao();
-			acao.setConteudo("conteudo");
+			Action acao = new Action();
+			acao.setsContent("conteudo");
 			acao.setFluxo(fluxo);
-			acao.setPosicaoPaginaX(10 * i);
-			acao.setPosicaoPaginaY(10 * i);
-			acao.setTagName("tag");
-			acao.setUrl("www.globo.com");
+			acao.setsPosX(10 * i);
+			acao.setsPosY(10 * i);
+			acao.setsTagName("tag");
+			acao.setsUrl("www.globo.com");
 			acoes.add(acao);
 		}
 		return acoes;
