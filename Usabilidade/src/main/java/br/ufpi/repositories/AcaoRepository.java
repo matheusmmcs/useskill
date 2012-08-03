@@ -2,16 +2,16 @@ package br.ufpi.repositories;
 
 import java.util.List;
 
-import br.ufpi.models.Acao;
+import br.ufpi.models.Action;
 
 public interface AcaoRepository {
-	void create(Acao entity);
+	void create(Action entity);
 
-	Acao update(Acao entity);
+	Action update(Action entity);
 
-	void destroy(Acao entity);
+	void destroy(Action entity);
 
-	Acao find(Long id);
+	Action find(Long id);
 
-	List<Acao> findAll();
+	List<Action> findAll();
 }

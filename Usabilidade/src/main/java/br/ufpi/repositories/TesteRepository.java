@@ -2,6 +2,7 @@ package br.ufpi.repositories;
 
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
+import br.ufpi.models.vo.ConvidadoVO;
 import br.ufpi.util.Paginacao;
 import java.util.List;
 
@@ -62,13 +63,13 @@ public interface TesteRepository {
 	 * @param quantidade
 	 * @return
 	 */
-	Paginacao<Usuario> getUsuariosConvidados(Long testeId, int numeroPagina,
+	Paginacao<ConvidadoVO> getUsuariosConvidados(Long testeId, int numeroPagina,
 			int quantidade);
 	/**Procura por todos os usuarios convidados para um teste.
 	 * @param testeId
 	 * @return
 	 */
-	List< Usuario> getUsuariosConvidadosAll(Long testeId);
+	List<ConvidadoVO> getUsuariosConvidadosAll(Long testeId);
 	/***
 	 * 
 	 * Lista todos os testes que um usuario foi convidado para participar

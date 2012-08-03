@@ -20,20 +20,17 @@ public interface PerguntaRepository {
 	 * Procura se uma pergunta pertence a um determinado Teste e a um
 	 * determinado Usuario
 	 * 
-         * @param usuarioId 
-         * @param testeId 
-         * @param perguntaId 
-         * @param testeLiberado indica se o teste esta liberado ou não
+	 * @param usuarioId
+	 * @param testeId
+	 * @param perguntaId
+	 * @param testeLiberado
+	 *            indica se o teste esta liberado ou não
 	 * @return Pergunta se obedecer todos os pre-requisitos e null se não
 	 *         encontra a pergunta
 	 */
 	Pergunta perguntaPertenceUsuario(Long usuarioId, Long testeId,
-			Long perguntaId,Boolean testeLiberado);
+			Long perguntaId, Boolean testeLiberado);
 
-	/**
-	 * @param pergunta
-	 * @return
-	 */
 	/**
 	 * Procura por o questionario de uma determinada pergunta
 	 * 
@@ -45,5 +42,17 @@ public interface PerguntaRepository {
 	Questionario findQuestionario(Long idPergunta);
 
 	boolean deleteAlternativas(Long idPergunta);
+
+	/**
+	 * Procura por pergunta que pertence a uma determinada tarefa;
+	 * 
+	 * @param usuarioId
+	 * @param testeId
+	 * @param perguntaId
+	 * @param tarefaId
+	 * @return
+	 */
+	Pergunta perguntaPertenceUsuarioETarefa(Long usuarioId, Long testeId,
+			Long perguntaId, Long tarefaId);
 
 }
