@@ -35,7 +35,7 @@
 			</legend>
 
             <div class="form-actions">
-                <input type="submit" value="<fmt:message key="liberar.teste"/>" title="Liberar Teste" class="btn btn-primary btn-large" style="width: 200px; height: 50px; margin-left: 100px;"/>
+                <input type="submit" value="<fmt:message key="liberar.teste"/>" title="Liberar Teste" class="btn btn-primary btn-large" style="width: 200px; height: 50px; margin-left: 230px;"/>
             </div>
         </fieldset>
     </form>

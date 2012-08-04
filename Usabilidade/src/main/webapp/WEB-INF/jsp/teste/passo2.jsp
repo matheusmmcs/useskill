@@ -72,12 +72,12 @@
 									href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">
 										${tarefa.nome}</a>
 								</td>
-								<td>
-	                                <a class="btn"  href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa/questionario" style="margin-left: 15px;">
+								<td class="centertd">
+	                                <a class="btn"  href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa/questionario">
 	                                <i class="icon-search"></i>
 	                                </a>
                                 </td>
-								<td><a class="btn"
+								<td class="centertd"><a class="btn"
 									href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">
 										<span class="icon-pencil"></span> </a> <a class="btn btn-primary"
 									href="${pageContext.request.contextPath}/teste/removed/tarefa/idTeste/${testeView.teste.id}/idTarefa/${tarefa.id }"
@@ -112,7 +112,7 @@
 									href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta">
 										${pergunta.titulo}</a>
 								</td>
-								<td><a class="btn"
+								<td class="centertd"><a class="btn"
 									href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta"
 									title="<fmt:message key="table.editar"/>"> <span
 										class="icon-pencil"></span> </a> 

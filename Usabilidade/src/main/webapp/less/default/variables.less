@@ -35,20 +35,21 @@
 @colorDarker:           darken(@color, 15%);
 @colorDark:             darken(@color, 10%);
 @color:                 #557bb2; //azul: 557bb2 , verde: 59ae4e
-@colorLight:            lighten(@color, 30%);
-@colorLighter:          lighten(@color, 39%);
-@colorWhite:            lighten(@color, 43%);
+@colorLight:            lighten(@color, 25%);
+@colorLighter:          lighten(@color, 30%);
+@colorWhite:            lighten(@color, 39%);
 
 @UScolorBackGround:		@colorWhite;
 @UScolorFont:			@colorBlack;
 @UScolorMenuTopBack:	@colorDarker;
 @UScolorMenuTopBorder:	@color;
 
-@UScolorShadow:			#ddd;
+@UScolorShadow:			#bbb;
 
 // Shadows
 // -------------------------
 @USShadowDefault:		0px 2px 8px @UScolorShadow;
+@USShadowMin:			2px 2px 4px darken(@colorLighter,4%);
 
 
 // Paths
@@ -90,7 +91,7 @@
 
 // Links
 // -------------------------
-@linkColor:             @color; //#08c
+@linkColor:             darken(@color, 10%); //#08c
 @linkColorHover:        darken(@linkColor, 20%);
 
 

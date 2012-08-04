@@ -28,9 +28,9 @@
 				</a></li>
 			</ul>
 			<ul class="nav nav-list nav-links" style="display: none;">
-				<li><a href="#"><fmt:message key="testes.construcao"/></a>
+				<li><a href="${pageContext.request.contextPath}/usuario"><fmt:message key="testes.construcao"/></a>
 				</li>
-				<li><a href="#"><fmt:message key="testes.liberado"/></a>
+				<li><a href="${pageContext.request.contextPath}/testes/liberados"><fmt:message key="testes.liberado"/></a>
 				</li>
 				<li><a href="#"><fmt:message key="testes.convites"/></a>
 				</li>

@@ -43,7 +43,7 @@
 							<td><a data-topmenu="1"
 								href="${pageContext.request.contextPath}/teste/${teste.id}/editar/passo1">${teste.titulo}</a>
 							</td>
-							<td><a class="btn"
+							<td class="centertd"><a class="btn"
 								href="${pageContext.request.contextPath}/teste/${teste.id}/editar/passo1"
 								title="<fmt:message key="table.editar"/>" data-topmenu="1"> <span
 									class="icon-pencil"></span> </a> <a class="btn btn-primary"
@@ -55,45 +55,9 @@
 				</tbody>
 			</table>
 		</fieldset>
-		 <div class="pagination">
-        <ul>      
-        	<c:choose>
-					<c:when test="${paginaAtual==1}">
-						<li class="disabled"><a href="#"> << </a></li>
-					</c:when>
-					<c:otherwise>
-						<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual-1}"> << </a></li>
-					</c:otherwise>
-			</c:choose>
-			<c:choose>
-				<c:when test="${paginaAtual-2>0}">
-					<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual-2}">${paginaAtual-2}</a></li>
-				</c:when>
-			</c:choose>
-			<c:choose>
-				<c:when test="${paginaAtual-1>0}">
-					<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual-1}">${paginaAtual-1}</a></li>
-				</c:when>
-			</c:choose>
-			<li><a class="active" href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual}">${paginaAtual}</a></li>
-			<c:choose>
-					<c:when test="${paginaAtual+1<=qtdPaginas}">
-						<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual+1}">${paginaAtual+1}</a></li>
-					</c:when>
-			</c:choose>
-			<c:choose>
-				<c:when test="${paginaAtual+2<=qtdPaginas}">
-					<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual+2}">${paginaAtual+2}</a></li>
-				</c:when>
-			</c:choose>
-			<c:choose>
-					<c:when test="${paginaAtual==qtdPaginas}">
-						<li class="disabled"><a href="#"> >> </a></li>
-					</c:when>
-					<c:otherwise>
-						<li><a href="${pageContext.request.contextPath}/usuario/pag/${paginaAtual+1}"> >> </a></li>
-					</c:otherwise>
-			</c:choose>
-        </ul>
-      </div>
+		
+		<jsp:include page="../paginator.jsp" flush="true">
+			<jsp:param name="link" value="${pageContext.request.contextPath}/usuario/pag/"/>
+		</jsp:include>
+	</div>
 </div>

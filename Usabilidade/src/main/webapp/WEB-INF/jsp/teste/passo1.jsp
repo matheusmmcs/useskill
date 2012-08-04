@@ -63,14 +63,3 @@
 		</fieldset>
 	</form>
 </div>
-<script type="text/javascript">
-/*
-    $("teste_passo1").validate({
-        rules:{
-            "titulo":{requerid:true},
-            "tituloPublico":{requerid:true},
-            "textoIntroducao":{requerid:true}
-        }
-    });
-*/
-</script>

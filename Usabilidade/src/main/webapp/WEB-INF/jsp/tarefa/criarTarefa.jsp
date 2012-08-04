@@ -51,7 +51,7 @@
         	<div class="control-group">
             	<label class="control-label" for="input01"><fmt:message key="tarefa.urlInicial" /> *</label>
             	<div class="controls">
-	                <input class="informacoes span6" rel="tooltip" data-original-title="first tooltip" type="text" value="${tarefa.urlInicial }" name="tarefa.urlInicial"/> 
+	                <input type="text" value="${tarefa.urlInicial }" name="tarefa.urlInicial" class="span6"/> 
             	</div>
         	</div>
 
@@ -65,6 +65,7 @@
 	</form>
 </div>
 
+<!-- class="informacoes span6" rel="tooltip" data-original-title="first tooltip" -->
 <script>
 	(function($){
 		$(document).ready(function(){

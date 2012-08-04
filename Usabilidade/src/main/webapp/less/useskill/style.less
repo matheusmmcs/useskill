@@ -34,15 +34,36 @@
 		.breadcrumb{
 			margin-bottom: 10px;
 		}
+		.form-layout{
+			position: relative;
+			z-index: 50;
+		}
 		.nav.nav-tabs{
-			li:not(.active) a:hover{
-				background: @colorLighter;
+			position: relative;
+			z-index: 20;
+			li a{
+				.box-shadow(@USShadowMin);
+				
+			}
+			li:not(.active) a{
+				background: lighten(@colorLighter,14%);
+				color: @colorDarker;
+				&:hover{
+					background: lighten(@colorLighter,5%);
+				}
 			}
 		}
 		.btn-toolbar{
 			.minHeight(30px);
 			a.btn{
 				padding: 5px 20px;
+			}
+		}
+		.pagination{
+			text-align: center;
+			
+			a.active{
+				background: @UScolorBackGround;
 			}
 		}
 	}
@@ -65,9 +86,10 @@
 			}
 		}
 		.form-actions{
-			background: lighten(@colorLighter,5%);
+			background: lighten(@colorLighter,7%);
 			border-top: 1px solid @colorLighter;
 			border-bottom: 1px solid @colorLighter;
+			padding: 9px 20px 10px;
 		}
 		
 		.control-group-min{
@@ -111,7 +133,9 @@ footer{
 		text-align: center;
 	}
 }
-
+.centertd{
+	text-align: center !important;
+}
 // Estilos de Visualização
 //	------------------------------
 .backWhiteWithShadow{
