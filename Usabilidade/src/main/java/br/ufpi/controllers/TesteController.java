@@ -382,7 +382,7 @@ public class TesteController extends BaseController {
 				usuarioLogado.getUsuario().getId(), numeroPagina, 50);
 		result.include("testesParticipados", paginacao.getListObjects());
 		Long qttObjetosNoBanco = paginacao.getCount();
-//		result.include("testesParticipadosCount", qttObjetosNoBanco);
+		// result.include("testesParticipadosCount", qttObjetosNoBanco);
 		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA,
 				qttObjetosNoBanco, result);
 
@@ -425,6 +425,21 @@ public class TesteController extends BaseController {
 				testesCriadosLiberados.getListObjects());
 		testesCriadosLiberados.geraPaginacao(numeroPagina,
 				Paginacao.OBJETOS_POR_PAGINA, qtdTestesTotais, result);
+	}
+
+	@Logado
+	@Get({ "/testes/convidados", "/testes/convidados/pag/{numeroPagina}" })
+	public void listarTestesConvidados(int numeroPagina) {
+		if (numeroPagina == 0) {
+			numeroPagina = 1;
+		}
+		Paginacao<ConvidadoVO> paginacao = testeRepository
+				.findTestesConvidados(usuarioLogado.getUsuario().getId(),
+						numeroPagina, Paginacao.OBJETOS_POR_PAGINA);
+		result.include("testesConvidados", paginacao.getListObjects());
+		Long qttObjetosNoBanco = paginacao.getCount();
+		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA,
+				qttObjetosNoBanco, result);
 	}
 
 }

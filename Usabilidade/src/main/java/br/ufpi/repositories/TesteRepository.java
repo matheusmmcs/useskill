@@ -89,4 +89,15 @@ public interface TesteRepository {
 	 * @return Lista de testes que o usuario liberou
 	 */
 	Paginacao<Teste> getTestesCriadosLiberados(Long usuarioId, int quantidade, int numeroPagina ); 
+	/**
+	 * Retorna todos os testes que o usuario foi convidado para participar
+	 * 
+	 * @param idUsuario
+	 *            Identificador do usuario que foi convidado para participar do
+	 *            Teste
+	 * @return Retorna todos os testes que o usuario foi convidado a Participar
+	 *         e para qual tipo de convite ele foi selecionado
+	 */
+	Paginacao<ConvidadoVO> findTestesConvidados(Long idUsuario,
+			int numeroPagina, int quantidade);
 }

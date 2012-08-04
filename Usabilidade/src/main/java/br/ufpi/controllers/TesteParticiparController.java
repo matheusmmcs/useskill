@@ -39,14 +39,14 @@ public class TesteParticiparController extends BaseController {
 	}
 
 	@Logado
-	@Post
+	@Get("/negar/testeId/{testeId}")
 	public void negar(Long testeId) {
 		verificaSeUsuarioConvidado(testeId);
 		Convidado convidado = new Convidado(usuarioLogado.getUsuario().getId(),
 				testeId);
 		convidado.setRealizou(false);
 		convidadoRepository.update(convidado);
-		result.redirectTo(LoginController.class).logado(1);
+		result.redirectTo(TesteController.class).listarTestesConvidados(0);
 	}
 
 	/**

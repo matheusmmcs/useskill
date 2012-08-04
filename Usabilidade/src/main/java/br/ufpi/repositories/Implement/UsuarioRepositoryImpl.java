@@ -119,22 +119,7 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 		return paginacao;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Paginacao<Teste> findTestesConvidados(Long idUsuario, int numeroPagina, int quantidade) {
-		Paginacao<Teste> paginacao = new Paginacao<Teste>();
-		Query query =  entityManager.createNamedQuery("Convidado.Teste");
-		query.setParameter("usuario", idUsuario);
-		query.setFirstResult(quantidade * (numeroPagina - 1));
-		query.setMaxResults(quantidade);
-		paginacao.setListObjects((List<Teste>) query.getResultList());
-		Query count = entityManager
-				.createNamedQuery("Convidado.Teste.Count");
-		count.setParameter("usuario", idUsuario);
-		count.setParameter("realiza", null);
-		paginacao.setCount((Long) count.getSingleResult());
-		return paginacao;
-	}
+	
 
 
 
