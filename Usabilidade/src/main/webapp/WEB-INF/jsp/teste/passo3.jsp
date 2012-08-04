@@ -94,11 +94,11 @@
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach items="${usuariosEscolhidos}" var="usuario">
+						<c:forEach items="${convidados}" var="convidado">
 								<tr>
 									<td><input type="checkbox" name="idUsuarios[]"
-										value="${usuario.id }"></td>
-									<td>${usuario.nome}</td>
+										value="${convidado.usuario.id }"></td>
+									<td>${convidado.usuario.nome}</td>
 									<td>${convidado.tipoConvidado}</td>
 								</tr>
 							</c:forEach>
