@@ -143,7 +143,19 @@ public class TesteController extends BaseController {
 	@Logado
 	@Get("teste/{idTeste}/editar/passo3")
 	public void passo3(Long idTeste) {
-		this.addUsers(idTeste, false);
+		int quantidade = 50;
+		int numeroPagina = 1;
+		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
+		Paginacao<ConvidadoVO> usuariosConvidados = testeRepository
+				.getUsuariosConvidados(idTeste, 1, 50);
+		result.include("convidados", usuariosConvidados.getListObjects());
+		result.include("totalUsuariosEscolhidos", usuariosConvidados.getCount());
+		Paginacao<Usuario> paginacaoUsuariosLivres = testeRepository
+				.usuariosLivresParaPartciparTeste(idTeste, numeroPagina,
+						quantidade);
+		result.include("usuariosLivres",
+				paginacaoUsuariosLivres.getListObjects());
+		result.include("totalUsuarios", paginacaoUsuariosLivres.getCount());
 	}
 
 	/**
@@ -219,12 +231,14 @@ public class TesteController extends BaseController {
 						TipoConvidado.parseTipoConvidado(tipoConvidado));
 			} catch (PersistenceException e) {
 				validateComponente.gerarErroCampoAlterado();
-				validator.onErrorForwardTo(this).convidar(idTeste);
+				validator.onErrorForwardTo(this).listarUsuriosNaoConvidados(
+						idTeste, 1);
 			}
 			if (!testeView.getTeste().isLiberado()) {
 				result.redirectTo(this).passo3(testeView.getTeste().getId());
 			} else {
-				result.redirectTo(this).convidar(testeView.getTeste().getId());
+				result.redirectTo(this).listarUsuriosNaoConvidados(
+						testeView.getTeste().getId(), 1);
 			}
 		} else {
 			result.redirectTo(this).passo3(idTeste);
@@ -255,7 +269,8 @@ public class TesteController extends BaseController {
 			if (!testeView.getTeste().isLiberado()) {
 				result.redirectTo(this).passo3(testeView.getTeste().getId());
 			} else {
-				result.redirectTo(this).convidar(testeView.getTeste().getId());
+				result.redirectTo(this).listarUsuriosNaoConvidados(
+						testeView.getTeste().getId(), 1);
 			}
 		} else {
 			result.redirectTo(this).passo3(idTeste);
@@ -332,48 +347,50 @@ public class TesteController extends BaseController {
 	 * @param idTeste
 	 *            Identificador do teste ao qual se quer adicionar novos
 	 *            convidados
+	 * @param numeroPagina
 	 */
 	@Logado
-	@Get("teste/{idTeste}/convidar/usuarios")
-	public void convidar(Long idTeste) {
-		addUsers(idTeste, true);
-
+	@Get({ "teste/{idTeste}/convidar/usuarios",
+			"teste/{idTeste}/convidar/usuarios/pag/{numeroPagina}" })
+	public void listarUsuriosNaoConvidados(Long idTeste, int numeroPagina) {
+		if (numeroPagina == 0 || numeroPagina < 0)
+			numeroPagina = 1;
+		this.testePertenceUsuarioLogado(idTeste);
+		Paginacao<Usuario> paginacao = testeRepository
+				.usuariosLivresParaPartciparTeste(idTeste, numeroPagina,
+						Paginacao.OBJETOS_POR_PAGINA);
+		result.include("usuariosLivres", paginacao.getListObjects());
+		Long qttObjetosNoBanco = paginacao.getCount();
+		result.include("totalUsuarios", qttObjetosNoBanco);
+		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA,
+				qttObjetosNoBanco, result);
+	
 	}
 
 	/**
-	 * Adiciona usuarios a um determinado Teste
+	 * Usado para listar os usuarios que foram convidados para participar dos testes
 	 * 
 	 * @param idTeste
-	 *            Identificador do teste a ser add usuarios
-	 * @param liberado
-	 *            true para testes liberados e false para testes não liberados
+	 *            Identificador do teste ao qual se quer adicionar novos
+	 *            convidados
+	 * @param numeroPagina
 	 */
-	private void addUsers(Long idTeste, boolean liberado) {
-		int quantidade = 50;
-		int numeroPagina = 1;
-		if (liberado) {
-			this.testePertenceUsuarioLogado(idTeste);
-		} else {
-			this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
-			Paginacao<ConvidadoVO> usuariosConvidados = testeRepository
-					.getUsuariosConvidados(idTeste, 1, 50);
-			result.include("convidados", usuariosConvidados.getListObjects());
-			result.include("totalUsuariosEscolhidos",
-					usuariosConvidados.getCount());
+	@Logado
+	@Get({ "teste/{idTeste}/usuarios/convidados",
+			"teste/{idTeste}/usuarios/convidados/pag/{numeroPagina}" })
+	public void listarUsuriosConvidados(Long idTeste, int numeroPagina) {
+		if (numeroPagina == 0 || numeroPagina < 0)
+			numeroPagina = 1;
+		this.testePertenceUsuarioLogado(idTeste);
+		Paginacao<ConvidadoVO> paginacao = testeRepository
+				.getUsuariosConvidados(idTeste, numeroPagina,
+						Paginacao.OBJETOS_POR_PAGINA);
+		result.include("convidados", paginacao.getListObjects());
+		Long qttObjetosNoBanco=paginacao.getCount();
+		result.include("totalUsuariosEscolhidos", qttObjetosNoBanco);
+		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA, 
+				qttObjetosNoBanco, result);
 		}
-		Paginacao<Usuario> paginacaoUsuariosLivres = testeRepository
-				.usuariosLivresParaPartciparTeste(idTeste, numeroPagina,
-						quantidade);
-		result.include("usuariosLivres",
-				paginacaoUsuariosLivres.getListObjects());
-		result.include("totalUsuarios", paginacaoUsuariosLivres.getCount());
-
-	}
-
-	@Get()
-	public void realizarTeste() {
-		// TODO analisar se é pra deletar metodo
-	}
 
 	@Logado
 	public void meusProjetos(int numeroPagina) {

@@ -36,11 +36,9 @@ import br.ufpi.repositories.Implement.AlternativaRepositoryImpl;
  *         pergunta que nao pertence ao id do teste passado</li>
  * 
  *         Caso de Teste Atualizar Pergunta</br> <li>Atualizar Pergunta com id
- *         vazio</li> <li>Caso de Sucesso atualizar pergunta Objetiva</li>
- * <li>Usuario não é dono do teste</li>
- * <li>Teste esta Liberado então não pode remover</li>
- *  <li>Id do teste null</li>
- *         FALTANDO   <li >remover
+ *         vazio</li> <li>Caso de Sucesso atualizar pergunta Objetiva</li> <li>
+ *         Usuario não é dono do teste</li> <li>Teste esta Liberado então não
+ *         pode remover</li> <li>Id do teste null</li> FALTANDO <li >remover
  *         pergunta que nao pertence ao id do teste passado</li>
  * 
  */
@@ -243,6 +241,46 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 		int qDepois = repository.findAll().size();
 		Assert.assertEquals("Deveria ter uma pergunta a mais", qAntes + 1,
 				qDepois);
+	}
+
+	/**
+	 * Test of salvarPergunta method, of class PerguntaController. Caso de
+	 * Sucesso salvar pergunta Subjetiva de uma determinada Tarefa
+	 */
+	@Test
+	public void testSalvarPerguntaEscritaSucessoTarefa() {
+		System.out.println("salvarPergunta com sucesso de Tarefa");
+		Long tarefaId = 7l;
+		int qAntes = repository.findAll().size();
+		Pergunta pergunta = PerguntaTestProcedure.newInstancePerguntaEscrita(
+				"O que vc achou do site?", true, "Pergunta2");
+		instance.salvarPergunta(testePertenceUsuarioNaoLiberado, pergunta,
+				tarefaId);
+		int qDepois = repository.findAll().size();
+		Assert.assertEquals("Deveria ter uma pergunta a mais", qAntes + 1,
+				qDepois);
+	}
+
+	@Test
+	public void deletarPerguntaDaTarefa() {
+		System.out.println("salvarPergunta com sucesso de Tarefa");
+		Long tarefaId = 7l;
+		int qAntes = repository.findAll().size();
+		Pergunta pergunta = PerguntaTestProcedure.newInstancePerguntaEscrita(
+				"O que vc achou do site?", true, "Pergunta2");
+		instance.salvarPergunta(testePertenceUsuarioNaoLiberado, pergunta,
+				tarefaId);
+		int qDepois = repository.findAll().size();
+		Assert.assertEquals("Deveria ter uma pergunta a mais", qAntes + 1,
+				qDepois);
+		List<Pergunta> findAll = repository.findAll();
+		Pergunta perguntaId = findAll.get(findAll.size()-1);
+		Assert.assertEquals(pergunta.getTexto(), perguntaId.getTexto());
+		instance.deletarPergunta(testePertenceUsuarioNaoLiberado, perguntaId.getId(),
+				tarefaId);
+		 qDepois = repository.findAll().size();
+		Assert.assertEquals(qAntes, qDepois);
+
 	}
 
 	/**
@@ -632,16 +670,18 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 		pergunta.setId(perguntaID);
 		List<Message> errors = null;
 		try {
-		instance.atualizarPergunta(testeNaoPertenceUsuario, pergunta);
+			instance.atualizarPergunta(testeNaoPertenceUsuario, pergunta);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals("campo.form.alterado", errors.get(0).getCategory());
 		int qDepois = alternativaRepositoryImpl.findAll().size();
 
-		Assert.assertEquals("E pra possui o mesmo tanto pois não foi alterado nada",
-				qAntes , qDepois);
+		Assert.assertEquals(
+				"E pra possui o mesmo tanto pois não foi alterado nada",
+				qAntes, qDepois);
 	}
+
 	/**
 	 * Test of atualizarPergunta method, of class PerguntaController.
 	 */
@@ -662,10 +702,12 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 		}
 		Assert.assertEquals("campo.form.alterado", errors.get(0).getCategory());
 		int qDepois = alternativaRepositoryImpl.findAll().size();
-		
-		Assert.assertEquals("E pra possui o mesmo tanto pois não foi alterado nada",
-				qAntes , qDepois);
+
+		Assert.assertEquals(
+				"E pra possui o mesmo tanto pois não foi alterado nada",
+				qAntes, qDepois);
 	}
+
 	/**
 	 * Test of atualizarPergunta method, of class PerguntaController.
 	 */
@@ -686,10 +728,12 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 		}
 		Assert.assertEquals("campo.form.alterado", errors.get(0).getCategory());
 		int qDepois = alternativaRepositoryImpl.findAll().size();
-		
-		Assert.assertEquals("E pra possui o mesmo tanto pois não foi alterado nada",
-				qAntes , qDepois);
+
+		Assert.assertEquals(
+				"E pra possui o mesmo tanto pois não foi alterado nada",
+				qAntes, qDepois);
 	}
+
 	/**
 	 * Test of atualizarPergunta method, of class PerguntaController.
 	 */
@@ -704,16 +748,19 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 		pergunta.setId(perguntaID);
 		List<Message> errors = null;
 		try {
-			instance.atualizarPergunta(testePertenceUsuarioNaoLiberado, pergunta);
+			instance.atualizarPergunta(testePertenceUsuarioNaoLiberado,
+					pergunta);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals("campo.form.alterado", errors.get(0).getCategory());
 		int qDepois = alternativaRepositoryImpl.findAll().size();
-		
-		Assert.assertEquals("E pra possui o mesmo tanto pois não foi alterado nada",
-				qAntes , qDepois);
+
+		Assert.assertEquals(
+				"E pra possui o mesmo tanto pois não foi alterado nada",
+				qAntes, qDepois);
 	}
+
 	private Long getPerguntaID(Long idTeste, boolean objetiva) {
 		Teste teste = TesteTestProcedure.newInstanceTesteRepository(
 				entityManager).find(idTeste);

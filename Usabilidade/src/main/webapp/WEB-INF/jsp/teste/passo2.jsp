@@ -80,7 +80,7 @@
 								<td class="centertd"><a class="btn"
 									href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">
 										<span class="icon-pencil"></span> </a> <a class="btn btn-primary"
-									href="${pageContext.request.contextPath}/teste/removed/tarefa/idTeste/${testeView.teste.id}/idTarefa/${tarefa.id }"
+									href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/removed/tarefa/${tarefa.id }"
 									title="<fmt:message key="table.remover"/>"> <span
 										class="icon-trash icon-white"></span> </a>
 								</td>

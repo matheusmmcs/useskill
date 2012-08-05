@@ -73,7 +73,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		try {
 			instance.salvar(titulo);
 		} catch (ValidationException validationException) {
-			Assert.assertEquals("NÃ£o pode deixar salvar pois campo esta vazio",
+			Assert.assertEquals(
+					"NÃ£o pode deixar salvar pois campo esta vazio",
 					"campo.titulo.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
@@ -92,7 +93,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 		try {
 			instance.salvar(titulo);
 		} catch (ValidationException validationException) {
-			Assert.assertEquals("NÃ£o pode deixar salvar pois campo esta vazio",
+			Assert.assertEquals(
+					"NÃ£o pode deixar salvar pois campo esta vazio",
 					"campo.titulo.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
@@ -115,8 +117,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo4 method, of class TesteController. Usuario nÃ£o Ã© o dono do
-	 * teste buscado
+	 * Test of passo4 method, of class TesteController. Usuario nÃ£o Ã© o dono
+	 * do teste buscado
 	 */
 	@Test
 	public void testPasso4UsuarioNaoEDonoDoTeste() {
@@ -206,8 +208,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario nÃ£o Ã© o dono do
-	 * teste buscado
+	 * Test of passo1 method, of class TesteController. Usuario nÃ£o Ã© o dono
+	 * do teste buscado
 	 */
 	@Test
 	public void testPasso1UsuarioNaoEDonoDoTeste() {
@@ -546,8 +548,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo2 method, of class TesteController. Usuario nÃ£o Ã© o dono do
-	 * teste buscado
+	 * Test of passo2 method, of class TesteController. Usuario nÃ£o Ã© o dono
+	 * do teste buscado
 	 */
 	@Test
 	public void testPasso2UsuarioNaoEDonoDoTeste() {
@@ -617,8 +619,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of liberarTeste method, of class TesteController. NÃ£o possui tarefas
-	 * cadastradas para o teste
+	 * Test of liberarTeste method, of class TesteController. NÃ£o possui
+	 * tarefas cadastradas para o teste
 	 */
 	@Test
 	public void testLiberarTesteSemTarefas() {
@@ -683,7 +685,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		idUsuarios.add(5l);
 		Long idTeste = 2l;
 		int qAntes = convidadoRepositoryImpl.findAll().size();
-		instance.convidarUsuario(idUsuarios, idTeste,true);
+		instance.convidarUsuario(idUsuarios, idTeste, true);
 		int qDepois = convidadoRepositoryImpl.findAll().size();
 		Assert.assertEquals(qAntes + 2, qDepois);
 	}
@@ -1032,15 +1034,6 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of realizarTeste method, of class TesteController.
-	 */
-	@Test
-	public void testRealizarTeste() {
-		System.out.println("realizarTeste");
-		instance.realizarTeste();
-	}
-
-	/**
 	 * Test of meusProjetos method, of class TesteController.
 	 */
 	@SuppressWarnings("unchecked")
@@ -1095,8 +1088,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo1 method, of class TesteController. Usuario nÃ£o Ã© o dono do
-	 * teste buscado
+	 * Test of passo1 method, of class TesteController. Usuario nÃ£o Ã© o dono
+	 * do teste buscado
 	 */
 	@Test
 	public void testPasso3UsuarioNaoEDonoDoTeste() {
@@ -1133,8 +1126,8 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of passo3method, of class TesteController. Usuario Ã© o dono do teste
-	 * buscado, mas ele esta liberado
+	 * Test of passo3method, of class TesteController. Usuario Ã© o dono do
+	 * teste buscado, mas ele esta liberado
 	 */
 	@Test
 	public void testPasso3UsuarioEDonoDoTesteLiberado() {
@@ -1160,7 +1153,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		System.out.println("Passo3UsuarioIDtesteNaoExiste");
 		Long id = 5500l;
 		try {
-			instance.convidar(id);
+			instance.listarUsuriosNaoConvidados(id, 1);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
@@ -1179,7 +1172,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 	public void testConvidarUsuarioTesteLiberado() {
 		System.out.println("passo1");
 		Long id = 4l;
-		instance.convidar(id);
+		instance.listarUsuriosNaoConvidados(id, 1);
 		List<Convidado> convidados = (List<Convidado>) result.included().get(
 				"usuariosEscolhidos");
 		List<Convidado> usuariosLivres = (List<Convidado>) result.included()
@@ -1193,15 +1186,15 @@ public class TesteControllerTest extends AbstractDaoTest {
 	}
 
 	/**
-	 * Test of ConvidarUsuario method, of class TesteController. Usuario nÃ£o Ã© o
-	 * dono do teste buscado
+	 * Test of ConvidarUsuario method, of class TesteController. Usuario nÃ£o Ã©
+	 * o dono do teste buscado
 	 */
 	@Test
 	public void testConvidarUsuarioUsuarioNaoEDonoDoTeste() {
 		System.out.println("Passo1UsuarioNaoEDonoDoTeste");
 		Long id = 3l;
 		try {
-			instance.convidar(id);
+			instance.listarUsuriosNaoConvidados(id, 1);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",
@@ -1220,7 +1213,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		System.out.println("Passo1UsuarioNaoPassaIDTeste");
 		Long id = null;
 		try {
-			instance.convidar(id);
+			instance.listarUsuriosNaoConvidados(id,1);
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"NÃ£o pode deixar salvar pois usuario nao Ã© dono do Teste",

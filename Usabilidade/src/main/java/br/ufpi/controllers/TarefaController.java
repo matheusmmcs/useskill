@@ -187,7 +187,7 @@ public class TarefaController extends BaseController {
 	 * @param idTeste
 	 */
 	@Logado
-	@Post("teste/removed/tarefa")
+	@Get("teste/{idTeste}/removed/tarefa/{idTarefa}")
 	public void removed(Long idTarefa, Long idTeste) {
 		Tarefa tarefa = this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
 		tarefaRepository.destroy(tarefa);

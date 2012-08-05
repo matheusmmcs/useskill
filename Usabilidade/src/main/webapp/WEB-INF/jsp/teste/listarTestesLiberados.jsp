@@ -37,12 +37,16 @@
 				<tbody>
 					<c:forEach items="${testesLiberados}" var="teste">
 						<tr>
-							<td><a
-								href="${pageContext.request.contextPath}/teste/${teste.id}/editar/passo1">${teste.titulo}</a>
+							<td>
+								${teste.titulo}
 							</td>
 							<td class="centertd">
 								<a class="btn"
 								href="${pageContext.request.contextPath}/teste/${teste.id}/convidar/usuarios">
+								<fmt:message key="testes.convidarusuarios" />
+								</a>
+								<a class="btn"
+								href="${pageContext.request.contextPath}/teste/${teste.id}/usuarios/convidados">
 								<fmt:message key="testes.convidarusuarios" />
 								</a>
 								<a class="btn"

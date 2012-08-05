@@ -44,7 +44,6 @@ public class ConvidadoRepositoryImpl extends Repository<Convidado, Long>
 	public void desconvidarUsuarios(List<Long> idUsuarios, Long idTeste) {
 		List<Convidado> convidados = criarListaConvidado(idUsuarios, idTeste);
 		for (Convidado convidado : convidados) {
-			System.out.println(convidado);
 			super.destroy(convidado);
 		}
 	}
@@ -81,7 +80,6 @@ public class ConvidadoRepositoryImpl extends Repository<Convidado, Long>
 			Long idTeste) {
 		List<Convidado> convidados = new ArrayList<Convidado>();
 		for (Long idUsuario : idUsuarios) {
-			System.out.println("Identificador do usuario"+idUsuario);
 			Convidado convidado = new Convidado(idUsuario, idTeste);
 			convidados.add(convidado);
 		}
@@ -90,8 +88,6 @@ public class ConvidadoRepositoryImpl extends Repository<Convidado, Long>
 
 	@Override
 	public ConvidadoVO getTesteConvidado(Long testeId, Long usuarioId) {
-		System.out.println("TesteID=" + testeId);
-		System.out.println("UsuarioID=" + usuarioId);
 		Query namedQuery = super.entityManager
 				.createNamedQuery("Convidado.UsuarioFoiConvidado");
 		namedQuery.setParameter("teste", testeId);
