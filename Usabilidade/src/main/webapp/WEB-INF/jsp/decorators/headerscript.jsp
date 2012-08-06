@@ -16,7 +16,8 @@
 <div id="webclient-topo">
 	<div class="direita">
 		<a class="botao botao-verde concluir" id="concluir12qz3"
-			href="${pageContext.request.contextPath}/teste/${testeSession.teste.id}/editar/passo2"><fmt:message key="concluirTarefa" /> </a>
+			href="${pageContext.request.contextPath}/teste/${testeSession.teste.id}/editar/passo2">
+			<fmt:message key="concluirTarefa" /> </a>
 	</div>
 	<div class="centro">
 		<a class="fancybox botao botao-info" id="roteiro" href="#inline1">Roteiro</a>

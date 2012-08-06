@@ -2,9 +2,11 @@
 
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
+	<div class="alert alert-error">
 		<c:forEach items="${errors}" var="error">
         ${error.message}<br />
 		</c:forEach>
+		</div>
 	</c:if>
 
 	<ul class="breadcrumb">
@@ -29,6 +31,9 @@
 		<fieldset>
 			<legend>
 				<span><fmt:message key="pergunta.editar" /> </span>
+				<p>
+					${testeView.teste.titulo }
+				</p>
 				<hr />
 			</legend>
 			<c:if test="${not empty pergunta.id}">
@@ -64,13 +69,13 @@
 				</label>
 				<div class="controls">
 					<label class="radio inline"> <input type="radio"
-						name="pergunta.responderFim" id="inlineCheckbox2" value="option2"
+						name="pergunta.responderFim" id="inlineCheckbox2" value="false"
 						<c:if test="${pergunta.responderFim==false}" >
                				checked
                     	</c:if> />
 						<fmt:message key="pergunta.responderInicio" /> </label> <label
 						class="radio inline"> <input type="radio"
-						name="pergunta.responderFim" id="inlineCheckbox1" value="option1"
+						name="pergunta.responderFim" id="inlineCheckbox1" value="true"
 						<c:if test="${pergunta.responderFim==true}" >
                				checked
                     	</c:if> />
@@ -85,14 +90,14 @@
 				<div class="controls">
 					<label class="radio inline"> <input id="respsub"
 						type="radio" name="pergunta.tipoRespostaAlternativa"
-						id="inlineCheckbox2" value="option4"
+						id="inlineCheckbox2" value="false"
 						<c:if test="${pergunta.tipoRespostaAlternativa==false}" >
                			checked
                     	</c:if> />
 						<fmt:message key="pergunta.subjetiva" /> </label> <label
 						class="radio inline"> <input id="respobj" type="radio"
 						name="pergunta.tipoRespostaAlternativa" id="inlineCheckbox1"
-						value="option3"
+						value="true"
 						<c:if test="${pergunta.tipoRespostaAlternativa==true}" >
                				checked
                     	</c:if> />

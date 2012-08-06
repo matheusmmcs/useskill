@@ -11,37 +11,26 @@
 		<li><a href="${pageContext.request.contextPath}/usuario"> <fmt:message
 					key="testes.meus" /> </a> <span class="divider">/</span>
 		</li>
-		<li class="active"><fmt:message key="testes.editar" /><span
-			class="divider">/</span></li>
-		<li class="active"><fmt:message key="testes.passo3" /></li>
-	</ul>
-
-	<ul class="nav nav-tabs" style="margin: 0 auto; width: 97%">
-		<li><a
-			href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo1"><fmt:message
-					key="testes.passo1" /> </a></li>
-		<li><a
-			href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo2"><fmt:message
-					key="testes.passo2" /> </a></li>
-		<li class="active"><a
-			href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo3"><fmt:message
-					key="testes.passo3" /> </a></li>
-		<li><a
-			href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo4"><fmt:message
-					key="testes.passo4" /> </a></li>
+		<li>
+			<a href="${pageContext.request.contextPath}/testes/liberados"> 
+				<fmt:message key="testes.liberado" />
+			</a>
+			<span class="divider">/</span>
+		</li>
+		<li>
+			<a href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/usuarios/convidados"> 
+				<fmt:message key="testes.usuarios.convidados" />
+			</a>
+			<span class="divider">/</span>
+		</li>
+		<li class="active"><fmt:message key="testes.convidar.usuarios" />
+		</li>
 	</ul>
 
 	<div class="form-horizontal form-layout">
 		<fieldset>
 			<legend>
-				<span> <fmt:message key="testes.passo3" /> </span>
-				<hr />
-			</legend>
-		</fieldset>
-
-		<fieldset>
-			<legend>
-				<span><fmt:message key="testes.passo3.listadeusuarios" /> </span>
+				<span><fmt:message key="testes.convidar.usuarios" /></span>
 				<hr />
 			</legend>
 
@@ -79,7 +68,7 @@
 		</jsp:include>
 	</div>
 </div>
-	
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.validate.js"></script>
 <script>
 	(function($){
 		$(document).ready(function(){

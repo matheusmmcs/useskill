@@ -44,7 +44,7 @@
 			</div>
 			<div class="control-group-medium">
 				<label class="control-label" for="input01"><fmt:message
-						key="confirmasenha" />*</label>
+						key="login.confirmasenha" />*</label>
 				<div class="controls">
 					<input type="password" name="confirmaSenha" value="" class="span5" />
 				</div>
@@ -54,7 +54,7 @@
 						key="telefone" />
 				</label>
 				<div class="controls">
-					<input type="text" name="usuario.telefones[0]"
+					<input id="telefone" type="text" name="usuario.telefones[0]"
 						value="${usuario.telefones[0]}" class="span5" />
 				</div>
 			</div>
@@ -68,8 +68,11 @@
 		</fieldset>
 	</form>
 </div>
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.maskedinput-1.3.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.validate.js"></script>
 <script type="text/javascript">
 (function($){
+	$("#telefone").mask("?(99) 999999999");
 	$(document).ready(function(){
 		$("#newUserForm").validate({
             rules : {

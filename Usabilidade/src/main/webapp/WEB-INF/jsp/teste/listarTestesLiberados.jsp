@@ -52,7 +52,7 @@
 					<tr>
 						<th><fmt:message key="table.titulo" />
 						</th>
-						<th style="width: 215px"><fmt:message key="table.acoes" />
+						<th style="width: 155px"><fmt:message key="table.acoes" />
 						</th>
 					</tr>
 				</thead>
@@ -63,15 +63,11 @@
 								${teste.titulo}
 							</td>
 							<td class="centertd">
-								<a class="btn"
-								href="${pageContext.request.contextPath}/teste/${teste.id}/convidar/usuarios">
-								<fmt:message key="testes.convidarusuarios" />
-								</a>
-								<a class="btn"
+								<a class="btn btn-success" title="<fmt:message key="testes.usuarios.convidados" />"
 								href="${pageContext.request.contextPath}/teste/${teste.id}/usuarios/convidados">
-								<fmt:message key="testes.usuarios.convidados" />
+								<fmt:message key="usuarios" />
 								</a>
-								<a class="btn"
+								<a class="btn btn-primary"
 								href="#">
 								<fmt:message key="testes.analises" />
 								</a>

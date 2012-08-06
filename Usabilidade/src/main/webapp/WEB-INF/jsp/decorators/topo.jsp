@@ -15,7 +15,7 @@
 							<fmt:message key="usuario.meusdados" />
 						</a></li>
 						<li>
-						<a title="<fmt:message key="topo.alterarsenha"/>" href="#">
+						<a title="<fmt:message key="topo.alterarsenha"/>" href="${pageContext.request.contextPath}/usuario/alterarsenha">
 							<fmt:message key="topo.alterarsenha"/>
 						</a></li>
 						<li class="divider"></li>

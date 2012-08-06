@@ -2,9 +2,11 @@
 
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
+	<div class="alert alert-error">
 		<c:forEach items="${errors}" var="error">
         ${error.message}<br />
 		</c:forEach>
+		</div>
 	</c:if>
 
 	<form id="editUsuario_Form"
@@ -39,7 +41,7 @@
 				<label class="control-label" for="input01"><fmt:message
 						key="telefone" /> </label>
 				<div class="controls">
-					<input type="text" name="usuario.telefones[0]"
+					<input id="telefone" type="text" name="usuario.telefones[0]"
 						value="${usuario.telefones[0]}" class="span6" />
 				</div>
 			</div>
@@ -57,6 +59,7 @@
 <script type="text/javascript">
 (function($){
 	$(document).ready(function(){
+		$("#telefone").mask("?(99) 999999999");
 		$("#editUsuario_Form").validate({
 			rules : {
 				"usuario.nome" : {

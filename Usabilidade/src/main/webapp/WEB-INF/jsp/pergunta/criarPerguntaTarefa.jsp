@@ -2,9 +2,11 @@
 
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
+	<div class="alert alert-error">
 		<c:forEach items="${errors}" var="error">
         ${error.message}<br />
 		</c:forEach>
+		</div>
 	</c:if>
 
 	<ul class="breadcrumb">
@@ -31,11 +33,15 @@
 		<li class="active"><fmt:message key="pergunta.inserir"/></li>
 	</ul>
 	<form class="form-horizontal form-layout"
-		action="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo2/editar/${tarefa.id}/tarefa/questionario/salvar/pergunta"
+													
+		action="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/tarefa/${tarefa.id}/questionario/salvar/pergunta"
 		method="POST">
 		<fieldset>
 			<legend>
 				<span><fmt:message key="pergunta.inserir" /> </span>
+				<p>
+					${tarefa.nome}
+				</p>
 				<hr />
 			</legend>
 			<c:if test="${not empty pergunta.id}">
@@ -69,12 +75,12 @@
 				<label class="control-label" for="inlineRadio1"><fmt:message key="pergunta.posicaopergunta" /></label>
 				<div class="controls">
 					<label class="radio inline"> 
-						<input type="radio" name="pergunta.responderFim" id="inlineCheckbox2" value="option2" checked>
-						<fmt:message key="pergunta.responderInicio" />
+						<input type="radio" name="pergunta.responderFim" id="inlineCheckbox2" value="false" checked>
+						<fmt:message key="pergunta.responderInicioTarefa" />
 					</label> 
 					<label class="radio inline"> 
-						<input type="radio" name="pergunta.responderFim" id="inlineCheckbox1" value="option1">
-						<fmt:message key="pergunta.responderFim" />
+						<input type="radio" name="pergunta.responderFim" id="inlineCheckbox1" value="true">
+						<fmt:message key="pergunta.responderFimTarefa" />
 					</label> 
 				</div>
 			</div>
@@ -83,11 +89,11 @@
 				<label class="control-label" for="inlineRadio2"><fmt:message key="pergunta.tiporesposta" /></label>
 				<div class="controls">
 					<label class="radio inline"> 
-						<input id="respsub" type="radio" name="pergunta.tipoRespostaAlternativa" id="inlineCheckbox2" value="option4" checked>
+						<input id="respsub" type="radio" name="pergunta.tipoRespostaAlternativa" id="inlineCheckbox2" value="false" checked>
 						<fmt:message key="pergunta.subjetiva" />
 					</label> 
 					<label class="radio inline"> 
-						<input id="respobj" type="radio" name="pergunta.tipoRespostaAlternativa" id="inlineCheckbox1" value="option3">
+						<input id="respobj" type="radio" name="pergunta.tipoRespostaAlternativa" id="inlineCheckbox1" value="true">
 						<fmt:message key="pergunta.objetiva" />
 					</label> 
 				</div>

@@ -2,9 +2,11 @@
 
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
+	<div class="alert alert-error">
 		<c:forEach items="${errors}" var="error">
         ${error.message}<br />
 		</c:forEach>
+		</div>
 	</c:if>
 	
 	<ul class="breadcrumb">
@@ -31,6 +33,9 @@
 		<fieldset>
 			<legend>
 				<span><fmt:message key="tarefa.inserir"/></span>
+				<p>
+					${testeView.teste.titulo }
+				</p>
 				<hr/>
 			</legend>
 			

@@ -2,9 +2,11 @@
 
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
+	<div class="alert alert-error">
 		<c:forEach items="${errors}" var="error">
         ${error.message}<br />
 		</c:forEach>
+		</div>
 	</c:if>
 
 	<ul class="breadcrumb">
@@ -31,11 +33,14 @@
         <fieldset>
 			<legend>
 				<span><fmt:message key="testes.passo4" /></span>
+				<p>
+					${testeView.teste.titulo }
+				</p>
 				<hr/>
 			</legend>
 
             <div class="form-actions">
-                <input type="submit" value="<fmt:message key="liberar.teste"/>" title="Liberar Teste" class="btn btn-primary btn-large" style="width: 200px; height: 50px; margin-left: 230px;"/>
+                <input type="submit" value="<fmt:message key="liberar.teste"/>" title="<fmt:message key="liberar.teste"/>" class="btn btn-primary btn-large" style="width: 200px; height: 50px; margin-left: 230px;"/>
             </div>
         </fieldset>
     </form>

@@ -1,29 +1,28 @@
-<div class="span6 offset3">
-	<form class="form-horizontal form-layout" id="form_reenviar-confirmacao"
+<div class="span7 offset3 center">
+	<c:if test="${not empty errors}">
+    	<div class="alert alert-error">
+        	<c:forEach items="${errors}" var="error">
+            	${error.message}<br />
+        	</c:forEach>
+    	</div>
+	</c:if>
+
+	<form class="form-horizontal form-layout"
 		action="${pageContext.request.contextPath}/usuario/reenviar/email"
 		method="post">
 		<fieldset>
-			<legend><fmt:message key="reenviar.email.confirmacao" /></legend>
+			<legend>
+				<span><fmt:message key="usuario.reenviar.email" />
+				</span>
+				<hr />
+			</legend>
+			
 			<input type="hidden" name="email" value="${email}" /> 
+			
 			<div class="form-actions">
-				<input type="submit" value="<fmt:message key="reenviar.email"/>" class="btn btn-primary"
-					style="float: right; width: 200px;"/>
-			</div>
+    			<input type="submit" value="<fmt:message key="usuario.reenviar.email"/>" title="<fmt:message key="usuario.reenviar.email"/>" 
+    			class="btn btn-primary btn-large" style="width: 250px; height: 50px; margin-left: 130px;"/>
+        	</div>
 		</fieldset>
 	</form>
 </div>
-
-<script type="text/javascript">
-(function($){
-	$(document).ready(function(){
-		$("#form_reenviar-confirmacao").validate({
-			rules : {
-				email : {
-					requerid : true,
-					email : true
-				}
-			}
-		});
-	});
-})(jQuery);
-</script>

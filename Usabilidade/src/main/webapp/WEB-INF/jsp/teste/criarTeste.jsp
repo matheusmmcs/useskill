@@ -1,10 +1,12 @@
 <%@include file="../leftmenus/default.jsp"%>
 
-<div class="span9 container-right">
+<div class="span9 container-right">	
 	<c:if test="${not empty errors}">
+	<div class="alert alert-error">
 		<c:forEach items="${errors}" var="error">
         ${error.message}<br />
 		</c:forEach>
+		</div>
 	</c:if>
 	
 	<ul class="breadcrumb">
@@ -43,6 +45,7 @@
 		</fieldset>
 	</form>
 </div>
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.validate.js"></script>
 <script type="text/javascript">
 (function($){
 	$(document).ready(function(){
@@ -59,5 +62,4 @@
 		});
 	});
 })(jQuery);
-	
 </script>

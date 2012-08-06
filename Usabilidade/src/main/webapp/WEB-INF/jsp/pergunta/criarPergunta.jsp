@@ -2,9 +2,11 @@
 
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
+	<div class="alert alert-error">
 		<c:forEach items="${errors}" var="error">
         ${error.message}<br />
 		</c:forEach>
+		</div>
 	</c:if>
 
 	<ul class="breadcrumb">
@@ -28,19 +30,21 @@
 		<fieldset>
 			<legend>
 				<span><fmt:message key="pergunta.inserir" /> </span>
+				<p>
+					${testeView.teste.titulo }
+				</p>
 				<hr />
 			</legend>
 			<c:if test="${not empty pergunta.id}">
-				<input type="hidden" name="pergunta.id" value="${pergunta.id}" />
-				<input type="hidden" name="_method" value="put" />
-			</c:if>
+            <input type="hidden" name="pergunta.id" value="${pergunta.id}" />
+            <input type="hidden" name="_method" value="put"/>
+        </c:if>
 
 			<div class="control-group">
 				<label class="control-label" for="input01"><fmt:message
 						key="pergunta.titulo" />*</label>
 				<div class="controls">
-					<input type="text" name="pergunta.titulo"
-						value="${pergunta.titulo}" id="titulo" class="span6" />
+					<input type="text" name="pergunta.titulo" value="${pergunta.titulo}" id="titulo" class="span6"/>
 					<p class="help-block">
 						<fmt:message key="pergunta.info.titulo" />
 					</p>
@@ -51,8 +55,7 @@
 				<label class="control-label" for="input01"><fmt:message
 						key="pergunta.texto" />*</label>
 				<div class="controls">
-					<textarea rows="10" cols="" name="pergunta.texto" id="texto"
-						class="span6">${pergunta.texto}</textarea>
+					<textarea rows="10" cols="" name="pergunta.texto" id="texto" class="span6">${pergunta.texto}</textarea>
 				</div>
 			</div>
 
@@ -61,11 +64,11 @@
 				<label class="control-label" for="inlineRadio1"><fmt:message key="pergunta.posicaopergunta" /></label>
 				<div class="controls">
 					<label class="radio inline"> 
-						<input type="radio" name="pergunta.responderFim" id="inlineCheckbox2" value="option2" checked>
+						<input type="radio" name="pergunta.responderFim" id="inlineCheckbox2" value="false" checked>
 						<fmt:message key="pergunta.responderInicio" />
 					</label> 
 					<label class="radio inline"> 
-						<input type="radio" name="pergunta.responderFim" id="inlineCheckbox1" value="option1">
+						<input type="radio" name="pergunta.responderFim" id="inlineCheckbox1" value="true">
 						<fmt:message key="pergunta.responderFim" />
 					</label> 
 				</div>
@@ -75,11 +78,11 @@
 				<label class="control-label" for="inlineRadio2"><fmt:message key="pergunta.tiporesposta" /></label>
 				<div class="controls">
 					<label class="radio inline"> 
-						<input id="respsub" type="radio" name="pergunta.tipoRespostaAlternativa" id="inlineCheckbox2" value="option4" checked>
+						<input id="respsub" type="radio" name="pergunta.tipoRespostaAlternativa" id="inlineCheckbox2" value="false" checked>
 						<fmt:message key="pergunta.subjetiva" />
 					</label> 
 					<label class="radio inline"> 
-						<input id="respobj" type="radio" name="pergunta.tipoRespostaAlternativa" id="inlineCheckbox1" value="option3">
+						<input id="respobj" type="radio" name="pergunta.tipoRespostaAlternativa" id="inlineCheckbox1" value="true">
 						<fmt:message key="pergunta.objetiva" />
 					</label> 
 				</div>

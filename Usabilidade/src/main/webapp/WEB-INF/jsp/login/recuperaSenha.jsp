@@ -6,6 +6,11 @@
         	</c:forEach>
     	</div>
 	</c:if>
+	<c:if test="${not empty sucesso}">
+    	<div class="alert alert-success">
+        	<fmt:message key="${sucesso}" />
+    	</div>
+	</c:if>
 
 	<form method="post" action="${pageContext.request.contextPath}/usuario/recupera-senha-completa"
 		id="recuperar_senha" class="form-horizontal form-layout">
@@ -15,7 +20,7 @@
 		</c:if>
 		<fieldset>
 			<legend>
-				<span><fmt:message key="usuario.novasenha" />
+				<span><fmt:message key="login.recuperarsenha" />
 				</span>
 				<hr />
 			</legend>
@@ -37,6 +42,7 @@
 		</fieldset>
 	</form>
 </div>
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.validate.js"></script>
 <script type="text/javascript">
 (function($){
 	$(document).ready(function(){

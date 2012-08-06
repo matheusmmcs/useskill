@@ -48,6 +48,7 @@
 		</fieldset>
 	</form>
 </div>
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.validate.js"></script>
 <script type="text/javascript">
 (function($){
 	$(document).ready(function(){

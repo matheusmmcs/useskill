@@ -6,8 +6,13 @@
         	</c:forEach>
     	</div>
 	</c:if>
+	<c:if test="${not empty sucesso}">
+    	<div class="alert alert-success">
+        	<fmt:message key="${sucesso}" />
+    	</div>
+	</c:if>
 
-	<form method="post" action="${pageContext.request.contextPath}/usuario/recupera-senha-completa"
+	<form method="post" action="${pageContext.request.contextPath}/usuario/alterarSenha"
 		id="recuperar_senha" class="form-horizontal form-layout">
 		<c:if test="${not empty usuario.id}">
 			<input type="hidden" name="usuario.id" value="${usuario.id}" />
@@ -15,35 +20,43 @@
 		</c:if>
 		<fieldset>
 			<legend>
-				<span><fmt:message key="usuario.novasenha" />
+				<span><fmt:message key="login.alterarsenha" />
 				</span>
 				<hr />
 			</legend>
-			<div class="control-group-min">
+			
+			<div class="control-group">
 				<label class="control-label" for="input01"><fmt:message
-						key="login.email" />*</label>
+						key="login.senhaantiga" />*</label>
 				<div class="controls">
-					<input type="text" name="email" id="email" value="${email}"
-						class="span5" />
+					<input type="password" name="senhaAntiga" id="senhaAntiga" value="${senhaAntiga}"
+						class="span4" />
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label" for="input01"><fmt:message
+						key="login.novasenha" />*</label>
+				<div class="controls">
+					<input type="password" name="senha" id="senha" value="${senha}"
+						class="span4" />
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label" for="input01"><fmt:message
+						key="login.confirmanovasenha" />*</label>
+				<div class="controls">
+					<input type="password" name="confirmacaoSenha" id="confirmacaoSenha" value="${confirmacaoSenha}"
+						class="span4" />
 				</div>
 			</div>
 
-
 			<div class="form-actions">
-				<input type="submit" value="<fmt:message key="usuario.gerarnovasenha"/>"
-					name="enviar" title="<fmt:message key="usuario.gerarnovasenha"/>"
-					class="btn btn-primary" style="float: right; margin-right: 40px" />
+				<input type="submit" value="<fmt:message key="login.alterarsenha"/>"
+					name="enviar" title="<fmt:message key="login.alterarsenha"/>"
+					class="btn btn-primary" style="float: right; margin-right: 60px" />
 			</div>
 		</fieldset>
 	</form>
 </div>
-<script type="text/javascript">
-(function($){
-	$(document).ready(function(){
-		$("#recuperar_senha").validate({rules:{
-            "email":{ required:true,
-                email:true}
-        }});
-	});
-})(jQuery)
-</script> 

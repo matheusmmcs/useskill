@@ -47,7 +47,7 @@
 					<tr>
 						<th><fmt:message key="table.titulo" /></th>
 						<th><fmt:message key="testes.criador" /></th>
-						<th><fmt:message key="testes.tipoconvidade" /></th>
+						<th><fmt:message key="testes.tipoconvidado" /></th>
 						<th style="width: 85px"><fmt:message key="table.acoes" /></th>
 					</tr>
 				</thead>
@@ -59,7 +59,7 @@
 							<td><fmt:message key="testes.tipo.${convidadoVO.tipoConvidado}" />
 							</td>
 							<td class="centertd"><a class="btn btn-success"
-								href="${pageContext.request.contextPath}/teste/participar/aceitar/testeId/${convidadoVO.teste.id}"
+								href="${pageContext.request.contextPath}/teste/participar/${convidadoVO.teste.id}/aceitar/"
 								title="<fmt:message key="table.aceitar"/>"> <span
 									class="icon-ok icon-white"></span> </a> 
 								<a title="<fmt:message key="table.recusar"/>"
