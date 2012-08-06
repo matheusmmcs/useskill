@@ -2,28 +2,30 @@
 
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
+	<div class="alert alert-error">
 		<c:forEach items="${errors}" var="error">
         ${error.message}<br />
 		</c:forEach>
+		</div>
 	</c:if>
 
 	<ul class="breadcrumb">
 		<li><a href="${pageContext.request.contextPath}/usuario"> <fmt:message
 					key="testes.meus" /> </a> <span class="divider">/</span>
 		</li>
-		<li class="active"><fmt:message key="testes.editar" /><span
-			class="divider">/</span></li>
-		<li class="active"><fmt:message key="testes.passo2" /></li>
+		<li class="active"><fmt:message key="testes.editar" />
+			[<fmt:message key="testes.passo2" />]
+		</li>
 	</ul>
 
 	<div class="btn-toolbar">
 		<div class="pull-right">
 			<a class="btn btn-primary"
 				href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/criar/tarefa">
-				Inserir Tarefa</a> 
+				<fmt:message key="tarefa.inserir"/></a> 
 			<a class="btn btn-primary"
 				href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/criar/pergunta"> 
-				Inserir Pergunta</a>
+				<fmt:message key="pergunta.inserir"/></a>
 		</div>
 	</div>
 
@@ -45,6 +47,9 @@
 		<fieldset>
 			<legend>
 				<span> <fmt:message key="testes.passo2" /> </span>
+				<p>
+					${testeView.teste.titulo }
+				</p>
 				<hr />
 			</legend>
 		</fieldset>
@@ -79,9 +84,9 @@
                                 </td>
 								<td class="centertd"><a class="btn"
 									href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">
-										<span class="icon-pencil"></span> </a> <a class="btn btn-primary"
-									href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/removed/tarefa/${tarefa.id }"
-									title="<fmt:message key="table.remover"/>"> <span
+										<span class="icon-pencil"></span> </a> 
+										<a class="btn btn-primary btn-modal" title="<fmt:message key="table.remover"/>" 
+										data-href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/tarefa/${tarefa.id}/apagar" data-acao="Remover" data-toggle="modal" href="#modalMessages"> <span
 										class="icon-trash icon-white"></span> </a>
 								</td>
 							</tr>
@@ -116,9 +121,13 @@
 									href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${pergunta.id}/pergunta"
 									title="<fmt:message key="table.editar"/>"> <span
 										class="icon-pencil"></span> </a> 
-									<a class="btn btn-primary"
-									href="${pageContext.request.contextPath}/teste/apagar/pergunta/testeId/${testeView.teste.id}/perguntaId/${pergunta.id}"
-									title="<fmt:message key="table.remover"/>"> <span
+									<a title="<fmt:message key="table.remover"/>"
+									class="btn btn-primary btn-modal" 
+									data-href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/pergunta/${pergunta.id}/apagar" 
+									data-acao="Remover" 
+									data-toggle="modal" 
+									href="#modalMessages"
+									> <span
 										class="icon-trash icon-white"></span> </a></td>
 							</tr>
 						</c:forEach>
