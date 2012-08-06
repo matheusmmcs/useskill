@@ -178,7 +178,7 @@ public class PerguntaController extends BaseController {
 	}
 
 	@Logado
-	@Post("teste/apagar/tarefa/pergunta")
+	@Get("teste/{testeId}/apagar/tarefa/{tarefaId}/pergunta/{perguntaId}")
 	public void deletarPergunta(Long testeId, Long perguntaId, Long tarefaId) {
 		validateComponente.validarId(tarefaId);
 		System.out.println(testeId);

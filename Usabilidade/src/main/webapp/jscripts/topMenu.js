@@ -31,9 +31,9 @@ function getCookie(c_name){
         
         $('a').click(function(){
         	var datatop = $(this).attr('data-topmenu');
-        	console.log('Click: '+datatop);
+        	//console.log('Click: '+datatop);
         	setCookie(cookieName,datatop);
-        	console.log('Click2: '+getCookie(cookieName));
+        	//console.log('Click2: '+getCookie(cookieName));
         });
 
         //funcao para percorrer todos os elementos gerando seus dados
