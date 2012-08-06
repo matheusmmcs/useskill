@@ -10,11 +10,33 @@
 	</c:if>
 
 	<ul class="breadcrumb">
-		<li><a href="${pageContext.request.contextPath}/usuario"> <fmt:message
-					key="testes.meus" /> </a> <span class="divider">/</span>
+		<li>
+			<a href="${pageContext.request.contextPath}/usuario"> 
+				<fmt:message key="testes.meus" />
+			</a>
+			<span class="divider">/</span>
 		</li>
 		<li class="active"><fmt:message key="testes.liberado" /></li>
 	</ul>
+	
+	<div class="btn-toolbar">
+		<div class="btn-group pull-right">
+			<a class="btn btn-primary"
+				href="${pageContext.request.contextPath}/teste/criar"> <fmt:message
+					key="testes.criar" /> </a>
+		</div>
+	
+		<div class="btn-group pull-left">		
+			<a class="btn"
+				href="${pageContext.request.contextPath}/usuario">
+				<fmt:message key="testes.construcao"/>
+			</a>
+			<a class="btn"
+				href="${pageContext.request.contextPath}/testes/convidados">
+				<fmt:message key="testes.convites"/>
+			</a>
+		</div>
+	</div>
 
 	<form class="form-horizontal form-layout"
 		action="${pageContext.request.contextPath}/conta" method="post">
@@ -47,7 +69,7 @@
 								</a>
 								<a class="btn"
 								href="${pageContext.request.contextPath}/teste/${teste.id}/usuarios/convidados">
-								<fmt:message key="testes.convidarusuarios" />
+								<fmt:message key="testes.usuarios.convidados" />
 								</a>
 								<a class="btn"
 								href="#">
