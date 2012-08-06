@@ -15,6 +15,7 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.view.Results;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.FluxoComponente;
 import br.ufpi.componets.SessionActions;
@@ -140,16 +141,14 @@ public class TarefaController extends BaseController {
 	@Get()
 	@Path(value = "teste/{idTeste}/editar/passo2/editar/{tarefa.id}/tarefa")
 	public Tarefa editarTarefa(Long idTeste, Tarefa tarefa, boolean isErro) {
+		this.instanceIdTesteView(idTeste);
 		if (isErro) {
-			testeView.setTeste(testeRepository.find(idTeste));
 			return tarefa;
 		}
 		Tarefa tarefaPertenceTeste = this.tarefaPertenceTeste(idTeste, tarefa.getId());
 		testeView.setTeste(testeRepository.find(idTeste));
 		return tarefaPertenceTeste;
 	}
-
-	
 
 	/**
 	 * Pagina para editar Tarefa, se idTeste e TarefaId foor igual a null
@@ -189,7 +188,7 @@ public class TarefaController extends BaseController {
 	 * @param idTeste
 	 */
 	@Logado
-	@Get("teste/{idTeste}/removed/tarefa/{idTarefa}")
+	@Get("teste/{idTeste}/tarefa/{idTarefa}/apagar")
 	public void removed(Long idTarefa, Long idTeste) {
 		Tarefa tarefa = this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
 		tarefaRepository.destroy(tarefa);
@@ -436,6 +435,7 @@ public class TarefaController extends BaseController {
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
 	@Logado
 	@Get
+	@Post
 	public String loadactionuser() {
 		System.out.println("loadActionUser ");
 		Long idTarefa = fluxoComponente.getTarefaVez();
@@ -549,6 +549,17 @@ public class TarefaController extends BaseController {
 	private Tarefa getTarefa(Long idTarefa) {
 		return tarefaRepository.find(idTarefa);
 
+	}
+
+	@Post("/tarefa/roteiro")
+	@Logado
+	public void getRoteiro(Long idTarefa) {
+		System.out.println("Teste da secion: " + testeSession.getTeste().getId());
+		System.out.println("id tarefa: " + idTarefa);
+		Tarefa tarefa = this.tarefaPertenceTeste(testeSession.getTeste().getId(), idTarefa);
+		System.out.println("Tarefa roteiro: " + tarefa.getRoteiro());
+		result.use(Results.json()).from(tarefa.getRoteiro()).serialize();
+		//return tarefa.getRoteiro();
 	}
 
 }
