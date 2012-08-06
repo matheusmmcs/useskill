@@ -59,7 +59,6 @@ public class TarefaController extends BaseController {
 	private final FluxoComponente fluxoComponente;
 	private final HttpServletRequest request;
 	private final TesteSession testeSession;
-	private final TarefaDetalhe tarefaDetalhe;
 	private final CookieManager cookieManager;
 
 	public TarefaController(Result result, Validator validator,
@@ -70,8 +69,7 @@ public class TarefaController extends BaseController {
 			FluxoUsuarioRepository fluxoUsuarioRepository,
 			ConvidadoRepository convidadoRepository, SessionActions actions,
 			FluxoComponente fluxoComponente, HttpServletRequest request,
-			TesteSession testeSession, TarefaDetalhe tarefaDetalhe,
-			CookieManager cookieManager) {
+			TesteSession testeSession, CookieManager cookieManager) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
@@ -82,7 +80,6 @@ public class TarefaController extends BaseController {
 		this.fluxoComponente = fluxoComponente;
 		this.request = request;
 		this.testeSession = testeSession;
-		this.tarefaDetalhe = tarefaDetalhe;
 		this.cookieManager = cookieManager;
 	}
 
@@ -315,81 +312,6 @@ public class TarefaController extends BaseController {
 	}
 
 	/**
-	 * Criado para iniciar os objetos na sessão antes da gravação dos testes
-	 * 
-	 * @param idTarefa
-	 *            Identificador da Tarefa a ser gravada
-	 * @param idTeste
-	 *            Identificador do teste ao qual a tarefa pertence
-	 */
-	@Logado
-	@Post()
-	@Path(value = "tarefa/gravar")
-	public void iniciarGravacaoTester(Long idTarefa, Long idTeste) {
-		this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
-		this.testeSession.setTeste(testeRepository.find(idTeste));
-		this.testeSession.setTarefa(tarefaRepository.find(idTarefa));
-		this.result.redirectTo(TarefaController.class).loadtasktester();
-	}
-
-	/**
-	 * Método que carrega uma página para realizar a tarefa. Nesta página,
-	 * possui um iframe onde são testadas as ações do TESTADOR.
-	 * 
-	 * @return
-	 */
-	@Logado
-	@Get()
-	@Post()
-	public void loadtasktester() {
-		Long idTarefa = testeSession.getTarefa().getId();
-		System.out.println("Action: loadTaskTester");
-		Tarefa tarefa = tarefaPertenceTeste(testeSession.getTeste().getId(),
-				idTarefa);
-		String url = BaseUrl.getInstance(request);
-		System.out.println("${String} =" + url
-				+ "/tarefa/loadactiontester?url=" + tarefa.getUrlInicial()
-				+ "&idTarefa=" + idTarefa);
-		tarefaDetalhe.setRoteiro(tarefa.getRoteiro());
-		tarefaDetalhe.setUrl(url + "/tarefa/loadactiontester?url="
-				+ tarefa.getUrlInicial() + "&idTarefa=" + idTarefa);
-	}
-
-	/**
-	 * Método que carrega uma página e adaptada para a Usabilitool. Nesta página
-	 * serão armazeandas as ações do TESTADOR.
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings({ "unused", "unchecked", "rawtypes" })
-	@Logado
-	@Get()
-	@Post()
-	public String loadactiontester() {
-		Long idTarefa = testeSession.getTarefa().getId();
-		System.out.println("loadActionTester");
-		Tarefa tarefa = tarefaPertenceTeste(testeSession.getTeste().getId(),
-				idTarefa);
-
-		String url = request.getParameter("url");
-		Map<String, String[]> parametrosRecebidos = request.getParameterMap();
-		String metodo = request.getMethod();
-
-		Enumeration headerNames = request.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			String headerName = (String) headerNames.nextElement();
-		}
-		if (url != null) {
-			return WebClientTester.loadPage(BaseUrl.getInstance(request)
-					+ "/tarefa/loadactiontester", url,
-					Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
-					metodo, cookieManager);
-		} else {
-			return "erro";
-		}
-	}
-
-	/**
 	 * Metodo que carrega uma página para realizar a tarefa. Nest pagina, possui
 	 * um iframe onde são testadas as ações do USUARIO. O id da tarefa é
 	 * recebido a partir da sessão FluxoComponente
@@ -443,6 +365,7 @@ public class TarefaController extends BaseController {
 			Convidado convidado = new Convidado(new UsuarioTestePK(
 					usuarioLogado.getUsuario(), testeSession.getTeste()));
 			convidado.setRealizou(true);
+			convidado.setTipoConvidado(fluxoComponente.getTipoConvidado());
 			convidadoRepository.update(convidado);
 			return null;
 		}
