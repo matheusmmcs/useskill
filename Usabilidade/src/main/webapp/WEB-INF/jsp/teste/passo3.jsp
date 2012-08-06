@@ -11,9 +11,9 @@
 		<li><a href="${pageContext.request.contextPath}/usuario"> <fmt:message
 					key="testes.meus" /> </a> <span class="divider">/</span>
 		</li>
-		<li class="active"><fmt:message key="testes.editar" /><span
-			class="divider">/</span></li>
-		<li class="active"><fmt:message key="testes.passo3" /></li>
+		<li class="active"><fmt:message key="testes.editar" />
+			[<fmt:message key="testes.passo3" />]
+		</li>
 	</ul>
 
 	<ul class="nav nav-tabs" style="margin: 0 auto; width: 97%">
@@ -82,7 +82,7 @@
 				<hr />
 			</legend>
 
-			<form class="form-horizontal"
+			<form id="removerUsuario" class="form-horizontal"
 				action="${pageContext.request.contextPath}/teste/desconvidar/usuario"
 				method="post">
 				<table class="table table-striped table-bordered table-condensed">
@@ -107,7 +107,8 @@
 				<input type="hidden" name=idTeste value=${testeView.teste.id }>
 				<input type="submit"
 					value="<fmt:message key="testes.passo3.usuariosremove"/>"
-					class="btn btn-danger" style="float: right; margin-right: 10px" />
+					class="btn btn-danger btn-modal" style="float: right; margin: 0 10px 5px 0" 
+					data-toggle="modal" href="#modalMessages" data-acao="Remover"/>
 			</form>
 		</fieldset>
 	</div>

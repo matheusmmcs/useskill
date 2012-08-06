@@ -4,7 +4,7 @@
 			<ul class="nav nav-list">
 				<li class="nav-header">
 				<a class="nav-show">
-				<fmt:message key="usuario.minhaconta"/>
+				<fmt:message key="leftmenu.minhaconta"/>
 				<b class="caret"></b>
 				</a></li>
 			</ul>
@@ -28,11 +28,13 @@
 				</a></li>
 			</ul>
 			<ul class="nav nav-list nav-links" style="display: none;">
+				<li><a href="${pageContext.request.contextPath}/teste/criar"><fmt:message key="testes.criar"/></a>
+				</li>
 				<li><a href="${pageContext.request.contextPath}/usuario"><fmt:message key="testes.construcao"/></a>
 				</li>
 				<li><a href="${pageContext.request.contextPath}/testes/liberados"><fmt:message key="testes.liberado"/></a>
 				</li>
-				<li><a href="#"><fmt:message key="testes.convites"/></a>
+				<li><a href="${pageContext.request.contextPath}/testes/convidados"><fmt:message key="testes.convites"/></a>
 				</li>
 			</ul>
 		</div>

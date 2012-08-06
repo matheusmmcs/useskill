@@ -11,10 +11,13 @@
 						<fmt:message key="usuario.minhaconta" /> <span class="caret"></span>
 					</a>
 					<ul class="dropdown-menu">
-						<li><a href="${pageContext.request.contextPath}/usuarios/${usuarioLogado.usuario.id}/edit">
+						<li><a title="<fmt:message key="usuario.meusdados"/>" href="${pageContext.request.contextPath}/usuarios/${usuarioLogado.usuario.id}/edit">
 							<fmt:message key="usuario.meusdados" />
 						</a></li>
-						<li><a href="#">Alterar Senha</a></li>
+						<li>
+						<a title="<fmt:message key="topo.alterarsenha"/>" href="#">
+							<fmt:message key="topo.alterarsenha"/>
+						</a></li>
 						<li class="divider"></li>
 						<li><a href="${pageContext.request.contextPath}/logout">
 							<fmt:message key="logout" /> 

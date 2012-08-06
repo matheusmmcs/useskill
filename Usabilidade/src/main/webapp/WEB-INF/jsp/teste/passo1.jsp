@@ -14,8 +14,9 @@
         	</a> 
         	<span class="divider">/</span>
     	</li>
-    	<li class="active"><fmt:message key="testes.editar" /><span class="divider">/</span></li>
-    	<li class="active"><fmt:message key="testes.passo1" /></li>
+    	<li class="active"><fmt:message key="testes.editar" />
+			[<fmt:message key="testes.passo1" />]
+		</li>
 	</ul>
 
 	<ul class="nav nav-tabs" style="margin: 0 auto; width: 97%">

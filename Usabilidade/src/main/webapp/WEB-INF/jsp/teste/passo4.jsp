@@ -11,9 +11,9 @@
 		<li><a href="${pageContext.request.contextPath}/usuario"> <fmt:message
 					key="testes.meus" /> </a> <span class="divider">/</span>
 		</li>
-		<li class="active"><fmt:message key="testes.editar" /><span
-			class="divider">/</span></li>
-		<li class="active"><fmt:message key="testes.passo4" /></li>
+		<li class="active"><fmt:message key="testes.editar" />
+			[<fmt:message key="testes.passo4" />]
+		</li>
 	</ul>
 	
     <ul class="nav nav-tabs" style="margin: 0 auto; width: 97%">

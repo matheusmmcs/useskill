@@ -19,6 +19,17 @@
 				href="${pageContext.request.contextPath}/teste/criar"> <fmt:message
 					key="testes.criar" /> </a>
 		</div>
+		
+		<div class="btn-group pull-left">		
+			<a class="btn"
+				href="${pageContext.request.contextPath}/testes/liberados">
+				<fmt:message key="testes.liberado"/>
+			</a>
+			<a class="btn"
+				href="${pageContext.request.contextPath}/testes/convidados">
+				<fmt:message key="testes.convites"/>
+			</a>
+		</div>
 	</div>
 
 	<div class="form-horizontal form-layout">
@@ -46,9 +57,14 @@
 							<td class="centertd"><a class="btn"
 								href="${pageContext.request.contextPath}/teste/${teste.id}/editar/passo1"
 								title="<fmt:message key="table.editar"/>" data-topmenu="1"> <span
-									class="icon-pencil"></span> </a> <a class="btn btn-primary"
-								href="${pageContext.request.contextPath}/teste/${teste.id}/remover"
-								title="<fmt:message key="table.remover"/>"> <span
+									class="icon-pencil"></span> </a> 
+								<a title="<fmt:message key="table.remover"/>"
+								class="btn btn-primary btn-modal" 
+								data-href="${pageContext.request.contextPath}/teste/${teste.id}/remover" 
+								data-acao="Remover" 
+								data-toggle="modal" 
+								href="#modalMessages"
+								> <span
 									class="icon-trash icon-white"></span> </a></td>
 						</tr>
 					</c:forEach>

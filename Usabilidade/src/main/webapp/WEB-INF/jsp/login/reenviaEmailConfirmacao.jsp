@@ -14,13 +14,16 @@
 </div>
 
 <script type="text/javascript">
-	$("#form_reenviar-confirmacao").validate({
-		rules : {
-			email : {
-				requerid : true,
-				email : true
+(function($){
+	$(document).ready(function(){
+		$("#form_reenviar-confirmacao").validate({
+			rules : {
+				email : {
+					requerid : true,
+					email : true
+				}
 			}
-		}
-
+		});
 	});
+})(jQuery);
 </script>

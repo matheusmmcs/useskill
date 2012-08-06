@@ -15,13 +15,13 @@
         	<span class="divider">/</span>
     	</li>
     	<li>
-    		<a href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2">
-        		<fmt:message key="testes.editar"/>
-    			/
-    			<fmt:message key="testes.passo2"/>
-        	</a>
-    		<span class="divider">/</span>
-    	</li>
+			<a
+			href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2">
+				<fmt:message key="testes.editar" />
+				[<fmt:message key="testes.passo2" />] 
+			</a> 
+			<span class="divider">/</span>
+		</li>
 		
     	<li class="active"><fmt:message key="tarefa.inserir"/></li>
 	</ul>
@@ -64,12 +64,3 @@
 		</fieldset>
 	</form>
 </div>
-
-<!-- class="informacoes span6" rel="tooltip" data-original-title="first tooltip" -->
-<script>
-	(function($){
-		$(document).ready(function(){
-			$('.informacoes').tooltip()
-		});
-	})(jQuery);
-</script>

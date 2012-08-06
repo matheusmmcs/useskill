@@ -49,16 +49,20 @@
 	</form>
 </div>
 <script type="text/javascript">
-	$("#loginForm").validate({
-		rules : {
-			email : {
-				required : true,
-				email : true
+(function($){
+	$(document).ready(function(){
+		$("#loginForm").validate({
+			rules : {
+				email : {
+					required : true,
+					email : true
+				},
+				senha : {
+					required : true
+				}
 			},
-			senha : {
-				required : true
-			}
-		},
-		errorElement : "div"
+			errorElement : "div"
+		});
 	});
+})(jQuery);
 </script>

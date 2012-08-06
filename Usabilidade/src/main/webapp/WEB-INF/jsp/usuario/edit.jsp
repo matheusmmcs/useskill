@@ -52,17 +52,22 @@
 		</fieldset>
 	</form>
 </div>
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.maskedinput-1.3.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.validate.js"></script>
 <script type="text/javascript">
-	$("#editUsuario_Form").validate({
-		rules : {
-			"usuario.nome" : {
-				required : true
-			},
-
-			"usuario.senha" : {
-				required : true,
-				minLength : 6
+(function($){
+	$(document).ready(function(){
+		$("#editUsuario_Form").validate({
+			rules : {
+				"usuario.nome" : {
+					required : true
+				},
+				"usuario.senha" : {
+					required : true,
+					minLength : 6
+				}
 			}
-		}
+		});
 	});
+})(jQuery);
 </script>

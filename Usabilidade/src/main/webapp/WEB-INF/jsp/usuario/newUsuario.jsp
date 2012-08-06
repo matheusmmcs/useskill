@@ -69,11 +69,9 @@
 	</form>
 </div>
 <script type="text/javascript">
-    $(document)
-    .ready(
-    function() {
-   
-        $("#newUserForm").validate({
+(function($){
+	$(document).ready(function(){
+		$("#newUserForm").validate({
             rules : {
                 "usuario.nome" : {
                     required : true
@@ -92,4 +90,6 @@
                 }
             }
         });
+	});
+})(jQuery);
 </script>

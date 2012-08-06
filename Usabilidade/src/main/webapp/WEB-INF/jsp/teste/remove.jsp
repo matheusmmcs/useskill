@@ -11,10 +11,16 @@
     <input type="submit" value="Confirmar"/>
 </form>
 <script type="text/javascript">
-    $("#form_delete").validate({ 
-        
-        rules:{"senha":{
-                required:true
-            }}}
-);
+(function($){
+	$(document).ready(function(){
+		$("#form_delete").validate({ 
+	        rules:{
+	        	"senha":{
+	                required:true
+	            }
+	    	}
+	    });
+	});
+})(jQuery);
+
 </script>
