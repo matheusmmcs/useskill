@@ -140,11 +140,13 @@ public class TarefaController extends BaseController {
 	@Get()
 	@Path(value = "teste/{idTeste}/editar/passo2/editar/{tarefa.id}/tarefa")
 	public Tarefa editarTarefa(Long idTeste, Tarefa tarefa, boolean isErro) {
-		this.instanceIdTesteView(idTeste);
 		if (isErro) {
+			testeView.setTeste(testeRepository.find(idTeste));
 			return tarefa;
 		}
-		return this.tarefaPertenceTeste(idTeste, tarefa.getId());
+		Tarefa tarefaPertenceTeste = this.tarefaPertenceTeste(idTeste, tarefa.getId());
+		testeView.setTeste(testeRepository.find(idTeste));
+		return tarefaPertenceTeste;
 	}
 
 	
