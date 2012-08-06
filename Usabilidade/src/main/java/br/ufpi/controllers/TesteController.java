@@ -59,7 +59,7 @@ public class TesteController extends BaseController {
 	@Logado
 	@Post()
 	public void salvar(String titulo) {
-		validateComponente.validarString(titulo, "titulo");
+		validateComponente.validarString(titulo, "testes.titulo");
 		validator.onErrorRedirectTo(this).criarTeste();
 		Teste teste = new Teste();
 		teste.setUsuarioCriador(usuarioLogado.getUsuario());
@@ -102,10 +102,9 @@ public class TesteController extends BaseController {
 			String textoIndroducao) {
 		validateComponente.validarId(idTeste);
 		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
-		validateComponente.validarString(titulo, "titulo");
-		validateComponente.validarString(tituloPublico, "teste.publico");
-		validateComponente.validarString(textoIndroducao,
-				"teste.textoIndroducao");
+		validateComponente.validarString(titulo, "testes.passo1.titulo");
+		validateComponente.validarString(tituloPublico, "testes.passo1.titulopublico");
+		validateComponente.validarString(textoIndroducao, "testes.passo1.introducao");
 		if (validator.hasErrors()) {
 			this.passo1(idTeste, titulo, tituloPublico, textoIndroducao);
 		}
@@ -322,7 +321,7 @@ public class TesteController extends BaseController {
 	@Delete()
 	@Logado
 	public void removed(final String senha, Long idTeste) {
-		validateComponente.validarString(senha, "senha");
+		validateComponente.validarString(senha, "login.senha");
 		validator.onErrorRedirectTo(this).remove(idTeste);
 		String senhaCriptografada = Criptografa.criptografar(senha);
 		if (senhaCriptografada.equals(usuarioLogado.getUsuario().getSenha())) {

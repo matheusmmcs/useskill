@@ -153,7 +153,7 @@ public class LoginController extends BaseController {
 	 * @return
 	 */
 	@Post("usuario/recupera-senha-completa")
-	public String recuperaSenhaCompleta(final String email) {
+	public void recuperaSenhaCompleta(final String email) {
 		validator.checking(new Validations() {
 			{
 				that(!email.isEmpty(), "campo.email.obrigatorio",
@@ -178,9 +178,9 @@ public class LoginController extends BaseController {
 			EmailUtils emailUtils = new EmailUtils();
 			emailUtils.enviarNovaSenha(usuario, novaSenha);
 			usuarioRepository.update(usuario);
-			return email;
+			result.include("sucesso", "usuario.senha.redefinida");
+			result.redirectTo(this).recuperaSenha(email);
 		}
-		return null;
 	}
 
 	/**

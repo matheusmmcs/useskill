@@ -178,10 +178,12 @@ public class Usuario implements Serializable {
 				+ ", confirmacaoEmail=" + confirmacaoEmail + "]";
 	}
 
-	public void criptografarSenhaGerarConfimacaoEmail() {
+	public void criptografarSenhaGerarConfimacaoEmail(boolean confirmarPorEmail) {
 		senha = Criptografa.criptografar(senha);
-		do {
-			confirmacaoEmail = Criptografa.criptografar(new Date().toString());
-		} while (getRepository().isContainConfirmacaoEmail(confirmacaoEmail));
+		if(confirmarPorEmail){
+			do {
+				confirmacaoEmail = Criptografa.criptografar(new Date().toString());
+			} while (getRepository().isContainConfirmacaoEmail(confirmacaoEmail));
+		}
 	}
 }

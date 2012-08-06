@@ -56,7 +56,7 @@ public class UsuarioController extends BaseController {
 			});
 		}
 		validator.onErrorUsePageOf(this).newUsuario();
-		usuario.criptografarSenhaGerarConfimacaoEmail();
+		usuario.criptografarSenhaGerarConfimacaoEmail(true);
 		usuarioRepository.create(usuario);
 		BaseUrl.getInstance(request);
 		EmailUtils emailUtils = new EmailUtils();
@@ -89,7 +89,7 @@ public class UsuarioController extends BaseController {
 		usuarioNovo.setTelefones(usuario.getTelefones());
 		if (!usuario.getEmail().equals(usuarioNovo.getEmail())) {
 			usuarioNovo.setEmail(usuario.getEmail());
-			usuario.criptografarSenhaGerarConfimacaoEmail();
+			usuario.criptografarSenhaGerarConfimacaoEmail(true);
 			EmailUtils emailUtils = new EmailUtils();
 			emailUtils.enviarEmailConfirmacao(usuario);
 		}
@@ -108,33 +108,41 @@ public class UsuarioController extends BaseController {
 		result.include("contador", usuario1.getTelefones().size());
 		return usuario1;
 	}
+	
+	@Logado
+	@Get("/usuario/alterarsenha")
+	public void alterarsenha() {
+	}
 
-	@Post
-	public void alterarSenha(String senha, String confirmacaoSenha,
-			String senhaAntiga) {
-		validateComponente.validarString(senha, "senhaNova");
-		validateComponente.validarString(confirmacaoSenha, "confirmacaoSenha");
-		validateComponente.validarString(senhaAntiga, "senhaAntiga");
-		if(senha.length()<6)
+	@Post("/usuario/alterarSenha")
+	public void alterarSenha(String senha, String confirmacaoSenha, String senhaAntiga) {
+		validateComponente.validarString(senha, "login.novasenha");
+		validateComponente.validarString(confirmacaoSenha, "login.confirmanovasenha");
+		validateComponente.validarString(senhaAntiga, "login.senhaantiga");
+		validator.onErrorRedirectTo(this).alterarsenha();
+		if(senha.length()<6){
 			validateComponente.gerarErro("senha.curta", "senha.curta");
-		// validator.onErrorRedirectTo(controller)
+			validator.onErrorRedirectTo(this).alterarsenha();
+		}
+			
 		if (senha.equals(confirmacaoSenha)) {
 			String senhaCriptografada = Criptografa.criptografar(senhaAntiga);
-			if (senhaCriptografada
-					.equals(usuarioLogado.getUsuario().getSenha())) {
-				Usuario usuarioAtualizar = usuarioRepository.find(usuarioLogado
-						.getUsuario().getId());
-				usuarioAtualizar.setSenha(senha);
+			if (senhaCriptografada.equals(usuarioLogado.getUsuario().getSenha())) {
+				Usuario usuarioAtualizar = usuarioRepository.find(usuarioLogado.getUsuario().getId());
+				usuarioAtualizar.setSenha(Criptografa.criptografar(senha));
 				usuarioRepository.update(usuarioAtualizar);
 				usuarioLogado.setUsuario(usuarioAtualizar);
-				// TODOGerar mensagem que o usuario conseguiu alterar senha com
-				// sucesso
+				result.include("sucesso", "login.alterarsenha.sucesso");
+				result.redirectTo(this).alterarsenha();
+				// Gerar mensagem que o usuario conseguiu alterar senha com sucesso
 			} else {
 				// Gerar mensagem de senha antiga não esta igual
-				validateComponente.gerarErro("senha.diferente",
-						"senha.diferente");
-				// TODO validator.onErrorRedirectTo(controller);
+				validateComponente.gerarErro("login.alterarsenha.erroantigadiferente","login.alterarsenha.erroantigadiferente");
+				validator.onErrorRedirectTo(this).alterarsenha();
 			}
+		}else{
+			validateComponente.gerarErro("login.alterarsenha.naoconfirma","login.alterarsenha.naoconfirma");
+			validator.onErrorRedirectTo(this).alterarsenha();
 		}
 	}
 

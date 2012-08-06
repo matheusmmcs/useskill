@@ -54,8 +54,8 @@ public class TesteParticiparController extends BaseController {
 	 * 
 	 * @param testeId
 	 */
-	@Post
 	@Logado
+	@Get("/{testeId}/aceitar/")
 	public void aceitar(Long testeId) {
 		 ConvidadoVO convidado = verificaSeUsuarioConvidado(testeId);
 		 

@@ -45,7 +45,7 @@ public class PerguntaController extends BaseController {
 	}
 
 	@Logado
-	@Get(value = "teste/{idTeste}/editar/passo2/editar/{idTarefa}/tarefa/questionario/criar/pergunta")
+	@Get(value = "teste/{idTeste}/editar/passo2/tarefa/{idTarefa}/questionario/criar/pergunta")
 	public Pergunta criarPerguntaTarefa(Long idTeste, Long idTarefa) {
 		Tarefa tarefa = this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
 		result.include(tarefa);
@@ -77,7 +77,7 @@ public class PerguntaController extends BaseController {
 	 *            identificador da tarefa que a pergunta pertence
 	 */
 	@Logado
-	@Post("teste/{idTeste}/editar/passo2/editar/{idTarefa}/tarefa/questionario/salvar/pergunta")
+	@Post("teste/{idTeste}/editar/passo2/tarefa/{idTarefa}/questionario/salvar/pergunta")
 	public void salvarPergunta(Long idTeste, Pergunta pergunta, Long idTarefa) {
 		Tarefa tarefa = this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
 		salvar(pergunta, idTeste, tarefa.getQuestionario());
@@ -170,7 +170,7 @@ public class PerguntaController extends BaseController {
 	}
 
 	@Logado
-	@Post("teste/apagar/pergunta")
+	@Get("teste/{testeId}/pergunta/{perguntaId}/apagar")
 	public void deletarPergunta(Long testeId, Long perguntaId) {
 		delete(testeId, perguntaId, null);
 		result.redirectTo(TesteController.class).passo2(testeId);
