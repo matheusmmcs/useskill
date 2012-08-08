@@ -1,6 +1,7 @@
 @CHARSET "UTF-8";
 
 #webclient-topo {
+	font-family: "Trebuchet MS", sans-serif;
 	width: 100%;
 	top: 0px;
 	height: 60px;
@@ -9,7 +10,9 @@
 	border-bottom: 1px solid #007AA5;
 	z-index: 99999;
 }
-
+#webclient-topo a{
+	text-decoration: none;
+}
 .concluir {
 	float: right;
 	margin: 15px 30px;

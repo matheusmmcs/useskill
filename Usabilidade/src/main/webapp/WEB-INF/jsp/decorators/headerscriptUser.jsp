@@ -17,7 +17,7 @@
 				},
 				success : function(json) {
 					console.log("SUCCESS");
-					$('#inline1').children('p').html(json.string);
+					$('#USroteiro').children('p').html(json.string);
 				},
 				error : function(jqXHR, textStatus, errorThrown){
 					console.log("ERRO");
@@ -40,7 +40,7 @@
 })(jQuery);
 </script>
 
-<div id="inline1" style="width: 400px; display: none;">
+<div id="USroteiro" style="width: 400px; display: none;">
 	<h3>Roteiro</h3>
 	<p></p>
 </div>
@@ -51,7 +51,7 @@
 			<fmt:message key="concluirTarefa" /> </a>
 	</div>
 	<div class="centro" id="roteiroContent">
-		<a class="fancybox botao botao-info" id="roteiro" href="#inline1">Roteiro</a>
+		<a class="fancybox botao botao-info" id="roteiro" href="#USroteiro">Roteiro</a>
 	</div>
 	<div class="esquerda">
 		<a class="bom botao botao-azul">Bom</a> 
