@@ -1,6 +1,5 @@
 <head>
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/css/webclient/loadtask.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/webclient/loadtask.css" />
 </head>
 <body>
 	<div id="iframe">

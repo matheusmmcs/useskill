@@ -1,203 +1,29 @@
 @CHARSET "UTF-8";
-
-#webclient-topo {
-	font-family: "Trebuchet MS", sans-serif;
-	width: 100%;
-	top: 0px;
-	height: 60px;
-	position: relative;
-	background: #EEF3F6;
-	border-bottom: 1px solid #007AA5;
-	z-index: 99999;
-}
-#webclient-topo a{
-	text-decoration: none;
-}
-.concluir {
-	float: right;
-	margin: 15px 30px;
-	padding: 5px 30px;
-}
-
-.bom {
-	float: left;
-	margin: 15px 5px;
-	padding: 5px 20px;
-}
-
-.ruim {
-	float: left;
-	margin: 15px 5px;
-	padding: 5px 20px;
-}
-
-.comentario {
-	float: left;
-	margin: 15px 5px;
-	padding: 5px 20px;
-}
-
-#roteiro {
-	float: right;
-	margin: 15px 170px 15px 15px;
-	padding: 5px 30px;
-}
-
-.direita {
-	float: right;
-	width: 33%;
-	height: 60px;
-}
-
-.centro {
-	float: right;
-	width: 33%;
-	height: 60px;
-}
-
-.esquerda {
-	float: right;
-	width: 33%;
-	height: 60px;
-}
-
-webclient-conteudo {
-	top: 80px;
-}
-
+#USwebclient-topo-todo{width: 100%;
+background-color: #3A5780;background-image: -webkit-gradient(radial, center center, 0, center center, 460, from(#557BB2), to(#3A5780));background-image: -webkit-radial-gradient(circle, #557BB2, #3A5780);background-image: -moz-radial-gradient(circle, #557BB2, #3A5780);background-image: -ms-radial-gradient(circle, #557BB2, #3A5780);background-image: -o-radial-gradient(circle, #557BB2, #3A5780);background-repeat: no-repeat;background-position: top center;}
+#USwebclient-topo {font-family: "Trebuchet MS", sans-serif;width: 980px;top: 0px;height: 40px;margin:0 auto;position: relative;border-bottom: 1px solid #007AA5;
+z-index: 99990;}
+#fancybox-overlay{z-index: 99991 !important;}
+.fancybox-opened {z-index: 99992 !important;}
+#USpreloader {font-family: "Trebuchet MS", sans-serif;z-index: 99993 !important;}
+#webclient-topo a{text-decoration: none;}
+.USconcluir.disabled, .USconcluir.disabled:hover{background: #999;cursor: default;}
+.USdireita {float: right;width: 33%;height: 60px;}
+.UScentro {float: right;width: 33%;height: 60px;}
+.USesquerda {float: right;width: 33%;height: 60px;}
+.USesquerda .USbotao {float: left;margin: 5px 5px;padding: 5px 20px;}
+.USdireita .USbotao {float: right;margin: 5px 30px;padding: 5px 30px;}
+.UScentro .USbotao {float: right;margin: 5px 90px 15px 15px;padding: 5px 30px;}
+#USroteiro{font-size:14px !important;min-height:350px;height:auto !important;height:350px;width: 400px; display: none;}
+#USroteiro h3{font-size:18px !important;font-weight:bold;border-bottom:1px solid #ddd;text-align:center;padding:10px 0;}
+#USroteiro p{margin-top: 10px;}
+/* #USwebclient-conteudo {top: 80px;} */
 /*	BOTÕES BOOTSTRAP	*/
-.botao {
-	border-color: #46a546;
-	display: inline-block;
-	*display: inline;
-	/* IE7 inline-block hack */
-	*zoom: 1;
-	padding: 4px 10px 4px;
-	margin-bottom: 0;
-	font-size: 13px;
-	line-height: 18px;
-	color: #333333;
-	text-align: center;
-	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
-	vertical-align: middle;
-	background-color: #f5f5f5;
-	background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
-	background-image: -ms-linear-gradient(top, #ffffff, #e6e6e6);
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff),
-		to(#e6e6e6) );
-	background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
-	background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
-	background-image: linear-gradient(top, #ffffff, #e6e6e6);
-	background-repeat: repeat-x;
-	filter: progid :     DXImageTransform.Microsoft.gradient (    
-		startColorstr =  
-		  '#ffffff', endColorstr =     '#e6e6e6', GradientType =     0 );
-	border-color: #e6e6e6 #e6e6e6 #bfbfbf;
-	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-	filter: progid :     dximagetransform.microsoft.gradient (     enabled =
-		  
-		 false );
-	border: 1px solid #cccccc;
-	border-bottom-color: #b3b3b3;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-	-webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px
-		rgba(0, 0, 0, 0.05);
-	-moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px
-		rgba(0, 0, 0, 0.05);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px
-		rgba(0, 0, 0, 0.05);
-	cursor: pointer;
-	*margin-left: .3em;
-}
-
-.botao:hover {
-	color: #333333;
-	text-decoration: none;
-	background-color: #e6e6e6;
-	background-position: 0 -15px;
-	-webkit-transition: background-position 0.1s linear;
-	-moz-transition: background-position 0.1s linear;
-	-ms-transition: background-position 0.1s linear;
-	-o-transition: background-position 0.1s linear;
-	transition: background-position 0.1s linear;
-}
-
-.botao-vermelho {
-	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-	color: white !important;
-	background-color: #BD362F;
-	background-color: #da4f49;
-	background-image: -moz-linear-gradient(top, #ee5f5b, #bd362f);
-	background-image: -ms-linear-gradient(top, #ee5f5b, #bd362f);
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b),to(#bd362f) );
-	background-image: -webkit-linear-gradient(top, #ee5f5b, #bd362f);
-	background-image: -o-linear-gradient(top, #ee5f5b, #bd362f);
-	background-image: linear-gradient(top, #ee5f5b, #bd362f);
-	background-repeat: repeat-x;
-	filter: progid : DXImageTransform.Microsoft.gradient ( startColorstr ='#ee5f5b', endColorstr = '#bd362f', GradientType = 0 );
-	border-color: #bd362f #bd362f #802420;
-	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-	filter: progid : dximagetransform.microsoft.gradient ( enabled = false );
-}
-.botao-vermelho:hover{
-	background-color: #bd362f;
-}
-.botao-azul{
-	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-	color: white !important;
-  background-color: #0074cc;
-  background-image: -moz-linear-gradient(top, #0088cc, #0055cc);
-  background-image: -ms-linear-gradient(top, #0088cc, #0055cc);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0055cc));
-  background-image: -webkit-linear-gradient(top, #0088cc, #0055cc);
-  background-image: -o-linear-gradient(top, #0088cc, #0055cc);
-  background-image: linear-gradient(top, #0088cc, #0055cc);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0088cc', endColorstr='#0055cc', GradientType=0);
-  border-color: #0055cc #0055cc #003580;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
-}
-.botao-azul:hover{
-	background-color: #0055cc;
-}
-.botao-verde{
-	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  color: #ffffff !important;
-  background-color: #5bb75b;
-  background-image: -moz-linear-gradient(top, #62c462, #51a351);
-  background-image: -ms-linear-gradient(top, #62c462, #51a351);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#51a351));
-  background-image: -webkit-linear-gradient(top, #62c462, #51a351);
-  background-image: -o-linear-gradient(top, #62c462, #51a351);
-  background-image: linear-gradient(top, #62c462, #51a351);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#62c462', endColorstr='#51a351', GradientType=0);
-  border-color: #51a351 #51a351 #387038;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
-}
-.botao-verde:hover{
-	background-color: #51a351;
-}
-.botao-info{
-	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  color: #ffffff !important;
-	background-color: #49afcd;
-  background-image: -moz-linear-gradient(top, #5bc0de, #2f96b4);
-  background-image: -ms-linear-gradient(top, #5bc0de, #2f96b4);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5bc0de), to(#2f96b4));
-  background-image: -webkit-linear-gradient(top, #5bc0de, #2f96b4);
-  background-image: -o-linear-gradient(top, #5bc0de, #2f96b4);
-  background-image: linear-gradient(top, #5bc0de, #2f96b4);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5bc0de', endColorstr='#2f96b4', GradientType=0);
-  border-color: #2f96b4 #2f96b4 #1f6377;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
-}
-.botao-info:hover{
-	background-color: #2f96b4;
-}
+.USbotao {border-color: #46a546;display: inline-block;*display: inline;*zoom: 1;padding: 4px 10px 4px;margin-bottom: 0;font-size: 13px;line-height: 18px;color: #333333;text-align: center;text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);vertical-align: middle;background-color: #f5f5f5;background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);background-image: -ms-linear-gradient(top, #ffffff, #e6e6e6);background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);background-image: linear-gradient(top, #ffffff, #e6e6e6);background-repeat: repeat-x;filter: progid : DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#e6e6e6', GradientType = 0);border-color: #e6e6e6 #e6e6e6 #bfbfbf;border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);filter: progid : dximagetransform.microsoft.gradient (enabled = false);border: 1px solid #cccccc;border-bottom-color: #b3b3b3;-webkit-border-radius: 4px;-moz-border-radius: 4px;border-radius: 4px;-webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);-moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);cursor: pointer;*margin-left: .3em;}
+.USbotao:hover {color: #333333;text-decoration: none;background-color: #e6e6e6;background-position: 0 -15px;-webkit-transition: background-position 0.1s linear;-moz-transition: background-position 0.1s linear;-ms-transition: background-position 0.1s linear;-o-transition: background-position 0.1s linear;transition: background-position 0.1s linear;}
+.USbotao-vermelho {text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);color: white !important;background-color: #BD362F;background-color: #da4f49;background-image: -moz-linear-gradient(top, #ee5f5b, #bd362f);background-image: -ms-linear-gradient(top, #ee5f5b, #bd362f);background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b),to(#bd362f) );background-image: -webkit-linear-gradient(top, #ee5f5b, #bd362f);background-image: -o-linear-gradient(top, #ee5f5b, #bd362f);background-image: linear-gradient(top, #ee5f5b, #bd362f);background-repeat: repeat-x;filter: progid : DXImageTransform.Microsoft.gradient ( startColorstr ='#ee5f5b', endColorstr = '#bd362f', GradientType = 0 );border-color: #bd362f #bd362f #802420;border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);filter: progid : dximagetransform.microsoft.gradient ( enabled = false );}
+.USbotao-vermelho:hover{background-color: #bd362f;}
+.USbotao-verde{text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);color: #ffffff !important;background-color: #5bb75b;background-image: -moz-linear-gradient(top, #62c462, #51a351);background-image: -ms-linear-gradient(top, #62c462, #51a351);background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#51a351));background-image: -webkit-linear-gradient(top, #62c462, #51a351);background-image: -o-linear-gradient(top, #62c462, #51a351);background-image: linear-gradient(top, #62c462, #51a351);background-repeat: repeat-x;filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#62c462', endColorstr='#51a351', GradientType=0);border-color: #51a351 #51a351 #387038;border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);filter: progid:dximagetransform.microsoft.gradient(enabled=false);}
+.USbotao-verde:hover{background-color: #51a351;}
+.USbotao-info{text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);color: #ffffff !important;background-color: #49afcd;background-image: -moz-linear-gradient(top, #5bc0de, #2f96b4);background-image: -ms-linear-gradient(top, #5bc0de, #2f96b4);background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5bc0de), to(#2f96b4));background-image: -webkit-linear-gradient(top, #5bc0de, #2f96b4);background-image: -o-linear-gradient(top, #5bc0de, #2f96b4);background-image: linear-gradient(top, #5bc0de, #2f96b4);background-repeat: repeat-x;filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5bc0de', endColorstr='#2f96b4', GradientType=0);border-color: #2f96b4 #2f96b4 #1f6377;border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);filter: progid:dximagetransform.microsoft.gradient(enabled=false);}
+.USbotao-info:hover{background-color: #2f96b4;}

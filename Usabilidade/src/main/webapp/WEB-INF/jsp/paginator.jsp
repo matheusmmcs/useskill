@@ -1,8 +1,4 @@
-
-<%
-	String link = request.getParameter("link");
-%>
-
+<%String link = request.getParameter("link");%>
 <center>
 	<div class="pagination">
 		<ul>
@@ -15,6 +11,12 @@
 					<li><a href="<%out.print(link);%>${paginaAtual-1}"> << </a>
 					</li>
 				</c:otherwise>
+			</c:choose>
+			<c:choose>
+				<c:when test="${paginaAtual-4>0}">
+					<li><a href="<%out.print(link);%>1">1</a>
+					</li>
+				</c:when>
 			</c:choose>
 			<c:choose>
 				<c:when test="${paginaAtual-3>0}">
@@ -51,6 +53,12 @@
 			<c:choose>
 				<c:when test="${paginaAtual+3<=qtdPaginas}">
 					<li class="disabled"><a href="#">...</a>
+					</li>
+				</c:when>
+			</c:choose>
+			<c:choose>
+				<c:when test="${paginaAtual+4<=qtdPaginas}">
+					<li><a href="<%out.print(link);%>${qtdPaginas}">${qtdPaginas}</a>
 					</li>
 				</c:when>
 			</c:choose>
