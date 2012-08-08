@@ -50,13 +50,12 @@ public class Paginacao<T> {
 	 *            Informa o numero da página que o usuario esta olhando
 	 * @param qtdObjetosPorPaginas
 	 *            Informa a quantidade de objetos que sera mostrado por paginas
-	 * @param qttObjetosNoBanco
+	 * @param qtdObjetosNoBanco
 	 *            Informa a quatindade de objetos que possui na base de Dados
 	 */
-	public void geraPaginacao(int numeroPagina, int qtdObjetosPorPaginas,
-			Long qttObjetosNoBanco, Result result) {
-		int qtdPaginas = (int) (qttObjetosNoBanco / qtdObjetosPorPaginas);
-		if (qttObjetosNoBanco % qtdObjetosPorPaginas != 0) {
+	public void geraPaginacao(int numeroPagina, int qtdObjetosPorPaginas, Long qtdObjetosNoBanco, Result result) {
+		int qtdPaginas = (int) (qtdObjetosNoBanco / qtdObjetosPorPaginas);
+		if (qtdObjetosNoBanco % qtdObjetosPorPaginas != 0 || qtdObjetosNoBanco == 0) {
 			qtdPaginas++;
 		}
 		result.include("paginaAtual", numeroPagina);

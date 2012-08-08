@@ -160,7 +160,7 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		Query count = entityManager
 				.createNamedQuery("Convidado.Teste.Count");
 		count.setParameter("usuario", idUsuario);
-		count.setParameter("realiza", null);
+//		count.setParameter("realiza", null);
 		paginacao.setCount((Long) count.getSingleResult());
 		return paginacao;
 	}
