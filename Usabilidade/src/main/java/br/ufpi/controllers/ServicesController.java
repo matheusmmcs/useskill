@@ -1,11 +1,12 @@
 package br.ufpi.controllers;
 
+import java.util.HashMap;
 import java.util.List;
 
 import br.com.caelum.vraptor.Post;
+import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.Validations;
 import br.com.caelum.vraptor.view.Results;
@@ -13,7 +14,10 @@ import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.Criptografa;
-@Component
+
+import com.google.gson.Gson;
+
+@Resource
 public class ServicesController {
 	private final Result result;
 	private final UsuarioRepository usuarioRepository;
@@ -31,42 +35,61 @@ public class ServicesController {
 	}
 
 	@Post
-	public void login(final String email, final String senha) {
+	
+	public String login(final String email, final String senha) {
+		Gson gson = new Gson();
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
 		validator.checking(new Validations() {
 
 			{
-				that(!email.isEmpty(), "campo.email.obrigatorio",
-						"campo.obrigatorio", i18n("email"));
-				that(!senha.isEmpty(), "campo.senha.obrigatorio",
-						"campo.obrigatorio", i18n("senha"));
+				that(email != null && !email.isEmpty(),
+						"campo.email.obrigatorio", "campo.obrigatorio",
+						i18n("email"));
+				that(senha != null && !senha.isEmpty(),
+						"campo.senha.obrigatorio", "campo.obrigatorio",
+						i18n("senha"));
 			}
 		});
-		List<Message> errors = validator.getErrors();
-
-		validator.onErrorUse(Results.json()).from(this.toStringMessage(errors))
-				.serialize();
+		if (validator.hasErrors()) {
+			
+			validator.onErrorUse(Results.json()).from(toStringMessage(validator.getErrors())).serialize();
+		}
 		String senhaCriptografada = Criptografa.criptografar(senha);
 		Usuario usuario = usuarioRepository.logar(email, senhaCriptografada);
 		if (usuario != null) {
 			if (usuario.isEmailConfirmado()) {
 				usuarioLogado.setUsuario(usuario);
-				result.use(Results.json()).from(usuario.getNome()).serialize();
+				hashMap.put("return", true);
+				hashMap.put("name", usuario.getNome());
+				System.out.println("Matheus vidao");
+				System.out.println("Matheus vidao");
+				return gson.toJson(hashMap);
 			} else {
-				result.use(Results.json())
-						.from("Entre no site para confirmar senha.")
-						.serialize();
+				hashMap.put("return", false);
+				hashMap.put("usuarioNaoConfirmado", "Usuario não confirmado");
+				return gson.toJson(hashMap).toString();
 			}
 		} else {
-			result.use(Results.json()).from("senha invalida").serialize();
+			validator.checking(new Validations() {
+
+				{
+					that(false, "email.senha.invalido", "email.senha.invalido");
+				}
+			});
+			validator.onErrorUse(Results.json()).from(toStringMessage(validator.getErrors())).serialize();
 		}
+		return "";
 	}
 
 	private String toStringMessage(List<Message> messages) {
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
 		String mensagem = "";
 		for (Message message : messages) {
-			mensagem += message.getMessage();
-
+			hashMap.put("ERROR" + message.getCategory(), message.getMessage());
+			hashMap.put("retorno", false);
 		}
+		result.use(Results.json()).from(hashMap).serialize();
 		return mensagem;
 	}
+
 }
