@@ -3,7 +3,7 @@ package br.ufpi.controllers;
 import java.util.HashMap;
 import java.util.List;
 
-import br.com.caelum.vraptor.Post;
+import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
@@ -14,8 +14,6 @@ import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.util.Criptografa;
-
-import com.google.gson.Gson;
 
 @Resource
 public class ServicesController {
@@ -34,10 +32,8 @@ public class ServicesController {
 		this.usuarioLogado = usuarioLogado;
 	}
 
-	@Post
-	
-	public String login(final String email, final String senha) {
-		Gson gson = new Gson();
+	@Get
+	public void login(final String email, final String senha) {
 		HashMap<String, Object> hashMap = new HashMap<String, Object>();
 		validator.checking(new Validations() {
 
@@ -51,8 +47,9 @@ public class ServicesController {
 			}
 		});
 		if (validator.hasErrors()) {
-			
-			validator.onErrorUse(Results.json()).from(toStringMessage(validator.getErrors())).serialize();
+
+			validator.onErrorUse(Results.json())
+					.from(toStringMessage(validator.getErrors())).serialize();
 		}
 		String senhaCriptografada = Criptografa.criptografar(senha);
 		Usuario usuario = usuarioRepository.logar(email, senhaCriptografada);
@@ -61,13 +58,11 @@ public class ServicesController {
 				usuarioLogado.setUsuario(usuario);
 				hashMap.put("return", true);
 				hashMap.put("name", usuario.getNome());
-				System.out.println("Matheus vidao");
-				System.out.println("Matheus vidao");
-				return gson.toJson(hashMap);
+				result.use(Results.json()).from(hashMap).serialize();
 			} else {
 				hashMap.put("return", false);
 				hashMap.put("usuarioNaoConfirmado", "Usuario não confirmado");
-				return gson.toJson(hashMap).toString();
+				result.use(Results.json()).from(hashMap).serialize();
 			}
 		} else {
 			validator.checking(new Validations() {
@@ -76,20 +71,18 @@ public class ServicesController {
 					that(false, "email.senha.invalido", "email.senha.invalido");
 				}
 			});
-			validator.onErrorUse(Results.json()).from(toStringMessage(validator.getErrors())).serialize();
+			validator.onErrorUse(Results.json())
+					.from(toStringMessage(validator.getErrors())).serialize();
 		}
-		return "";
 	}
 
-	private String toStringMessage(List<Message> messages) {
+	private HashMap<String,Object> toStringMessage(List<Message> messages) {
 		HashMap<String, Object> hashMap = new HashMap<String, Object>();
-		String mensagem = "";
 		for (Message message : messages) {
 			hashMap.put("ERROR" + message.getCategory(), message.getMessage());
 			hashMap.put("retorno", false);
 		}
-		result.use(Results.json()).from(hashMap).serialize();
-		return mensagem;
+		return hashMap;
 	}
 
 }
