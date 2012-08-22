@@ -18,8 +18,8 @@ public class UsuarioLogado {
 	UsuarioRepository usuarioRepository;
 	private Usuario usuario;
 
-	public UsuarioLogado( UsuarioRepository repository) {
-		this.usuarioRepository=repository;
+	public UsuarioLogado(UsuarioRepository usuarioRepository ) {
+		this.usuarioRepository=usuarioRepository;
 		usuario=usuarioRepository.find(1l);
 		System.out.println(usuario);
 	}

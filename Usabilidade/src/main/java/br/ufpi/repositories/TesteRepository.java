@@ -3,6 +3,7 @@ package br.ufpi.repositories;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.models.vo.ConvidadoVO;
+import br.ufpi.models.vo.TesteVO;
 import br.ufpi.util.Paginacao;
 import java.util.List;
 
@@ -100,4 +101,14 @@ public interface TesteRepository {
 	 */
 	Paginacao<ConvidadoVO> findTestesConvidados(Long idUsuario,
 			int numeroPagina, int quantidade);
+	/**
+	 * Retorna todos os testes que o usuario foi convidado para participar
+	 * 
+	 * @param idUsuario
+	 *            Identificador do usuario que foi convidado para participar do
+	 *            Teste
+	 * @return Retorna todos os testes que o usuario foi convidado a Participar
+	 *         e para qual tipo de convite ele foi selecionado
+	 */
+	Paginacao<TesteVO> findTestesConvidados(int numeroPagina,Long idUsuario, int quantidade);
 }

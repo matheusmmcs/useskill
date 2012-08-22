@@ -10,6 +10,7 @@ import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 import br.ufpi.models.vo.ConvidadoVO;
+import br.ufpi.models.vo.TesteVO;
 import br.ufpi.repositories.Repository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.Paginacao;
@@ -161,6 +162,25 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 				.createNamedQuery("Convidado.Teste.Count");
 		count.setParameter("usuario", idUsuario);
 //		count.setParameter("realiza", null);
+		paginacao.setCount((Long) count.getSingleResult());
+		return paginacao;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Paginacao<TesteVO> findTestesConvidados(int numeroPagina,
+			Long idUsuario, int quantidade) {
+		Paginacao<TesteVO> paginacao = new Paginacao<TesteVO>();
+		//TODO Mudar o convidao.Teste Named Query
+		Query query =  entityManager.createNamedQuery("Convidado.TesteVO");
+		query.setParameter("usuario", idUsuario);
+		query.setFirstResult(quantidade * (numeroPagina - 1));
+		query.setMaxResults(quantidade);
+		paginacao.setListObjects((List<TesteVO>) query.getResultList());
+		//TODO Mudar o convidao.Teste Named Query
+		Query count = entityManager
+				.createNamedQuery("Convidado.TesteVO.Count");
+		count.setParameter("usuario", idUsuario);
 		paginacao.setCount((Long) count.getSingleResult());
 		return paginacao;
 	}

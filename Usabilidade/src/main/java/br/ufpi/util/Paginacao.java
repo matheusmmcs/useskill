@@ -1,8 +1,10 @@
 package br.ufpi.util;
 
+import java.util.HashMap;
 import java.util.List;
 
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.view.Results;
 
 /**
  * Usado para fazer paginação de objetos
@@ -15,7 +17,7 @@ import br.com.caelum.vraptor.Result;
 public class Paginacao<T> {
 	private Long count;
 	private List<T> listObjects;
-	public static final int OBJETOS_POR_PAGINA=10;
+	public static final int OBJETOS_POR_PAGINA = 10;
 
 	public Paginacao() {
 		super();
@@ -53,13 +55,38 @@ public class Paginacao<T> {
 	 * @param qtdObjetosNoBanco
 	 *            Informa a quatindade de objetos que possui na base de Dados
 	 */
-	public void geraPaginacao(int numeroPagina, int qtdObjetosPorPaginas, Long qtdObjetosNoBanco, Result result) {
+	public void geraPaginacao(int numeroPagina, int qtdObjetosPorPaginas,
+			Long qtdObjetosNoBanco, Result result) {
 		int qtdPaginas = (int) (qtdObjetosNoBanco / qtdObjetosPorPaginas);
-		if (qtdObjetosNoBanco % qtdObjetosPorPaginas != 0 || qtdObjetosNoBanco == 0) {
+		if (qtdObjetosNoBanco % qtdObjetosPorPaginas != 0
+				|| qtdObjetosNoBanco == 0) {
 			qtdPaginas++;
 		}
 		result.include("paginaAtual", numeroPagina);
 		result.include("qtdPaginas", qtdPaginas);
 	}
+
+	/**
+	 * Usado para gerar a paginação de paginas com Json
+	 * 
+	 * @param numeroPagina
+	 *            Informa o numero da página que o usuario esta olhando
+	 * @param qtdObjetosPorPaginas
+	 *            Informa a quantidade de objetos que sera mostrado por paginas
+	 * @param qtdObjetosNoBanco
+	 *            Informa a quatindade de objetos que possui na base de Dados
+	 */
+	public void geraPaginacaoJson(int numeroPagina, int qtdObjetosPorPaginas,
+			Long qtdObjetosNoBanco,HashMap<String, Object> mapJson, Result result) {
+		int qtdPaginas = (int) (qtdObjetosNoBanco / qtdObjetosPorPaginas);
+		if (qtdObjetosNoBanco % qtdObjetosPorPaginas != 0
+				|| qtdObjetosNoBanco == 0) {
+			qtdPaginas++;
+		}
+		mapJson.put("paginaAtual", numeroPagina);
+		mapJson.put("qtdPaginas", qtdPaginas);
+		result.use(Results.json()).from(mapJson).serialize();
+	}
+	
 
 }

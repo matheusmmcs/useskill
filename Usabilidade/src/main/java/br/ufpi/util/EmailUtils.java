@@ -50,10 +50,10 @@ public class EmailUtils {
 	 */
 	public void enviaEmail(Mensagem mensagem) throws EmailException {
 		conectaEmail();
-		email.setSubject(mensagem.getTitulo());
-		email.setMsg(mensagem.getMensagem());
-		email.addTo(mensagem.getDestino());
-		email.send();
+//		email.setSubject(mensagem.getTitulo());
+//		email.setMsg(mensagem.getMensagem());
+//		email.addTo(mensagem.getDestino());
+//		email.send();
 
 	}
 
