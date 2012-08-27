@@ -6,6 +6,8 @@ import java.util.List;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 
+import com.google.gson.Gson;
+
 /**
  * Usado para fazer paginação de objetos
  * 
@@ -76,16 +78,16 @@ public class Paginacao<T> {
 	 * @param qtdObjetosNoBanco
 	 *            Informa a quatindade de objetos que possui na base de Dados
 	 */
-	public void geraPaginacaoJson(int numeroPagina, int qtdObjetosPorPaginas,
-			Long qtdObjetosNoBanco,HashMap<String, Object> mapJson, Result result) {
+	public void geraPaginacaoJson(int numeroPagina, int qtdObjetosPorPaginas, Long qtdObjetosNoBanco,HashMap<String, Object> mapJson, Result result) {
 		int qtdPaginas = (int) (qtdObjetosNoBanco / qtdObjetosPorPaginas);
+		Gson gson = new Gson();
 		if (qtdObjetosNoBanco % qtdObjetosPorPaginas != 0
 				|| qtdObjetosNoBanco == 0) {
 			qtdPaginas++;
 		}
 		mapJson.put("paginaAtual", numeroPagina);
 		mapJson.put("qtdPaginas", qtdPaginas);
-		result.use(Results.json()).from(mapJson).serialize();
+		result.use(Results.json()).from(gson.toJson(mapJson)).serialize();
 	}
 	
 

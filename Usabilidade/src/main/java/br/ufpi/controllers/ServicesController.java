@@ -3,7 +3,10 @@ package br.ufpi.controllers;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.gson.Gson;
+
 import br.com.caelum.vraptor.Get;
+import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
@@ -38,47 +41,39 @@ public class ServicesController {
 		this.usuarioLogado = usuarioLogado;
 	}
 
-	@Get
+	@Post
 	public void login(final String email, final String senha) {
 		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		Gson gson = new Gson();
 		validator.checking(new Validations() {
-
 			{
 				that(email != null && !email.isEmpty(),
-						"campo.email.obrigatorio", "campo.obrigatorio",
-						i18n("email"));
+						"campo.email.obrigatorio", "campo.obrigatorio", i18n("email"));
 				that(senha != null && !senha.isEmpty(),
-						"campo.senha.obrigatorio", "campo.obrigatorio",
-						i18n("senha"));
+						"campo.senha.obrigatorio", "campo.obrigatorio", i18n("senha"));
 			}
 		});
 		if (validator.hasErrors()) {
-
-			validator.onErrorUse(Results.json())
-					.from(toStringMessage(validator.getErrors())).serialize();
+			validator.onErrorUse(Results.json()).from(gson.toJson(toStringMessage(validator.getErrors()))).serialize();
 		}
 		String senhaCriptografada = Criptografa.criptografar(senha);
 		Usuario usuario = usuarioRepository.logar(email, senhaCriptografada);
 		if (usuario != null) {
 			if (usuario.isEmailConfirmado()) {
 				usuarioLogado.setUsuario(usuario);
-				hashMap.put("return", true);
+				hashMap.put("retorno", true);
 				hashMap.put("name", usuario.getNome());
-				result.use(Results.json()).from(hashMap).serialize();
+				System.out.println("Logado");
+				result.use(Results.json()).from(gson.toJson(hashMap)).serialize();
 			} else {
-				hashMap.put("return", false);
+				hashMap.put("retorno", false);
 				hashMap.put("usuarioNaoConfirmado", "Usuario não confirmado");
-				result.use(Results.json()).from(hashMap).serialize();
+				System.out.println("Erro email confirmado");
+				result.use(Results.json()).from(gson.toJson(hashMap)).serialize();
 			}
 		} else {
-			validator.checking(new Validations() {
-
-				{
-					that(false, "email.senha.invalido", "email.senha.invalido");
-				}
-			});
-			validator.onErrorUse(Results.json())
-					.from(toStringMessage(validator.getErrors())).serialize();
+			validator.checking(new Validations(){{ that(false, "email.senha.invalido", "email.senha.invalido"); }});
+			validator.onErrorUse(Results.json()).from(gson.toJson(toStringMessage(validator.getErrors()))).serialize();
 		}
 	}
 
@@ -89,11 +84,10 @@ public class ServicesController {
 		if (numeroPagina == 0) {
 			numeroPagina = 1;
 		}
+		Gson gson = new Gson();
 		HashMap<String, Object> json = new HashMap<String, Object>();
-		Paginacao<TesteVO> paginacao = testeRepository.findTestesConvidados(
-				numeroPagina, usuarioLogado.getUsuario().getId(),
-				Paginacao.OBJETOS_POR_PAGINA);
-		json.put("testesConvidados", paginacao.getListObjects());
+		Paginacao<TesteVO> paginacao = testeRepository.findTestesConvidados(numeroPagina, usuarioLogado.getUsuario().getId(),Paginacao.OBJETOS_POR_PAGINA);
+		json.put("testesConvidados", gson.toJson(paginacao.getListObjects()));
 		Long qttObjetosNoBanco = paginacao.getCount();
 		paginacao.geraPaginacaoJson(numeroPagina, Paginacao.OBJETOS_POR_PAGINA,
 				qttObjetosNoBanco, json, result);
@@ -111,8 +105,8 @@ public class ServicesController {
 	private HashMap<String, Object> toStringMessage(List<Message> messages) {
 		HashMap<String, Object> hashMap = new HashMap<String, Object>();
 		for (Message message : messages) {
-			hashMap.put("ERROR , " + message.getCategory(),
-					message.getMessage());
+			// + message.getCategory()
+			hashMap.put("erro", message.getMessage());
 			hashMap.put("retorno", false);
 		}
 		return hashMap;
@@ -120,7 +114,7 @@ public class ServicesController {
 
 	@Get("/services/user/logado")
 	public void isUserLogado() {
-		if (usuarioLogado == null) {
+		if (usuarioLogado.getUsuario() == null) {
 			result.use(Results.json()).from(Boolean.FALSE.toString(), "logado")
 					.serialize();
 		} else {
