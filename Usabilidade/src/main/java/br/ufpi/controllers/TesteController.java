@@ -464,8 +464,11 @@ public class TesteController extends BaseController {
 	private List<ElementosTeste> organizarElementos() {
 		Gson gson = new Gson();
 		Teste teste = testeView.getTeste();
+		String elementosTeste2 = teste.getElementosTeste();
+		if(elementosTeste2==null)
+			return null;
 		List<ElementosTeste> elementosTestes = (List<ElementosTeste>) gson
-				.fromJson(teste.getElementosTeste(), ElementosTeste.class);
+				.fromJson(elementosTeste2, ElementosTeste.class);
 		for (ElementosTeste elementosTeste : elementosTestes) {
 			if (elementosTeste.getTipo() == 'T') {
 				for (Tarefa tarefa : teste.getTarefas()) {
