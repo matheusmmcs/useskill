@@ -16,6 +16,8 @@ import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
+import br.ufpi.models.ElementosTeste;
+import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
@@ -28,6 +30,8 @@ import br.ufpi.util.BaseUrl;
 import br.ufpi.util.Criptografa;
 import br.ufpi.util.EmailUtils;
 import br.ufpi.util.Paginacao;
+
+import com.google.gson.Gson;
 
 @Resource
 public class TesteController extends BaseController {
@@ -103,8 +107,10 @@ public class TesteController extends BaseController {
 		validateComponente.validarId(idTeste);
 		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 		validateComponente.validarString(titulo, "testes.passo1.titulo");
-		validateComponente.validarString(tituloPublico, "testes.passo1.titulopublico");
-		validateComponente.validarString(textoIndroducao, "testes.passo1.introducao");
+		validateComponente.validarString(tituloPublico,
+				"testes.passo1.titulopublico");
+		validateComponente.validarString(textoIndroducao,
+				"testes.passo1.introducao");
 		if (validator.hasErrors()) {
 			this.passo1(idTeste, titulo, tituloPublico, textoIndroducao);
 		}
@@ -116,20 +122,14 @@ public class TesteController extends BaseController {
 		teste.setTextoIndroducao(textoIndroducao);
 		usuarioLogado.getUsuario().getTestesCriados();
 		testeRepository.update(teste);
-		result.include("tarefas", testeView.getTeste().getTarefas());
-		result.include("perguntas", testeView.getTeste().getSatisfacao()
-				.getPerguntas());
+		result.include("elementosTeste", organizarElementos());
 	}
 
 	@Logado
 	@Get("teste/{idTeste}/editar/passo2")
 	public void passo2(Long idTeste) {
-		System.out.println("Passo 2 Chegou primeiro");
 		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
-		result.include("tarefas", testeView.getTeste().getTarefas());
-		result.include("perguntas", testeView.getTeste().getSatisfacao()
-				.getPerguntas());
-
+		result.include("elementosTeste", organizarElementos());
 	}
 
 	/**
@@ -363,11 +363,12 @@ public class TesteController extends BaseController {
 		result.include("totalUsuarios", qttObjetosNoBanco);
 		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA,
 				qttObjetosNoBanco, result);
-	
+
 	}
 
 	/**
-	 * Usado para listar os usuarios que foram convidados para participar dos testes
+	 * Usado para listar os usuarios que foram convidados para participar dos
+	 * testes
 	 * 
 	 * @param idTeste
 	 *            Identificador do teste ao qual se quer adicionar novos
@@ -385,11 +386,11 @@ public class TesteController extends BaseController {
 				.getUsuariosConvidados(idTeste, numeroPagina,
 						Paginacao.OBJETOS_POR_PAGINA);
 		result.include("convidados", paginacao.getListObjects());
-		Long qttObjetosNoBanco=paginacao.getCount();
+		Long qttObjetosNoBanco = paginacao.getCount();
 		result.include("totalUsuariosEscolhidos", qttObjetosNoBanco);
-		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA, 
+		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA,
 				qttObjetosNoBanco, result);
-		}
+	}
 
 	@Logado
 	public void meusProjetos(int numeroPagina) {
@@ -459,4 +460,37 @@ public class TesteController extends BaseController {
 				qttObjetosNoBanco, result);
 	}
 
+	@SuppressWarnings({ "unchecked" })
+	private List<ElementosTeste> organizarElementos() {
+		Gson gson = new Gson();
+		Teste teste = testeView.getTeste();
+		List<ElementosTeste> elementosTestes = (List<ElementosTeste>) gson
+				.fromJson(teste.getElementosTeste(), ElementosTeste.class);
+		for (ElementosTeste elementosTeste : elementosTestes) {
+			if (elementosTeste.getTipo() == 'T') {
+				for (Tarefa tarefa : teste.getTarefas()) {
+					if (tarefa.getId().equals(elementosTeste.getId()))
+						elementosTeste.setTitulo(tarefa.getNome());
+				}
+			} else {
+				for (Pergunta pergunta : teste.getSatisfacao().getPerguntas()) {
+					if (pergunta.getId().equals(elementosTeste.getId())) {
+						elementosTeste.setTitulo(pergunta.getTitulo());
+					}
+				}
+			}
+		}
+		return elementosTestes;
+	}
+
+	@Logado
+	@Post()
+	public void salvaListaElementos(Long idTeste, String listaElementos) {
+		validateComponente.validarId(idTeste);
+		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
+		Teste teste = testeView.getTeste();
+		teste.setElementosTeste(listaElementos);
+		testeRepository.update(teste);
+
+	}
 }

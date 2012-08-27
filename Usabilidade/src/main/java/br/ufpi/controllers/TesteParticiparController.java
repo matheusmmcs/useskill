@@ -2,18 +2,17 @@ package br.ufpi.controllers;
 
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.view.Results;
 import br.ufpi.annotation.Logado;
-import br.ufpi.componets.FluxoComponente;
-import br.ufpi.componets.TesteSession;
+import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Convidado;
-import br.ufpi.models.vo.ConvidadoVO;
+import br.ufpi.models.vo.TesteParticiparVO;
 import br.ufpi.repositories.ConvidadoRepository;
 
 /**
@@ -24,18 +23,30 @@ import br.ufpi.repositories.ConvidadoRepository;
 @Resource
 public class TesteParticiparController extends BaseController {
 	private final ConvidadoRepository convidadoRepository;
-	private final FluxoComponente fluxoComponente;
-	private final TesteSession testeSession;
+	private final TesteSessionPlugin testeSessionPlugin;
 
 	public TesteParticiparController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
-			ConvidadoRepository convidadoRepository, FluxoComponente fluxoComponente,
-			TesteSession testeSession) {
+			ConvidadoRepository convidadoRepository,
+			TesteSessionPlugin testeSessionPlugin) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.convidadoRepository = convidadoRepository;
-		this.fluxoComponente = fluxoComponente;
-		this.testeSession = testeSession;
+		this.testeSessionPlugin = testeSessionPlugin;
+	}
+
+	/**
+	 * @return the convidadoRepository
+	 */
+	public ConvidadoRepository getConvidadoRepository() {
+		return convidadoRepository;
+	}
+
+	/**
+	 * @return the testeSessionPlugin
+	 */
+	public TesteSessionPlugin getTesteSessionPlugin() {
+		return testeSessionPlugin;
 	}
 
 	@Logado
@@ -47,20 +58,6 @@ public class TesteParticiparController extends BaseController {
 		convidado.setRealizou(false);
 		convidadoRepository.update(convidado);
 		result.redirectTo(TesteController.class).listarTestesConvidados(0);
-	}
-
-	/**
-	 * O Usuario aceita o Teste
-	 * 
-	 * @param testeId
-	 */
-	@Logado
-	@Get("/{testeId}/aceitar/")
-	public void aceitar(Long testeId) {
-		 ConvidadoVO convidado = verificaSeUsuarioConvidado(testeId);
-		 
-		testeSession.setTeste(convidado.getTeste());
-		fluxoComponente.criarLista(convidado.getTeste(),convidado.getTipoConvidado());
 	}
 
 	@Logado
@@ -75,12 +72,12 @@ public class TesteParticiparController extends BaseController {
 	 * @param idTeste
 	 * @return
 	 */
-	private ConvidadoVO verificaSeUsuarioConvidado(Long idTeste) {
+	private TesteParticiparVO verificaSeUsuarioConvidado(Long idTeste) {
 		validateComponente.validarId(idTeste);
-	 ConvidadoVO convidadoVO = convidadoRepository.getTesteConvidado(idTeste,
-				usuarioLogado.getUsuario().getId());
-		validateComponente.validarObjeto(convidadoVO);
-		return convidadoVO;
+		TesteParticiparVO testeParticiparVO = convidadoRepository
+				.getTesteConvidado(idTeste, usuarioLogado.getUsuario().getId());
+		validateComponente.validarObjeto(testeParticiparVO);
+		return testeParticiparVO;
 	}
 
 	@Logado
@@ -88,6 +85,23 @@ public class TesteParticiparController extends BaseController {
 
 		// incluir proximo
 		// incluir tbm o que é pra responder
+
+	}
+
+	/**
+	 * O Usuario aceita o Teste
+	 * 
+	 * @param testeId
+	 */
+	@Logado
+	@Get("/{testeId}/aceitar")
+	public void aceitar(Long testeId) {
+		TesteParticiparVO testeParticiparVO = verificaSeUsuarioConvidado(testeId);
+		testeSessionPlugin.setIdTeste(testeId);
+		testeSessionPlugin.setTipoConvidado(testeParticiparVO
+				.getTipoConvidado());
+		result.use(Results.json()).from(testeParticiparVO.getElemntosTeste(),
+				"listaElementos");
 
 	}
 

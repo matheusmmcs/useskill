@@ -18,7 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -59,8 +58,6 @@ public class Tarefa implements Serializable {
 	@Column(nullable = false)
 	@NotBlank
 	private String urlInicial;
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
-	private Questionario questionario;
 
 	public Long getId() {
 		return id;
@@ -111,19 +108,6 @@ public class Tarefa implements Serializable {
 	}
 
 
-	/**
-	 * Usado para obeter a lista de perguntas de uma determinada Tarefa
-	 * 
-	 * @return Questionario da tarefa contendo todas as perguntas referente a
-	 *         tarefa
-	 */
-	public Questionario getQuestionario() {
-		return questionario;
-	}
-
-	public void setQuestionario(Questionario questionario) {
-		this.questionario = questionario;
-	}
 
 	public List<FluxoIdeal> getFluxoIdeais() {
 		return fluxoIdeais;

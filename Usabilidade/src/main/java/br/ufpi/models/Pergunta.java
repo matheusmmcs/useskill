@@ -26,12 +26,6 @@ import javax.persistence.OneToMany;
 @NamedQueries({
 		@NamedQuery(name = "Pergunta.pertence.teste.usuario", query = "select perguntas from Teste as t left join t.satisfacao lef join t.satisfacao.perguntas as perguntas "
 				+ "where t.id= :teste and t.usuarioCriador.id= :usuario and perguntas.id= :pergunta"),
-		@NamedQuery(name = "Pergunta.pertence.tarefa.usuario", query = "select perguntas from Teste as t left join t.tarefas as tarefas"
-				+ " left join tarefas.questionario as questionario"
-				+ " left join questionario.perguntas as perguntas"
-				+ " where tarefas.id= :tarefa AND t.id= :teste "
-				+ "AND perguntas.id= :pergunta "
-				+ "AND t.usuarioCriador.id= :usuario AND t.liberado is false"),
 		@NamedQuery(name = "Pergunta.pertence.teste.usuario.Liberado", query = "select perguntas from Teste as t left join t.satisfacao lef join t.satisfacao.perguntas as perguntas where t.id= :teste and t.usuarioCriador.id= :usuario and perguntas.id= :pergunta and t.liberado= :liberado"),
 		@NamedQuery(name = "Pergunta.delete.Alternativas", query = "delete Alternativa  a where a.pergunta.id= :pergunta"),
 		@NamedQuery(name = "Pergunta.getQuestionario", query = "select p.questionario from Pergunta as p left join p.questionario as Questionario where p.id= :pergunta") })
@@ -57,7 +51,6 @@ public class Pergunta implements Serializable {
 	private List<RespostaAlternativa> respostaAlternativas;
 	@OneToMany(mappedBy = "pergunta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<RespostaEscrita> respostaEscritas;
-	private boolean responderFim;
 
 	public Long getId() {
 		return id;
@@ -124,13 +117,6 @@ public class Pergunta implements Serializable {
 		this.titulo = titulo;
 	}
 
-	public boolean isResponderFim() {
-		return responderFim;
-	}
-
-	public void setResponderFim(boolean responderFim) {
-		this.responderFim = responderFim;
-	}
 
 	public Pergunta clone() {
 		Pergunta pergunta = new Pergunta();

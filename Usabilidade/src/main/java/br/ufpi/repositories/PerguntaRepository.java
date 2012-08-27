@@ -43,16 +43,5 @@ public interface PerguntaRepository {
 
 	boolean deleteAlternativas(Long idPergunta);
 
-	/**
-	 * Procura por pergunta que pertence a uma determinada tarefa;
-	 * 
-	 * @param usuarioId
-	 * @param testeId
-	 * @param perguntaId
-	 * @param tarefaId
-	 * @return
-	 */
-	Pergunta perguntaPertenceUsuarioETarefa(Long usuarioId, Long testeId,
-			Long perguntaId, Long tarefaId);
 
 }

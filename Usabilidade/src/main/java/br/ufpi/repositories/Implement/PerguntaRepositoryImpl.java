@@ -69,22 +69,6 @@ public class PerguntaRepositoryImpl extends Repository<Pergunta, Long>
 
 	}
 
-	@Override
-	public Pergunta perguntaPertenceUsuarioETarefa(Long usuarioId, Long testeId,
-			Long perguntaId, Long tarefaId) {
-		Query query = null;
-			query = entityManager
-					.createNamedQuery("Pergunta.pertence.tarefa.usuario");
-			query.setParameter("teste", testeId);
-			query.setParameter("usuario", usuarioId);
-			query.setParameter("pergunta", perguntaId);
-			query.setParameter("tarefa", tarefaId);
-
-		try {
-			return (Pergunta) query.getSingleResult();
-		} catch (NoResultException nre) {
-			return null;
-		}
-	}
+	
 
 }

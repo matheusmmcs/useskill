@@ -24,8 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 		@NamedQuery(name = "Teste.Criado.Liberado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.liberado=true"),
 		@NamedQuery(name = "Teste.Criado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste"),
 		@NamedQuery(name = "Testes.Criados.Liberados", query = "SELECT t FROM Teste t WHERE t.usuarioCriador.id= :usuarioCriador AND t.liberado=true"),
-		@NamedQuery(name = "Testes.Criados.Liberados.Count", query = "SELECT count(*) FROM Teste t WHERE t.usuarioCriador.id= :usuarioCriador AND t.liberado=true"),
-		})
+		@NamedQuery(name = "Testes.Criados.Liberados.Count", query = "SELECT count(*) FROM Teste t WHERE t.usuarioCriador.id= :usuarioCriador AND t.liberado=true"), })
 @Entity
 public class Teste implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -59,6 +58,12 @@ public class Teste implements Serializable {
 	 * Diferença do realizao é que se liberado pode ser alterado.
 	 */
 	private boolean liberado;
+	/**
+	 * Salva a lista de objetos em forma de gson Tendo a ordem dos elementos que
+	 * compoem o teste
+	 */
+	@Column(columnDefinition = "TiNYTEXT")
+	private String elementosTeste;
 
 	public Long getId() {
 		return id;
@@ -130,6 +135,21 @@ public class Teste implements Serializable {
 
 	public void setTitulo(String titulo) {
 		this.titulo = titulo;
+	}
+
+	/**
+	 * @return the elementosTeste
+	 */
+	public String getElementosTeste() {
+		return elementosTeste;
+	}
+
+	/**
+	 * @param elementosTeste
+	 *            the elementosTeste to set
+	 */
+	public void setElementosTeste(String elementosTeste) {
+		this.elementosTeste = elementosTeste;
 	}
 
 	@Override

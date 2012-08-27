@@ -10,7 +10,7 @@ import javax.persistence.Query;
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Convidado;
 import br.ufpi.models.TipoConvidado;
-import br.ufpi.models.vo.ConvidadoVO;
+import br.ufpi.models.vo.TesteParticiparVO;
 import br.ufpi.repositories.ConvidadoRepository;
 import br.ufpi.repositories.Repository;
 
@@ -87,18 +87,19 @@ public class ConvidadoRepositoryImpl extends Repository<Convidado, Long>
 	}
 
 	@Override
-	public ConvidadoVO getTesteConvidado(Long testeId, Long usuarioId) {
+	public TesteParticiparVO getTesteConvidado(Long testeId, Long usuarioId) {
 		Query namedQuery = super.entityManager
 				.createNamedQuery("Convidado.UsuarioFoiConvidado");
 		namedQuery.setParameter("teste", testeId);
 		namedQuery.setParameter("usuario", usuarioId);
 		try {
-			return (ConvidadoVO) namedQuery.getSingleResult();
+			return (TesteParticiparVO) namedQuery.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
 
 	}
+	
 
 	@Override
 	public Convidado find(Long testeId, Long usuarioId) {

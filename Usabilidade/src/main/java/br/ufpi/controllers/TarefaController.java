@@ -3,11 +3,7 @@ package br.ufpi.controllers;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
@@ -17,32 +13,21 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.ufpi.annotation.Logado;
-import br.ufpi.componets.FluxoComponente;
-import br.ufpi.componets.SessionActions;
-import br.ufpi.componets.TarefaDetalhe;
-import br.ufpi.componets.TesteSession;
+import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Action;
-import br.ufpi.models.Convidado;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.FluxoUsuario;
-import br.ufpi.models.Pergunta;
-import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.TipoConvidado;
-import br.ufpi.models.UsuarioTestePK;
-import br.ufpi.repositories.ConvidadoRepository;
 import br.ufpi.repositories.FluxoIdealRepository;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
-import br.ufpi.util.BaseUrl;
-import br.ufpi.util.CookieManager;
-import br.ufpi.util.WebClientTester;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -54,12 +39,9 @@ public class TarefaController extends BaseController {
 	private final TesteRepository testeRepository;
 	private final FluxoIdealRepository fluxoIdealRepository;
 	private final FluxoUsuarioRepository fluxoUsuarioRepository;
-	private final ConvidadoRepository convidadoRepository;
-	private SessionActions actions;
-	private final FluxoComponente fluxoComponente;
-	private final HttpServletRequest request;
-	private final TesteSession testeSession;
-	private final CookieManager cookieManager;
+	private final TesteSessionPlugin testeSessionPlugin;
+
+	
 
 	public TarefaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
@@ -67,20 +49,13 @@ public class TarefaController extends BaseController {
 			TarefaRepository tarefaRepository, TesteRepository testeRepository,
 			FluxoIdealRepository fluxoIdealRepository,
 			FluxoUsuarioRepository fluxoUsuarioRepository,
-			ConvidadoRepository convidadoRepository, SessionActions actions,
-			FluxoComponente fluxoComponente, HttpServletRequest request,
-			TesteSession testeSession, CookieManager cookieManager) {
+			TesteSessionPlugin testeSessionPlugin) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
 		this.fluxoIdealRepository = fluxoIdealRepository;
 		this.fluxoUsuarioRepository = fluxoUsuarioRepository;
-		this.convidadoRepository = convidadoRepository;
-		this.actions = actions;
-		this.fluxoComponente = fluxoComponente;
-		this.request = request;
-		this.testeSession = testeSession;
-		this.cookieManager = cookieManager;
+		this.testeSessionPlugin = testeSessionPlugin;
 	}
 
 	/**
@@ -112,8 +87,6 @@ public class TarefaController extends BaseController {
 		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
 		Teste teste = testeView.getTeste();
 		tarefa.setTeste(teste);
-		Questionario questionario = new Questionario();
-		tarefa.setQuestionario(questionario);
 		tarefaRepository.create(tarefa);
 		result.redirectTo(TesteController.class).passo2(
 				testeView.getTeste().getId());
@@ -142,7 +115,8 @@ public class TarefaController extends BaseController {
 		if (isErro) {
 			return tarefa;
 		}
-		Tarefa tarefaPertenceTeste = this.tarefaPertenceTeste(idTeste, tarefa.getId());
+		Tarefa tarefaPertenceTeste = this.tarefaPertenceTeste(idTeste,
+				tarefa.getId());
 		testeView.setTeste(testeRepository.find(idTeste));
 		return tarefaPertenceTeste;
 	}
@@ -192,75 +166,13 @@ public class TarefaController extends BaseController {
 		result.redirectTo(TesteController.class).passo2(idTeste);
 	}
 
-	@Logado
-	@Post("tarefa/save/fluxo/ideal")
-	/**
-	 * Recebe uma String de dados.
-	 *
-	 * @param dados Estes dados serão passados em forma de String e convertido
-	 * em uma lista de Ações
-	 * @param completo Realata se terminou a captura de informações de um teste
-	 */
-	public void saveFluxoIdeal(String dados, Boolean completo) {
-		Long tarefaId = this.testeSession.getTarefa().getId();
-		System.out.println("Action: saveFluxoIdeal");
-		if (completo) {
-			System.out.println("Completo");
-		}
-		System.out.println(dados + " - " + completo + " - " + tarefaId);
-		saveFluxo(dados, completo, tarefaId, TipoConvidado.TESTER);
-	}
 
 	@Logado
-	@Post("tarefa/save/fluxo/usuario")
-	public String saveFluxoUsuario(String dados, Boolean completo, Long tarefaId) {
-		System.out.println("Action: saveFluxoUsuario");
-		// System.out.println(dados + " - " + completo + " - " + tarefaId);
-		if (completo) {
-			System.out.println("Completo");
-		}
-		saveFluxo(dados, completo, tarefaId, fluxoComponente.getTipoConvidado());
-		return "Teste";
+	@Post("tarefa/save/fluxo")
+	public void saveFluxo(String dados, Long tarefaId) {
+		gravaFluxo(dados, tarefaId, testeSessionPlugin.getTipoConvidado());
 	}
 
-	/**
-	 * Salva os Fluxos e altera a url para a pxoxima pagina aberta.
-	 * 
-	 * @param dados
-	 *            Ações em formato Json
-	 * @param completo
-	 *            Determina true se teste estiverCompleto
-	 * @param tarefaId
-	 *            Identificador da Tarefa que o fluxo pertence
-	 * @param fluxoIdeal
-	 *            True se for fluxo ideal
-	 */
-	private void saveFluxo(String dados, Boolean completo, Long tarefaId,
-			TipoConvidado tipoConvidado) {
-		Gson gson = new Gson();
-		Type collectionType = new TypeToken<Collection<Action>>() {
-		}.getType();
-		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
-		List<Action> acoes = new ArrayList<Action>(ints2);
-		this.actions.addAction(acoes);
-		if (completo) {
-			switch (tipoConvidado) {
-			case TESTER:
-				gravaFluxo(tarefaId, tipoConvidado);
-				break;
-			case USER:
-
-				gravaFluxo(this.fluxoComponente.getTarefaVez(), tipoConvidado);
-				break;
-
-			default:
-				break;
-
-			}
-			actions.destroy();
-		}
-		// actions.setUrlProxima();
-	}
 
 	/**
 	 * Grava o fluxo de usuario de uma determinada Tarefa. Destroy o
@@ -269,25 +181,19 @@ public class TarefaController extends BaseController {
 	 * @param tarefaId
 	 *            O identificador da tarefa que tera o fluxo gravado
 	 */
-	private void gravaFluxo(Long tarefaId, TipoConvidado tipoConvidado) {
-		// System.out.println("GRAVA FLUXO DE USUARIO");
+	private void gravaFluxo(String dados,Long tarefaId, TipoConvidado tipoConvidado) {
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
-		List<Action> acoes = actions.getAcoes();
+		Gson gson = new Gson();
+		Type collectionType = new TypeToken<Collection<Action>>() {
+		}.getType();
+		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
+		List<Action> acoes = new ArrayList<Action>(ints2);
 		for (Action acao : acoes) {
 			acao.setFluxo(fluxo);
 		}
-		fluxo.setAcoes(actions.getAcoes());
-		// fluxoRepository.create(fluxo);
+		fluxo.setAcoes(acoes);
 		saveTipoFluxo(tipoConvidado, fluxo);
-		fluxoComponente.getProximaTarefa();
-		// System.out.println("AGORA vez esta" +
-		// fluxoComponente.getTarefaVez());
-		if (fluxoComponente.getTarefaVez() == 0) {
-			// System.out
-			// .println("Tarefa = 0 -> redirecionar para responder as ultimas perguntas");
-			result.redirectTo(RespostaController.class).exibir();
-		}
 	}
 
 	/**
@@ -306,117 +212,7 @@ public class TarefaController extends BaseController {
 			fluxoUsuario.setFluxo(fluxo);
 			fluxoUsuarioRepository.create(fluxoUsuario);
 			break;
-		default:
-			break;
 		}
-	}
-
-	/**
-	 * Metodo que carrega uma página para realizar a tarefa. Nest pagina, possui
-	 * um iframe onde são testadas as ações do USUARIO. O id da tarefa é
-	 * recebido a partir da sessão FluxoComponente
-	 * 
-	 * @return
-	 */
-	@Logado
-	@Get()
-	@Post()
-	public TarefaDetalhe loadtaskuser() {
-		System.out.println("Action: loadTaskUser");
-		Long idTarefa = fluxoComponente.getTarefaVez();
-		System.out.println(idTarefa + "Tarefa na vez");
-		if (idTarefa == 0) {
-			System.out.println("Tarefa igual a zero");
-			Convidado convidado = new Convidado(new UsuarioTestePK(
-					usuarioLogado.getUsuario(), testeSession.getTeste()));
-			convidado.setRealizou(true);
-			convidadoRepository.update(convidado);
-			fluxoComponente.setRespondendoInicio(false);
-			result.redirectTo(RespostaController.class).exibir();
-			return null;
-		}
-
-		Tarefa tarefa = getTarefa(idTarefa);
-		// return BaseUrl.getInstance(request)+"/tarefa/loadactionuser?url="+
-		// tarefa.getUrlInicial() + "&idTarefa=" + idTarefa;
-		// System.out.println("TESTAR TAREFA" + tarefa);
-		TarefaDetalhe tarefadetalhe = new TarefaDetalhe();
-		tarefadetalhe.setRoteiro(tarefa.getRoteiro());
-		tarefadetalhe.setUrl(BaseUrl.getInstance(request)
-				+ "/tarefa/loadactionuser?url=" + tarefa.getUrlInicial()
-				+ "&idTarefa=" + idTarefa);
-		return tarefadetalhe;
-	}
-
-	/**
-	 * Método que carrega uma página e adaptada para a Usabilitool. Nesta página
-	 * serão armazeandas as ações do TESTADOR.
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
-	@Logado
-	@Get
-	@Post
-	public String loadactionuser() {
-		System.out.println("loadActionUser ");
-		Long idTarefa = fluxoComponente.getTarefaVez();
-		if (idTarefa == 0) {
-			Convidado convidado = new Convidado(new UsuarioTestePK(
-					usuarioLogado.getUsuario(), testeSession.getTeste()));
-			convidado.setRealizou(true);
-			convidado.setTipoConvidado(fluxoComponente.getTipoConvidado());
-			convidadoRepository.update(convidado);
-			return null;
-		}
-
-		Tarefa tarefa = getTarefa(idTarefa);
-		String url = request.getParameter("url");
-		System.out.println("URL" + url);
-		Map<String, String[]> parametrosRecebidos = request.getParameterMap();
-		String metodo = request.getMethod();
-
-		Enumeration headerNames = request.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			String headerName = (String) headerNames.nextElement();
-			// System.out.println(headerName);
-			// System.out.println("HN(HN): " + request.getHeader(headerName));
-		}
-		if (url == null) {
-			url = tarefa.getUrlInicial();
-		}
-		return WebClientTester.loadPage(BaseUrl.getInstance(request)
-				+ "/tarefa/loadactionuser", url,
-				Integer.parseInt(idTarefa.toString()), parametrosRecebidos,
-				metodo, cookieManager);
-	}
-
-	// private void gravaFluxoIdeal(Long tarefaId) {
-	// System.out.println("Grava FluxoTarefa IDEAL");
-	// Long idTeste = testeSession.getTeste().getId();
-	// Tarefa tarefa = this.tarefaPertenceTeste(idTeste, tarefaId);
-	// Fluxo fluxoIdeal = new Fluxo();
-	// fluxoIdeal.setUsuario(usuarioLogado.getUsuario());
-	// List<Acao> acoes = actions.getAcoes();
-	// for (Acao acao : acoes) {
-	// acao.setFluxo(fluxoIdeal);
-	// }
-	// fluxoIdeal.setAcoes(acoes);
-	// tarefa.setFluxoIdeal(fluxoIdeal);
-	// tarefa.setFluxoIdealPreenchido(true);
-	// tarefaRepository.update(tarefa);
-	// tarefaDetalhe.destroy();
-	// System.out.println("Tarefa é pra ter sido salva");
-	// }
-	@Logado
-	@Get(value = "teste/{idTeste}/editar/passo2/editar/{idTarefa}/tarefa/questionario")
-	public void questionario(Long idTeste, Long idTarefa) {
-		this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
-		Tarefa tarefa = tarefaRepository.find(idTarefa);
-		result.include(tarefa);
-		List<Pergunta> perguntas = tarefa.getQuestionario().getPerguntas();
-		result.include("perguntas", perguntas);
-		this.instanceIdTesteView(idTeste);
 	}
 
 	/**
@@ -469,20 +265,16 @@ public class TarefaController extends BaseController {
 		return tarefaRetorno;
 	}
 
-	private Tarefa getTarefa(Long idTarefa) {
-		return tarefaRepository.find(idTarefa);
-
-	}
 
 	@Post("/tarefa/roteiro")
 	@Logado
 	public void getRoteiro(Long idTarefa) {
-		System.out.println("Teste da secion: " + testeSession.getTeste().getId());
+		System.out.println("Teste da secion: "
+				+ testeSessionPlugin.getIdTeste());
 		System.out.println("id tarefa: " + idTarefa);
-		Tarefa tarefa = this.tarefaPertenceTeste(testeSession.getTeste().getId(), idTarefa);
-		System.out.println("Tarefa roteiro: " + tarefa.getRoteiro());
+		Tarefa tarefa = this.tarefaPertenceTeste(
+				testeSessionPlugin.getIdTeste(), idTarefa);
 		result.use(Results.json()).from(tarefa.getRoteiro()).serialize();
-		//return tarefa.getRoteiro();
 	}
 
 }

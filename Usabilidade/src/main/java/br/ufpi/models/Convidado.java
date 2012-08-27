@@ -16,7 +16,7 @@ import javax.persistence.NamedQuery;
  */
 @Entity
 @NamedQueries({
-		@NamedQuery(name = "Convidado.UsuarioFoiConvidado", query = "SELECT new br.ufpi.models.vo.ConvidadoVO(c.chaveComposta.teste,c.tipoConvidado) FROM Convidado AS c Where c.chaveComposta.participante.id= :usuario AND c.chaveComposta.teste.id= :teste And c.chaveComposta.teste.liberado= true And c.realizou= null"),
+		@NamedQuery(name = "Convidado.UsuarioFoiConvidado", query = "SELECT new br.ufpi.models.vo.TesteParticiparVO(c.tipoConvidado,c.chaveComposta.teste.elementosTeste) FROM Convidado AS c Where c.chaveComposta.participante.id= :usuario AND c.chaveComposta.teste.id= :teste And c.chaveComposta.teste.liberado= true And c.realizou= null"),
 		@NamedQuery(name = "Convidado.find", query = "SELECT c FROM Convidado AS c Where c.chaveComposta.participante.id= :usuario AND c.chaveComposta.teste.id= :teste"),
 		@NamedQuery(name = "Convidado.Teste", query = "SELECT new br.ufpi.models.vo.ConvidadoVO(c.chaveComposta.teste,c.tipoConvidado) FROM Convidado AS c Where c.realizou is null  And c.chaveComposta.participante.id= :usuario And c.chaveComposta.teste.liberado= true"),
 		@NamedQuery(name = "Convidado.Teste.Count", query = "SELECT count(*) FROM Convidado AS c Where c.realizou is null  And c.chaveComposta.participante.id= :usuario And c.chaveComposta.teste.liberado= true"),
