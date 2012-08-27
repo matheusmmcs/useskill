@@ -28,6 +28,7 @@ import br.ufpi.repositories.FluxoIdealRepository;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
+import br.ufpi.util.GsonElements;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -40,8 +41,6 @@ public class TarefaController extends BaseController {
 	private final FluxoIdealRepository fluxoIdealRepository;
 	private final FluxoUsuarioRepository fluxoUsuarioRepository;
 	private final TesteSessionPlugin testeSessionPlugin;
-
-	
 
 	public TarefaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
@@ -88,6 +87,9 @@ public class TarefaController extends BaseController {
 		Teste teste = testeView.getTeste();
 		tarefa.setTeste(teste);
 		tarefaRepository.create(tarefa);
+		Teste testeUpdate = GsonElements.addTarefa(tarefa.getId(),
+				testeView.getTeste());
+		testeRepository.update(testeUpdate);
 		result.redirectTo(TesteController.class).passo2(
 				testeView.getTeste().getId());
 	}
@@ -166,13 +168,11 @@ public class TarefaController extends BaseController {
 		result.redirectTo(TesteController.class).passo2(idTeste);
 	}
 
-
 	@Logado
 	@Post("tarefa/save/fluxo")
 	public void saveFluxo(String dados, Long tarefaId) {
 		gravaFluxo(dados, tarefaId, testeSessionPlugin.getTipoConvidado());
 	}
-
 
 	/**
 	 * Grava o fluxo de usuario de uma determinada Tarefa. Destroy o
@@ -181,7 +181,8 @@ public class TarefaController extends BaseController {
 	 * @param tarefaId
 	 *            O identificador da tarefa que tera o fluxo gravado
 	 */
-	private void gravaFluxo(String dados,Long tarefaId, TipoConvidado tipoConvidado) {
+	private void gravaFluxo(String dados, Long tarefaId,
+			TipoConvidado tipoConvidado) {
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
 		Gson gson = new Gson();
@@ -264,7 +265,6 @@ public class TarefaController extends BaseController {
 		validateComponente.validarObjeto(tarefaRetorno);
 		return tarefaRetorno;
 	}
-
 
 	@Post("/tarefa/roteiro")
 	@Logado

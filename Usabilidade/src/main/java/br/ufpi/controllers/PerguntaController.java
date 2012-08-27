@@ -16,6 +16,7 @@ import br.ufpi.models.Questionario;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.TesteRepository;
+import br.ufpi.util.GsonElements;
 
 @Resource
 public class PerguntaController extends BaseController {
@@ -100,6 +101,8 @@ public class PerguntaController extends BaseController {
 			pergunta.setAlternativas(null);
 		}
 		perguntaRepository.create(pergunta);
+		Teste teste = GsonElements.addPergunta(pergunta.getId(), testeView.getTeste());
+		testeRepository.update(teste);
 
 	}
 
