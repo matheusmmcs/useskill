@@ -1,5 +1,6 @@
 package br.ufpi.controllers;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.persistence.PersistenceException;
@@ -32,6 +33,7 @@ import br.ufpi.util.EmailUtils;
 import br.ufpi.util.Paginacao;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 @Resource
 public class TesteController extends BaseController {
@@ -463,12 +465,14 @@ public class TesteController extends BaseController {
 	@SuppressWarnings({ "unchecked" })
 	private List<ElementosTeste> organizarElementos() {
 		Gson gson = new Gson();
+		
 		Teste teste = testeView.getTeste();
 		String elementosTeste2 = teste.getElementosTeste();
 		if(elementosTeste2==null)
 			return null;
-		List<ElementosTeste> elementosTestes = (List<ElementosTeste>) gson
-				.fromJson(elementosTeste2, ElementosTeste.class);
+		
+		Type listType = new TypeToken<List<ElementosTeste>>(){}.getType();
+		List<ElementosTeste> elementosTestes = (List<ElementosTeste>) gson.fromJson(elementosTeste2, listType);
 		for (ElementosTeste elementosTeste : elementosTestes) {
 			if (elementosTeste.getTipo() == 'T') {
 				for (Tarefa tarefa : teste.getTarefas()) {
