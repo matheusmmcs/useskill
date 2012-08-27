@@ -1,5 +1,6 @@
 @USWidthMinControlGroup:			80px;
 @USWidthMediumControlGroup:			120px;
+@USHeightElementosTeste:			30px;
 
 .container{
 	width: @USwidthContainer;
@@ -156,6 +157,29 @@ footer{
 	}
 	.delalternativa{
 		margin: 10px 2px;
+	}
+}
+.sortable{
+	list-style-type: none; padding: 0; margin: 0 10px; width: 97%;
+	li{
+		position: relative;
+		height: @USHeightElementosTeste;
+		.ui-icon{
+			float: left;
+			margin: 7px 0 0 2px;
+		}
+		.titulo{
+			float: left;
+			padding: 5px 0 0 5px;
+			font-size: 16px;
+			height: @USHeightElementosTeste - 5;
+		}
+		.acoes{
+			float: right;
+			height: @USHeightElementosTeste - 4;
+			margin: 3px 5px;
+			padding: 0px;
+		}
 	}
 }
 // Estilos de Visualização

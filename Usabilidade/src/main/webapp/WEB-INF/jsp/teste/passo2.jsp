@@ -1,5 +1,9 @@
-<%@include file="../leftmenus/default.jsp"%>
-
+<head>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/jscripts/libs/jqueryui/css/smoothness/jquery-ui-1.8.18.custom.css">
+	<script src="${pageContext.request.contextPath}/jscripts/libs/jqueryui/js/jquery-ui-1.8.18.custom.min.js"></script>
+</head>
+<body>
+	<%@include file="../leftmenus/default.jsp"%>
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
 	<div class="alert alert-error">
@@ -51,57 +55,11 @@
 					${testeView.teste.titulo }
 				</p>
 				<hr />
+				<p>
+					<fmt:message key="testes.passo2.info" />
+				</p>
 			</legend>
-		</fieldset>
-
-
-		<fieldset>
-			<legend>
-				<span><fmt:message key="tarefas"/></span>
-				<hr />
-			</legend>
-			<table class="table table-striped table-bordered table-condensed">
-				<thead>
-					<tr>
-						<th><fmt:message key="table.titulo" /></th>
-						<th style="width: 70px"><fmt:message key="tarefa.perguntas" /></th>
-						<th style="width: 85px"><fmt:message key="table.acoes" />
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:if test="${not empty tarefas}">
-						<c:forEach items="${tarefas}" var="tarefa">
-							<tr>
-								<td><a
-									href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">
-										${tarefa.nome}</a>
-								</td>
-								<td class="centertd">
-	                                <a class="btn"  href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa/questionario">
-	                                <i class="icon-search"></i>
-	                                </a>
-                                </td>
-								<td class="centertd"><a class="btn"
-									href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${tarefa.id}/tarefa">
-										<span class="icon-pencil"></span> </a> 
-										<a class="btn btn-primary btn-modal" title="<fmt:message key="table.remover"/>" 
-										data-href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/tarefa/${tarefa.id}/apagar" data-acao="Remover" data-toggle="modal" href="#modalMessages"> <span
-										class="icon-trash icon-white"></span> </a>
-								</td>
-							</tr>
-						</c:forEach>
-					</c:if>
-				</tbody>
-			</table>
-		</fieldset>
-
-
-		<fieldset>
-			<legend>
-				<span><fmt:message key="testes.perguntas"/></span>
-				<hr />
-			</legend>
+		
 			<table class="table table-striped table-bordered table-condensed">
 				<thead>
 					<tr>
@@ -135,13 +93,66 @@
 				</tbody>
 			</table>
 			
+			<ul class="sortable">
+				<c:if test="${not empty elementosTeste}">
+					<c:forEach items="${elementosTeste}" var="el">
+								<c:choose>
+									<c:when test="${el.tipo == 'T'}">
+							<li class="ui-state-blue">
+								<span class="ui-azul ui-icon ui-icon-arrowthick-2-n-s"></span>
+								<div class="titulo">${el.titulo }</div>
+								<div class="acoes ">
+										<a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${el.id}/tarefa" title="<fmt:message key="table.editar"/>">
+											<span class="icon-pencil"></span>
+										</a>
+										<a title="<fmt:message key="table.remover"/>" class="btn btn-primary btn-modal" data-href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/tarefa/${el.id}/apagar" data-acao="Remover" data-toggle="modal" href="#modalMessages">
+											<span class="icon-trash icon-white"></span>
+										</a>
+								</div>
+								<input type="hidden" name="tipo" value="T"/>
+								<input type="hidden" name="id" value="1"/>
+							</li>
+									</c:when>
+									<c:otherwise>
+									
+							<li class="ui-state-green">
+								<span class="ui-green ui-icon ui-icon-arrowthick-2-n-s"></span>
+								<div class="titulo">${el.titulo }</div>
+								<div class="acoes ">
+										<a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${el.id}/pergunta" title="<fmt:message key="table.editar"/>">
+											<span class="icon-pencil"></span>
+										</a>
+										<a title="<fmt:message key="table.remover"/>" class="btn btn-primary btn-modal" data-href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/pergunta/${el.id}/apagar" data-acao="Remover" data-toggle="modal" href="#modalMessages">
+											<span class="icon-trash icon-white"></span>
+										</a>
+								</div>
+								<input type="hidden" name="tipo" value="T"/>
+								<input type="hidden" name="id" value="1"/>
+							</li>
+									</c:otherwise>
+								</c:choose>
+					</c:forEach>
+				</c:if>
+			</ul>
+			
 			<div class="form-actions">
 				<a
 				href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo3"
-				title="<fmt:message key="testes.proximopasso" />"
+				title="<fmt:message key="testes.passo2.salvarordem" />"
 				class="btn btn-primary pull-right"> <fmt:message
-					key="testes.continuar" /> </a>
+					key="testes.passo2.salvarordem" /> </a>
 			</div>
 		</fieldset>
 	</div>
 </div>
+<script>
+	(function($){
+		var $sortable = $(".sortable").disableSelection().sortable();
+		function ElementosTeste(id, tipo){
+			this.id = id;
+			this.tipo = tipo;
+		}
+		var arrayElementos = new Array();
+	})(jQuery);
+</script>
+</body>

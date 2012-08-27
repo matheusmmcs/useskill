@@ -81,6 +81,10 @@
 .ui-priority-primary, .ui-widget-content .ui-priority-primary, .ui-widget-header .ui-priority-primary { font-weight: bold; }
 .ui-priority-secondary, .ui-widget-content .ui-priority-secondary,  .ui-widget-header .ui-priority-secondary { opacity: .7; filter:Alpha(Opacity=70); font-weight: normal; }
 .ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled { opacity: .35; filter:Alpha(Opacity=35); background-image: none; }
+.ui-state-green, .ui-widget-content .ui-state-green, .ui-widget-header .ui-state-green  {cursor: move; border: 1px solid #b5e1b6; background: #fbf9ee url(images/ui-bg_glass_75_green_1x400.png) 50% 50% repeat-x; color: #363636; }
+.ui-state-green a, .ui-widget-content .ui-state-green a,.ui-widget-header .ui-state-green a { color: #363636; }
+.ui-state-blue, .ui-widget-content .ui-state-blue, .ui-widget-header .ui-state-blue  {cursor: move; border: 1px solid #cdd8e9; background: #fbf9ee url(images/ui-bg_glass_75_blue_1x400.png) 50% 50% repeat-x; color: #363636; }
+.ui-state-blue a, .ui-widget-content .ui-state-blue a,.ui-widget-header .ui-state-blue a { color: #363636; }
 
 /* Icons
 ----------------------------------*/
@@ -94,6 +98,8 @@
 .ui-state-active .ui-icon {background-image: url(images/ui-icons_454545_256x240.png); }
 .ui-state-highlight .ui-icon {background-image: url(images/ui-icons_2e83ff_256x240.png); }
 .ui-state-error .ui-icon, .ui-state-error-text .ui-icon {background-image: url(images/ui-icons_cd0a0a_256x240.png); }
+.ui-icon.ui-azul {background-image: url(images/ui-icons_2e83ff_256x240.png); }
+.ui-icon.ui-green {background-image: url(images/ui-icons_888888_256x240.png); }
 
 /* positioning */
 .ui-icon-carat-1-n { background-position: 0 0; }
