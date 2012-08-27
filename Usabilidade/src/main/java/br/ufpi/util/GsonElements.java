@@ -12,27 +12,45 @@ import com.google.gson.reflect.TypeToken;
 
 public class GsonElements {
 	public static Teste addPergunta(Long id, Teste teste) {
+		return add(id, 'P', teste);	}
+
+	public static Teste addTarefa(Long id, Teste teste) {
+		return add(id, 'T', teste);
+		
+	}
+
+	public static Teste removerPergunta(Long id, Teste teste) {
+		return remover(id, teste, 'P');
+	}
+
+	public static Teste removerTarefa(Long id, Teste teste) {
+		return remover(id, teste, 'T');
+	}
+
+	private static Teste remover(Long id, Teste teste, char tipo) {
 		Gson gson = new Gson();
-		ElementosTeste elementosTeste = new ElementosTeste(id, 'P');
+		ElementosTeste elementosTeste = new ElementosTeste(id, tipo);
 		String elementosTeste2 = teste.getElementosTeste();
-		List<ElementosTeste> elementosTestes= new ArrayList<ElementosTeste>();
-		if (elementosTeste2 != null) {
-			Type listType = new TypeToken<List<ElementosTeste>>(){}.getType();
-		 elementosTestes = (List<ElementosTeste>) gson.fromJson(elementosTeste2, listType);}
-		elementosTestes.add(elementosTeste);
+		List<ElementosTeste> elementosTestes = new ArrayList<ElementosTeste>();
+		Type listType = new TypeToken<List<ElementosTeste>>() {
+		}.getType();
+		elementosTestes = (List<ElementosTeste>) gson.fromJson(elementosTeste2,
+				listType);
+		elementosTestes.remove(elementosTeste);
 		teste.setElementosTeste(gson.toJson(elementosTestes));
 		return teste;
 	}
-
-	public static Teste addTarefa(Long id, Teste teste) {
+	private static Teste add(Long id, char tipo, Teste teste){
 		Gson gson = new Gson();
-		ElementosTeste elementosTeste = new ElementosTeste(id, 'T');
+		ElementosTeste elementosTeste = new ElementosTeste(id, tipo);
 		String elementosTeste2 = teste.getElementosTeste();
-		List<ElementosTeste> elementosTestes= new ArrayList<ElementosTeste>();
+		List<ElementosTeste> elementosTestes = new ArrayList<ElementosTeste>();
 		if (elementosTeste2 != null) {
-			Type listType = new TypeToken<List<ElementosTeste>>(){}.getType();
-			elementosTestes = (List<ElementosTeste>) gson.fromJson(elementosTeste2, listType);
-			}
+			Type listType = new TypeToken<List<ElementosTeste>>() {
+			}.getType();
+			elementosTestes = (List<ElementosTeste>) gson.fromJson(
+					elementosTeste2, listType);
+		}
 		elementosTestes.add(elementosTeste);
 		teste.setElementosTeste(gson.toJson(elementosTestes));
 		return teste;

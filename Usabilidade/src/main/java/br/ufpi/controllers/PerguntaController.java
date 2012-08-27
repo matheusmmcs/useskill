@@ -155,7 +155,10 @@ public class PerguntaController extends BaseController {
 		Pergunta perguntaPertenceUsuario = perguntaPertenceUsuario(perguntaId,
 				testeId);
 		validateComponente.validarObjeto(perguntaPertenceUsuario);
+		Teste teste = testeView.getTeste();
+		teste=GsonElements.removerPergunta(perguntaPertenceUsuario.getId(), teste);
 		perguntaRepository.destroy(perguntaPertenceUsuario);
+		testeRepository.update(teste);
 		result.redirectTo(TesteController.class).passo2(testeId);
 
 	}
