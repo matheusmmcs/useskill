@@ -279,8 +279,8 @@ public class TarefaController extends BaseController {
 		result.use(Results.json()).from(roteiro).serialize();
 	}
 
-	@Post()
 	@Logado
+	@Get("/tarefa/{idTarefa}/json")
 	public void getTarefa(Long idTarefa) {
 		validateComponente.validarId(idTarefa);
 		validateComponente.validarId(testeSessionPlugin.getIdTeste());

@@ -5,13 +5,15 @@ package br.ufpi.models.vo;
  *
  */
 public class TarefaVO {
+	private String titulo;
 	private String roteiro;
 	private String url;
 	
-	public TarefaVO(String roteiro, String url) {
+	public TarefaVO(String roteiro, String url, String titulo) {
 		super();
 		this.roteiro = roteiro;
 		this.url = url;
+		this.titulo = titulo;
 	}
 	/**
 	 * @return the roteiro
@@ -37,13 +39,12 @@ public class TarefaVO {
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
-		return "TarefaVO [roteiro=" + roteiro + ", url=" + url + "]";
+		return "TarefaVO [titulo=" + titulo + ", roteiro=" + roteiro + ", url="
+				+ url + "]";
 	}
+	
 	
 
 }

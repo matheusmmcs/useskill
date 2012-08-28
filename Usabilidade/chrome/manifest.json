@@ -1,0 +1,31 @@
+﻿{
+  "name": "UseSkill for Google Chrome™",
+  "version": "0.7.6",
+  "description": "By Cleiton Moura, Matheus Campanhã e Pedro Almir",
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["js/jquery.js"]
+    }
+  ],
+  "permissions": [
+    "notifications", "tabs", "http://*/*", "https://*/*", "unlimitedStorage"
+  ],
+  "background": {
+    "scripts": ["js/jquery.js", "js/background.js"]
+  },
+  "icons": { 
+    "16": "images/icon16.png",
+    "48": "images/icon48.png"
+  },
+  "browser_action": {
+    "default_icon": "images/icon16.png",
+	  "default_title": "UseSkill",
+	  "default_popup": "popup.html"
+  },
+  "web_accessible_resources": [
+    "images/icon.png",
+    "html/topoteste.html"
+  ],
+  "manifest_version": 2
+}
