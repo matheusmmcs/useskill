@@ -7,6 +7,7 @@ import javax.persistence.Query;
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
+import br.ufpi.models.vo.PerguntaVO;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.Repository;
 
@@ -67,6 +68,22 @@ public class PerguntaRepositoryImpl extends Repository<Pergunta, Long>
 		}
 		return true;
 
+	}
+
+	@Override
+	public PerguntaVO perguntaPertenceTeste(Long testeId, Long perguntaId) {
+		Query query = null;
+			query = entityManager
+					.createNamedQuery("Pergunta.pertence.teste.PerguntaVO");
+			query.setParameter("teste", testeId);
+			query.setParameter("pergunta", perguntaId);
+
+		try {
+			return (PerguntaVO) query.getSingleResult();
+		} catch (NoResultException nre) {
+			return null;
+		}
+		
 	}
 
 	

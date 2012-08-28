@@ -24,6 +24,7 @@ import br.ufpi.models.FluxoUsuario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.TipoConvidado;
+import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.FluxoIdealRepository;
 import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
@@ -272,12 +273,21 @@ public class TarefaController extends BaseController {
 	@Post("/tarefa/roteiro")
 	@Logado
 	public void getRoteiro(Long idTarefa) {
-		System.out.println("Teste da secion: "
-				+ testeSessionPlugin.getIdTeste());
-		System.out.println("id tarefa: " + idTarefa);
-		Tarefa tarefa = this.tarefaPertenceTeste(
-				testeSessionPlugin.getIdTeste(), idTarefa);
-		result.use(Results.json()).from(tarefa.getRoteiro()).serialize();
+		validateComponente.validarId(idTarefa);
+		String roteiro = tarefaRepository.getRoteiro(idTarefa, testeSessionPlugin.getIdTeste());
+		validateComponente.validarObjeto(roteiro);
+		result.use(Results.json()).from(roteiro).serialize();
+	}
+
+	@Post()
+	@Logado
+	public void getTarefa(Long idTarefa) {
+		validateComponente.validarId(idTarefa);
+		validateComponente.validarId(testeSessionPlugin.getIdTeste());
+		TarefaVO tarefaVO = tarefaRepository.getTarefaVO(idTarefa, testeSessionPlugin.getIdTeste());
+		System.out.println(tarefaVO);
+		validateComponente.validarObjeto(tarefaVO);
+		result.use(Results.json()).from(tarefaVO).serialize();
 	}
 
 }

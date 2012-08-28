@@ -6,7 +6,9 @@ import br.com.caelum.vraptor.Put;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.view.Results;
 import br.ufpi.annotation.Logado;
+import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
@@ -14,6 +16,7 @@ import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Teste;
+import br.ufpi.models.vo.PerguntaVO;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.GsonElements;
@@ -23,16 +26,7 @@ public class PerguntaController extends BaseController {
 
 	private final PerguntaRepository perguntaRepository;
 	private final TesteRepository testeRepository;
-
-	public PerguntaController(Result result, Validator validator,
-			TesteView testeView, UsuarioLogado usuarioLogado,
-			ValidateComponente validateComponente,
-			PerguntaRepository perguntaRepository,
-			TesteRepository testeRepository) {
-		super(result, validator, testeView, usuarioLogado, validateComponente);
-		this.perguntaRepository = perguntaRepository;
-		this.testeRepository = testeRepository;
-	}
+	private final TesteSessionPlugin sessionPlugin;
 
 	@Logado
 	@Get({ "teste/{testeId}/editar/passo2/criar/pergunta" })
@@ -40,7 +34,6 @@ public class PerguntaController extends BaseController {
 		this.testeNaoLiberadoPertenceUsuarioLogado(testeId);
 		return new Pergunta();
 	}
-
 
 	/**
 	 * Método utilizado para editar pergunta.
@@ -101,7 +94,8 @@ public class PerguntaController extends BaseController {
 			pergunta.setAlternativas(null);
 		}
 		perguntaRepository.create(pergunta);
-		Teste teste = GsonElements.addPergunta(pergunta.getId(), testeView.getTeste());
+		Teste teste = GsonElements.addPergunta(pergunta.getId(),
+				testeView.getTeste());
 		testeRepository.update(teste);
 
 	}
@@ -156,7 +150,8 @@ public class PerguntaController extends BaseController {
 				testeId);
 		validateComponente.validarObjeto(perguntaPertenceUsuario);
 		Teste teste = testeView.getTeste();
-		teste=GsonElements.removerPergunta(perguntaPertenceUsuario.getId(), teste);
+		teste = GsonElements.removerPergunta(perguntaPertenceUsuario.getId(),
+				teste);
 		perguntaRepository.destroy(perguntaPertenceUsuario);
 		testeRepository.update(teste);
 		result.redirectTo(TesteController.class).passo2(testeId);
@@ -193,6 +188,29 @@ public class PerguntaController extends BaseController {
 		validateComponente.validarObjeto(teste);
 		testeView.setTeste(teste);
 
+	}
+
+	@Get
+	@Logado
+	public void getPergunta(long idPergunta) {
+		validateComponente.validarId(idPergunta);
+		validateComponente.validarId(sessionPlugin.getIdTeste());
+		PerguntaVO perguntaPertenceTeste = perguntaRepository
+				.perguntaPertenceTeste(sessionPlugin.getIdTeste(), idPergunta);
+		validateComponente.validarObjeto(perguntaPertenceTeste);
+		System.out.println(perguntaPertenceTeste);
+		result.use(Results.json()).from(perguntaPertenceTeste).serialize();
+	}
+
+	public PerguntaController(Result result, Validator validator,
+			TesteView testeView, UsuarioLogado usuarioLogado,
+			ValidateComponente validateComponente,
+			PerguntaRepository perguntaRepository,
+			TesteRepository testeRepository, TesteSessionPlugin sessionPlugin) {
+		super(result, validator, testeView, usuarioLogado, validateComponente);
+		this.perguntaRepository = perguntaRepository;
+		this.testeRepository = testeRepository;
+		this.sessionPlugin = sessionPlugin;
 	}
 
 }
