@@ -498,6 +498,6 @@ public class TesteController extends BaseController {
 		Teste teste = testeView.getTeste();
 		teste.setElementosTeste(listaElementos);
 		testeRepository.update(teste);
-
+		result.redirectTo(this).passo2(idTeste);
 	}
 }

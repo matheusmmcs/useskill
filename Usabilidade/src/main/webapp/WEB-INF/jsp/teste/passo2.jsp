@@ -100,7 +100,7 @@
 									<c:when test="${el.tipo == 'T'}">
 							<li class="ui-state-blue">
 								<span class="ui-azul ui-icon ui-icon-arrowthick-2-n-s"></span>
-								<div class="titulo">${el.titulo }</div>
+								<div class="titulo">Tarefa - ${el.titulo }</div>
 								<div class="acoes ">
 										<a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${el.id}/tarefa" title="<fmt:message key="table.editar"/>">
 											<span class="icon-pencil"></span>
@@ -117,7 +117,7 @@
 									
 							<li class="ui-state-green">
 								<span class="ui-green ui-icon ui-icon-arrowthick-2-n-s"></span>
-								<div class="titulo">${el.titulo }</div>
+								<div class="titulo">Pergunta - ${el.titulo }</div>
 								<div class="acoes ">
 										<a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${el.id}/pergunta" title="<fmt:message key="table.editar"/>">
 											<span class="icon-pencil"></span>
