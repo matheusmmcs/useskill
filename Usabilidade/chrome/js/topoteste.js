@@ -3,7 +3,7 @@
 
 		var html = $('html');
 
-		var iframeId = 'USsomeSidebar7X';
+		var iframeId = 'USsomeSidebar7X1';
 		if (document.getElementById(iframeId)) {
 		  throw 'id:' + iframeId + 'taken please dont use this id!';
 		}

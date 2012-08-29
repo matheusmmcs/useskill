@@ -1,10 +1,12 @@
 var domainUseSkill = "http://localhost:8080/Usabilidade";
-var storage = new Array();
+//var storage = new Array();
+function Store () {
+    this.listaElementos;
+    this.elementoAtualLista;
+}
 
-// var elementoAtualLista;
-// var listaElementos;
-// var idTarefa;
-
+var storage = new Store();
+var ultimaTab = 0;
 
 function parseJSON(data) {
 	return window.JSON && window.JSON.parse ? window.JSON.parse( data ) : (new Function("return " + data))(); 
@@ -29,23 +31,30 @@ function ajax(caminho, tipo, dados){
 	return retorno;
 }
 
-function nextElement(idTarefa){
-	var objJson = ajax(domainUseSkill+"/teste/participar/"+idTarefa+"/aceitar", "GET");
-	var listaElementos = parseJSON(objJson.listaElementos);
-	var atual = 0;
+function nextElement(atual, lista){
+	var listaElementos;
+	if(lista){
+		listaElementos = parseJSON(lista.listaElementos);
+		storage.listaElementos = lista.listaElementos;
+	}else{
+		listaElementos = parseJSON(storage.listaElementos);
+	}
 
-	storage["listaElementos"] = objJson.listaElementos;
-	storage["elementoAtualLista"] = atual;
+	storage.elementoAtualLista = atual;
 	
 	if(listaElementos.length > atual){
 		localStorage.clear("tabIds");
 		var elemento = listaElementos[atual];
+
 		if(elemento.tipo == "T"){
-			storage["idTarefa"] = elemento.id;
 			var objJson = ajax(domainUseSkill+"/tarefa/"+elemento.id+"/json", "GET");
 			var tarefa = objJson.tarefaVO;
 
 			chrome.tabs.create({'url': tarefa.url}, function(tab) {
+				if(!lista){
+					chrome.tabs.remove(ultimaTab);
+				}
+				ultimaTab=tab.id;
         		//set tabIds separados por ,
         		localStorage.setItem("tabIds", tab.id);
 				chrome.browserAction.setIcon({path: 'images/icon16on.png', tabId: tab.id});
@@ -59,11 +68,11 @@ function nextElement(idTarefa){
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
     if (request.useskill == "nextElement"){
-    	nextElement(request.idTarefa);
+    	nextElement(request.atual, request.lista);
     	//sendResponse({farewell: "goodbye"});
     }else if (request.useskill == "getStorage"){
-    	console.log(storage[request.key]);
-    	sendResponse({dados: storage[request.key]});
+		console.log(storage);
+    	sendResponse({dados: storage});
     }
 });
 

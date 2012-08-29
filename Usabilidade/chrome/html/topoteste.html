@@ -22,7 +22,11 @@
 </div>
 <!-- BOTÃO SHOW TOPO -->
 <a class="USbotao USbotao-info" id="USbuttonTopo">UseSkill</a>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <script>
+	var url = chrome.extension.getURL("js/jquery.js");
+	window.jQuery || document.write('<script src="'+url+'"><\/script>');
+
 	(function($){
 		var domainUseSkill = "http://localhost:8080/Usabilidade";
 		var $topo = $('#USwebclient-topo-todo');
@@ -32,9 +36,12 @@
 		var heightTop = $topo.css("height").substr(0,2);
 		var btnConcluir = "concluir12qz3";
 
-		function getStorage(chave){			
-			chrome.extension.sendRequest({useskill: "getStorage", key: chave}, function(response) {
-  					console.log(response.dados);
+		function getStorage(callback){			
+			chrome.extension.sendRequest({useskill: "getStorage"}, function(response) {
+				if (callback && typeof(callback) === "function") {
+        			callback.call(this, response);
+    			}
+    			
 			});
 		}
 
@@ -65,6 +72,11 @@
 			}
 		});
 
+		/*converter json to object*/
+		function parseJSON(data) {
+	    	return window.JSON && window.JSON.parse ? window.JSON.parse( data ) : (new Function("return " + data))(); 
+		}
+
 		/*método genérico para realizar ajax*/
 		function ajax(caminho, tipo, dados){
 			var retorno;
@@ -93,43 +105,42 @@
 				});
 
 				$("#"+btnConcluir).click(function(e){
-					alert(getStorage("listaElementos"));
+					getStorage(function(dado){
+						var prox = dado.dados.elementoAtualLista;
+						prox++;
+						//var listaElementos = parseJSON(dado.dados.listaElementos);
+						//var proxEl = listaElementos[prox];
+						
+						chrome.extension.sendRequest({useskill: "nextElement", atual: prox});
+					});
 					//ajax(domainUseSkill+"/tarefa/save/fluxo", "POST", "{ tarefaId: "++", dados: }");
 				});
 
 
 				//$.webclientCapt({'url': "${pageContext.request.contextPath}/tarefa/save/fluxo/usuario"});
-				/*
+				
 				$('#roteiro').click(function(e){
-					$.ajax({
+					getStorage(function(dado){
+						var atual = dado.dados.elementoAtualLista;
+						var listaElementos = parseJSON(dado.dados.listaElementos);
+						var elAtual = listaElementos[atual];
+						$.ajax({
 							url : domainUseSkill+"/tarefa/roteiro",
 							type : 'POST',
 							dataType : 'json',
 							async : false,
 							data : {
-								'idTarefa' : get_url_parameter("idTarefa")
+								'idTarefa' : elAtual.id
 								},
-								success : function(json) {
-									console.log("SUCCESS");
-									$('#USroteiro').children('p').html(json.string);
-									},
-									error : function(jqXHR, textStatus, errorThrown){
-										console.log("ERRO");
-										}
-									});
+							success : function(json) {
+								$('#USroteiro').children('p').html(json.string);
+							},
+							error : function(jqXHR, textStatus, errorThrown){
+								console.log(jqXHR);
+							}
+						});
 					});
-		
-				function get_url_parameter(param) {
-					param = param.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-					var r1 = "[\\?&]" + param + "=([^&#]*)";
-					var r2 = new RegExp(r1);
-					var r3 = r2.exec(window.location.href);
-					if (r3 == null)
-						return "";
-					else
-						return r3[1];
-				}
-				*/
+				});
 			});
 	})(jQuery);
 </script>

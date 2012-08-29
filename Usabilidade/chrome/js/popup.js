@@ -60,7 +60,9 @@
 			"click" : function(e){
 				e.preventDefault();
 				var id = $(this).parentsUntil('tr').parent().attr('data-id');
-				chrome.extension.sendRequest({useskill: "nextElement", idTarefa: id});
+
+				var objJson = ajax(domainUseSkill+"/teste/participar/"+id+"/aceitar", "GET");
+				chrome.extension.sendRequest({useskill: "nextElement", lista: objJson, atual: 0});
 			}
 		});
 	});
@@ -99,11 +101,11 @@
 			}else{
 				htmlReturn+="- Sem Titulo -";
 			}
-			htmlReturn+='</td><td class="centertd"><a class="btn btn-primary teste-info" href="#" title="Duvidas"><span class="icon-question-sign icon-white"></span></a><div class="teste-info-content">Tipo: '+arrayTestes[t].tipoConvidado+' /Quem Convidou: '+arrayTestes[t].usuarioCriado+'</div></td><td class="centertd"><a class="btn btn-success teste-aceitar" href="#" title="Aceitar"><span class="icon-ok icon-white"></span></a><a title="Recusar" class="btn btn-danger teste-recusar" href="#"><span class="icon-remove icon-white"></span></a></td></tr>';
+			htmlReturn+='</td><td class="centertd"><a class="btn btn-primary teste-info" href="#" rel="tooltip" data-original-title="Tipo: '+arrayTestes[t].tipoConvidado+' <br/>Convidou: '+arrayTestes[t].usuarioCriado+'"><span class="icon-question-sign icon-white"></span></a></td><td class="centertd"><a class="btn btn-success teste-aceitar" href="#" title="Aceitar"><span class="icon-ok icon-white"></span></a><a title="Recusar" class="btn btn-danger teste-recusar" href="#"><span class="icon-remove icon-white"></span></a></td></tr>';
 		}
-
 		$('tbody').html(htmlReturn);
-		
+		$('.teste-info').tooltip();
+
 	}
 
 	/*método genérico para realizar ajax*/
