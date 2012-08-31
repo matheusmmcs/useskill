@@ -198,7 +198,6 @@ public class PerguntaController extends BaseController {
 		PerguntaVO perguntaPertenceTeste = perguntaRepository
 				.perguntaPertenceTeste(sessionPlugin.getIdTeste(), idPergunta);
 		validateComponente.validarObjeto(perguntaPertenceTeste);
-		System.out.println(perguntaPertenceTeste);
 		result.use(Results.json()).from(perguntaPertenceTeste).serialize();
 	}
 

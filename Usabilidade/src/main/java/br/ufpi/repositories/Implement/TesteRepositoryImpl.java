@@ -184,4 +184,11 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		paginacao.setCount((Long) count.getSingleResult());
 		return paginacao;
 	}
+
+	@Override
+	public Teste findTestePorQuesTionarioID(Long idQuestionario) {
+		Query query=entityManager.createNamedQuery("Teste.findByQuestionario.ID");
+		query.setParameter("id", idQuestionario);
+		return (Teste) query.getSingleResult();
+	}
 }
