@@ -148,7 +148,6 @@ public class TarefaController extends BaseController {
 		if (!tarefaUpdate.getUrlInicial().equals(tarefa.getUrlInicial().trim())) {
 			tarefaUpdate.setUrlInicial(tarefa.getUrlInicial());
 		}
-		// TODO Apaagar o fluxo que ja tinha sido gravado caso
 		tarefaRepository.update(tarefaUpdate);
 		result.redirectTo(TesteController.class).passo2(idTeste);
 
@@ -165,6 +164,7 @@ public class TarefaController extends BaseController {
 	@Get("teste/{idTeste}/tarefa/{idTarefa}/apagar")
 	public void removed(Long idTarefa, Long idTeste) {
 		Tarefa tarefa = this.tarefaPertenceTesteNaoRealizado(idTarefa, idTeste);
+		testeView.setTeste(testeRepository.find(idTeste));
 		Teste teste = GsonElements.removerTarefa(tarefa.getId(),
 				testeView.getTeste());
 		tarefaRepository.destroy(tarefa);
