@@ -35,7 +35,7 @@
 				</div>
 				
 				<div class="form-actions">
-					<input type="submit" value="<fmt:message key="responde.pergunta"/>" name="salvar" title="<fmt:message key="responde.pergunta"/>" class="btn btn-primary" style="float: right; width: 120px" />
+					<input id="USperguntaTeste12z3" type="submit" value="<fmt:message key="responde.pergunta"/>" name="salvar" title="<fmt:message key="responde.pergunta"/>" class="btn btn-primary" style="float: right; width: 120px" />
 				</div>
 			</fieldset>
 		</form>
@@ -66,7 +66,7 @@
           	</div>
 			
 			<div class="form-actions">
-				<input type="submit" value="<fmt:message key="responde.pergunta"/>" name="salvar" title="<fmt:message key="responde.pergunta"/>" class="btn btn-primary" style="float: right; width: 120px" />
+				<input id="USperguntaTeste12z3" type="submit" value="<fmt:message key="responde.pergunta"/>" name="salvar" title="<fmt:message key="responde.pergunta"/>" class="btn btn-primary" style="float: right; width: 120px" />
 			</div>
 		</fieldset>
 		
