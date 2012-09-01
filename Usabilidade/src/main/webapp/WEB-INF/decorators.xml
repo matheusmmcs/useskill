@@ -3,6 +3,7 @@
 <decorators defaultdir="/WEB-INF/jsp/decorators">
 	<decorator name="blank" page="blank.jsp">
 		<pattern>/tarefa/loadtaskuser</pattern>
+		<pattern>/teste/responder/pergunta/*</pattern>
 	</decorator>
 	<decorator name="testeUser" page="testeUser.jsp">
 		<pattern>/tarefa/loadactionuser</pattern>

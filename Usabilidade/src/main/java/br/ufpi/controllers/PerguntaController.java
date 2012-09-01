@@ -212,4 +212,17 @@ public class PerguntaController extends BaseController {
 		this.sessionPlugin = sessionPlugin;
 	}
 
+	@Logado
+	@Get("/teste/responder/pergunta/{idPergunta}")
+	public void exibir(Long idPergunta) {
+		validateComponente.validarId(idPergunta);
+		validateComponente.validarId(sessionPlugin.getIdTeste());
+		PerguntaVO perguntaVo = perguntaRepository
+				.perguntaPertenceTeste(sessionPlugin.getIdTeste(), idPergunta);
+		validateComponente.validarObjeto(perguntaVo);
+		
+		System.out.println("pergunta alternativa"
+				+ perguntaVo.getTipoRespostaAlternativa());
+		result.include("pergunta", perguntaVo);
+	}
 }

@@ -97,7 +97,7 @@
 			background: lighten(@colorLighter,7%);
 			border-top: 1px solid @colorLighter;
 			border-bottom: 1px solid @colorLighter;
-			padding: 9px 20px 10px;
+			padding: 9px 10px 10px;
 		}
 		
 		.control-group-min{
@@ -197,4 +197,18 @@ footer{
 .center{
 	float: none; 
 	margin: 0 auto;
+}
+
+// Perguntas e Respotas
+// ------------------------------
+.pergunta .control-group{
+	&.notop{
+		margin-top: 0px;
+	}
+	div{
+		padding-left: 20px;
+		&.center{
+			padding-left: 0px;
+		}
+	}
 }

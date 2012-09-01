@@ -13,6 +13,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.validator.Validations;
+import br.com.caelum.vraptor.view.Results;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
@@ -491,13 +492,14 @@ public class TesteController extends BaseController {
 	}
 
 	@Logado
-	@Post()
+	@Post("teste/ordenar")
 	public void salvaListaElementos(Long idTeste, String listaElementos) {
+		System.out.println("ORDENEI");
 		validateComponente.validarId(idTeste);
 		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 		Teste teste = testeView.getTeste();
 		teste.setElementosTeste(listaElementos);
 		testeRepository.update(teste);
-		result.redirectTo(this).passo2(idTeste);
+		result.use(Results.json()).from("sucesso").serialize();
 	}
 }

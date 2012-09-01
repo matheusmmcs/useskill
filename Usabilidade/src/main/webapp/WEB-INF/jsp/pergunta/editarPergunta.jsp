@@ -64,26 +64,6 @@
 
 			<hr />
 			<div class="control-group">
-				<label class="control-label" for="inlineRadio1"><fmt:message
-						key="pergunta.posicaopergunta" />
-				</label>
-				<div class="controls">
-					<label class="radio inline"> <input type="radio"
-						name="pergunta.responderFim" id="inlineCheckbox2" value="false"
-						<c:if test="${pergunta.responderFim==false}" >
-               				checked
-                    	</c:if> />
-						<fmt:message key="pergunta.responderInicio" /> </label> <label
-						class="radio inline"> <input type="radio"
-						name="pergunta.responderFim" id="inlineCheckbox1" value="true"
-						<c:if test="${pergunta.responderFim==true}" >
-               				checked
-                    	</c:if> />
-						<fmt:message key="pergunta.responderFim" /> </label>
-				</div>
-			</div>
-			<hr />
-			<div class="control-group">
 				<label class="control-label" for="inlineRadio2"><fmt:message
 						key="pergunta.tiporesposta" />
 				</label>

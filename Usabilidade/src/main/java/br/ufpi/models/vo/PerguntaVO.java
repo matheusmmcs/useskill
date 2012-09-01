@@ -9,12 +9,14 @@ import br.ufpi.models.Pergunta;
 public class PerguntaVO {
 	private String titulo;
 	private String texto;
+	private Boolean tipoRespostaAlternativa;
 	private List<AlternativaVO> alternativas;
 
 	public PerguntaVO(Pergunta pergunta) {
 		super();
 		this.titulo = pergunta.getTitulo();
 		this.texto = pergunta.getTitulo();
+		this.setTipoRespostaAlternativa(pergunta.getTipoRespostaAlternativa());
 		this.alternativas = new ArrayList<AlternativaVO>();
 		for (Alternativa alternativa : pergunta.getAlternativas()) {
 			AlternativaVO alternativaVO = new AlternativaVO(
@@ -72,6 +74,14 @@ public class PerguntaVO {
 	public String toString() {
 		return "PerguntaVO [titulo=" + titulo + ", texto=" + texto
 				+ ", alternativas=" + alternativas + "]";
+	}
+
+	public void setTipoRespostaAlternativa(Boolean tipoRespostaAlternativa) {
+		this.tipoRespostaAlternativa = tipoRespostaAlternativa;
+	}
+
+	public Boolean getTipoRespostaAlternativa() {
+		return tipoRespostaAlternativa;
 	}
 
 }

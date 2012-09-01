@@ -86,26 +86,41 @@
 		getPage("convidados", 'getTestesConvidados');
 	}
 
+	function getStorage(callback){			
+		chrome.extension.sendRequest({useskill: "getStorage"}, function(response) {
+			if (callback && typeof(callback) === "function") {
+    			callback.call(this, response);
+			}
+		});
+	}
+
 	/*receber os testes convidados do usuário*/
 	function getTestesConvidados(){
-		var objJson = ajax(urls.convidados, typeEnum.GET);
-		objJson = parseJSON(objJson.string);
-		objJson.testesConvidados = parseJSON(objJson.testesConvidados);
-		var arrayTestes = objJson.testesConvidados;
+		getStorage(function(dados){
+			//se estiver gravando avisa que precisa encerrar
+			if(!dados.dados.gravando){
+				var objJson = ajax(urls.convidados, typeEnum.GET);
+				objJson = parseJSON(objJson.string);
+				objJson.testesConvidados = parseJSON(objJson.testesConvidados);
+				var arrayTestes = objJson.testesConvidados;
 
-		var htmlReturn = "";
-		for(var t in arrayTestes){
-			htmlReturn+='<tr data-id="'+arrayTestes[t].id+'"><td>';
-			if(arrayTestes[t].nome!=undefined){
-				htmlReturn+=arrayTestes[t].nome;
+				var htmlReturn = "";
+				for(var t in arrayTestes){
+					htmlReturn+='<tr data-id="'+arrayTestes[t].id+'"><td>';
+					if(arrayTestes[t].nome!=undefined){
+						htmlReturn+=arrayTestes[t].nome;
+					}else{
+						htmlReturn+="- Sem Titulo -";
+					}
+					htmlReturn+='</td><td class="centertd"><a class="btn teste-info" href="#" rel="tooltip" data-original-title="Tipo: '+arrayTestes[t].tipoConvidado+' <br/>Convidou: '+arrayTestes[t].usuarioCriado+'"><span class="icon-question-sign"></span></a></td><td class="centertd"><div class="btn-group"><a class="btn btn-primary teste-aceitar" href="#" title="Aceitar"><span class="icon-ok icon-white"></span></a><a title="Recusar" class="btn btn-danger teste-recusar" href="#"><span class="icon-remove icon-white"></span></a></div></td></tr>';
+				}
+				$('tbody').html(htmlReturn);
+				$('.teste-info').tooltip();		
 			}else{
-				htmlReturn+="- Sem Titulo -";
+				var htmlReturn = "Por favor, finalize o teste que esta em execucao!";
+				$('#idConvidados').html(htmlReturn);
 			}
-			htmlReturn+='</td><td class="centertd"><a class="btn btn-primary teste-info" href="#" rel="tooltip" data-original-title="Tipo: '+arrayTestes[t].tipoConvidado+' <br/>Convidou: '+arrayTestes[t].usuarioCriado+'"><span class="icon-question-sign icon-white"></span></a></td><td class="centertd"><a class="btn btn-success teste-aceitar" href="#" title="Aceitar"><span class="icon-ok icon-white"></span></a><a title="Recusar" class="btn btn-danger teste-recusar" href="#"><span class="icon-remove icon-white"></span></a></td></tr>';
-		}
-		$('tbody').html(htmlReturn);
-		$('.teste-info').tooltip();
-
+		})
 	}
 
 	/*método genérico para realizar ajax*/
