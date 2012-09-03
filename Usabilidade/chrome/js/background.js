@@ -169,6 +169,7 @@ function removeTabsGravando(){
 
 function insertOnPage(tabId){
 	chrome.tabs.executeScript(tabId, {file: "js/jquery.js"});
+	chrome.tabs.executeScript(tabId, {file: "js/capt.js"});
 	chrome.tabs.insertCSS(tabId, {file: "css/topoteste.css"});
 	chrome.tabs.insertCSS(tabId, {file: "css/jquery.fancybox.css"});
 	chrome.tabs.executeScript(tabId, {file: "js/topoteste.js"});
