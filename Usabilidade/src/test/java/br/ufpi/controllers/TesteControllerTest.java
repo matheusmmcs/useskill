@@ -16,6 +16,7 @@ import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.controllers.procedure.TesteTestProcedure;
 import br.ufpi.models.Convidado;
+import br.ufpi.models.ElementosTeste;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
@@ -75,7 +76,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"NÃ£o pode deixar salvar pois campo esta vazio",
-					"campo.titulo.obrigatorio", validationException.getErrors()
+					"campo.testes.titulo.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
 		Assert.assertEquals(qAntes, repository.findAll().size());
@@ -95,7 +96,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"NÃ£o pode deixar salvar pois campo esta vazio",
-					"campo.titulo.obrigatorio", validationException.getErrors()
+					"campo.testes.titulo.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
 		Assert.assertEquals(qAntes, repository.findAll().size());
@@ -408,7 +409,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"NÃ£o pode deixar salvar pois usuario passou campo titulo vazio",
-					"campo.titulo.obrigatorio", validationException.getErrors()
+					"campo.testes.passo1.titulo.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
 		Teste testeDepois = repository.find(1l);
@@ -435,7 +436,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"NÃ£o pode deixar salvar pois usuario passou campo titulo vazio",
-					"campo.teste.textoIndroducao.obrigatorio",
+					"campo.testes.passo1.introducao.obrigatorio",
 					validationException.getErrors().get(0).getCategory());
 		}
 		Teste testeDepois = repository.find(1l);
@@ -462,7 +463,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"NÃ£o pode deixar salvar pois usuario passou campo titulo publico vazio",
-					"campo.teste.publico.obrigatorio", validationException
+					"campo.testes.passo1.titulopublico.obrigatorio", validationException
 							.getErrors().get(0).getCategory());
 		}
 		Teste testeDepois = repository.find(1l);
@@ -488,15 +489,15 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"NÃ£o pode deixar salvar pois usuario passou campo titulo publico vazio",
-					"campo.teste.publico.obrigatorio", validationException
+					"campo.testes.passo1.titulopublico.obrigatorio", validationException
 							.getErrors().get(1).getCategory());
 			Assert.assertEquals(
 					"NÃ£o pode deixar salvar pois usuario passou campo titulo vazio",
-					"campo.teste.textoIndroducao.obrigatorio",
+					"campo.testes.passo1.introducao.obrigatorio",
 					validationException.getErrors().get(2).getCategory());
 			Assert.assertEquals(
 					"NÃ£o pode deixar salvar pois usuario passou campo titulo vazio",
-					"campo.titulo.obrigatorio", validationException.getErrors()
+					"campo.testes.passo1.titulo.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
 		Teste testeDepois = repository.find(1l);
@@ -538,13 +539,10 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Assert.assertEquals(
 				"Usuario Ã© o criador do teste entao deveria retorna o mesmo valor do id passado",
 				id, instance.testeView.getTeste().getId());
-		List<Tarefa> tarefas = (List<Tarefa>) result.included().get("tarefas");
-		List<Pergunta> perguntas = (List<Pergunta>) result.included().get(
-				"perguntas");
-		Assert.assertEquals("O teste so Ã© para possuir 3 tarefas", 3,
-				tarefas.size());
-		Assert.assertEquals("O teste  Ã© para possuir 8 pergunta", 8,
-				perguntas.size());
+		List<ElementosTeste> elementosTeste = (List<ElementosTeste>) result.included().get("elementosTeste");
+		Assert.assertEquals("O teste so era para possuir 11 elementoss", 11,
+				elementosTeste.size());
+	
 	}
 
 	/**
@@ -1025,7 +1023,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		} catch (ValidationException validationException) {
 			Assert.assertEquals(
 					"NÃ£o pode deixar deletar pois senha esta vazia",
-					"campo.senha.obrigatorio", validationException.getErrors()
+					"campo.login.senha.obrigatorio", validationException.getErrors()
 							.get(0).getCategory());
 		}
 		int qDepois = repository.findAll().size();
@@ -1044,11 +1042,6 @@ public class TesteControllerTest extends AbstractDaoTest {
 		List<Teste> object = (List<Teste>) result.included().get(
 				"testesParticipados");
 		Assert.assertTrue("", object.isEmpty());
-		Long numeroTeste = (Long) result.included().get(
-				"testesParticipadosCount");
-		Long numeroTestesParticipados = 1l;
-		Assert.assertEquals("Este usuario nunca participou de um teste",
-				numeroTestesParticipados, numeroTeste);
 	}
 
 	/**
@@ -1081,7 +1074,7 @@ public class TesteControllerTest extends AbstractDaoTest {
 		Long id = 2l;
 		instance.passo3(id);
 		List<Convidado> convidados = (List<Convidado>) result.included().get(
-				"usuariosEscolhidos");
+				"convidados");
 		Assert.assertTrue("NÃ£o possui usuarios Convidados",
 				convidados.isEmpty());
 
@@ -1227,7 +1220,6 @@ public class TesteControllerTest extends AbstractDaoTest {
 	public void testlistarTestesLiberados() {
 		instance.listarTestesLiberados(1);
 		Map<String, Object> included = result.included();
-		Assert.assertEquals(5l, included.get("testesLiberadosCount"));
 		List<Teste> testes = (List<Teste>) included.get("testesLiberados");
 		List<Teste> all = repository.findAll();
 		Long usuarioId = instance.usuarioLogado.getUsuario().getId();

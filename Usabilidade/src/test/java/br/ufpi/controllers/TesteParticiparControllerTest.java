@@ -12,8 +12,7 @@ import org.junit.Test;
 
 import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
-import br.ufpi.componets.FluxoComponente;
-import br.ufpi.componets.TesteSession;
+import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.controllers.procedure.TesteParticiparTestProcedure;
 import br.ufpi.models.Convidado;
 import br.ufpi.repositories.AbstractDaoTest;
@@ -40,8 +39,7 @@ public class TesteParticiparControllerTest extends AbstractDaoTest {
 	private Long testeConvidadoEJaParticipou = 12l;
 	private ConvidadoRepository convidadoRepository;
 	private Long usuarioId = 1l;
-	FluxoComponente fluxo= new FluxoComponente();
-	TesteSession testeSession= new TesteSession();
+	TesteSessionPlugin testeSession= new TesteSessionPlugin();
 
 	@Before
 	public void setUp() throws Exception {
@@ -147,12 +145,11 @@ Caso em que o usuario é convidado para o teste e ele não esta liberado
 				usuarioId);
 		Assert.assertNull(convidado.isRealizou());
 		instance.aceitar(testeConvidadoLiberado);
-		Assert.assertNotNull(fluxo.getTarefas());
 	}
 	
 	private void instanciarTesteParticipar() {
 		
-		instance=TesteParticiparTestProcedure.newInstanceTesteController(entityManager, result, testeSession, fluxo);
+		instance=TesteParticiparTestProcedure.newInstanceTesteController(entityManager, result, testeSession);
 		
 	}
 

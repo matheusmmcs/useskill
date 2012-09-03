@@ -4,8 +4,7 @@ import javax.persistence.EntityManager;
 
 import br.com.caelum.vraptor.util.test.MockResult;
 import br.com.caelum.vraptor.util.test.MockValidator;
-import br.ufpi.componets.FluxoComponente;
-import br.ufpi.componets.TesteSession;
+import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
@@ -24,12 +23,13 @@ public class TesteParticiparTestProcedure {
 		ValidateComponente validateComponente = new ValidateComponente(
 				validator);
 		ConvidadoRepository convidadoRepository= UsuarioTestProcedure.newInstanceConvidadoRepository(entityManager);
-		TesteParticiparController controller= new TesteParticiparController(result, validator, testeView, usuarioLogado, validateComponente, convidadoRepository,null,null);
+		TesteSessionPlugin testeSessionPlugin = null;
+		TesteParticiparController controller= new TesteParticiparController(result, validator, testeView, usuarioLogado, validateComponente, convidadoRepository, testeSessionPlugin);
 				
 		return controller;
 	}
 	public static TesteParticiparController newInstanceTesteController(
-			EntityManager entityManager, MockResult result, TesteSession testeSession, FluxoComponente fluxo) {
+			EntityManager entityManager, MockResult result, TesteSessionPlugin testeSession) {
 		TesteView testeView = new TesteView();
 		MockValidator validator = new MockValidator();
 		UsuarioRepository usuarioRepositoryImpl = UsuarioTestProcedure
@@ -38,7 +38,7 @@ public class TesteParticiparTestProcedure {
 		ValidateComponente validateComponente = new ValidateComponente(
 				validator);
 		ConvidadoRepository convidadoRepository= UsuarioTestProcedure.newInstanceConvidadoRepository(entityManager);
-		TesteParticiparController controller= new TesteParticiparController(result, validator, testeView, usuarioLogado, validateComponente, convidadoRepository,fluxo,testeSession);
+		TesteParticiparController controller= new TesteParticiparController(result, validator, testeView, usuarioLogado, validateComponente, convidadoRepository,testeSession);
 		
 		return controller;
 	}

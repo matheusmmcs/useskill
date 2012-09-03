@@ -11,7 +11,7 @@ import br.ufpi.util.CriptografiaTeste;
 @SuiteClasses({ LoginControllerTest.class, PerguntaControllerTest.class,
 		RespostaControllerTest.class, TarefaControllerTest.class,
 		TesteControllerTest.class, TesteParticiparControllerTest.class,
-		UsuarioControllerTest.class,UsuarioRepositoryImplTest.class,CriptografiaTeste.class})
+		UsuarioControllerTest.class,UsuarioRepositoryImplTest.class,CriptografiaTeste.class,RespostaControllerTest.class})
 public class AllTests {
 
 }

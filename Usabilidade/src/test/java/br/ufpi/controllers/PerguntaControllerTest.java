@@ -10,8 +10,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import br.com.caelum.vraptor.util.test.MockSerializationResult;
 import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
+import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.controllers.procedure.PerguntaTestProcedure;
 import br.ufpi.controllers.procedure.TesteTestProcedure;
 import br.ufpi.models.Pergunta;
@@ -54,7 +56,7 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 		super.setUp();
 		repository = PerguntaTestProcedure
 				.newInstancePerguntaRepository(entityManager);
-		instance = PerguntaTestProcedure.newInstanceTarefaController(
+		instance = PerguntaTestProcedure.newInstancePerguntaController(
 				entityManager, result);
 	}
 
@@ -245,46 +247,6 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of salvarPergunta method, of class PerguntaController. Caso de
-	 * Sucesso salvar pergunta Subjetiva de uma determinada Tarefa
-	 */
-	@Test
-	public void testSalvarPerguntaEscritaSucessoTarefa() {
-		System.out.println("salvarPergunta com sucesso de Tarefa");
-		Long tarefaId = 7l;
-		int qAntes = repository.findAll().size();
-		Pergunta pergunta = PerguntaTestProcedure.newInstancePerguntaEscrita(
-				"O que vc achou do site?", true, "Pergunta2");
-		instance.salvarPergunta(testePertenceUsuarioNaoLiberado, pergunta,
-				tarefaId);
-		int qDepois = repository.findAll().size();
-		Assert.assertEquals("Deveria ter uma pergunta a mais", qAntes + 1,
-				qDepois);
-	}
-
-	@Test
-	public void deletarPerguntaDaTarefa() {
-		System.out.println("salvarPergunta com sucesso de Tarefa");
-		Long tarefaId = 7l;
-		int qAntes = repository.findAll().size();
-		Pergunta pergunta = PerguntaTestProcedure.newInstancePerguntaEscrita(
-				"O que vc achou do site?", true, "Pergunta2");
-		instance.salvarPergunta(testePertenceUsuarioNaoLiberado, pergunta,
-				tarefaId);
-		int qDepois = repository.findAll().size();
-		Assert.assertEquals("Deveria ter uma pergunta a mais", qAntes + 1,
-				qDepois);
-		List<Pergunta> findAll = repository.findAll();
-		Pergunta perguntaId = findAll.get(findAll.size()-1);
-		Assert.assertEquals(pergunta.getTexto(), perguntaId.getTexto());
-		instance.deletarPergunta(testePertenceUsuarioNaoLiberado, perguntaId.getId(),
-				tarefaId);
-		 qDepois = repository.findAll().size();
-		Assert.assertEquals(qAntes, qDepois);
-
-	}
-
-	/**
-	 * Test of salvarPergunta method, of class PerguntaController. Caso de
 	 * Sucesso salvar pergunta Subjetiva
 	 */
 	@Test
@@ -434,7 +396,7 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 	 */
 	@Test
 	public void testDeletarPerguntaObjetiva() {
-		System.out.println("deletarPergunta");
+		System.out.println("deletarPerguntaObjetiva");
 		Teste teste = TesteTestProcedure.newInstanceTesteRepository(
 				entityManager).find(testePertenceUsuarioNaoLiberado);
 		List<Pergunta> perguntas = teste.getSatisfacao().getPerguntas();
@@ -649,8 +611,8 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 		pergunta.setId(perguntaID);
 		instance.atualizarPergunta(testePertenceUsuarioNaoLiberado, pergunta);
 		int qDepois = alternativaRepositoryImpl.findAll().size();
-		Assert.assertNull("Não era para possui mais alternativas", repository
-				.find(perguntaID).getAlternativas());
+		Assert.assertEquals("Não era para possui mais alternativas",0, repository
+				.find(perguntaID).getAlternativas().size());
 
 		Assert.assertEquals("Era para possuir menos 5 alternativas",
 				qAntes - 5, qDepois);
@@ -782,6 +744,16 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 		return null;
 	}
 
+	@Test
+	public void testGetPergunta() throws Exception {
+		long idPergunta = 10;
+		MockSerializationResult result = new MockSerializationResult();
+		instance = PerguntaTestProcedure.newInstancePerguntaController(
+				entityManager, result, getTesteSessionPlugin(testeLiberado));
+		instance.getPergunta(idPergunta);
+		System.out.println(result.serializedResult());
+	}
+
 	private Pergunta getPerguntaView(boolean objetiva) {
 		Pergunta pergunta;
 		if (!objetiva)
@@ -797,4 +769,11 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 	private int sizeAlternativas(Long idpergunta) {
 		return repository.find(idpergunta).getAlternativas().size();
 	}
+
+	private static TesteSessionPlugin getTesteSessionPlugin(Long idTeste) {
+		TesteSessionPlugin plugin = new TesteSessionPlugin();
+		plugin.setIdTeste(idTeste);
+		return plugin;
+	}
+
 }

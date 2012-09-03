@@ -4,7 +4,7 @@ import javax.persistence.EntityManager;
 
 import br.com.caelum.vraptor.util.test.MockResult;
 import br.com.caelum.vraptor.util.test.MockValidator;
-import br.ufpi.componets.FluxoComponente;
+import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
@@ -16,13 +16,11 @@ import br.ufpi.repositories.TesteRepository;
 import br.ufpi.repositories.UsuarioRepository;
 import br.ufpi.repositories.Implement.RespostaAlternativaRepositoryImpl;
 import br.ufpi.repositories.Implement.RespostaEscritaRepositoryImpl;
-import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 import br.ufpi.repositories.Implement.TesteRepositoryImpl;
 
 public class RespostaTestProcedure {
 		public static RespostaController newInstanceRespostaController(
-			EntityManager entityManager, MockResult result,
-			FluxoComponente fluxoComponente) {
+			EntityManager entityManager, MockResult result) {
 		TesteView testeView = new TesteView();
 		MockValidator validator = new MockValidator();
 		UsuarioRepository usuarioRepositoryImpl = UsuarioTestProcedure
@@ -36,7 +34,8 @@ public class RespostaTestProcedure {
 		RespostaAlternativaRepository alternativaRepository = newInstanceRespostaAlternativaRepository(entityManager);
 		
 		TesteRepository testeRepository=new TesteRepositoryImpl(entityManager);
-		return new RespostaController(result, validator, testeView, usuarioLogado, validateComponente, escritaRepository, alternativaRepository, perguntaRepository, fluxoComponente, testeRepository);
+		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
+		return new RespostaController(result, validator, testeView, usuarioLogado, validateComponente, escritaRepository, alternativaRepository, perguntaRepository, testeRepository, testeSessionPlugin);
 	}
 
 	public static RespostaAlternativaRepository newInstanceRespostaAlternativaRepository(

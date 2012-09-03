@@ -5,16 +5,11 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
 
 import br.com.caelum.vraptor.util.test.JSR303MockValidator;
 import br.com.caelum.vraptor.util.test.MockResult;
 import br.com.caelum.vraptor.util.test.MockValidator;
-import br.ufpi.commons.HttpRequestTest;
-import br.ufpi.componets.FluxoComponente;
-import br.ufpi.componets.SessionActions;
-import br.ufpi.componets.TarefaDetalhe;
-import br.ufpi.componets.TesteSession;
+import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
@@ -22,11 +17,9 @@ import br.ufpi.controllers.TarefaController;
 import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoIdeal;
-import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
-import br.ufpi.repositories.ConvidadoRepository;
 import br.ufpi.repositories.FluxoIdealRepository;
 import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.FluxoUsuarioRepository;
@@ -38,12 +31,10 @@ import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
 import br.ufpi.repositories.Implement.FluxoUsuarioRepositoryImpl;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 import br.ufpi.repositories.Implement.TesteRepositoryImpl;
-import br.ufpi.util.CookieManager;
 
 public class TarefaTestProcedure {
 	public static TarefaController newInstanceTarefaController(
 			EntityManager entityManager, MockResult result) {
-		HttpServletRequest request = new HttpRequestTest();
 		TesteView testeView = new TesteView();
 		JSR303MockValidator validator = new JSR303MockValidator();
 		UsuarioRepository usuarioRepositoryImpl = UsuarioTestProcedure
@@ -54,24 +45,18 @@ public class TarefaTestProcedure {
 		TarefaRepository tarefaRepository = newInstanceTarefaRepository(entityManager);
 		TesteRepository testeRepository = TesteTestProcedure
 				.newInstanceTesteRepository(entityManager);
-		ConvidadoRepository convidadoRepository = UsuarioTestProcedure
-				.newInstanceConvidadoRepository(entityManager);
-		TarefaDetalhe tarefaDetalhe = new TarefaDetalhe();
-
-		TesteSession testeSession = null;
-		SessionActions actions = null;
-		FluxoComponente fluxoComponente = null;
-		CookieManager cookieManager= new CookieManager();
-		FluxoUsuarioRepository fluxoUsuarioRepository=new FluxoUsuarioRepositoryImpl(entityManager);
-		FluxoIdealRepository fluxoIdealRepository=new FluxoIdealRepositoryImpl(entityManager);
-		TarefaController controller=new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoIdealRepository, fluxoUsuarioRepository, convidadoRepository, actions, fluxoComponente, request, testeSession, tarefaDetalhe, cookieManager);
+		FluxoUsuarioRepository fluxoUsuarioRepository = new FluxoUsuarioRepositoryImpl(
+				entityManager);
+		FluxoIdealRepository fluxoIdealRepository = new FluxoIdealRepositoryImpl(
+				entityManager);
+		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoIdealRepository, fluxoUsuarioRepository, testeSessionPlugin);
 		return controller;
 	}
 
 	public static TarefaController newInstanceTarefaController(
 			EntityManager entityManager, MockResult result, Long idTarefa,
 			Long idTeste) {
-		HttpServletRequest request = new HttpRequestTest();
 		TesteView testeView = new TesteView();
 		MockValidator validator = new MockValidator();
 		UsuarioRepository usuarioRepositoryImpl = UsuarioTestProcedure
@@ -79,21 +64,16 @@ public class TarefaTestProcedure {
 		UsuarioLogado usuarioLogado = new UsuarioLogado(usuarioRepositoryImpl);
 		ValidateComponente validateComponente = new ValidateComponente(
 				validator);
-		TesteSession testeSession = new TesteSession();
 		TarefaRepository tarefaRepository = new TarefaRepositoryImpl(
 				entityManager);
 		TesteRepository testeRepository = new TesteRepositoryImpl(entityManager);
-		testeSession.setTarefa(tarefaRepository.find(idTarefa));
-		testeSession.setTeste(testeRepository.find(idTeste));
-		ConvidadoRepository convidadoRepository = UsuarioTestProcedure
-				.newInstanceConvidadoRepository(entityManager);
-		SessionActions actions = null;
-		TarefaDetalhe tarefaDetalhe = null;
-		FluxoComponente fluxoComponente = null;
-		CookieManager cookieManager= new CookieManager();
-		FluxoUsuarioRepository fluxoUsuarioRepository=new FluxoUsuarioRepositoryImpl(entityManager);
-		FluxoIdealRepository fluxoIdealRepository=new FluxoIdealRepositoryImpl(entityManager);
-		TarefaController controller =new  TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoIdealRepository, fluxoUsuarioRepository, convidadoRepository, actions, fluxoComponente, request, testeSession, tarefaDetalhe, cookieManager);
+		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
+		testeSessionPlugin.setIdTeste(idTeste);
+		FluxoUsuarioRepository fluxoUsuarioRepository = new FluxoUsuarioRepositoryImpl(
+				entityManager);
+		FluxoIdealRepository fluxoIdealRepository = new FluxoIdealRepositoryImpl(
+				entityManager);
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoIdealRepository, fluxoUsuarioRepository, testeSessionPlugin);
 		return controller;
 	}
 
@@ -114,7 +94,6 @@ public class TarefaTestProcedure {
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
 		tarefa.setTeste(teste);
-		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 
@@ -124,7 +103,6 @@ public class TarefaTestProcedure {
 		tarefa.setNome(nome);
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
-		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 
@@ -136,7 +114,6 @@ public class TarefaTestProcedure {
 		tarefa.setId(id);
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
-		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 
@@ -147,7 +124,6 @@ public class TarefaTestProcedure {
 		tarefa.setRoteiro(roteiro);
 		tarefa.setUrlInicial(urlInicial);
 		tarefa.setTeste(teste);
-		tarefa.setQuestionario(new Questionario());
 		return tarefa;
 	}
 

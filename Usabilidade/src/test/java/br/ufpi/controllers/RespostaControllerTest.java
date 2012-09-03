@@ -12,8 +12,7 @@ import org.junit.Test;
 
 import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
-import br.ufpi.componets.FluxoComponente;
-import br.ufpi.componets.TesteSession;
+import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.controllers.procedure.RespostaTestProcedure;
 import br.ufpi.controllers.procedure.TesteParticiparTestProcedure;
 import br.ufpi.models.Alternativa;
@@ -33,15 +32,15 @@ import br.ufpi.repositories.RespostaEscritaRepository;
 public class RespostaControllerTest extends AbstractDaoTest {
 
 	private static final Long testeConvidadoLiberado = 13l;
+	private static final Long perguntaDoTesteConvidadoLiberadoSubjetiva = 31l;
+	private static final Long perguntaDoTesteConvidadoLiberadoObjetiva = 26l;
 	private static final Long alternativaPergunta26 = 54l;
-	private static final Long alternativaPergunta28 = 63l;
 	private RespostaAlternativaRepository respostaAlternativaRepository;
 
 	private RespostaEscritaRepository escritaRepositoryImpl;
 	private RespostaController instance;
 	private TesteParticiparController participarController;
-	private FluxoComponente fluxo;
-	private TesteSession testeSession;
+	private TesteSessionPlugin testeSession;
 
 	@Before
 	public void setUp() throws Exception {
@@ -50,13 +49,13 @@ public class RespostaControllerTest extends AbstractDaoTest {
 				.newInstanceRespostaAlternativaRepository(entityManager);
 		escritaRepositoryImpl = RespostaTestProcedure
 				.newInstanceRespostaEscritaRepositoryImpl(entityManager);
-		fluxo = new FluxoComponente();
-		testeSession = new TesteSession();
+		testeSession = new TesteSessionPlugin();
+		testeSession.setIdTeste(testeConvidadoLiberado);
 		participarController = TesteParticiparTestProcedure
 				.newInstanceTesteController(entityManager, result,
-						testeSession, fluxo);
+						testeSession);
 		instance = RespostaTestProcedure.newInstanceRespostaController(
-				entityManager, result, fluxo);
+				entityManager, result);
 
 	}
 
@@ -70,7 +69,7 @@ public class RespostaControllerTest extends AbstractDaoTest {
 		int qAntes = escritaRepositoryImpl.findAll().size();
 		List<Message> errors = null;
 		try {
-			instance.salvarRespostaEscrita(resposta);
+			instance.salvarRespostaEscrita(resposta,perguntaDoTesteConvidadoLiberadoSubjetiva);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
@@ -90,51 +89,8 @@ public class RespostaControllerTest extends AbstractDaoTest {
 		participarController.aceitar(testeConvidadoLiberado);
 		String resposta = "Esta é minha Resposta";
 		int qAntes = escritaRepositoryImpl.findAll().size();
-		int perAntes = fluxo.getPerguntasInicio().size();
-		instance.salvarRespostaEscrita(resposta);
+		instance.salvarRespostaEscrita(resposta,perguntaDoTesteConvidadoLiberadoSubjetiva);
 		int qDepois = escritaRepositoryImpl.findAll().size();
-		int perDepois = fluxo.getPerguntasInicio().size();
-		Assert.assertEquals(perAntes, perDepois + 1);
-		Assert.assertEquals("Era para ter salvo mais uma resposta", qAntes + 1,
-				qDepois);
-	}
-	/**
-	 * Test of salvarRespostaEscrita method, of class RespostaController.
-	 */
-	@Test
-	public void testSalvarRespostaEscritaCorretaUltimaPerguntaFim() {
-		System.out.println("salvarRespostaEscrita");
-		participarController.aceitar(testeConvidadoLiberado);
-		String resposta = "Esta é minha Resposta";
-		int qAntes = escritaRepositoryImpl.findAll().size();
-		int perAntes = fluxo.getPerguntasInicio().size();
-		fluxo.getProximaPergunta(fluxo.getPerguntasInicio());
-		fluxo.getProximaPergunta(fluxo.getPerguntasInicio());
-		fluxo.getProximaPergunta(fluxo.getPerguntasInicio());
-		System.out.println(fluxo.getPerguntaVez(fluxo.getPerguntasInicio()));
-		instance.salvarRespostaEscrita(resposta);
-		int qDepois = escritaRepositoryImpl.findAll().size();
-		int perDepois = fluxo.getPerguntasInicio().size();
-		Assert.assertEquals(perAntes, perDepois + 4);
-		Assert.assertEquals("Era para ter salvo mais uma resposta", qAntes+1,
-				qDepois);
-	}
-
-	/**
-	 * Test of salvarRespostaEscrita method, of class RespostaController.
-	 */
-	@Test
-	public void testSalvarRespostaEscritaCorretaFim() {
-		System.out.println("salvarRespostaEscrita");
-		participarController.aceitar(testeConvidadoLiberado);
-		fluxo.setRespondendoInicio(false);
-		String resposta = "Esta é minha Resposta";
-		int qAntes = escritaRepositoryImpl.findAll().size();
-		int perAntes = fluxo.getPerguntasFim().size();
-		instance.salvarRespostaEscrita(resposta);
-		int qDepois = escritaRepositoryImpl.findAll().size();
-		int perDepois = fluxo.getPerguntasFim().size();
-		Assert.assertEquals(perAntes, perDepois + 1);
 		Assert.assertEquals("Era para ter salvo mais uma resposta", qAntes + 1,
 				qDepois);
 	}
@@ -145,66 +101,33 @@ public class RespostaControllerTest extends AbstractDaoTest {
 	@Test
 	public void testSalvarRespostaAlternativaCorreta() {
 		System.out.println("salvarRespostaAlternativa");
-		participarController.aceitar(testeConvidadoLiberado);
-		int perAntes = fluxo.getPerguntasInicio().size();
 		int resAntes = respostaAlternativaRepository.findAll().size();
 		Alternativa alternativa = new Alternativa();
 		alternativa.setId(alternativaPergunta26);
-		instance.salvarRespostaAlternativa(alternativa);
-		int perDepois = fluxo.getPerguntasInicio().size();
+		instance.salvarRespostaAlternativa(alternativa,perguntaDoTesteConvidadoLiberadoObjetiva);
 		int resDepois = respostaAlternativaRepository.findAll().size();
-		Assert.assertEquals(perAntes, perDepois + 1);
 		Assert.assertEquals(resAntes, resDepois - 1);
 	}
-	@Test
-	public void testSalvarRespostaAlternativaCorretaDoFim() {
-		System.out.println("salvarRespostaAlternativa");
-		participarController.aceitar(testeConvidadoLiberado);
-		fluxo.setRespondendoInicio(false);
-		fluxo.getProximaPergunta(fluxo.getPerguntasFim());
-		int perAntes = fluxo.getPerguntasFim().size();
-		int resAntes = respostaAlternativaRepository.findAll().size();
-		Alternativa alternativa = new Alternativa();
-		alternativa.setId(alternativaPergunta28);
-		instance.salvarRespostaAlternativa(alternativa);
-		int perDepois = fluxo.getPerguntasFim().size();
-		int resDepois = respostaAlternativaRepository.findAll().size();
-		Assert.assertEquals(perAntes, perDepois + 1);
-		Assert.assertEquals(resAntes, resDepois - 1);
-	}
-
 	/**
 	 * Test of salvarRespostaAlternativa method, of class RespostaController.
 	 */
 	@Test
 	public void testSalvarRespostaAlternativaPassandoIdInvalido() {
 		System.out.println("salvarRespostaAlternativa");
-		participarController.aceitar(testeConvidadoLiberado);
-		int perAntes = fluxo.getPerguntasInicio().size();
 		int resAntes = respostaAlternativaRepository.findAll().size();
 		Alternativa alternativa = new Alternativa();
 		alternativa.setId(1l);
 		List<Message> errors=null;
 		try {
-			instance.salvarRespostaAlternativa(alternativa);
+			instance.salvarRespostaAlternativa(alternativa,perguntaDoTesteConvidadoLiberadoObjetiva);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
 		Assert.assertEquals("Alternativa não pertence ao teste","pergunta.alternativa.sem.resposta", errors.get(0).getCategory());
-		int perDepois = fluxo.getPerguntasInicio().size();
 		int resDepois = respostaAlternativaRepository.findAll().size();
-		Assert.assertEquals(perAntes, perDepois);
 		Assert.assertEquals(resAntes, resDepois);
 	}
 
-	/**
-	 * Test of exibir method, of class RespostaController.
-	 */
-	@Test
-	public void testExibir() {
-		System.out.println("exibir");
-		instance.exibir();
-	}
 
 	/**
 	 * Test of exibirRespostas method, of class RespostaController.

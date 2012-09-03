@@ -4,9 +4,6 @@
  */
 package br.ufpi.controllers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,13 +17,7 @@ import br.ufpi.controllers.procedure.TarefaTestProcedure;
 import br.ufpi.models.Action;
 import br.ufpi.models.Tarefa;
 import br.ufpi.repositories.AbstractDaoTest;
-import br.ufpi.repositories.AcaoRepository;
-import br.ufpi.repositories.FluxoRepository;
-import br.ufpi.repositories.QuestionarioRepository;
 import br.ufpi.repositories.TarefaRepository;
-import br.ufpi.repositories.Implement.AcaoRepositoryImpl;
-import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
-import br.ufpi.repositories.Implement.QuestionarioRepositoryImpl;
 
 import com.google.gson.Gson;
 
@@ -56,7 +47,6 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	private static Long testeNaoPertenceUsuario = 5l;
 	private static Long testeLiberado = 11l;
 	private TarefaRepository repository;
-	private QuestionarioRepository questionarioRepository;
 	private TarefaController instance;
 	private Long testeNaoPertenceUsuario2 = 14l;
 
@@ -65,7 +55,6 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		super.setUp();
 		repository = TarefaTestProcedure
 				.newInstanceTarefaRepository(entityManager);
-		questionarioRepository= new QuestionarioRepositoryImpl(entityManager);
 		instance = TarefaTestProcedure.newInstanceTarefaController(
 				entityManager, result);
 	}
@@ -143,14 +132,11 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	public void testSalvarTarefa() {
 		System.out.println("salvarTarefa");
 		int qAntes = repository.findAll().size();
-		int numQuestionariosAntes= questionarioRepository.findAll().size();
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa("urlInicial",
 				"roteiro", "nome");
 		instance.salvarTarefa(tarefa, testePertenceUsuarioNaoLiberado);
 		int qDepois = repository.findAll().size();
-		int numQuestionariosDepois= questionarioRepository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois - 1);
-		Assert.assertEquals(numQuestionariosAntes, numQuestionariosDepois- 1);
 	}
 
 	/**
@@ -373,30 +359,6 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		Assert.assertNull(result);
 	}
 
-	/**
-	 * Test of updateTarefa method, of class TarefaController. Com fluxo ideal
-	 * gravado
-	 */
-	@Test
-	public void testUpdateTarefaComFluxoIdeal() {
-		System.out.println("updateTarefa");
-		Long tarefaId = 7l;
-
-		String urlInicial = "urlInicial2";
-		String roteiro = "roteiro";
-		String nome = "nome";
-		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(tarefaId,
-				urlInicial, roteiro, nome);
-		int qAntes = this.getAcaoSize();
-		instance.updateTarefa(tarefa, testePertenceUsuarioNaoLiberado);
-		Tarefa tarefaFind = repository.find(tarefaId);
-		
-		int qDepois = this.getAcaoSize();
-		Assert.assertEquals(qAntes, qDepois+10);
-		Assert.assertEquals(nome, tarefaFind.getNome());
-		Assert.assertEquals(roteiro, tarefaFind.getRoteiro());
-		Assert.assertEquals(urlInicial, tarefaFind.getUrlInicial());
-	}
 
 
 	/**
@@ -412,22 +374,6 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		Assert.assertEquals(qAntes, qDepois + 1);
 	}
 
-	/**
-	 * Test of removed method, of class TarefaController.
-	 */
-	@Test
-	public void testRemovedComFluxoIdealGravado() {
-		System.out.println("removed");
-		Long idTarefa = 25l;
-		FluxoRepository fluxoRepository = new FluxoRepositoryImpl(entityManager);
-		int qAntesFluxo = fluxoRepository.findAll().size();
-		int qAntes = repository.findAll().size();
-		instance.removed(idTarefa, 16l);
-		int qDepois = repository.findAll().size();
-		int qDepoisFluxo = fluxoRepository.findAll().size();
-		Assert.assertEquals(qAntes, qDepois + 1);
-		Assert.assertEquals(qAntesFluxo, qDepoisFluxo + 1);
-	}
 
 	/**
 	 * Test of removed method, of class TarefaController. Caso id de teste nÃ£o
@@ -528,112 +474,9 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		Assert.assertEquals(qAntes, qDepois);
 	}
 
-	/**
-	 * Test of saveFluxoIdeal method, of class TarefaController.
-	 */
-	@Test
-	public void testSaveFluxoIdeal() {
-	
-		System.out.println("saveFluxoIdeal");
-		String dados = getGSonDados();
-		Boolean completo = false;
-		instance.saveFluxoIdeal(dados, completo);
-	}
 
-	/**
-	 * Test of saveFluxoUsuario method, of class TarefaController.
-	 */
-	@Test
-	public void testSaveFluxoUsuario() {
 
-		System.out.println("saveFluxoUsuario");
-		String dados = "";
-		Boolean completo = null;
-		Long tarefaId = null;
-		TarefaController instance = null;
-		String expResult = "";
-		String result = instance.saveFluxoUsuario(dados, completo, tarefaId);
-		assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
-	}
-
-	/**
-	 * Test of iniciarGravacao method, of class TarefaController.
-	 */
-	@Test
-	public void testIniciarGravacao() {
-		System.out.println("iniciarGravacao");
-		Long idTarefa = null;
-		Long idTeste = null;
-		TarefaController instance = null;
-		instance.iniciarGravacaoTester(idTarefa, idTeste);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
-	}
-
-	/**
-	 * Test of loadtasktester method, of class TarefaController.
-	 */
-	@Test
-	public void testLoadtasktester() {
-		System.out.println("loadtasktester");
-		TarefaController instance = null;
-		// TarefaDetalhe expResult = null;
-		// TarefaDetalhe result = instance.loadtasktester();
-		// assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
-	}
-
-	/**
-	 * Test of loadactiontester method, of class TarefaController.
-	 */
-	@Test
-	public void testLoadactiontester() {
-		System.out.println("loadactiontester");
-		TarefaController instance = null;
-		String expResult = "";
-		String result = instance.loadactiontester();
-		assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
-	}
-
-	/**
-	 * Test of loadtaskuser method, of class TarefaController.
-	 */
-	@Test
-	public void testLoadtaskuser() {
-		System.out.println("loadtaskuser");
-		TarefaController instance = null;
-		// // TarefaDetalhe expResult = null;
-		// // TarefaDetalhe result = instance.loadtaskuser();
-		// assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
-	}
-
-	/**
-	 * Test of loadactionuser method, of class TarefaController.
-	 */
-	@Test
-	public void testLoadactionuser() {
-		System.out.println("loadactionuser");
-		String expResult = "";
-		String result = instance.loadactionuser();
-		assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
-	}
-
-	private String getGSonDados() {
+	public String getGSonDados() {
 		List<Action> acaos = new ArrayList<Action>();
 		for (int i = 0; i < 10; i++) {
 
@@ -656,12 +499,4 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		return gson.toJson(acaos);
 	}
 
-	private void initTestSession(long idTarefa, long idTeste) {
-		instance = TarefaTestProcedure.newInstanceTarefaController(
-				entityManager, result, idTarefa, idTeste);
-	}
-	private int getAcaoSize(){
-		AcaoRepository acaoRepository= new AcaoRepositoryImpl(entityManager);
-		return acaoRepository.findAll().size();
-	}
 }

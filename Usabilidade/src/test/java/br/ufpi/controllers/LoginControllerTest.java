@@ -159,15 +159,7 @@ public class LoginControllerTest extends AbstractDaoTest {
 		instance.logado(1);
 		List<Teste> testesCriados = (List<Teste>) result.included().get(
 				"testesCriados");
-		List<Teste> testesConvidados = (List<Teste>) result.included().get(
-				"testesConvidados");
-		for (Teste teste : testesConvidados) {
-			if(teste.getId()==5){
-				Assert.assertTrue("Teste 5 ainda não foi liberado entao não e para o usuario ver este teste",false);
-			}
-		}
-		Assert.assertEquals("Usuario so foi convidado para 4 teste",4,
-				testesConvidados.size());
+		
 		Assert.assertEquals(
 				"Usuario so possui 7 teste criados e não liberados ", 7,
 				testesCriados.size());
