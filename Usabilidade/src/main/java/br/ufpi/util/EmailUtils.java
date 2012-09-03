@@ -20,9 +20,9 @@ import org.apache.commons.mail.HtmlEmail;
 public class EmailUtils {
 
 	private static final String HOSTNAME = "smtp.gmail.com";
-	private static final String USERNAME = "usabilitool@gmail.com";
+	private static final String USERNAME = "useskill.contato@gmail.com";
 	private static final String PASSWORD = "cl123456";
-	private static final String EMAILORIGEM = "usabilitool@gmail.com";
+	private static final String EMAILORIGEM = "useskill.contato@gmail.com";
 	private HtmlEmail email;
 
 	public EmailUtils() {
