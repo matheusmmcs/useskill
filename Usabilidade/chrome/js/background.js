@@ -36,6 +36,26 @@ Array.prototype.toConsole = function(){
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
+
+localStorage.clear("BG");
+var acoes = parseJSON(localStorage.getItem("BG"));
+if(!acoes){
+	acoes = new Array();
+}
+
+function addAcao(stringAcao){
+	var acao = parseJSON(stringAcao);
+	console.log(stringAcao);
+	console.log(acao);
+	acoes.push(acao);
+	localStorage.setItem("BG",stringfyJSON(acoes));
+}
+
+function clearAcoes(){
+	acoes = new Array();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------
 var domainUseSkill = "http://localhost:8080/Usabilidade";
 
 function Store () {
@@ -48,22 +68,39 @@ function Store () {
 var storage = new Store();
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
-    if (request.useskill == "nextElement"){
-    	nextElement(request.atual, request.lista);
-    }else if (request.useskill == "getStorage"){
-    	sendResponse({dados: storage});
-    }else if (request.useskill == "setNewTab"){
-    	//vem de abas com new target
-    	chrome.tabs.create({'url': request.url}, function(tab) {
-			if(storage.gravando){
-				//adiciono a tab para a lista das tabs monitoradas
-				storage.tabs.add(tab.id);
-			}
-		});
-    }else if (request.useskill == "testFinish"){
-    	//finalizar o teste que está em execução
-    	removeTabsGravando();
-    }
+	switch(request.useskill){
+		case "nextElement":
+		  	nextElement(request.atual, request.lista);
+		  	break;
+		case "getStorageAndAcoes":
+			sendResponse({storage: storage, acoes: acoes});
+			break;
+		case "getStorage":
+		  	sendResponse({dados: storage});
+		  	break;
+		case "getAcoes":
+			sendResponse({dados: acoes});
+			break;
+		case "addAcao":
+			addAcao(request.acao);
+			break;
+		case "clearAcoes":
+			clearAcoes();
+			break;
+		case "setNewTab":
+		  	//vem de abas com new target
+    		chrome.tabs.create({'url': request.url}, function(tab) {
+				if(storage.gravando){
+					//adiciono a tab para a lista das tabs monitoradas
+					storage.tabs.add(tab.id);
+				}
+			});
+		  	break;
+		case "testFinish":
+			//finalizar o teste que está em execução
+		  	removeTabsGravando();
+		  	break;
+	}
 });
 
 //sempre que criar uma nova tab durante a gravação do teste, esta página deve ser monitorada
@@ -170,6 +207,7 @@ function removeTabsGravando(){
 function insertOnPage(tabId){
 	chrome.tabs.executeScript(tabId, {file: "js/jquery.js"});
 	chrome.tabs.executeScript(tabId, {file: "js/capt.js"});
+	//chrome.tabs.executeScript(tabId, {file: "js/playback.js"});
 	chrome.tabs.insertCSS(tabId, {file: "css/topoteste.css"});
 	chrome.tabs.insertCSS(tabId, {file: "css/jquery.fancybox.css"});
 	chrome.tabs.executeScript(tabId, {file: "js/topoteste.js"});
@@ -183,10 +221,7 @@ function insertOnQuestion(){
 	chrome.browserAction.setIcon({path: 'images/icon16on.png', tabId: tabId});
 }
 
-function parseJSON(data) {
-	return window.JSON && window.JSON.parse ? window.JSON.parse( data ) : (new Function("return " + data))(); 
-}
-
+//----------------------------------------------------------------------------------------------------------------------------------------------
 /*método genérico para realizar ajax*/
 function ajax(caminho, tipo, dados){
 	var retorno;
@@ -204,4 +239,10 @@ function ajax(caminho, tipo, dados){
 		}
 	});
 	return retorno;
+}
+function parseJSON(data) {
+	return window.JSON && window.JSON.parse ? window.JSON.parse(data) : (new Function("return " + data))(); 
+}
+function stringfyJSON(data){
+	return window.JSON && window.JSON.stringify ? window.JSON.stringify(data) : (new Function("return " + data))();
 }

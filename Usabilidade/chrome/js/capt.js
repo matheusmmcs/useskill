@@ -1,5 +1,3 @@
-var nameStorage = "UScapt";
-
 (function($){
 	$(document).ready(function(){
 		function Action(action, time, url, content, tag, tagIndex, posX, posY) {
@@ -12,9 +10,10 @@ var nameStorage = "UScapt";
 			this.sPosX = posX;
 			this.sPosY = posY;
 		}
+
 		console.log("capt -> localStorage");
-		//localStorage.clear(nameStorage)
-		console.log(getItem(nameStorage));
+
+
 		$(document).bind({
 			click : function(e) {
 				var acao = new Action('click', new Date().getTime(), getUrl(), $(e.target).html(), e.target.tagName, $(e.target.tagName).index(e.target), e.pageX, e.pageY);
@@ -27,13 +26,15 @@ var nameStorage = "UScapt";
 			}
 		});
 		/*	FUNÇÕES EXTRAS	*/
+		printAcoes();
+		function printAcoes(){
+			chrome.extension.sendRequest({useskill: "getAcoes"}, function(response) {
+				console.log(response.dados);
+			});
+		}
 		function addAcao(acao){
-			var arr = getItem(nameStorage);
-			if(!$.isArray(arr)){
-				arr = [];
-			}
-			arr.push(acao);
-			setItem(nameStorage, arr);
+			var stringAcao = stringfyJSON(acao);
+			chrome.extension.sendRequest({useskill: "addAcao", acao: stringAcao});
 		}
 		function setItem(name, acoes){
 			var x = stringfyJSON(acoes);
