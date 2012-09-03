@@ -7,6 +7,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.validator.Validations;
+import br.com.caelum.vraptor.view.Results;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
@@ -52,7 +53,7 @@ public class RespostaController extends BaseController {
 	@Post("/teste/salvar/resposta/escrita")
 	public void salvarRespostaEscrita(final String resposta,Long perguntaId) {
 		validateComponente.validarString(resposta, "resposta");
-		//TODO validar com o json
+		validator.onErrorUse(Results.json()).from(validator.getErrors(), "erro").serialize();
 		RespostaEscrita respostaEscrita = new RespostaEscrita();
 		respostaEscrita.setResposta(resposta);
 		respostaEscrita.setUsuario(usuarioLogado.getUsuario());
@@ -75,7 +76,6 @@ public class RespostaController extends BaseController {
 	@Logado
 	@Post("/teste/salvar/resposta/alternativa")
 	public void salvarRespostaAlternativa(Alternativa alternativa,Long perguntaId) {
-		//TODO validar com o json
 		RespostaAlternativa respostaAlternativa = new RespostaAlternativa();
 		respostaAlternativa.setAlternativa(alternativa);
 		Pergunta pergunta = perguntaPertenceTesteLiberado(perguntaId,testeSessionPlugin.getIdTeste());
@@ -106,7 +106,7 @@ public class RespostaController extends BaseController {
 							"pergunta.alternativa.sem.resposta");
 				}
 			});
-			//TODO manda mensagem que alternavia não possui a pergunta
+		validator.onErrorUse(Results.json()).from(validator.getErrors(), "errors").serialize();
 		}
 	}
 

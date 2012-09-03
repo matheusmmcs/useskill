@@ -12,7 +12,6 @@ import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
-import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Teste;
@@ -85,11 +84,7 @@ public class PerguntaController extends BaseController {
 		pergunta.setQuestionario(questionario);
 		boolean tipo = pergunta.getTipoRespostaAlternativa() == null ? false
 				: true;
-		if (tipo && pergunta.getAlternativas() != null) {
-			for (Alternativa alternativa : pergunta.getAlternativas()) {
-				alternativa.setPergunta(pergunta);
-			}
-		} else {
+		if (tipo && pergunta.getAlternativas() == null) {
 			pergunta.setTipoRespostaAlternativa(false);
 			pergunta.setAlternativas(null);
 		}
@@ -125,11 +120,7 @@ public class PerguntaController extends BaseController {
 			pergunta.setTipoRespostaAlternativa(false);
 			pergunta.setAlternativas(null);
 		} else {
-			if (pergunta.getAlternativas() != null) {
-				for (Alternativa alternativa : pergunta.getAlternativas()) {
-					alternativa.setPergunta(pergunta);
-				}
-			} else {
+			if (pergunta.getAlternativas() == null) {
 				pergunta.setTipoRespostaAlternativa(false);
 				pergunta.setAlternativas(null);
 			}

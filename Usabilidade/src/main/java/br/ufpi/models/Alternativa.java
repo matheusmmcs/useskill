@@ -6,13 +6,11 @@ package br.ufpi.models;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -30,8 +28,6 @@ public class Alternativa implements Serializable {
     @NotBlank
     @Column(columnDefinition="TINYTEXT")
     private String textoAlternativa;
-    @ManyToOne(optional=false,cascade= CascadeType.REFRESH)
-    private Pergunta pergunta;
 
     public Long getId() {
         return id;
@@ -41,15 +37,6 @@ public class Alternativa implements Serializable {
         this.id = id;
     }
 
-   
-
-    public Pergunta getPergunta() {
-        return pergunta;
-    }
-
-    public void setPergunta(Pergunta pergunta) {
-        this.pergunta = pergunta;
-    }
 
     public String getTextoAlternativa() {
         return textoAlternativa;
@@ -59,10 +46,15 @@ public class Alternativa implements Serializable {
         this.textoAlternativa = textoAlternativa;
     }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "Alternativa [id=" + id + ", textoAlternativa="
-				+ textoAlternativa + ", pergunta=" + pergunta + "]";
+				+ textoAlternativa + "]";
 	}
+
+	
     
 }
