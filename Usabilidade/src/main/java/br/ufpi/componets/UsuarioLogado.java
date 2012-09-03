@@ -15,13 +15,13 @@ import br.ufpi.repositories.UsuarioRepository;
 @SessionScoped
 public class UsuarioLogado {
 	//TODO depois apagar UsuarioRepository aqui é apenas para não precisar fazer login
-	UsuarioRepository usuarioRepository;
+//	UsuarioRepository usuarioRepository;
 	private Usuario usuario;
 
-	public UsuarioLogado(UsuarioRepository usuarioRepository ) {
-		this.usuarioRepository=usuarioRepository;
-		usuario=usuarioRepository.find(1l);
-		System.out.println(usuario);
+	public UsuarioLogado( UsuarioRepository repository) {
+		//this.usuarioRepository=repository;
+		//usuario=usuarioRepository.find(9l);
+		//System.out.println(usuario);
 	}
 
 	public Usuario getUsuario() {
