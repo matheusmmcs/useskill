@@ -32,25 +32,7 @@ import org.hibernate.validator.constraints.NotBlank;
 		@NamedQuery(name = "Tarefa.pertence.Teste.GetRoteiro", query = "select new java.lang.String(t.roteiro) from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa"),
 		@NamedQuery(name = "Tarefa.pertence.Teste.GetTarefaVO", query = "select new br.ufpi.models.vo.TarefaVO(t.roteiro,t.urlInicial,t.nome) from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa"),
 		@NamedQuery(name = "Tarefa.pertence.Teste.Liberado.Usuario", query = "select t from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa and t.teste.usuarioCriador.id= :usuario and t.teste.liberado= true"),
-		@NamedQuery(name = "Tarefa.pertence.Teste.E.Usuario.Realizou.Fluxo", query = "select fluxo from Teste as t "
-				+ "left join t.tarefas as tarefas "
-				+ "left join tarefas.fluxoIdeais as fluxoIdeais "
-				+ "left join fluxoIdeais.fluxo as fluxo  "
-				+ "left join tarefas.fluxoUsuarios as fluxoUsuarios "
-				+ "left join fluxoUsuarios.fluxo as fluxo "
-				+ " where t.id= :teste "
-				+ "and tarefas.id= :tarefa"
-				+ " and t.usuarioCriador.id= :usuarioCriador"
-				+ " and fluxo.usuario.id= :usuario"),
-		@NamedQuery(name = "Tarefa.usuarios.realizaram.Fluxo", query = "select fluxo.usuario from Teste as t "
-				+ "left join t.tarefas as tarefas "
-				+ "left join tarefas.fluxoIdeais as fluxoIdeais "
-				+ "left join fluxoIdeais.fluxo as fluxo  "
-				+ "left join tarefas.fluxoUsuarios as fluxoUsuarios "
-				+ "left join fluxoUsuarios.fluxo as fluxo"
-				+ " where t.id= :teste "
-				+ "and tarefas.id= :tarefa"
-				+ " and t.usuarioCriador.id= :usuarioCriador"),
+		
 		/**
 		 * Usuario tem que ser dono do teste. o teste não pode ser liberado.
 		 * Tarefa tem que pertencer ao teste.
@@ -71,9 +53,8 @@ public class Tarefa implements Serializable {
 	@OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Impressao> impressoes;
 	@OneToMany(mappedBy="tarefa",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<FluxoIdeal> fluxoIdeais;
-	@OneToMany(mappedBy="tarefa",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<FluxoUsuario> fluxoUsuarios;
+	private List<Fluxo> fluxos;
+	
 	@ManyToOne(cascade = CascadeType.REFRESH)
 	private Teste teste;
 	@Column(nullable = false)
@@ -128,20 +109,20 @@ public class Tarefa implements Serializable {
 		this.urlInicial = urlInicial;
 	}
 
-	public List<FluxoIdeal> getFluxoIdeais() {
-		return fluxoIdeais;
+	/**
+	 * @return the fluxo
+	 */
+	public List<Fluxo> getFluxos() {
+		return fluxos;
 	}
 
-	public void setFluxoIdeais(List<FluxoIdeal> fluxoIdeais) {
-		this.fluxoIdeais = fluxoIdeais;
+	/**
+	 * @param fluxo the fluxo to set
+	 */
+	public void setFluxos(List<Fluxo> fluxo) {
+		this.fluxos = fluxo;
 	}
 
-	public List<FluxoUsuario> getFluxoUsuarios() {
-		return fluxoUsuarios;
-	}
-
-	public void setFluxoUsuarios(List<FluxoUsuario> fluxoUsuarios) {
-		this.fluxoUsuarios = fluxoUsuarios;
-	}
+	
 
 }

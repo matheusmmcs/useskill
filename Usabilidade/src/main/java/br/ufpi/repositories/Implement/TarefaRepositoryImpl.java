@@ -1,5 +1,7 @@
 package br.ufpi.repositories.Implement;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -7,9 +9,11 @@ import javax.persistence.Query;
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
+import br.ufpi.models.vo.ConvidadoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.Repository;
 import br.ufpi.repositories.TarefaRepository;
+import br.ufpi.util.Paginacao;
 
 @Component
 public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
@@ -75,21 +79,38 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Fluxo getFluxo(Long testeId, Long tarefaId, Long usarioId,
+	public List<Fluxo> getFluxo(Long testeId, Long tarefaId, Long usarioId,
 			Long usuarioCriadorId) {
 			
 		Query query = entityManager
-				.createNamedQuery("Tarefa.pertence.Teste.E.Usuario.Realizou.Fluxo");
+				.createNamedQuery("Fluxo.Tarefa.pertence.Teste.E.Usuario.Realizou.Fluxo");
 		query.setParameter("teste", testeId);
 		query.setParameter("tarefa", tarefaId);
 		query.setParameter("usuarioCriador", usuarioCriadorId);
 		query.setParameter("usuario", usarioId);
 		try {
-			return (Fluxo) query.getSingleResult();
+			return (List<Fluxo>) query.getResultList();
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public Paginacao<Fluxo> getFluxos(Long tarefaId,
+			Long testeId, Long usuarioDonoTeste, int quantidade,int numeroPagina) {
+		Paginacao<Fluxo> paginacao = new Paginacao<Fluxo>();
+		//TODO alterar named queris
+		Query query =  entityManager.createNamedQuery("Convidado.Teste");
+		query.setFirstResult(quantidade * (numeroPagina - 1));
+		query.setMaxResults(quantidade);
+		paginacao.setListObjects((List<Fluxo>) query.getResultList());
+		Query count = entityManager
+				.createNamedQuery("Convidado.Teste.Count");
+//		count.setParameter("realiza", null);
+		paginacao.setCount((Long) count.getSingleResult());
+		return paginacao;
 	}
 
 }

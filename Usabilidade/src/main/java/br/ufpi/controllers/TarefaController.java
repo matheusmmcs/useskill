@@ -19,14 +19,10 @@ import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
-import br.ufpi.models.FluxoIdeal;
-import br.ufpi.models.FluxoUsuario;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
-import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.vo.TarefaVO;
-import br.ufpi.repositories.FluxoIdealRepository;
-import br.ufpi.repositories.FluxoUsuarioRepository;
+import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.GsonElements;
@@ -39,22 +35,20 @@ public class TarefaController extends BaseController {
 
 	private final TarefaRepository tarefaRepository;
 	private final TesteRepository testeRepository;
-	private final FluxoIdealRepository fluxoIdealRepository;
-	private final FluxoUsuarioRepository fluxoUsuarioRepository;
+	private final FluxoRepository fluxoRepository;
 	private final TesteSessionPlugin testeSessionPlugin;
 
 	public TarefaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
 			TarefaRepository tarefaRepository, TesteRepository testeRepository,
-			FluxoIdealRepository fluxoIdealRepository,
-			FluxoUsuarioRepository fluxoUsuarioRepository,
+			FluxoRepository fluxoIdealRepository,
+
 			TesteSessionPlugin testeSessionPlugin) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
-		this.fluxoIdealRepository = fluxoIdealRepository;
-		this.fluxoUsuarioRepository = fluxoUsuarioRepository;
+		this.fluxoRepository = fluxoIdealRepository;
 		this.testeSessionPlugin = testeSessionPlugin;
 	}
 
@@ -175,46 +169,17 @@ public class TarefaController extends BaseController {
 	@Logado
 	@Post("tarefa/save/fluxo")
 	public void saveFluxo(String dados, Long tarefaId) {
-		gravaFluxo(dados, tarefaId, testeSessionPlugin.getTipoConvidado());
-	}
-
-	/**
-	 * Grava o fluxo de usuario de uma determinada Tarefa. Destroy o
-	 * FluxoComponente de ações.
-	 * 
-	 * @param tarefaId
-	 *            O identificador da tarefa que tera o fluxo gravado
-	 */
-	private void gravaFluxo(String dados, Long tarefaId,
-			TipoConvidado tipoConvidado) {
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
+		//TODO Falta altera o tempo que foi iniciado o fluxo do usuario
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<Collection<Action>>() {
 		}.getType();
 		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
 		List<Action> acoes = new ArrayList<Action>(ints2);
 		fluxo.setAcoes(acoes);
-		saveTipoFluxo(tipoConvidado, fluxo);
-	}
-
-	/**
-	 * @param tipoConvidado
-	 * @param fluxo
-	 */
-	private void saveTipoFluxo(TipoConvidado tipoConvidado, Fluxo fluxo) {
-		switch (tipoConvidado) {
-		case TESTER:
-			FluxoIdeal fluxoIdeal = new FluxoIdeal();
-			fluxoIdeal.setFluxo(fluxo);
-			fluxoIdealRepository.create(fluxoIdeal);
-			break;
-		case USER:
-			FluxoUsuario fluxoUsuario = new FluxoUsuario();
-			fluxoUsuario.setFluxo(fluxo);
-			fluxoUsuarioRepository.create(fluxoUsuario);
-			break;
-		}
+		fluxo.setTipoConvidado(testeSessionPlugin.getTipoConvidado());
+		fluxoRepository.create(fluxo);
 	}
 
 	/**
@@ -308,16 +273,17 @@ public class TarefaController extends BaseController {
 		validateComponente.validarId(tarefaId);
 		validateComponente.validarId(usarioId);
 		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
-		Fluxo fluxo = tarefaRepository.getFluxo(testeId, tarefaId, usarioId,
+		List<Fluxo> fluxos = tarefaRepository.getFluxo(testeId, tarefaId, usarioId,
 				usuarioCriadorId);
-		System.out.println(fluxo.getId());
-		validateComponente.validarObjeto(fluxo);
-		result.include("fluxo", fluxo);
+		validateComponente.validarObjeto(fluxos);
+		result.include("fluxos", fluxos);
 	}
 
-	public void listUsers(Long tarefaId) {
+	public void listUsers(Long testeId,Long tarefaId) {
 		validateComponente.validarId(tarefaId);
-		
-	
+		validateComponente.validarId(testeId);
+//		Long usuarioDonoTeste = usuarioLogado.getUsuario().getId();
+		//tarefaRepository.getFluxos(tarefaId,testeId,usuarioDonoTeste);
+
 	}
 }
