@@ -1,5 +1,6 @@
 package br.ufpi.repositories;
 
+import br.ufpi.models.Pergunta;
 import br.ufpi.models.RespostaAlternativa;
 import java.util.List;
 
@@ -14,4 +15,7 @@ public interface RespostaAlternativaRepository {
 	RespostaAlternativa find(Long id);
 
 	List<RespostaAlternativa> findAll();
+
+	Pergunta perguntaPertenceTesteLiberadoEAlternativa(Long alternativaId,
+			Long perguntaId, Long idTeste);
 }

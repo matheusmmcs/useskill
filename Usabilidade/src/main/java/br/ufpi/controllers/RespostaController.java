@@ -6,7 +6,6 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.validator.Validations;
 import br.com.caelum.vraptor.view.Results;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteSessionPlugin;
@@ -28,7 +27,7 @@ public class RespostaController extends BaseController {
 	private final RespostaAlternativaRepository alternativaRepository;
 	private final PerguntaRepository perguntaRepository;
 	private final TesteRepository testeRepository;
-	private final TesteSessionPlugin  testeSessionPlugin;
+	private final TesteSessionPlugin testeSessionPlugin;
 
 	public RespostaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
@@ -46,71 +45,51 @@ public class RespostaController extends BaseController {
 		this.testeSessionPlugin = testeSessionPlugin;
 	}
 
-
-
-
 	@Logado
 	@Post("/teste/salvar/resposta/escrita")
-	public void salvarRespostaEscrita(final String resposta,Long perguntaId) {
+	public void salvarRespostaEscrita(final String resposta, Long perguntaId) {
 		validateComponente.validarString(resposta, "resposta");
-		validator.onErrorUse(Results.json()).from(validator.getErrors(), "erro").serialize();
+		validator.onErrorUse(Results.json())
+				.from(validator.getErrors(), "erro").serialize();
 		RespostaEscrita respostaEscrita = new RespostaEscrita();
 		respostaEscrita.setResposta(resposta);
 		respostaEscrita.setUsuario(usuarioLogado.getUsuario());
-		Pergunta pergunta = perguntaPertenceTesteLiberado(perguntaId,testeSessionPlugin.getIdTeste());
+		Pergunta pergunta = perguntaPertenceTesteLiberado(perguntaId,
+				testeSessionPlugin.getIdTeste());
 		respostaEscrita.setPergunta(pergunta);
 		escritaRepository.create(respostaEscrita);
 	}
 
-
-	
-
 	private Pergunta perguntaPertenceTesteLiberado(Long perguntaId, Long idTeste) {
-		// TODO Auto-generated method stub
-		return null;
+		Pergunta pergunta = perguntaRepository.perguntPertenceTeste(idTeste,
+				perguntaId);
+		validateComponente.validarObjeto(pergunta);
+		return pergunta;
 	}
 
-
-
+	private Pergunta perguntaPertenceTesteLiberadoEAlternativa(
+			Long alternativaId, Long perguntaId, Long idTeste) {
+		Pergunta pergunta = alternativaRepository
+				.perguntaPertenceTesteLiberadoEAlternativa(alternativaId,
+						perguntaId, idTeste);
+		validateComponente.validarObjeto(pergunta);
+		return pergunta;
+	}
 
 	@Logado
 	@Post("/teste/salvar/resposta/alternativa")
-	public void salvarRespostaAlternativa(Alternativa alternativa,Long perguntaId) {
+	public void salvarRespostaAlternativa(Alternativa alternativa,
+			Long perguntaId) {
 		RespostaAlternativa respostaAlternativa = new RespostaAlternativa();
 		respostaAlternativa.setAlternativa(alternativa);
-		Pergunta pergunta = perguntaPertenceTesteLiberado(perguntaId,testeSessionPlugin.getIdTeste());
-		alternaviaPertencePergunta(alternativa, pergunta);
+		Pergunta pergunta = perguntaPertenceTesteLiberadoEAlternativa(
+				alternativa.getId(), perguntaId,
+				testeSessionPlugin.getIdTeste());
+		validateComponente.validarObjetoJson(pergunta);
 		respostaAlternativa.setPergunta(pergunta);
 		respostaAlternativa.setUsuario(usuarioLogado.getUsuario());
 		alternativaRepository.create(respostaAlternativa);
 	}
-
-	/**
-	 * Analisa se a alternativa passada pertence a pergunta respondida
-	 * 
-	 * @param alternativa
-	 * @param pergunta
-	 */
-	private void alternaviaPertencePergunta(Alternativa alternativa,
-			Pergunta pergunta) {
-		boolean alternativaPertencePergunta = false;
-		for (Alternativa alternativa2 : pergunta.getAlternativas()) {
-			if (alternativa2.getId().equals(alternativa.getId())) {
-				alternativaPertencePergunta = true;
-			}
-		}
-		if (!alternativaPertencePergunta) {
-			validator.checking(new Validations() {
-				{
-					that(false, "pergunta.alternativa.sem.resposta",
-							"pergunta.alternativa.sem.resposta");
-				}
-			});
-		validator.onErrorUse(Results.json()).from(validator.getErrors(), "errors").serialize();
-		}
-	}
-
-
 
 	@Logado
 	@Get("analise/teste/{testeId}/pergunta/{perguntaId}")
@@ -152,5 +131,4 @@ public class RespostaController extends BaseController {
 		return null;
 	}
 
-	
 }

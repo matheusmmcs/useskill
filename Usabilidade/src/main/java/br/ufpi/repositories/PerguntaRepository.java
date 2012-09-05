@@ -40,7 +40,18 @@ public interface PerguntaRepository {
 	 * @return Pergunta se obedecer todos os pre-requisitos e null se não
 	 *         encontra a pergunta
 	 */
-	PerguntaVO perguntaPertenceTeste( Long testeId,
+	PerguntaVO perguntVOPertenceTeste( Long testeId,
+			Long perguntaId);
+	/**
+	 * Procura se uma pergunta pertence a um determinado Teste
+	 * 
+	 * @param perguntaId
+	 * @param testeLiberado
+	 *            indica se o teste esta liberado ou não
+	 * @return Pergunta se obedecer todos os pre-requisitos e null se não
+	 *         encontra a pergunta
+	 */
+	Pergunta perguntPertenceTeste( Long testeId,
 			Long perguntaId);
 
 	/**

@@ -8,9 +8,11 @@ import java.io.Serializable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 /**
@@ -26,7 +28,23 @@ public class FluxoUsuario implements Serializable {
 	private Long id;
 	@OneToOne(cascade=CascadeType.ALL)
 	private Fluxo fluxo;
+	@ManyToOne(fetch=FetchType.LAZY)
+	private Tarefa tarefa;
+	
 
+	/**
+	 * @return the tarefa
+	 */
+	public Tarefa getTarefa() {
+		return tarefa;
+	}
+
+	/**
+	 * @param tarefa the tarefa to set
+	 */
+	public void setTarefa(Tarefa tarefa) {
+		this.tarefa = tarefa;
+	}
 	public Long getId() {
 		return id;
 	}

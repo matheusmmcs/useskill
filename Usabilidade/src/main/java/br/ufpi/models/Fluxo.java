@@ -24,7 +24,7 @@ public class Fluxo implements Serializable {
     private Date dataInicio;
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataFim;
-    @OneToMany(mappedBy = "fluxo",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+    @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY)
     private List<Action> acoes;
     @ManyToOne(optional = false, cascade = CascadeType.REFRESH,fetch=FetchType.LAZY)
     private Usuario usuario;

@@ -1,6 +1,5 @@
 package br.ufpi.models.vo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.ufpi.models.Alternativa;
@@ -10,19 +9,14 @@ public class PerguntaVO {
 	private String titulo;
 	private String texto;
 	private Boolean tipoRespostaAlternativa;
-	private List<AlternativaVO> alternativas;
+	private List<Alternativa> alternativas;
 
 	public PerguntaVO(Pergunta pergunta) {
 		super();
 		this.titulo = pergunta.getTitulo();
 		this.texto = pergunta.getTitulo();
 		this.setTipoRespostaAlternativa(pergunta.getTipoRespostaAlternativa());
-		this.alternativas = new ArrayList<AlternativaVO>();
-		for (Alternativa alternativa : pergunta.getAlternativas()) {
-			AlternativaVO alternativaVO = new AlternativaVO(
-					alternativa.getId(), alternativa.getTextoAlternativa());
-			this.alternativas.add(alternativaVO);
-		}
+		this.alternativas=pergunta.getAlternativas();
 	}
 
 	/**
@@ -58,7 +52,8 @@ public class PerguntaVO {
 	/**
 	 * @return the alternativas
 	 */
-	public List<AlternativaVO> getAlternativas() {
+	public List<Alternativa
+	> getAlternativas() {
 		return alternativas;
 	}
 
@@ -66,7 +61,7 @@ public class PerguntaVO {
 	 * @param alternativas
 	 *            the alternativas to set
 	 */
-	public void setAlternativas(List<AlternativaVO> alternativas) {
+	public void setAlternativas(List<Alternativa> alternativas) {
 		this.alternativas = alternativas;
 	}
 

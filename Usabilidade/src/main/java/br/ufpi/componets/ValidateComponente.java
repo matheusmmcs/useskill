@@ -3,6 +3,7 @@ package br.ufpi.componets;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.validator.Validations;
+import br.com.caelum.vraptor.view.Results;
 import br.ufpi.controllers.LoginController;
 import br.ufpi.controllers.TesteParticiparController;
 
@@ -89,6 +90,20 @@ public class ValidateComponente {
 			}
 		});	
 		validator.onErrorRedirectTo(LoginController.class).logado(1);
+	}
+	/**
+	 * Apenas analisa se o teste não é nulo
+	 * @param object Objeto a ser verificado
+	 */
+	public void validarObjetoJson(final Object object) {
+		validator.checking(new Validations() {
+			
+			{
+				that((object!=null ), "campo.form.alterado",
+						"campo.form.alterado");
+			}
+		});	
+		validator.onErrorUse(Results.json()).from(validator.getErrors(),"errors").serialize();
 	}
 	/**
 	 * Gera erro informando que campo forme foi alterado

@@ -1,9 +1,10 @@
 package br.ufpi.repositories;
 
+import java.util.List;
+
+import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.vo.TarefaVO;
-
-import java.util.List;
 
 public interface TarefaRepository {
 
@@ -53,4 +54,13 @@ public interface TarefaRepository {
      * @return
      */
     Tarefa perteceTesteNaoRealizado(Long idTarefa, Long idTeste, Long idUsuario);
+    /**
+     * Obtem o fluxo de uma determinada tarefa
+     * @param testeId identificador do teste que a tarefa pertence
+     * @param tarefaId identificador da tarefa
+     * @param usarioId identificador do usuario que realizou o fluxo
+     * @param usuarioCriadorId identificador do usuario que criou o teste
+     * @return o fluxo que o usuario realizou para criar o teste
+     */
+    Fluxo getFluxo(Long testeId, Long tarefaId, Long usarioId,Long usuarioCriadorId);
 }

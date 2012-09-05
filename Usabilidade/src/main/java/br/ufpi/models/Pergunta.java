@@ -24,13 +24,18 @@ import javax.persistence.OneToMany;
  * @author Cleiton
  */
 @NamedQueries({
-		@NamedQuery(name = "Pergunta.pertence.teste.usuario", query = "select perguntas from Teste as t left join t.satisfacao lef join t.satisfacao.perguntas as perguntas "
+		@NamedQuery(name = "Pergunta.pertence.teste.usuario", query = "select perguntas from Teste as t left join t.satisfacao left join t.satisfacao.perguntas as perguntas "
 				+ "where t.id= :teste and t.usuarioCriador.id= :usuario and perguntas.id= :pergunta"),
+		@NamedQuery(name = "Pergunta.pertence.teste.e.alternativa", query = "select perguntas from Teste as t left join t.satisfacao left join t.satisfacao.perguntas as perguntas right join perguntas.alternativas as alternativas "
+				+ "where t.id= :teste and perguntas.id= :pergunta and alternativas.id= :alternativa"),
 		@NamedQuery(name = "Pergunta.pertence.teste.PerguntaVO", query = "select new br.ufpi.models.vo.PerguntaVO(perguntas) from Teste as t left join t.satisfacao lef join t.satisfacao.perguntas as perguntas "
-						+ "where t.id= :teste and perguntas.id= :pergunta"),
+				+ "where t.id= :teste and perguntas.id= :pergunta"),
+		@NamedQuery(name = "Pergunta.pertence.teste.Pergunta", query = "select perguntas from Teste as t left join t.satisfacao lef join t.satisfacao.perguntas as perguntas "
+				+ " where t.id= :teste and perguntas.id= :pergunta"),
 		@NamedQuery(name = "Pergunta.pertence.teste.usuario.Liberado", query = "select perguntas from Teste as t left join t.satisfacao lef join t.satisfacao.perguntas as perguntas where t.id= :teste and t.usuarioCriador.id= :usuario and perguntas.id= :pergunta and t.liberado= :liberado"),
-//		@NamedQuery(name = "Pergunta.delete.Alternativas", query = "delete Alternativa  a where a.pergunta.id= :pergunta"),
-		@NamedQuery(name = "Pergunta.getQuestionario", query = "select p.questionario from Pergunta as p left join p.questionario as Questionario where p.id= :pergunta") })
+		@NamedQuery(name = "Pergunta.getQuestionario", query = "select p.questionario from Pergunta as p left join p.questionario as Questionario where p.id= :pergunta"), 
+		
+})
 @Entity
 public class Pergunta implements Serializable {
 
@@ -45,7 +50,7 @@ public class Pergunta implements Serializable {
 	 * True para pergunta objetiva
 	 */
 	private Boolean tipoRespostaAlternativa;
-	@OneToMany( cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Alternativa> alternativas;
 	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)
 	private Questionario questionario;
@@ -118,7 +123,6 @@ public class Pergunta implements Serializable {
 	public void setTitulo(String titulo) {
 		this.titulo = titulo;
 	}
-
 
 	public Pergunta clone() {
 		Pergunta pergunta = new Pergunta();

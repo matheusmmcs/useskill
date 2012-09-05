@@ -194,9 +194,6 @@ public class TarefaController extends BaseController {
 		}.getType();
 		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
 		List<Action> acoes = new ArrayList<Action>(ints2);
-		for (Action acao : acoes) {
-			acao.setFluxo(fluxo);
-		}
 		fluxo.setAcoes(acoes);
 		saveTipoFluxo(tipoConvidado, fluxo);
 	}
@@ -274,7 +271,8 @@ public class TarefaController extends BaseController {
 	@Logado
 	public void getRoteiro(Long idTarefa) {
 		validateComponente.validarId(idTarefa);
-		String roteiro = tarefaRepository.getRoteiro(idTarefa, testeSessionPlugin.getIdTeste());
+		String roteiro = tarefaRepository.getRoteiro(idTarefa,
+				testeSessionPlugin.getIdTeste());
 		validateComponente.validarObjeto(roteiro);
 		result.use(Results.json()).from(roteiro).serialize();
 	}
@@ -284,10 +282,42 @@ public class TarefaController extends BaseController {
 	public void getTarefa(Long idTarefa) {
 		validateComponente.validarId(idTarefa);
 		validateComponente.validarId(testeSessionPlugin.getIdTeste());
-		TarefaVO tarefaVO = tarefaRepository.getTarefaVO(idTarefa, testeSessionPlugin.getIdTeste());
+		TarefaVO tarefaVO = tarefaRepository.getTarefaVO(idTarefa,
+				testeSessionPlugin.getIdTeste());
 		System.out.println(tarefaVO);
 		validateComponente.validarObjeto(tarefaVO);
 		result.use(Results.json()).from(tarefaVO).serialize();
 	}
 
+	/**
+	 * Passos do método
+	 * 
+	 * 1º passar idTarefa,idTeste,idPessoa(Validar itens passados) e tipo de
+	 * fluxo que ele realizou
+	 * 
+	 * 2º verificar se o usario é criador do teste
+	 * 
+	 * 
+	 * 
+	 * 
+	 * */
+	@Logado
+	@Get
+	public void exibirActions(Long testeId, Long tarefaId, Long usarioId) {
+		validateComponente.validarId(testeId);
+		validateComponente.validarId(tarefaId);
+		validateComponente.validarId(usarioId);
+		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
+		Fluxo fluxo = tarefaRepository.getFluxo(testeId, tarefaId, usarioId,
+				usuarioCriadorId);
+		System.out.println(fluxo.getId());
+		validateComponente.validarObjeto(fluxo);
+		result.include("fluxo", fluxo);
+	}
+
+	public void listUsers(Long tarefaId) {
+		validateComponente.validarId(tarefaId);
+		
+	
+	}
 }

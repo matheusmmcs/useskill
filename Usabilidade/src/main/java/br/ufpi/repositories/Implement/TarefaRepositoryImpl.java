@@ -5,6 +5,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import br.com.caelum.vraptor.ioc.Component;
+import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.Repository;
@@ -69,6 +70,23 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 		query.setParameter("tarefa", idTarefa);
 		try {
 			return (TarefaVO) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public Fluxo getFluxo(Long testeId, Long tarefaId, Long usarioId,
+			Long usuarioCriadorId) {
+			
+		Query query = entityManager
+				.createNamedQuery("Tarefa.pertence.Teste.E.Usuario.Realizou.Fluxo");
+		query.setParameter("teste", testeId);
+		query.setParameter("tarefa", tarefaId);
+		query.setParameter("usuarioCriador", usuarioCriadorId);
+		query.setParameter("usuario", usarioId);
+		try {
+			return (Fluxo) query.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}

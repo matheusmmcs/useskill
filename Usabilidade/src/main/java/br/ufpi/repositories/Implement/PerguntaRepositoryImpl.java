@@ -29,7 +29,7 @@ public class PerguntaRepositoryImpl extends Repository<Pergunta, Long>
 			query.setParameter("teste", testeId);
 			query.setParameter("usuario", usuarioId);
 			query.setParameter("pergunta", perguntaId);
-		}else{
+		} else {
 			query = entityManager
 					.createNamedQuery("Pergunta.pertence.teste.usuario.Liberado");
 			query.setParameter("teste", testeId);
@@ -60,7 +60,8 @@ public class PerguntaRepositoryImpl extends Repository<Pergunta, Long>
 	@Override
 	public boolean deleteAlternativas(Long idPergunta) {
 		try {
-			entityManager.createNamedQuery("Pergunta.delete.Alternativas")
+			entityManager.
+			createNamedQuery("Pergunta.delete.Alternativas")
 					.setParameter("pergunta", idPergunta).executeUpdate();
 
 		} catch (NoResultException e) {
@@ -71,21 +72,34 @@ public class PerguntaRepositoryImpl extends Repository<Pergunta, Long>
 	}
 
 	@Override
-	public PerguntaVO perguntaPertenceTeste(Long testeId, Long perguntaId) {
+	public PerguntaVO perguntVOPertenceTeste(Long testeId, Long perguntaId) {
 		Query query = null;
-			query = entityManager
-					.createNamedQuery("Pergunta.pertence.teste.PerguntaVO");
-			query.setParameter("teste", testeId);
-			query.setParameter("pergunta", perguntaId);
+		query = entityManager
+				.createNamedQuery("Pergunta.pertence.teste.PerguntaVO");
+		query.setParameter("teste", testeId);
+		query.setParameter("pergunta", perguntaId);
 
 		try {
 			return (PerguntaVO) query.getSingleResult();
 		} catch (NoResultException nre) {
 			return null;
 		}
-		
+
 	}
 
-	
+	@Override
+	public Pergunta perguntPertenceTeste(Long testeId, Long perguntaId) {
+		Query query = null;
+		query = entityManager
+				.createNamedQuery("Pergunta.pertence.teste.Pergunta");
+		query.setParameter("teste", testeId);
+		query.setParameter("pergunta", perguntaId);
+
+		try {
+			return (Pergunta) query.getSingleResult();
+		} catch (NoResultException nre) {
+			return null;
+		}
+	}
 
 }

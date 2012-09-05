@@ -115,7 +115,6 @@ public class PerguntaController extends BaseController {
 		boolean objetiva = pergunta.getTipoRespostaAlternativa() == null ? true
 				: pergunta.getTipoRespostaAlternativa();
 
-		System.out.println(pergunta.getTipoRespostaAlternativa());
 		if (!objetiva) {
 			pergunta.setTipoRespostaAlternativa(false);
 			pergunta.setAlternativas(null);
@@ -143,8 +142,8 @@ public class PerguntaController extends BaseController {
 		Teste teste = testeView.getTeste();
 		teste = GsonElements.removerPergunta(perguntaPertenceUsuario.getId(),
 				teste);
-		perguntaRepository.destroy(perguntaPertenceUsuario);
 		testeRepository.update(teste);
+		perguntaRepository.destroy(perguntaPertenceUsuario);
 		result.redirectTo(TesteController.class).passo2(testeId);
 
 	}
@@ -187,7 +186,7 @@ public class PerguntaController extends BaseController {
 		validateComponente.validarId(idPergunta);
 		validateComponente.validarId(sessionPlugin.getIdTeste());
 		PerguntaVO perguntaPertenceTeste = perguntaRepository
-				.perguntaPertenceTeste(sessionPlugin.getIdTeste(), idPergunta);
+				.perguntVOPertenceTeste(sessionPlugin.getIdTeste(), idPergunta);
 		validateComponente.validarObjeto(perguntaPertenceTeste);
 		result.use(Results.json()).from(perguntaPertenceTeste).serialize();
 	}
@@ -209,7 +208,7 @@ public class PerguntaController extends BaseController {
 		validateComponente.validarId(idPergunta);
 		validateComponente.validarId(sessionPlugin.getIdTeste());
 		PerguntaVO perguntaVo = perguntaRepository
-				.perguntaPertenceTeste(sessionPlugin.getIdTeste(), idPergunta);
+				.perguntVOPertenceTeste(sessionPlugin.getIdTeste(), idPergunta);
 		validateComponente.validarObjeto(perguntaVo);
 		
 		System.out.println("pergunta alternativa"
