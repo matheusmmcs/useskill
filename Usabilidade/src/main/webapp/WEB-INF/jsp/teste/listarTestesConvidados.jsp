@@ -26,16 +26,25 @@
 		<div class="btn-group pull-left">		
 			<a class="btn"
 				href="${pageContext.request.contextPath}/usuario">
-				<fmt:message key="testes.construcao"/>
+				<fmt:message key="testes.mini.construcao"/>
 			</a>
 			<a class="btn"
 				href="${pageContext.request.contextPath}/testes/liberados">
-				<fmt:message key="testes.liberado"/>
+				<fmt:message key="testes.mini.liberados"/>
+			</a>
+			<a class="btn"
+				href="${pageContext.request.contextPath}/testes/convidados">
+				<fmt:message key="testes.mini.convites"/>
 			</a>
 		</div>
 	</div>
 
+	<a href="${pageContext.request.contextPath}/files/chrome.crx" title="Download Plugin Google Chrome"><img src="${pageContext.request.contextPath}/img/banner.jpg" /></a>
+
 	<div class="form-horizontal form-layout">
+		<p style="line-height: 20px;padding: 0 20px;font-size: 16px;color: #829abe;margin: 10px 0px 5px;">
+			<fmt:message key="testeparticipar.mensagemchrome" />
+		</p>
 		<fieldset>
 			<legend>
 				<hr />
@@ -48,7 +57,7 @@
 						<th><fmt:message key="table.titulo" /></th>
 						<th><fmt:message key="testes.criador" /></th>
 						<th><fmt:message key="testes.tipoconvidado" /></th>
-						<th style="width: 85px"><fmt:message key="table.acoes" /></th>
+						<th style="width: 45px"><fmt:message key="table.acoes" /></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -58,10 +67,11 @@
 							<td>${convidadoVO.teste.usuarioCriador.nome}</td>
 							<td><fmt:message key="testes.tipo.${convidadoVO.tipoConvidado}" />
 							</td>
-							<td class="centertd"><a class="btn btn-success"
+							<td class="centertd">
+							<!-- <a class="btn btn-success"
 								href="${pageContext.request.contextPath}/teste/participar/${convidadoVO.teste.id}/aceitar/"
 								title="<fmt:message key="table.aceitar"/>"> <span
-									class="icon-ok icon-white"></span> </a> 
+									class="icon-ok icon-white"></span> </a>--> 
 								<a title="<fmt:message key="table.recusar"/>"
 								class="btn btn-primary btn-modal" 
 								data-href="${pageContext.request.contextPath}/teste/participar/negar/testeId/${convidadoVO.teste.id}" 

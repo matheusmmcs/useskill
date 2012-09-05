@@ -22,12 +22,16 @@
 		
 		<div class="btn-group pull-left">		
 			<a class="btn"
+				href="${pageContext.request.contextPath}/usuario">
+				<fmt:message key="testes.mini.construcao"/>
+			</a>
+			<a class="btn"
 				href="${pageContext.request.contextPath}/testes/liberados">
-				<fmt:message key="testes.liberado"/>
+				<fmt:message key="testes.mini.liberados"/>
 			</a>
 			<a class="btn"
 				href="${pageContext.request.contextPath}/testes/convidados">
-				<fmt:message key="testes.convites"/>
+				<fmt:message key="testes.mini.convites"/>
 			</a>
 		</div>
 	</div>

@@ -86,6 +86,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 			break;
 		case "clearAcoes":
 			clearAcoes();
+			sendResponse({clear: true});
 			break;
 		case "setNewTab":
 		  	//vem de abas com new target

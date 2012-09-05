@@ -4,8 +4,6 @@
     <class>br.ufpi.models.Action</class>
     <class>br.ufpi.models.Alternativa</class>
     <class>br.ufpi.models.Fluxo</class>
-    <class>br.ufpi.models.FluxoIdeal</class>
-    <class>br.ufpi.models.FluxoUsuario</class>
     <class>br.ufpi.models.Impressao</class>
     <class>br.ufpi.models.Pergunta</class>
     <class>br.ufpi.models.Questionario</class>

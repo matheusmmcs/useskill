@@ -180,6 +180,7 @@ public class TarefaController extends BaseController {
 		fluxo.setAcoes(acoes);
 		fluxo.setTipoConvidado(testeSessionPlugin.getTipoConvidado());
 		fluxoRepository.create(fluxo);
+		result.use(Results.json()).from("true").serialize();
 	}
 
 	/**

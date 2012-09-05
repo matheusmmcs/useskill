@@ -85,6 +85,9 @@
 		function parseJSON(data) {
 	    	return window.JSON && window.JSON.parse ? window.JSON.parse( data ) : (new Function("return " + data))(); 
 		}
+		function stringfyJSON(data){
+			return window.JSON && window.JSON.stringify ? window.JSON.stringify(data) : (new Function("return " + data))();
+		}
 
 		/*método genérico para realizar ajax*/
 		function ajax(caminho, tipo, dados){
@@ -158,8 +161,8 @@
 						var listaElementos = parseJSON(resp.storage.listaElementos);
 						var elAtual = listaElementos[atual];
 
-						var acoes = resp.storage.acoes;
-
+						var acoes = stringfyJSON(resp.acoes);
+						
 						$.ajax({
 							url: domainUseSkill+"/tarefa/save/fluxo",
 							cache: false,
@@ -178,6 +181,7 @@
 								console.log(jqXHR);
 							}
 						});
+						
 					});
 				});
 
