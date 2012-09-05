@@ -3,6 +3,7 @@ package br.ufpi.repositories;
 import javax.persistence.EntityManager;
 
 import br.ufpi.controllers.procedure.TesteTestProcedure;
+import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.vo.TarefaVO;
@@ -49,4 +50,12 @@ public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 		return tarefaRepositoryImpl.perteceTesteNaoRealizado(idTarefa, idTeste,
 				idUsuario);
 	}
+
+	@Override
+	public Fluxo getFluxo(Long testeId, Long tarefaId, Long usarioId,
+			Long usuarioCriadorId) {
+		return tarefaRepositoryImpl.getFluxo(testeId, tarefaId, usarioId, usuarioCriadorId);
+	}
+
+	
 }

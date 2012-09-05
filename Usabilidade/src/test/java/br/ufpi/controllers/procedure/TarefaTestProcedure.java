@@ -19,6 +19,7 @@ import br.ufpi.models.Fluxo;
 import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
+import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.Usuario;
 import br.ufpi.repositories.FluxoIdealRepository;
 import br.ufpi.repositories.FluxoRepository;
@@ -55,8 +56,8 @@ public class TarefaTestProcedure {
 	}
 
 	public static TarefaController newInstanceTarefaController(
-			EntityManager entityManager, MockResult result, Long idTarefa,
-			Long idTeste) {
+			EntityManager entityManager, MockResult result, 
+			Long idTeste, TipoConvidado tipoConvidado) {
 		TesteView testeView = new TesteView();
 		MockValidator validator = new MockValidator();
 		UsuarioRepository usuarioRepositoryImpl = UsuarioTestProcedure
@@ -69,6 +70,7 @@ public class TarefaTestProcedure {
 		TesteRepository testeRepository = new TesteRepositoryImpl(entityManager);
 		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
 		testeSessionPlugin.setIdTeste(idTeste);
+		testeSessionPlugin.setTipoConvidado(tipoConvidado);
 		FluxoUsuarioRepository fluxoUsuarioRepository = new FluxoUsuarioRepositoryImpl(
 				entityManager);
 		FluxoIdealRepository fluxoIdealRepository = new FluxoIdealRepositoryImpl(
@@ -138,21 +140,20 @@ public class TarefaTestProcedure {
 		Fluxo fluxo = new Fluxo();
 		fluxo.setDataInicio(new Date(System.currentTimeMillis()));
 		fluxo.setDataFim(new Date(System.currentTimeMillis()));
-		fluxo.setAcoes(newInstanceAcoes(fluxo));
+		fluxo.setAcoes(newInstanceAcoes());
 		fluxo.setUsuario(usuario);
 
 		return fluxo;
 	}
 
-	public static List<Action> newInstanceAcoes(Fluxo fluxo) {
+	public static List<Action> newInstanceAcoes() {
 		ArrayList<Action> acoes = new ArrayList<Action>();
 		for (int i = 0; i < 10; i++) {
 			Action acao = new Action();
 			acao.setsContent("conteudo");
-			acao.setFluxo(fluxo);
 			acao.setsPosX(10 * i);
 			acao.setsPosY(10 * i);
-			acao.setsTagName("tag");
+			acao.setsTag("sTag");
 			acao.setsUrl("www.globo.com");
 			acoes.add(acao);
 		}

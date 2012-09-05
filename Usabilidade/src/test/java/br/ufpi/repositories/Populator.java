@@ -116,8 +116,10 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(4l);
-		convidadoRepository.convidarUsuarios(idUsuarios, 6l, TipoConvidado.TESTER);
-		convidadoRepository.convidarUsuarios(idUsuarios, 5l,  TipoConvidado.USER);
+		convidadoRepository.convidarUsuarios(idUsuarios, 6l,
+				TipoConvidado.TESTER);
+		convidadoRepository
+				.convidarUsuarios(idUsuarios, 5l, TipoConvidado.USER);
 
 	}
 
@@ -212,7 +214,8 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(5l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, 7l,TipoConvidado.TESTER);
+		convidadoRepository.convidarUsuarios(idUsuarios, 7l,
+				TipoConvidado.TESTER);
 	}
 
 	/**
@@ -235,7 +238,8 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(5l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, 8l,TipoConvidado.TESTER);
+		convidadoRepository.convidarUsuarios(idUsuarios, 8l,
+				TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryTest(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
@@ -272,7 +276,8 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(5l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, 9l,TipoConvidado.TESTER);
+		convidadoRepository.convidarUsuarios(idUsuarios, 9l,
+				TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryTest(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
@@ -311,7 +316,8 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(5l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,
+				TipoConvidado.TESTER);
 
 		TarefaRepository repository = new TarefaRepositoryTest(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
@@ -324,13 +330,15 @@ public class Populator {
 		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.cidadeverde.com", "visualizar blog de união",
 				"Procurar Campeão", teste, true);
-		FluxoIdealRepository fluxoRepository= new FluxoIdealRepositoryImpl(entityManager);
+		FluxoIdealRepository fluxoRepository = new FluxoIdealRepositoryImpl(
+				entityManager);
 		Fluxo fluxo = TarefaTestProcedure.newInstanceFluxo(usuario1);
 		FluxoIdeal fluxoIdeal = TarefaTestProcedure
 				.newInstanceFluxoIdeal(usuario1);
+		fluxoIdeal.setTarefa(tarefa);
 		fluxoIdeal.setFluxo(fluxo);
 		fluxoRepository.create(fluxoIdeal);
-		
+
 		repository.create(tarefa);
 		repository.create(tarefa2);
 		repository.create(tarefa3);
@@ -360,7 +368,8 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(5l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,
+				TipoConvidado.TESTER);
 
 		TarefaRepository repository = new TarefaRepositoryTest(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
@@ -401,7 +410,8 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,
+				TipoConvidado.TESTER);
 		Convidado find = convidadoRepository.find(idTeste, 1l);
 		find.setRealizou(true);
 		convidadoRepository.update(find);
@@ -439,7 +449,8 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,
+				TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryTest(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
@@ -474,7 +485,8 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,
+				TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryTest(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
@@ -486,10 +498,12 @@ public class Populator {
 		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.cidadeverde.com", "visualizar blog de união",
 				"Procurar Campeão", teste, true);
-		FluxoIdealRepository fluxoRepository= new FluxoIdealRepositoryImpl(entityManager);
+		FluxoIdealRepository fluxoRepository = new FluxoIdealRepositoryImpl(
+				entityManager);
 		Fluxo fluxo = TarefaTestProcedure.newInstanceFluxo(usuario1);
 		FluxoIdeal fluxoIdeal = TarefaTestProcedure
 				.newInstanceFluxoIdeal(usuario1);
+		fluxoIdeal.setFluxo(fluxo);
 		fluxoIdeal.setFluxo(fluxo);
 		fluxoRepository.create(fluxoIdeal);
 
@@ -498,6 +512,7 @@ public class Populator {
 		repository.create(tarefa3);
 		Populator.criarPergunta(entityManager, idTeste);
 	}
+
 	public static void testUser15(EntityManager entityManager) {
 		Long idTeste = 15l;
 		UsuarioRepository usuarioRepository = UsuarioTestProcedure
@@ -515,7 +530,8 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,
+				TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryTest(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
@@ -527,11 +543,13 @@ public class Populator {
 		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.cidadeverde.com", "visualizar blog de união",
 				"Procurar Campeão", teste, true);
-		FluxoIdealRepository fluxoRepository= new FluxoIdealRepositoryImpl(entityManager);
+		FluxoIdealRepository fluxoRepository = new FluxoIdealRepositoryImpl(
+				entityManager);
 		Fluxo fluxo = TarefaTestProcedure.newInstanceFluxo(usuario1);
 		FluxoIdeal fluxoIdeal = TarefaTestProcedure
 				.newInstanceFluxoIdeal(usuario1);
 		fluxoIdeal.setFluxo(fluxo);
+		fluxoIdeal.setTarefa(tarefa);
 		fluxoRepository.create(fluxoIdeal);
 
 		repository.create(tarefa);
@@ -539,6 +557,7 @@ public class Populator {
 		repository.create(tarefa3);
 		Populator.criarPergunta(entityManager, idTeste);
 	}
+
 	public static void testUser16(EntityManager entityManager) {
 		Long idTeste = 16l;
 		UsuarioRepository usuarioRepository = UsuarioTestProcedure
@@ -556,7 +575,8 @@ public class Populator {
 		List<Long> idUsuarios = new ArrayList<Long>();
 		idUsuarios.add(1l);
 		idUsuarios.add(2l);
-		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,TipoConvidado.TESTER);
+		convidadoRepository.convidarUsuarios(idUsuarios, idTeste,
+				TipoConvidado.TESTER);
 		TarefaRepository repository = new TarefaRepositoryTest(entityManager);
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.globo.com", "Ir no site do Verdão",
@@ -568,11 +588,13 @@ public class Populator {
 		Tarefa tarefa3 = TarefaTestProcedure.newInstanceTarefa(
 				"http://www.cidadeverde.com", "visualizar blog de união",
 				"Procurar Campeão", teste, true);
-		FluxoIdealRepository fluxoRepository= new FluxoIdealRepositoryImpl(entityManager);
+		FluxoIdealRepository fluxoRepository = new FluxoIdealRepositoryImpl(
+				entityManager);
 		Fluxo fluxo = TarefaTestProcedure.newInstanceFluxo(usuario1);
 		FluxoIdeal fluxoIdeal = TarefaTestProcedure
 				.newInstanceFluxoIdeal(usuario1);
 		fluxoIdeal.setFluxo(fluxo);
+		fluxoIdeal.setTarefa(tarefa);
 		fluxoRepository.create(fluxoIdeal);
 
 		repository.create(tarefa);

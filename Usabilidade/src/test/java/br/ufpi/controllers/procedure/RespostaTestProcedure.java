@@ -20,7 +20,7 @@ import br.ufpi.repositories.Implement.TesteRepositoryImpl;
 
 public class RespostaTestProcedure {
 		public static RespostaController newInstanceRespostaController(
-			EntityManager entityManager, MockResult result) {
+			EntityManager entityManager, MockResult result,TesteSessionPlugin testeSessionPlugin) {
 		TesteView testeView = new TesteView();
 		MockValidator validator = new MockValidator();
 		UsuarioRepository usuarioRepositoryImpl = UsuarioTestProcedure
@@ -34,7 +34,6 @@ public class RespostaTestProcedure {
 		RespostaAlternativaRepository alternativaRepository = newInstanceRespostaAlternativaRepository(entityManager);
 		
 		TesteRepository testeRepository=new TesteRepositoryImpl(entityManager);
-		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
 		return new RespostaController(result, validator, testeView, usuarioLogado, validateComponente, escritaRepository, alternativaRepository, perguntaRepository, testeRepository, testeSessionPlugin);
 	}
 

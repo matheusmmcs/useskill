@@ -38,8 +38,8 @@ public class PerguntaRepositoryTest extends Repository<Pergunta, Long>
 	}
 
 	@Override
-	public PerguntaVO perguntaPertenceTeste(Long testeId, Long perguntaId) {
-		return repositoryImpl.perguntaPertenceTeste(testeId, perguntaId);
+	public PerguntaVO perguntVOPertenceTeste(Long testeId, Long perguntaId) {
+		return repositoryImpl.perguntVOPertenceTeste(testeId, perguntaId);
 	}
 
 	@Override
@@ -50,6 +50,11 @@ public class PerguntaRepositoryTest extends Repository<Pergunta, Long>
 	@Override
 	public boolean deleteAlternativas(Long idPergunta) {
 		return repositoryImpl.deleteAlternativas(idPergunta);
+	}
+
+	@Override
+	public Pergunta perguntPertenceTeste(Long testeId, Long perguntaId) {
+		return repositoryImpl.perguntPertenceTeste(testeId, perguntaId);
 	}
 
 }

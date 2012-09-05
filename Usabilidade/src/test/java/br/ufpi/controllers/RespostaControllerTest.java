@@ -14,7 +14,6 @@ import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.controllers.procedure.RespostaTestProcedure;
-import br.ufpi.controllers.procedure.TesteParticiparTestProcedure;
 import br.ufpi.models.Alternativa;
 import br.ufpi.repositories.AbstractDaoTest;
 import br.ufpi.repositories.RespostaAlternativaRepository;
@@ -39,7 +38,6 @@ public class RespostaControllerTest extends AbstractDaoTest {
 
 	private RespostaEscritaRepository escritaRepositoryImpl;
 	private RespostaController instance;
-	private TesteParticiparController participarController;
 	private TesteSessionPlugin testeSession;
 
 	@Before
@@ -51,11 +49,8 @@ public class RespostaControllerTest extends AbstractDaoTest {
 				.newInstanceRespostaEscritaRepositoryImpl(entityManager);
 		testeSession = new TesteSessionPlugin();
 		testeSession.setIdTeste(testeConvidadoLiberado);
-		participarController = TesteParticiparTestProcedure
-				.newInstanceTesteController(entityManager, result,
-						testeSession);
 		instance = RespostaTestProcedure.newInstanceRespostaController(
-				entityManager, result);
+				entityManager, result,testeSession);
 
 	}
 
@@ -86,7 +81,6 @@ public class RespostaControllerTest extends AbstractDaoTest {
 	@Test
 	public void testSalvarRespostaEscritaCorretaInicio() {
 		System.out.println("salvarRespostaEscrita");
-		participarController.aceitar(testeConvidadoLiberado);
 		String resposta = "Esta é minha Resposta";
 		int qAntes = escritaRepositoryImpl.findAll().size();
 		instance.salvarRespostaEscrita(resposta,perguntaDoTesteConvidadoLiberadoSubjetiva);
@@ -113,17 +107,18 @@ public class RespostaControllerTest extends AbstractDaoTest {
 	 */
 	@Test
 	public void testSalvarRespostaAlternativaPassandoIdInvalido() {
-		System.out.println("salvarRespostaAlternativa");
+		System.out.println("salvarRespostaAlternativa Id invalido");
 		int resAntes = respostaAlternativaRepository.findAll().size();
 		Alternativa alternativa = new Alternativa();
 		alternativa.setId(1l);
 		List<Message> errors=null;
 		try {
+			System.out.println("Teste session "+testeSession.getIdTeste());
 			instance.salvarRespostaAlternativa(alternativa,perguntaDoTesteConvidadoLiberadoObjetiva);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
-		Assert.assertEquals("Alternativa não pertence ao teste","pergunta.alternativa.sem.resposta", errors.get(0).getCategory());
+		Assert.assertEquals("Alternativa não pertence ao teste","campo.form.alterado", errors.get(0).getCategory());
 		int resDepois = respostaAlternativaRepository.findAll().size();
 		Assert.assertEquals(resAntes, resDepois);
 	}

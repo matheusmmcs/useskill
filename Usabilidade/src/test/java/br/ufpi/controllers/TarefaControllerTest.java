@@ -16,6 +16,7 @@ import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.controllers.procedure.TarefaTestProcedure;
 import br.ufpi.models.Action;
 import br.ufpi.models.Tarefa;
+import br.ufpi.models.TipoConvidado;
 import br.ufpi.repositories.AbstractDaoTest;
 import br.ufpi.repositories.TarefaRepository;
 
@@ -359,8 +360,6 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		Assert.assertNull(result);
 	}
 
-
-
 	/**
 	 * Test of removed method, of class TarefaController.
 	 */
@@ -373,7 +372,6 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		int qDepois = repository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois + 1);
 	}
-
 
 	/**
 	 * Test of removed method, of class TarefaController. Caso id de teste nÃ£o
@@ -474,7 +472,13 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		Assert.assertEquals(qAntes, qDepois);
 	}
 
-
+	@Test
+	public void exibirActions() {
+		Long usarioId = 1l;
+		Long tarefaId = 1l;
+		Long testeId = 8l;
+		instance.exibirActions(testeId, tarefaId, usarioId);
+	}
 
 	public String getGSonDados() {
 		List<Action> acaos = new ArrayList<Action>();
@@ -485,13 +489,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			acao.setsPosX(i);
 			acao.setsPosY(i);
 			acao.setsTag("tag");
-			acao.setsTagClass("tagClass");
-			acao.setsTagId("tagId");
-			acao.setsTagName("sTagName");
-			acao.setsTagType("TagType");
-			acao.setsTagValue("valeu");
-			acao.setsTime((double) i);
-			acao.setsTagType("click");
+			acao.setsTag("sTagName");
 			acao.setsUrl("www.globo.com");
 			acaos.add(acao);
 		}
@@ -499,4 +497,10 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		return gson.toJson(acaos);
 	}
 
+	@Test
+	public void saveFluxo() {
+		
+		instance= TarefaTestProcedure.newInstanceTarefaController(entityManager, result, 8l,TipoConvidado.TESTER);
+		instance.saveFluxo(this.getGSonDados(), 8l);
+	}
 }

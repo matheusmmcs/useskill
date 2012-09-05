@@ -611,8 +611,8 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 		pergunta.setId(perguntaID);
 		instance.atualizarPergunta(testePertenceUsuarioNaoLiberado, pergunta);
 		int qDepois = alternativaRepositoryImpl.findAll().size();
-		Assert.assertEquals("Não era para possui mais alternativas",0, repository
-				.find(perguntaID).getAlternativas().size());
+		Assert.assertNull("Não era para possui mais alternativas", repository
+				.find(perguntaID).getAlternativas());
 
 		Assert.assertEquals("Era para possuir menos 5 alternativas",
 				qAntes - 5, qDepois);
