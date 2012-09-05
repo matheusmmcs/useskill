@@ -475,8 +475,8 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	@Test
 	public void exibirActions() {
 		Long usarioId = 1l;
-		Long tarefaId = 1l;
-		Long testeId = 8l;
+		Long tarefaId = 7l;
+		Long testeId = 10l;
 		instance.exibirActions(testeId, tarefaId, usarioId);
 	}
 

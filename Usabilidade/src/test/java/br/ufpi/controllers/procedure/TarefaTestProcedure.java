@@ -16,20 +16,15 @@ import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.TarefaController;
 import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
-import br.ufpi.models.FluxoIdeal;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.Usuario;
-import br.ufpi.repositories.FluxoIdealRepository;
 import br.ufpi.repositories.FluxoRepository;
-import br.ufpi.repositories.FluxoUsuarioRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.repositories.UsuarioRepository;
-import br.ufpi.repositories.Implement.FluxoIdealRepositoryImpl;
 import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
-import br.ufpi.repositories.Implement.FluxoUsuarioRepositoryImpl;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 import br.ufpi.repositories.Implement.TesteRepositoryImpl;
 
@@ -46,12 +41,11 @@ public class TarefaTestProcedure {
 		TarefaRepository tarefaRepository = newInstanceTarefaRepository(entityManager);
 		TesteRepository testeRepository = TesteTestProcedure
 				.newInstanceTesteRepository(entityManager);
-		FluxoUsuarioRepository fluxoUsuarioRepository = new FluxoUsuarioRepositoryImpl(
-				entityManager);
-		FluxoIdealRepository fluxoIdealRepository = new FluxoIdealRepositoryImpl(
+	
+		FluxoRepository fluxoRepository = new FluxoRepositoryImpl(
 				entityManager);
 		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
-		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoIdealRepository, fluxoUsuarioRepository, testeSessionPlugin);
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin);
 		return controller;
 	}
 
@@ -71,11 +65,9 @@ public class TarefaTestProcedure {
 		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
 		testeSessionPlugin.setIdTeste(idTeste);
 		testeSessionPlugin.setTipoConvidado(tipoConvidado);
-		FluxoUsuarioRepository fluxoUsuarioRepository = new FluxoUsuarioRepositoryImpl(
+		FluxoRepository fluxoRepository = new FluxoRepositoryImpl(
 				entityManager);
-		FluxoIdealRepository fluxoIdealRepository = new FluxoIdealRepositoryImpl(
-				entityManager);
-		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoIdealRepository, fluxoUsuarioRepository, testeSessionPlugin);
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin);
 		return controller;
 	}
 
@@ -129,11 +121,7 @@ public class TarefaTestProcedure {
 		return tarefa;
 	}
 
-	public static FluxoIdeal newInstanceFluxoIdeal(Usuario usuario) {
-		FluxoIdeal fluxoIdeal = new FluxoIdeal();
-		// fluxoIdeal.setFluxo(newInstanceFluxo(usuario));
-		return fluxoIdeal;
-	}
+	
 
 	public static Fluxo newInstanceFluxo(Usuario usuario) {
 

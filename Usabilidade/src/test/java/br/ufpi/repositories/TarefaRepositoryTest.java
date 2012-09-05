@@ -1,5 +1,7 @@
 package br.ufpi.repositories;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import br.ufpi.controllers.procedure.TesteTestProcedure;
@@ -9,6 +11,7 @@ import br.ufpi.models.Teste;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 import br.ufpi.util.GsonElements;
+import br.ufpi.util.Paginacao;
 
 public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 		TarefaRepository {
@@ -51,8 +54,17 @@ public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 				idUsuario);
 	}
 
+	
+
 	@Override
-	public Fluxo getFluxo(Long testeId, Long tarefaId, Long usarioId,
+	public Paginacao<Fluxo> getFluxos(Long tarefaId, Long testeId,
+			Long usuarioDonoTeste, int quantidade, int numeroPagina) {
+		
+		return tarefaRepositoryImpl.getFluxos(tarefaId, testeId, usuarioDonoTeste, quantidade, numeroPagina);
+	}
+
+	@Override
+	public List<Fluxo> getFluxo(Long testeId, Long tarefaId, Long usarioId,
 			Long usuarioCriadorId) {
 		return tarefaRepositoryImpl.getFluxo(testeId, tarefaId, usarioId, usuarioCriadorId);
 	}

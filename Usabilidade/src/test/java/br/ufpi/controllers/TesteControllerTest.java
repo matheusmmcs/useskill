@@ -17,8 +17,6 @@ import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.controllers.procedure.TesteTestProcedure;
 import br.ufpi.models.Convidado;
 import br.ufpi.models.ElementosTeste;
-import br.ufpi.models.Pergunta;
-import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.repositories.AbstractDaoTest;
 import br.ufpi.repositories.TesteRepository;
