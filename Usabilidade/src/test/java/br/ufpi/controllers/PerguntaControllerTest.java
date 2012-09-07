@@ -771,7 +771,7 @@ public class PerguntaControllerTest extends AbstractDaoTest {
 	}
 
 	private static TesteSessionPlugin getTesteSessionPlugin(Long idTeste) {
-		TesteSessionPlugin plugin = new TesteSessionPlugin();
+		TesteSessionPlugin plugin = new TesteSessionPlugin(entityManager);
 		plugin.setIdTeste(idTeste);
 		return plugin;
 	}

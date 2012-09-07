@@ -44,7 +44,7 @@ public class TarefaTestProcedure {
 	
 		FluxoRepository fluxoRepository = new FluxoRepositoryImpl(
 				entityManager);
-		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
+		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin(entityManager);
 		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin);
 		return controller;
 	}
@@ -62,7 +62,7 @@ public class TarefaTestProcedure {
 		TarefaRepository tarefaRepository = new TarefaRepositoryImpl(
 				entityManager);
 		TesteRepository testeRepository = new TesteRepositoryImpl(entityManager);
-		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
+		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin(entityManager);
 		testeSessionPlugin.setIdTeste(idTeste);
 		testeSessionPlugin.setTipoConvidado(tipoConvidado);
 		FluxoRepository fluxoRepository = new FluxoRepositoryImpl(
@@ -126,8 +126,7 @@ public class TarefaTestProcedure {
 	public static Fluxo newInstanceFluxo(Usuario usuario) {
 
 		Fluxo fluxo = new Fluxo();
-		fluxo.setDataInicio(new Date(System.currentTimeMillis()));
-		fluxo.setDataFim(new Date(System.currentTimeMillis()));
+		fluxo.setDataRealizacao(new Date(System.currentTimeMillis()));
 		fluxo.setAcoes(newInstanceAcoes());
 		fluxo.setUsuario(usuario);
 

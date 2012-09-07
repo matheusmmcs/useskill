@@ -3,6 +3,7 @@ package br.ufpi.controllers;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import br.com.caelum.vraptor.Get;
@@ -13,6 +14,7 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.ufpi.annotation.Logado;
+import br.ufpi.componets.ObjetoSalvo;
 import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
@@ -25,7 +27,9 @@ import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
+import br.ufpi.util.EnumObjetoSalvo;
 import br.ufpi.util.GsonElements;
+import br.ufpi.util.Paginacao;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -171,15 +175,18 @@ public class TarefaController extends BaseController {
 	public void saveFluxo(String dados, Long tarefaId) {
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
-		//TODO Falta altera o tempo que foi iniciado o fluxo do usuario
+		// TODO Falta altera o tempo que foi iniciado o fluxo do usuario
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<Collection<Action>>() {
 		}.getType();
 		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
 		List<Action> acoes = new ArrayList<Action>(ints2);
+		fluxo.setDataRealizacao(new Date(System.currentTimeMillis()));
+		fluxo.setTempoRealicao(acoes.get(acoes.size()-1).getsTime());
 		fluxo.setAcoes(acoes);
 		fluxo.setTipoConvidado(testeSessionPlugin.getTipoConvidado());
 		fluxoRepository.create(fluxo);
+		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(fluxo.getId(), EnumObjetoSalvo.FLUXO));
 		result.use(Results.json()).from("true").serialize();
 	}
 
@@ -262,10 +269,6 @@ public class TarefaController extends BaseController {
 	 * fluxo que ele realizou
 	 * 
 	 * 2º verificar se o usario é criador do teste
-	 * 
-	 * 
-	 * 
-	 * 
 	 * */
 	@Logado
 	@Get
@@ -274,17 +277,22 @@ public class TarefaController extends BaseController {
 		validateComponente.validarId(tarefaId);
 		validateComponente.validarId(usarioId);
 		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
-		List<Fluxo> fluxos = tarefaRepository.getFluxo(testeId, tarefaId, usarioId,
-				usuarioCriadorId);
+		List<Fluxo> fluxos = tarefaRepository.getFluxo(testeId, tarefaId,
+				usarioId, usuarioCriadorId);
 		validateComponente.validarObjeto(fluxos);
 		result.include("fluxos", fluxos);
 	}
 
-	public void listUsers(Long testeId,Long tarefaId) {
+	@Logado
+	@Get()
+	public void listUsers(Long testeId, Long tarefaId, int numeroPagina) {
 		validateComponente.validarId(tarefaId);
 		validateComponente.validarId(testeId);
-//		Long usuarioDonoTeste = usuarioLogado.getUsuario().getId();
-		//tarefaRepository.getFluxos(tarefaId,testeId,usuarioDonoTeste);
+		Long usuarioDonoTeste = usuarioLogado.getUsuario().getId();
+		Paginacao<Fluxo> paginacao = tarefaRepository.getFluxos(tarefaId,
+				testeId, usuarioDonoTeste, Paginacao.OBJETOS_POR_PAGINA,
+				numeroPagina);
+		paginacao.geraPaginacao("fluxos", numeroPagina, result);
 
 	}
 }

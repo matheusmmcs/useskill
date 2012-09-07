@@ -25,14 +25,61 @@ import javax.persistence.TemporalType;
  * 
  * @author Cleiton
  */
-@NamedQueries({ 
-	 @NamedQuery(name = "Fluxo.Tarefa.pertence.Teste.E.Usuario.Realizou.Fluxo", query = "select fluxo from Teste as t "
-             + "left join t.tarefas as tarefas "
-             + "left join tarefas.fluxos as fluxo "
-             + "where t.id= :teste "
-             + "and tarefas.id= :tarefa "
-             + "and t.usuarioCriador.id= :usuarioCriador "
-             + "and fluxo.usuario.id= :usuario"),})
+@NamedQueries({
+
+		/*
+		 * obtem uma lista de fluxo em que o usuario participou
+		 * 
+		 * Lista de Condições
+		 * 
+		 * 1º usuarioCriador ser dono do teste
+		 * 
+		 * 2º tarefa pertencer ao teste
+		 * 
+		 * 3º usuario ter realizado o fluxo
+		 */
+		@NamedQuery(name = "Fluxo.obterfluxo", query = "select fluxo from Teste as t "
+				+ "left join t.tarefas as tarefas "
+				+ "left join tarefas.fluxos as fluxo "
+				+ "where t.id= :teste "
+				+ "and tarefas.id= :tarefa "
+				+ "and t.usuarioCriador.id= :usuarioCriador "
+				+ "and fluxo.usuario.id= :usuario"),
+		/*
+		 * obtem uma lista de fluxo de uma tarefa
+		 * 
+		 * Lista de Condições
+		 * 
+		 * 1º usuarioCriador ser dono do teste
+		 * 
+		 * 2º tarefa pertencer ao teste
+		 * 
+		 * 3º usuario ter realizado o fluxo
+		 */
+		@NamedQuery(name = "Fluxo.getFluxos.Tarefa", query = "select fluxo from Teste as t "
+				+ "left join t.tarefas as tarefas "
+				+ "left join tarefas.fluxos as fluxo "
+				+ "where t.id= :teste "
+				+ "and tarefas.id= :tarefa "
+				+ "and t.usuarioCriador.id= :usuarioCriador "),
+				/*
+				 * obtem o total de fluxo de uma tarefa
+				 * 
+				 * Lista de Condições
+				 * 
+				 * 1º usuarioCriador ser dono do teste
+				 * 
+				 * 2º tarefa pertencer ao teste
+				 * 
+				 * 3º usuario ter realizado o fluxo
+				 */
+				@NamedQuery(name = "Fluxo.getFluxos.Tarefa.Count", query = "select fluxo from Teste as t "
+						+ "left join t.tarefas as tarefas "
+						+ "left join tarefas.fluxos as fluxo "
+						+ "where t.id= :teste "
+						+ "and tarefas.id= :tarefa "
+						+ "and t.usuarioCriador.id= :usuarioCriador "),
+				})
 @Entity
 public class Fluxo implements Serializable {
 
@@ -41,9 +88,9 @@ public class Fluxo implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date dataInicio;
+	private Date dataRealizacao;
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date dataFim;
+	private Long tempoRealicao;
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Action> acoes;
 	@ManyToOne(optional = false, cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
@@ -83,21 +130,7 @@ public class Fluxo implements Serializable {
 		this.acoes = acoes;
 	}
 
-	public Date getDataFim() {
-		return dataFim;
-	}
 
-	public void setDataFim(Date dataFim) {
-		this.dataFim = dataFim;
-	}
-
-	public Date getDataInicio() {
-		return dataInicio;
-	}
-
-	public void setDataInicio(Date dataInicio) {
-		this.dataInicio = dataInicio;
-	}
 
 	public Usuario getUsuario() {
 		return usuario;
@@ -107,10 +140,33 @@ public class Fluxo implements Serializable {
 		this.usuario = usuario;
 	}
 
-	@Override
-	public String toString() {
-		return "FluxoComponente [id=" + id + ", dataInicio=" + dataInicio
-				+ ", dataFim=" + dataFim + "]";
+
+	/**
+	 * @return the dataRealizacao
+	 */
+	public Date getDataRealizacao() {
+		return dataRealizacao;
+	}
+
+	/**
+	 * @param dataRealizacao the dataRealizacao to set
+	 */
+	public void setDataRealizacao(Date dataRealizacao) {
+		this.dataRealizacao = dataRealizacao;
+	}
+
+	/**
+	 * @return the tempoRealicao
+	 */
+	public Long getTempoRealicao() {
+		return tempoRealicao;
+	}
+
+	/**
+	 * @param tempoRealicao the tempoRealicao to set
+	 */
+	public void setTempoRealicao(Long tempoRealicao) {
+		this.tempoRealicao = tempoRealicao;
 	}
 
 	public TipoConvidado getTipoConvidado() {

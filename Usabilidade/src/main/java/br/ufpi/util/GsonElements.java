@@ -27,6 +27,7 @@ public class GsonElements {
 		return remover(id, teste, 'T');
 	}
 
+	@SuppressWarnings("unchecked")
 	private static Teste remover(Long id, Teste teste, char tipo) {
 		Gson gson = new Gson();
 		ElementosTeste elementosTeste = new ElementosTeste(id, tipo);
@@ -40,6 +41,7 @@ public class GsonElements {
 		teste.setElementosTeste(gson.toJson(elementosTestes));
 		return teste;
 	}
+	@SuppressWarnings("unchecked")
 	private static Teste add(Long id, char tipo, Teste teste){
 		Gson gson = new Gson();
 		ElementosTeste elementosTeste = new ElementosTeste(id, tipo);

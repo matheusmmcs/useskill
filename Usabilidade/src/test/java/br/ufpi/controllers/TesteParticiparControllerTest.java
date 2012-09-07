@@ -39,7 +39,7 @@ public class TesteParticiparControllerTest extends AbstractDaoTest {
 	private Long testeConvidadoEJaParticipou = 12l;
 	private ConvidadoRepository convidadoRepository;
 	private Long usuarioId = 1l;
-	TesteSessionPlugin testeSession= new TesteSessionPlugin();
+	TesteSessionPlugin testeSession= new TesteSessionPlugin(entityManager);
 
 	@Before
 	public void setUp() throws Exception {
@@ -229,14 +229,5 @@ Caso em que o usuario é convidado para o teste e já realizou uma vez
 	public void testTermino() {
 		System.out.println("termino");
 		instance.termino();
-	}
-
-	/**
-	 * Test of responder method, of class TesteParticiparController.
-	 */
-	@Test
-	public void testResponder() {
-		System.out.println("responder");
-		instance.responder();
 	}
 }

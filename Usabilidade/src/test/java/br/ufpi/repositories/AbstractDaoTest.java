@@ -27,7 +27,6 @@ public abstract class AbstractDaoTest {
 		HashMap<String, String> configuracao = new HashMap<String, String>();
 //		configuracao.put("hibernate.connection.url",
 //				"jdbc:mysql://localhost:3306/usabilidadeTest");
-//		configuracao.put("ibernate.hbm2ddl.auto", "create");
 		entityManagerFactory = Persistence.createEntityManagerFactory(
 				"default", configuracao);
 		populator(entityManagerFactory.createEntityManager());

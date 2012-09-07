@@ -8,6 +8,7 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.ufpi.annotation.Logado;
+import br.ufpi.componets.ObjetoSalvo;
 import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
@@ -20,6 +21,7 @@ import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.RespostaAlternativaRepository;
 import br.ufpi.repositories.RespostaEscritaRepository;
 import br.ufpi.repositories.TesteRepository;
+import br.ufpi.util.EnumObjetoSalvo;
 
 @Resource
 public class RespostaController extends BaseController {
@@ -58,6 +60,9 @@ public class RespostaController extends BaseController {
 				testeSessionPlugin.getIdTeste());
 		respostaEscrita.setPergunta(pergunta);
 		escritaRepository.create(respostaEscrita);
+		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(respostaEscrita
+				.getId(), EnumObjetoSalvo.SUBJETIVA));
+		result.use(Results.nothing());
 	}
 
 	private Pergunta perguntaPertenceTesteLiberado(Long perguntaId, Long idTeste) {
@@ -89,6 +94,9 @@ public class RespostaController extends BaseController {
 		respostaAlternativa.setPergunta(pergunta);
 		respostaAlternativa.setUsuario(usuarioLogado.getUsuario());
 		alternativaRepository.create(respostaAlternativa);
+		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(respostaAlternativa
+				.getId(), EnumObjetoSalvo.SUBJETIVA));
+		result.use(Results.nothing());
 	}
 
 	@Logado

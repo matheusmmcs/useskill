@@ -63,6 +63,7 @@ public class TesteParticiparController extends BaseController {
 	@Logado
 	@Get
 	public void termino() {
+		testeSessionPlugin.termino();
 
 	}
 
@@ -80,13 +81,6 @@ public class TesteParticiparController extends BaseController {
 		return testeParticiparVO;
 	}
 
-	@Logado
-	public void responder() {
-
-		// incluir proximo
-		// incluir tbm o que é pra responder
-
-	}
 
 	/**
 	 * O Usuario aceita o Teste
@@ -99,9 +93,11 @@ public class TesteParticiparController extends BaseController {
 		TesteParticiparVO testeParticiparVO = verificaSeUsuarioConvidado(testeId);
 		System.out.println(testeParticiparVO.getElemntosTeste());
 		testeSessionPlugin.setIdTeste(testeId);
-		testeSessionPlugin.setTipoConvidado(testeParticiparVO.getTipoConvidado());
-		result.use(Results.json()).from(testeParticiparVO.getElemntosTeste(),
-				"listaElementos").serialize();
+		testeSessionPlugin.setTipoConvidado(testeParticiparVO
+				.getTipoConvidado());
+		result.use(Results.json())
+				.from(testeParticiparVO.getElemntosTeste(), "listaElementos")
+				.serialize();
 
 	}
 

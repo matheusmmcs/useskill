@@ -47,7 +47,7 @@ public class RespostaControllerTest extends AbstractDaoTest {
 				.newInstanceRespostaAlternativaRepository(entityManager);
 		escritaRepositoryImpl = RespostaTestProcedure
 				.newInstanceRespostaEscritaRepositoryImpl(entityManager);
-		testeSession = new TesteSessionPlugin();
+		testeSession = new TesteSessionPlugin(entityManager);
 		testeSession.setIdTeste(testeConvidadoLiberado);
 		instance = RespostaTestProcedure.newInstanceRespostaController(
 				entityManager, result,testeSession);

@@ -89,6 +89,20 @@ public class Paginacao<T> {
 		mapJson.put("qtdPaginas", qtdPaginas);
 		result.use(Results.json()).from(gson.toJson(mapJson)).serialize();
 	}
+
+	public void geraPaginacao(String nomeObjetosInclud,int numeroPagina,
+			Result result) {
+		Long qtdObjetosNoBanco=this.getCount();
+		int qtdPaginas = (int) (qtdObjetosNoBanco / OBJETOS_POR_PAGINA);
+		if (qtdObjetosNoBanco % OBJETOS_POR_PAGINA != 0
+				|| qtdObjetosNoBanco == 0) {
+			qtdPaginas++;
+		}
+		result.include("paginaAtual", numeroPagina);
+		result.include("qtdPaginas", qtdPaginas);
+		result.include(nomeObjetosInclud,this.getListObjects());
+		
+	}
 	
 
 }

@@ -9,7 +9,6 @@ import javax.persistence.Query;
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
-import br.ufpi.models.vo.ConvidadoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.Repository;
 import br.ufpi.repositories.TarefaRepository;
@@ -83,9 +82,8 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 	@Override
 	public List<Fluxo> getFluxo(Long testeId, Long tarefaId, Long usarioId,
 			Long usuarioCriadorId) {
-			
-		Query query = entityManager
-				.createNamedQuery("Fluxo.Tarefa.pertence.Teste.E.Usuario.Realizou.Fluxo");
+
+		Query query = entityManager.createNamedQuery("Fluxo.obterfluxo");
 		query.setParameter("teste", testeId);
 		query.setParameter("tarefa", tarefaId);
 		query.setParameter("usuarioCriador", usuarioCriadorId);
@@ -97,18 +95,23 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Paginacao<Fluxo> getFluxos(Long tarefaId,
-			Long testeId, Long usuarioDonoTeste, int quantidade,int numeroPagina) {
+	public Paginacao<Fluxo> getFluxos(Long tarefaId, Long testeId,
+			Long usuarioDonoTeste, int quantidade, int numeroPagina) {
+		String namedQuery = "Fluxo.getFluxos.Tarefa";
 		Paginacao<Fluxo> paginacao = new Paginacao<Fluxo>();
-		//TODO alterar named queris
-		Query query =  entityManager.createNamedQuery("Convidado.Teste");
+		Query query = entityManager.createNamedQuery(namedQuery);
+		query.setParameter("teste", testeId);
+		query.setParameter("tarefa", tarefaId);
+		query.setParameter("usuarioCriador", usuarioDonoTeste);
 		query.setFirstResult(quantidade * (numeroPagina - 1));
 		query.setMaxResults(quantidade);
 		paginacao.setListObjects((List<Fluxo>) query.getResultList());
-		Query count = entityManager
-				.createNamedQuery("Convidado.Teste.Count");
-//		count.setParameter("realiza", null);
+		Query count = entityManager.createNamedQuery(namedQuery + ".Count");
+		count.setParameter("tarefa", tarefaId);
+		count.setParameter("teste", testeId);
+		count.setParameter("usuarioCriador", usuarioDonoTeste);
 		paginacao.setCount((Long) count.getSingleResult());
 		return paginacao;
 	}
