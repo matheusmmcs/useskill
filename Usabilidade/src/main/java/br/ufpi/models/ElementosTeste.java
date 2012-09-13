@@ -93,6 +93,15 @@ public class ElementosTeste {
 			return false;
 		return true;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ElementosTeste [id=" + id + ", tipo=" + tipo + ", titulo="
+				+ titulo + "]";
+	}
 	
 
 }

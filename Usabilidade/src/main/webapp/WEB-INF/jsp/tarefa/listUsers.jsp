@@ -46,7 +46,7 @@
 		action="${pageContext.request.contextPath}/conta" method="post">
 		<fieldset>
 			<legend>
-				<span><fmt:message key="testes.liberado" />
+				<span>Tarefa - ${tarefa.titulo }
 				</span>
 				<hr />
 			</legend>
@@ -61,19 +61,18 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach items="${testesLiberados}" var="teste">
+					<c:forEach items="${fluxos}" var="fluxo">
 						<tr>
 							<td>
-								${teste.titulo}
+								${fluxo.nomeUsuario}
+							</td>
+							<td>
+								<fmt:formatDate value="${fluxo.dataRealizacao}" type="date" pattern="dd/MM/yyyy"/> 
 							</td>
 							<td class="centertd">
 								<a class="btn btn-success" title="<fmt:message key="testes.usuarios.convidados" />"
-								href="${pageContext.request.contextPath}/teste/${teste.id}/usuarios/convidados">
-								<fmt:message key="usuarios" />
-								</a>
-								<a class="btn btn-primary"
-								href="${pageContext.request.contextPath}/teste/${teste.id}/analise">
-								<fmt:message key="testes.analises" />
+								href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefaId}/usuario/${fluxo.idUsuario}/analise">
+								<fmt:message key="analise fluxos" />
 								</a>
 							</td>
 						</tr>

@@ -9,6 +9,19 @@ public class TarefaVO {
 	private String roteiro;
 	private String url;
 	
+	
+	/**
+	 * @return the titulo
+	 */
+	public String getTitulo() {
+		return titulo;
+	}
+	/**
+	 * @param titulo the titulo to set
+	 */
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
 	public TarefaVO(String roteiro, String url, String titulo) {
 		super();
 		this.roteiro = roteiro;

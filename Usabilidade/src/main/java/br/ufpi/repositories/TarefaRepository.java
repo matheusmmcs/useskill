@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
+import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.util.Paginacao;
 
@@ -94,6 +95,14 @@ public interface TarefaRepository {
 	 * 
 	 * @return O objeto paginação com uma lista de fluxo
 	 */
-	Paginacao<Fluxo> getFluxos(Long tarefaId, Long testeId,
+	Paginacao<FluxoVO> getFluxos(Long tarefaId, Long testeId,
 			Long usuarioDonoTeste,int quantidade,int numeroPagina);
+	/**
+	 * 
+	 * @param testeId
+	 * @param tarefaId
+	 * @param usarioId
+	 * @return
+	 */
+	List<Long> getTempoDeTodosFluxos(Long testeId, Long tarefaId, Long usarioId);
 }

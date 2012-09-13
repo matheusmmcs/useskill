@@ -13,6 +13,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.view.Results;
+import br.ufpi.analise.Estatistica;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.ObjetoSalvo;
 import br.ufpi.componets.TesteSessionPlugin;
@@ -23,6 +24,7 @@ import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
+import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.TarefaRepository;
@@ -182,11 +184,12 @@ public class TarefaController extends BaseController {
 		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
 		List<Action> acoes = new ArrayList<Action>(ints2);
 		fluxo.setDataRealizacao(new Date(System.currentTimeMillis()));
-		fluxo.setTempoRealicao(acoes.get(acoes.size()-1).getsTime());
+		fluxo.setTempoRealizacao(acoes.get(acoes.size() - 1).getsTime());
 		fluxo.setAcoes(acoes);
 		fluxo.setTipoConvidado(testeSessionPlugin.getTipoConvidado());
 		fluxoRepository.create(fluxo);
-		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(fluxo.getId(), EnumObjetoSalvo.FLUXO));
+		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(fluxo.getId(),
+				EnumObjetoSalvo.FLUXO));
 		result.use(Results.json()).from("true").serialize();
 	}
 
@@ -271,28 +274,52 @@ public class TarefaController extends BaseController {
 	 * 2º verificar se o usario é criador do teste
 	 * */
 	@Logado
-	@Get
-	public void exibirActions(Long testeId, Long tarefaId, Long usarioId) {
+	@Get({
+			"teste/{testeId}/tarefa/{tarefaId}/usuario/{usuarioId}/analise",
+			"teste/{testeId}/tarefa/{tarefaId}/usuario/{usuarioId}/analise/pag/{numeroPagina}" })
+	public void exibirActions(Long testeId, Long tarefaId, Long usuarioId) {
 		validateComponente.validarId(testeId);
 		validateComponente.validarId(tarefaId);
-		validateComponente.validarId(usarioId);
+		validateComponente.validarId(usuarioId);
 		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
 		List<Fluxo> fluxos = tarefaRepository.getFluxo(testeId, tarefaId,
-				usarioId, usuarioCriadorId);
+				usuarioId, usuarioCriadorId);
 		validateComponente.validarObjeto(fluxos);
 		result.include("fluxos", fluxos);
+
 	}
 
 	@Logado
-	@Get()
+	@Get({ "teste/{testeId}/tarefa/{tarefaId}/analise",
+			"teste/{testeId}/tarefa/{tarefaId}/analise/pag/{numeroPagina}" })
 	public void listUsers(Long testeId, Long tarefaId, int numeroPagina) {
 		validateComponente.validarId(tarefaId);
 		validateComponente.validarId(testeId);
+		if (numeroPagina <= 0) {
+			numeroPagina = 1;
+		}
 		Long usuarioDonoTeste = usuarioLogado.getUsuario().getId();
-		Paginacao<Fluxo> paginacao = tarefaRepository.getFluxos(tarefaId,
+		Paginacao<FluxoVO> paginacao = tarefaRepository.getFluxos(tarefaId,
 				testeId, usuarioDonoTeste, Paginacao.OBJETOS_POR_PAGINA,
 				numeroPagina);
 		paginacao.geraPaginacao("fluxos", numeroPagina, result);
-
+		result.include("tarefaId", tarefaId);
+		result.include("testeId", testeId);
+		if (!paginacao.getListObjects().isEmpty()) {
+			Estatistica estatistica = new Estatistica();
+			List<FluxoVO> fluxos = paginacao.getListObjects();
+			List<Long> tempoDeTodosFluxos = tarefaRepository
+					.getTempoDeTodosFluxos(testeId, tarefaId, usuarioDonoTeste);
+			double desvioPadrao = estatistica.desvioPadrao(tempoDeTodosFluxos);
+			double mediaAritimetica = estatistica
+					.mediaAritimetica(tempoDeTodosFluxos);
+			estatistica.classificarUsuarios(mediaAritimetica, desvioPadrao,
+					fluxos);
+			result.include("desvioPadrao", desvioPadrao);
+			result.include("media", mediaAritimetica);
+			result.include("tarefa",
+					tarefaRepository.getTarefaVO(tarefaId, testeId));
+		}
 	}
+
 }

@@ -5,6 +5,7 @@
 package br.ufpi.models;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -54,6 +55,24 @@ public class Teste implements Serializable {
 	private String tituloPublico;
 	@Column(columnDefinition = "TiNYTEXT")
 	private String textoIndroducao;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date dataLiberacao;
+	
+
+	/**
+	 * @return the dataLiberacao
+	 */
+	public Date getDataLiberacao() {
+		return dataLiberacao;
+	}
+
+	/**
+	 * @param dataLiberacao the dataLiberacao to set
+	 */
+	public void setDataLiberacao(Date dataLiberacao) {
+		this.dataLiberacao = dataLiberacao;
+	}
+
 	/**
 	 * Indica se o Teste jah foi liberado para os usuarios responderem.
 	 * Diferença do realizao é que se liberado pode ser alterado.

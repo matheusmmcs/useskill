@@ -8,6 +8,7 @@ import br.ufpi.controllers.procedure.TesteTestProcedure;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
+import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 import br.ufpi.util.GsonElements;
@@ -57,7 +58,7 @@ public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 	
 
 	@Override
-	public Paginacao<Fluxo> getFluxos(Long tarefaId, Long testeId,
+	public Paginacao<FluxoVO> getFluxos(Long tarefaId, Long testeId,
 			Long usuarioDonoTeste, int quantidade, int numeroPagina) {
 		
 		return tarefaRepositoryImpl.getFluxos(tarefaId, testeId, usuarioDonoTeste, quantidade, numeroPagina);
@@ -67,6 +68,15 @@ public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 	public List<Fluxo> getFluxo(Long testeId, Long tarefaId, Long usarioId,
 			Long usuarioCriadorId) {
 		return tarefaRepositoryImpl.getFluxo(testeId, tarefaId, usarioId, usuarioCriadorId);
+	}
+
+	/* (non-Javadoc)
+	 * @see br.ufpi.repositories.TarefaRepository#getTempoDeTodosFluxos(java.lang.Long, java.lang.Long, java.lang.Long)
+	 */
+	@Override
+	public List<Long> getTempoDeTodosFluxos(Long testeId, Long tarefaId,
+			Long usarioId) {
+		return tarefaRepositoryImpl.getTempoDeTodosFluxos(testeId, tarefaId, usarioId);
 	}
 
 	

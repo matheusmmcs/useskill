@@ -56,30 +56,36 @@ import javax.persistence.TemporalType;
 		 * 
 		 * 3º usuario ter realizado o fluxo
 		 */
-		@NamedQuery(name = "Fluxo.getFluxos.Tarefa", query = "select fluxo from Teste as t "
+		@NamedQuery(name = "Fluxo.getFluxos.Tarefa", query = "select new br.ufpi.models.vo.FluxoVO(fluxo.usuario.nome,fluxo.usuario.id,fluxo.dataRealizacao,fluxo.tempoRealizacao) from Teste as t "
 				+ "left join t.tarefas as tarefas "
 				+ "left join tarefas.fluxos as fluxo "
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
 				+ "and t.usuarioCriador.id= :usuarioCriador "),
-				/*
-				 * obtem o total de fluxo de uma tarefa
-				 * 
-				 * Lista de Condições
-				 * 
-				 * 1º usuarioCriador ser dono do teste
-				 * 
-				 * 2º tarefa pertencer ao teste
-				 * 
-				 * 3º usuario ter realizado o fluxo
-				 */
-				@NamedQuery(name = "Fluxo.getFluxos.Tarefa.Count", query = "select fluxo from Teste as t "
-						+ "left join t.tarefas as tarefas "
-						+ "left join tarefas.fluxos as fluxo "
-						+ "where t.id= :teste "
-						+ "and tarefas.id= :tarefa "
-						+ "and t.usuarioCriador.id= :usuarioCriador "),
-				})
+		/*
+		 * obtem o total de fluxo de uma tarefa
+		 * 
+		 * Lista de Condições
+		 * 
+		 * 1º usuarioCriador ser dono do teste
+		 * 
+		 * 2º tarefa pertencer ao teste
+		 * 
+		 * 3º usuario ter realizado o fluxo
+		 */
+
+		@NamedQuery(name = "Fluxo.getFluxos.Tarefa.Count", query = "select count(*) from Teste as t "
+				+ "left join t.tarefas as tarefas "
+				+ "left join tarefas.fluxos as fluxo "
+				+ "where t.id= :teste "
+				+ "and tarefas.id= :tarefa "
+				+ "and t.usuarioCriador.id= :usuarioCriador "),
+		@NamedQuery(name = "Fluxo.getFluxos.Tarefa.Lista.Tempo", query = "select fluxo.tempoRealizacao from Teste as t "
+				+ "left join t.tarefas as tarefas "
+				+ "left join tarefas.fluxos as fluxo "
+				+ "where t.id= :teste "
+				+ "and tarefas.id= :tarefa "
+				+ "and t.usuarioCriador.id= :usuarioCriador "), })
 @Entity
 public class Fluxo implements Serializable {
 
@@ -89,8 +95,7 @@ public class Fluxo implements Serializable {
 	private Long id;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dataRealizacao;
-	@Temporal(TemporalType.TIMESTAMP)
-	private Long tempoRealicao;
+	private Long tempoRealizacao;
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Action> acoes;
 	@ManyToOne(optional = false, cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
@@ -130,8 +135,6 @@ public class Fluxo implements Serializable {
 		this.acoes = acoes;
 	}
 
-
-
 	public Usuario getUsuario() {
 		return usuario;
 	}
@@ -139,7 +142,6 @@ public class Fluxo implements Serializable {
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
-
 
 	/**
 	 * @return the dataRealizacao
@@ -149,7 +151,8 @@ public class Fluxo implements Serializable {
 	}
 
 	/**
-	 * @param dataRealizacao the dataRealizacao to set
+	 * @param dataRealizacao
+	 *            the dataRealizacao to set
 	 */
 	public void setDataRealizacao(Date dataRealizacao) {
 		this.dataRealizacao = dataRealizacao;
@@ -158,15 +161,16 @@ public class Fluxo implements Serializable {
 	/**
 	 * @return the tempoRealicao
 	 */
-	public Long getTempoRealicao() {
-		return tempoRealicao;
+	public Long getTempoRealizacao() {
+		return tempoRealizacao;
 	}
 
 	/**
-	 * @param tempoRealicao the tempoRealicao to set
+	 * @param tempoRealicao
+	 *            the tempoRealicao to set
 	 */
-	public void setTempoRealicao(Long tempoRealicao) {
-		this.tempoRealicao = tempoRealicao;
+	public void setTempoRealizacao(Long tempoRealicao) {
+		this.tempoRealizacao = tempoRealicao;
 	}
 
 	public TipoConvidado getTipoConvidado() {

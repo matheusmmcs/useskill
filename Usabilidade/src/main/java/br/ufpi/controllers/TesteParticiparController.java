@@ -91,7 +91,6 @@ public class TesteParticiparController extends BaseController {
 	@Get("/{testeId}/aceitar")
 	public void aceitar(Long testeId) {
 		TesteParticiparVO testeParticiparVO = verificaSeUsuarioConvidado(testeId);
-		System.out.println(testeParticiparVO.getElemntosTeste());
 		testeSessionPlugin.setIdTeste(testeId);
 		testeSessionPlugin.setTipoConvidado(testeParticiparVO
 				.getTipoConvidado());

@@ -1,6 +1,7 @@
 package br.ufpi.controllers;
 
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.PersistenceException;
@@ -203,6 +204,7 @@ public class TesteController extends BaseController {
 			email.enviarConviteTeste(usuario.getUsuario(), teste);
 		}
 		teste.setLiberado(true);
+		teste.setDataLiberacao(new Date(System.currentTimeMillis()));
 		testeRepository.update(teste);
 		this.result.redirectTo(LoginController.class).logado(1);
 	}
@@ -355,7 +357,7 @@ public class TesteController extends BaseController {
 	@Get({ "teste/{idTeste}/convidar/usuarios",
 			"teste/{idTeste}/convidar/usuarios/pag/{numeroPagina}" })
 	public void listarUsuriosNaoConvidados(Long idTeste, int numeroPagina) {
-		if (numeroPagina == 0 || numeroPagina < 0)
+		if (numeroPagina <= 0 || numeroPagina < 0)
 			numeroPagina = 1;
 		this.testePertenceUsuarioLogado(idTeste);
 		Paginacao<Usuario> paginacao = testeRepository
@@ -382,7 +384,7 @@ public class TesteController extends BaseController {
 	@Get({ "teste/{idTeste}/usuarios/convidados",
 			"teste/{idTeste}/usuarios/convidados/pag/{numeroPagina}" })
 	public void listarUsuriosConvidados(Long idTeste, int numeroPagina) {
-		if (numeroPagina == 0 || numeroPagina < 0)
+		if (numeroPagina <= 0 || numeroPagina < 0)
 			numeroPagina = 1;
 		this.testePertenceUsuarioLogado(idTeste);
 		Paginacao<ConvidadoVO> paginacao = testeRepository
@@ -433,7 +435,7 @@ public class TesteController extends BaseController {
 	@Logado
 	@Get({ "testes/liberados/pag/{numeroPagina}", "testes/liberados" })
 	public void listarTestesLiberados(int numeroPagina) {
-		if (numeroPagina == 0) {
+		if (numeroPagina <= 0) {
 			numeroPagina = 1;
 		}
 		validateComponente.validarId((long) numeroPagina);
@@ -450,7 +452,7 @@ public class TesteController extends BaseController {
 	@Logado
 	@Get({ "/testes/convidados", "/testes/convidados/pag/{numeroPagina}" })
 	public void listarTestesConvidados(int numeroPagina) {
-		if (numeroPagina == 0) {
+		if (numeroPagina <= 0) {
 			numeroPagina = 1;
 		}
 		Paginacao<ConvidadoVO> paginacao = testeRepository
@@ -466,7 +468,6 @@ public class TesteController extends BaseController {
 	@SuppressWarnings({ "unchecked" })
 	private List<ElementosTeste> organizarElementos() {
 		Gson gson = new Gson();
-		
 		Teste teste = testeView.getTeste();
 		String elementosTeste2 = teste.getElementosTeste();
 		if(elementosTeste2==null)
@@ -488,18 +489,24 @@ public class TesteController extends BaseController {
 				}
 			}
 		}
+		System.out.println(elementosTestes);
 		return elementosTestes;
 	}
 
 	@Logado
 	@Post("teste/ordenar")
 	public void salvaListaElementos(Long idTeste, String listaElementos) {
-		System.out.println("ORDENEI");
 		validateComponente.validarId(idTeste);
 		this.testeNaoLiberadoPertenceUsuarioLogado(idTeste);
 		Teste teste = testeView.getTeste();
 		teste.setElementosTeste(listaElementos);
 		testeRepository.update(teste);
 		result.use(Results.json()).from("sucesso").serialize();
+	}
+	@Logado
+	@Get("teste/{idTeste}/analise")
+	public void analise(Long idTeste){
+		this.testePertenceUsuarioLogado(idTeste);
+		result.include("elementosTeste", organizarElementos());
 	}
 }
