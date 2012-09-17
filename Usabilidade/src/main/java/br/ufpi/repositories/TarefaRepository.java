@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
+import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.util.Paginacao;
@@ -104,5 +105,5 @@ public interface TarefaRepository {
 	 * @param usarioId
 	 * @return
 	 */
-	List<Long> getTempoDeTodosFluxos(Long testeId, Long tarefaId, Long usarioId);
+	List<Long> getTempoDeTodosFluxos(Long testeId, Long tarefaId, Long usarioId,TipoConvidado tipoConvidado);
 }

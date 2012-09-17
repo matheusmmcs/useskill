@@ -1,12 +1,15 @@
 package br.ufpi.controllers;
 
 //TODO Validar se as perguntas estão sendo respondida e mostra uma mensagem
+import java.util.List;
+
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.view.Results;
+import br.ufpi.analise.Estatistica;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.ObjetoSalvo;
 import br.ufpi.componets.TesteSessionPlugin;
@@ -17,6 +20,7 @@ import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.RespostaAlternativa;
 import br.ufpi.models.RespostaEscrita;
+import br.ufpi.models.vo.RespostaAlternativaVO;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.RespostaAlternativaRepository;
 import br.ufpi.repositories.RespostaEscritaRepository;
@@ -83,9 +87,11 @@ public class RespostaController extends BaseController {
 
 	@Logado
 	@Post("/teste/salvar/resposta/alternativa")
-	public void salvarRespostaAlternativa(Alternativa alternativa,
+	public void salvarRespostaAlternativa(Long alternativaId,
 			Long perguntaId) {
 		RespostaAlternativa respostaAlternativa = new RespostaAlternativa();
+		Alternativa alternativa= new Alternativa();
+		alternativa.setId(alternativaId);
 		respostaAlternativa.setAlternativa(alternativa);
 		Pergunta pergunta = perguntaPertenceTesteLiberadoEAlternativa(
 				alternativa.getId(), perguntaId,
@@ -102,15 +108,20 @@ public class RespostaController extends BaseController {
 	@Logado
 	@Get("analise/teste/{testeId}/pergunta/{perguntaId}")
 	public void exibirRespostas(Long testeId, Long perguntaId) {
-		if (testeId != null && perguntaId != null) {
-			Pergunta pergunta = perguntaPertenceUsuarioTesteLiberado(
-					perguntaId, testeId);
-			result.include("teste", testeRepository.find(testeId));
-			result.include("pergunta", pergunta);
+		validateComponente.validarId(testeId);
+		validateComponente.validarId(perguntaId);
+		Pergunta pergunta = perguntaPertenceUsuarioTesteLiberado(perguntaId,
+				testeId);
+		if (pergunta.getTipoRespostaAlternativa()) {
+			List<RespostaAlternativaVO> respostasAlternativas = alternativaRepository
+					.getRespostasAlternativas(perguntaId);
+			Estatistica estatistica= new Estatistica();
+			estatistica.gerarPorcentagem(respostasAlternativas);
+			result.include("respostas", respostasAlternativas);
+		} 
+		result.include("teste", testeRepository.find(testeId));
+		result.include("pergunta", pergunta);
 
-		} else {
-			result.redirectTo(LoginController.class).logado(1);
-		}
 	}
 
 	/**

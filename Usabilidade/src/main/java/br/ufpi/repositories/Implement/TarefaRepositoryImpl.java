@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
+import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.Repository;
@@ -120,11 +121,12 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Long> getTempoDeTodosFluxos(Long testeId, Long tarefaId,
-			Long usarioId) {
+			Long usarioId, TipoConvidado tipoConvidado) {
 		String namedQuery = "Fluxo.getFluxos.Tarefa.Lista.Tempo";
 		Query query = entityManager.createNamedQuery(namedQuery);
 		query.setParameter("teste", testeId);
 		query.setParameter("tarefa", tarefaId);
+		query.setParameter("tipoConvidado", tipoConvidado);
 		query.setParameter("usuarioCriador", usarioId);
 		return (List<Long>)query.getResultList();
 	}

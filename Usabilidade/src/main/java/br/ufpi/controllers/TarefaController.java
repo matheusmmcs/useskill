@@ -24,6 +24,7 @@ import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
+import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.FluxoRepository;
@@ -306,20 +307,36 @@ public class TarefaController extends BaseController {
 		result.include("tarefaId", tarefaId);
 		result.include("testeId", testeId);
 		if (!paginacao.getListObjects().isEmpty()) {
-			Estatistica estatistica = new Estatistica();
-			List<FluxoVO> fluxos = paginacao.getListObjects();
-			List<Long> tempoDeTodosFluxos = tarefaRepository
-					.getTempoDeTodosFluxos(testeId, tarefaId, usuarioDonoTeste);
-			double desvioPadrao = estatistica.desvioPadrao(tempoDeTodosFluxos);
-			double mediaAritimetica = estatistica
-					.mediaAritimetica(tempoDeTodosFluxos);
-			estatistica.classificarUsuarios(mediaAritimetica, desvioPadrao,
-					fluxos);
-			result.include("desvioPadrao", desvioPadrao);
-			result.include("media", mediaAritimetica);
+			realizarCalculosEstatisticos(paginacao, tarefaId, testeId,
+					usuarioDonoTeste, TipoConvidado.TESTER);
+			realizarCalculosEstatisticos(paginacao, tarefaId, testeId,
+					usuarioDonoTeste, TipoConvidado.USER);
 			result.include("tarefa",
 					tarefaRepository.getTarefaVO(tarefaId, testeId));
 		}
 	}
 
+	/**
+	 * Realiza o calculo estatistico sobre um grupo de
+	 * 
+	 * @param paginacao
+	 * @param tarefaId
+	 * @param testeId
+	 * @param usuarioDonoTeste
+	 * @param tipoConvidado
+	 */
+	private void realizarCalculosEstatisticos(Paginacao<FluxoVO> paginacao,
+			Long tarefaId, Long testeId, Long usuarioDonoTeste,
+			TipoConvidado tipoConvidado) {
+		Estatistica estatistica = new Estatistica();
+		List<FluxoVO> fluxos = paginacao.getListObjects();
+		List<Long> tempoDeTodosFluxos = tarefaRepository.getTempoDeTodosFluxos(
+				testeId, tarefaId, usuarioDonoTeste, tipoConvidado);
+		double desvioPadrao = estatistica.desvioPadrao(tempoDeTodosFluxos);
+		double mediaAritimetica = estatistica
+				.mediaAritimetica(tempoDeTodosFluxos);
+		estatistica.classificarUsuarios(mediaAritimetica, desvioPadrao, fluxos,tipoConvidado);
+		result.include("desvioPadrao_" + tipoConvidado, desvioPadrao);
+		result.include("media_" + tipoConvidado, mediaAritimetica);
+	}
 }

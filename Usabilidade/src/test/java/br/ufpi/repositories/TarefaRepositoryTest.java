@@ -8,6 +8,7 @@ import br.ufpi.controllers.procedure.TesteTestProcedure;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
+import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
@@ -75,8 +76,8 @@ public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 	 */
 	@Override
 	public List<Long> getTempoDeTodosFluxos(Long testeId, Long tarefaId,
-			Long usarioId) {
-		return tarefaRepositoryImpl.getTempoDeTodosFluxos(testeId, tarefaId, usarioId);
+			Long usarioId,TipoConvidado tipoConvidado) {
+		return tarefaRepositoryImpl.getTempoDeTodosFluxos(testeId, tarefaId, usarioId,tipoConvidado);
 	}
 
 	

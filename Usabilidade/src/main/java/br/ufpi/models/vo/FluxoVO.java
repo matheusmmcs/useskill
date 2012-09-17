@@ -6,6 +6,7 @@ package br.ufpi.models.vo;
 import java.util.Date;
 
 import br.ufpi.analise.enums.TipoMedia;
+import br.ufpi.models.TipoConvidado;
 
 /**
  * @author Cleiton
@@ -17,6 +18,7 @@ public class FluxoVO {
 	private Date dataRealizacao;
 	private Long tempoRealicao;
 	private TipoMedia media;
+	private TipoConvidado tipoConvidado;
 	/**
 	 * @param nomeUsuario
 	 * @param idUsuario
@@ -24,12 +26,13 @@ public class FluxoVO {
 	 * @param tempoRealicao
 	 */
 	public FluxoVO(String nomeUsuario, Long idUsuario, Date dataRealizacao,
-			Long tempoRealicao) {
+			Long tempoRealicao,TipoConvidado tipoConvidado) {
 		super();
 		this.nomeUsuario = nomeUsuario;
 		this.idUsuario = idUsuario;
 		this.dataRealizacao = dataRealizacao;
 		this.tempoRealicao = tempoRealicao;
+		this.tipoConvidado=tipoConvidado;
 	}
 	/**
 	 * @return the nomeUsuario
@@ -91,5 +94,18 @@ public class FluxoVO {
 	public void setMedia(TipoMedia media) {
 		this.media = media;
 	}
+	/**
+	 * @return the tipoConvidado
+	 */
+	public TipoConvidado getTipoConvidado() {
+		return tipoConvidado;
+	}
+	/**
+	 * @param tipoConvidado the tipoConvidado to set
+	 */
+	public void setTipoConvidado(TipoConvidado tipoConvidado) {
+		this.tipoConvidado = tipoConvidado;
+	}
+	
 	
 }

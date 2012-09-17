@@ -56,7 +56,7 @@ import javax.persistence.TemporalType;
 		 * 
 		 * 3º usuario ter realizado o fluxo
 		 */
-		@NamedQuery(name = "Fluxo.getFluxos.Tarefa", query = "select new br.ufpi.models.vo.FluxoVO(fluxo.usuario.nome,fluxo.usuario.id,fluxo.dataRealizacao,fluxo.tempoRealizacao) from Teste as t "
+		@NamedQuery(name = "Fluxo.getFluxos.Tarefa", query = "select new br.ufpi.models.vo.FluxoVO(fluxo.usuario.nome,fluxo.usuario.id,fluxo.dataRealizacao,fluxo.tempoRealizacao,fluxo.tipoConvidado) from Teste as t "
 				+ "left join t.tarefas as tarefas "
 				+ "left join tarefas.fluxos as fluxo "
 				+ "where t.id= :teste "
@@ -85,7 +85,8 @@ import javax.persistence.TemporalType;
 				+ "left join tarefas.fluxos as fluxo "
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
-				+ "and t.usuarioCriador.id= :usuarioCriador "), })
+				+ "and t.usuarioCriador.id= :usuarioCriador "
+				+"and fluxo.tipoConvidado= :tipoconvidado"), })
 @Entity
 public class Fluxo implements Serializable {
 
