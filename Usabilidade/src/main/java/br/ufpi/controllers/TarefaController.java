@@ -286,10 +286,11 @@ public class TarefaController extends BaseController {
 		List<Fluxo> fluxos = tarefaRepository.getFluxo(testeId, tarefaId,
 				usuarioId, usuarioCriadorId);
 		validateComponente.validarObjeto(fluxos);
-		result.include("tarefa",tarefaRepository.find(tarefaId));
+		result.include("tarefa", tarefaRepository.find(tarefaId));
 		result.include("fluxos", fluxos);
-		result.include("testeId",testeId);
+		result.include("testeId", testeId);
 	}
+
 	/**
 	 * Passos do método
 	 * 
@@ -299,20 +300,44 @@ public class TarefaController extends BaseController {
 	 * 2º verificar se o usario é criador do teste
 	 * */
 	@Logado
-	@Get({
-		"teste/{testeId}/tarefa/{tarefaId}/usuario/{usuarioId}/fluxo/{fluxoId}/analise"})
-	public void exibirActions(Long testeId, Long tarefaId, Long usuarioId,Long fluxoId) {
+	@Get({ "teste/{testeId}/tarefa/{tarefaId}/usuario/{usuarioId}/fluxo/{fluxoId}/analise" })
+	public void exibirActions(Long testeId, Long tarefaId, Long usuarioId,
+			Long fluxoId) {
 		validateComponente.validarId(testeId);
 		validateComponente.validarId(testeId);
 		validateComponente.validarId(usuarioId);
 		validateComponente.validarId(fluxoId);
 		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
 		List<Action> acoes = tarefaRepository.getAcoesFluxo(testeId, tarefaId,
-				usuarioId, usuarioCriadorId,fluxoId);
+				usuarioId, usuarioCriadorId, fluxoId);
 		validateComponente.validarObjeto(acoes);
+		diferencaTempo(acoes);
 		result.include("acoes", acoes);
-		result.include("tarefaId",tarefaId);
-		result.include("testeId",testeId);
+		result.include("tarefaId", tarefaId);
+		result.include("testeId", testeId);
+	}
+
+	/**
+	 * Calcula a diferença de cada ação em relacao ao tempo da primeira ação
+	 * realizada
+	 * 
+	 * @param acoes Lista de ações que serão comparadas
+	 */
+	public static void diferencaTempo(List<Action> acoes) {
+		if (!acoes.isEmpty()) {
+			Long anterior = 0l;
+			for (int i = 0; i < acoes.size(); i++) {
+				if (i != 0) {
+					Long tempo = acoes.get(i).getsTime() - anterior;
+					acoes.get(i).setsTime(tempo);
+				} else {
+					anterior = acoes.get(0).getsTime();
+					acoes.get(0).setsTime(0l);
+
+				}
+			}
+		}
+
 	}
 
 	@Logado
