@@ -477,7 +477,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		Long usarioId = 1l;
 		Long tarefaId = 7l;
 		Long testeId = 10l;
-		instance.exibirActions(testeId, tarefaId, usarioId);
+		instance.exibirFluxosUsuario(testeId, tarefaId, usarioId);
 	}
 
 	public String getGSonDados() {

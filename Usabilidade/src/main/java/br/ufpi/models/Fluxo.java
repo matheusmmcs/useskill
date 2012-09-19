@@ -44,7 +44,16 @@ import javax.persistence.TemporalType;
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
 				+ "and t.usuarioCriador.id= :usuarioCriador "
-				+ "and fluxo.usuario.id= :usuario"),
+				+ "and fluxo.usuario.id= :usuario order by  fluxo.tempoRealizacao desc"),
+	@NamedQuery(name = "Fluxo.obterActions", query = "select acao from Teste as t "
+						+ "left join t.tarefas as tarefas "
+						+ "left join tarefas.fluxos as fluxo "
+						+ "left join fluxo.acoes as acao "
+						+ "where t.id= :teste "
+						+ "and tarefas.id= :tarefa "
+						+ "and t.usuarioCriador.id= :usuarioCriador "
+						+ "and fluxo.usuario.id= :usuario "
+						+"and fluxo.id= :fluxo"),
 		/*
 		 * obtem uma lista de fluxo de uma tarefa
 		 * 
@@ -86,7 +95,7 @@ import javax.persistence.TemporalType;
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
 				+ "and t.usuarioCriador.id= :usuarioCriador "
-				+"and fluxo.tipoConvidado= :tipoconvidado"), })
+				+"and fluxo.tipoConvidado= :tipoConvidado"), })
 @Entity
 public class Fluxo implements Serializable {
 

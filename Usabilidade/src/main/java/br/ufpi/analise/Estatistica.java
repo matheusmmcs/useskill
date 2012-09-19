@@ -32,7 +32,7 @@ public class Estatistica {
 	 * @return
 	 */
 	public double desvioPadrao(List<Long> objetos) {
-		if (objetos.size() == 1) {
+		if (objetos.size() == 1 ) {
 			return 0.0;
 		} else {
 			double mediaAritimetica = mediaAritimetica(objetos);
@@ -53,6 +53,7 @@ public class Estatistica {
 	 */
 	public double mediaAritimetica(List<Long> objetos) {
 		double somatorio = 0l;
+		System.out.println(objetos);
 		for (Long d : objetos) {
 			somatorio += d;
 		}

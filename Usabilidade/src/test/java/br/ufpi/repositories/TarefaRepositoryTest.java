@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import br.ufpi.controllers.procedure.TesteTestProcedure;
+import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
@@ -78,6 +79,15 @@ public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 	public List<Long> getTempoDeTodosFluxos(Long testeId, Long tarefaId,
 			Long usarioId,TipoConvidado tipoConvidado) {
 		return tarefaRepositoryImpl.getTempoDeTodosFluxos(testeId, tarefaId, usarioId,tipoConvidado);
+	}
+
+	/* (non-Javadoc)
+	 * @see br.ufpi.repositories.TarefaRepository#getAcoesFluxo(java.lang.Long, java.lang.Long, java.lang.Long, java.lang.Long, java.lang.Long)
+	 */
+	@Override
+	public List<Action> getAcoesFluxo(Long testeId, Long tarefaId,
+			Long usarioId, Long usuarioCriadorId, Long fluxoId) {
+		return tarefaRepositoryImpl.getAcoesFluxo(testeId, tarefaId, usarioId, usuarioCriadorId, fluxoId);
 	}
 
 	

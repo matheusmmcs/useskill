@@ -54,27 +54,19 @@
 			<table class="table table-striped table-bordered table-condensed">
 				<thead>
 					<tr>
-						<th><fmt:message key="table.titulo" />
-						</th>
-						<th style="width: 155px"><fmt:message key="table.acoes" />
-						</th>
+						<th style="width: 155px">Tipo da ação</th>
+						<th style="width: 155px">Url</th>
+						<th style="width: 155px">tempo realizacao</th>
+						<th style="width: 155px">local</th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach items="${fluxos}" var="fluxo">
+					<c:forEach items="${acoes}" var="acao">
 						<tr>
-							<td>
-								${fluxo.usuario.nome}
-							</td>
-							<td>
-								<fmt:formatDate value="${fluxo.dataRealizacao}" type="date" pattern="dd/MM/yyyy"/> 
-							</td>
-							<td class="centertd">
-								<a class="btn btn-success" title="<fmt:message key="testes.usuarios.convidados" />"
-								href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefaId}/usuario/${fluxo.usuario.id}/analise">
-								<fmt:message key="analise fluxos" />
-								</a>
-							</td>
+							<td>${acao.sActionType}</td>
+							<td>${acao.sUrl}</td>
+							<td>${acao.sTime}</td>
+							<td>${acao.sContent}</td>
 						</tr>
 					</c:forEach>
 				</tbody>

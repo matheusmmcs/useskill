@@ -46,7 +46,7 @@
 		action="${pageContext.request.contextPath}/conta" method="post">
 		<fieldset>
 			<legend>
-				<span>Tarefa - ${tarefa.titulo }
+				<span>Tarefa - ${tarefa.nome }
 				</span>
 				<hr />
 			</legend>
@@ -56,33 +56,26 @@
 					<tr>
 						<th><fmt:message key="table.titulo" />
 						</th>
-						<th style="width: 155px"><fmt:message key="table.acoes" />
-						</th>
-						<th style="width: 155px">Analise</th>
-						<th style="width: 155px">Media</th>
-						<th style="width: 155px">tipo convidado</th>
+						<th style="width: 155px"><fmt:message key="table.acoes" /></th>
+						<th style="width: 155px">tempo realizacao</th>
+						<th style="width: 155px">analise</th>
 					</tr>
 				</thead>
 				<tbody>
 					<c:forEach items="${fluxos}" var="fluxo">
 						<tr>
 							<td>
-								${fluxo.nomeUsuario}
+								${fluxo.usuario.nome}
 							</td>
 							<td>
 								<fmt:formatDate value="${fluxo.dataRealizacao}" type="date" pattern="dd/MM/yyyy"/> 
 							</td>
+							<td>${fluxo.tempoRealizacao}</td>
 							<td class="centertd">
 								<a class="btn btn-success" title="<fmt:message key="testes.usuarios.convidados" />"
-								href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefaId}/usuario/${fluxo.idUsuario}/analise">
+								href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefa.id}/usuario/${fluxo.usuario.id}/fluxo/${fluxo.id}/analise">
 								<fmt:message key="analise fluxos" />
 								</a>
-							</td>
-							<td>
-								${fluxo.media}
-							</td>
-							<td>
-								${fluxo.tipoConvidado}
 							</td>
 						</tr>
 					</c:forEach>

@@ -278,16 +278,41 @@ public class TarefaController extends BaseController {
 	@Get({
 			"teste/{testeId}/tarefa/{tarefaId}/usuario/{usuarioId}/analise",
 			"teste/{testeId}/tarefa/{tarefaId}/usuario/{usuarioId}/analise/pag/{numeroPagina}" })
-	public void exibirActions(Long testeId, Long tarefaId, Long usuarioId) {
+	public void exibirFluxosUsuario(Long testeId, Long tarefaId, Long usuarioId) {
 		validateComponente.validarId(testeId);
-		validateComponente.validarId(tarefaId);
+		validateComponente.validarId(testeId);
 		validateComponente.validarId(usuarioId);
 		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
 		List<Fluxo> fluxos = tarefaRepository.getFluxo(testeId, tarefaId,
 				usuarioId, usuarioCriadorId);
 		validateComponente.validarObjeto(fluxos);
+		result.include("tarefa",tarefaRepository.find(tarefaId));
 		result.include("fluxos", fluxos);
-
+		result.include("testeId",testeId);
+	}
+	/**
+	 * Passos do método
+	 * 
+	 * 1º passar idTarefa,idTeste,idPessoa(Validar itens passados) e tipo de
+	 * fluxo que ele realizou
+	 * 
+	 * 2º verificar se o usario é criador do teste
+	 * */
+	@Logado
+	@Get({
+		"teste/{testeId}/tarefa/{tarefaId}/usuario/{usuarioId}/fluxo/{fluxoId}/analise"})
+	public void exibirActions(Long testeId, Long tarefaId, Long usuarioId,Long fluxoId) {
+		validateComponente.validarId(testeId);
+		validateComponente.validarId(testeId);
+		validateComponente.validarId(usuarioId);
+		validateComponente.validarId(fluxoId);
+		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
+		List<Action> acoes = tarefaRepository.getAcoesFluxo(testeId, tarefaId,
+				usuarioId, usuarioCriadorId,fluxoId);
+		validateComponente.validarObjeto(acoes);
+		result.include("acoes", acoes);
+		result.include("tarefaId",tarefaId);
+		result.include("testeId",testeId);
 	}
 
 	@Logado
@@ -306,13 +331,13 @@ public class TarefaController extends BaseController {
 		paginacao.geraPaginacao("fluxos", numeroPagina, result);
 		result.include("tarefaId", tarefaId);
 		result.include("testeId", testeId);
+		result.include("tarefa",
+				tarefaRepository.getTarefaVO(tarefaId, testeId));
 		if (!paginacao.getListObjects().isEmpty()) {
 			realizarCalculosEstatisticos(paginacao, tarefaId, testeId,
 					usuarioDonoTeste, TipoConvidado.TESTER);
 			realizarCalculosEstatisticos(paginacao, tarefaId, testeId,
 					usuarioDonoTeste, TipoConvidado.USER);
-			result.include("tarefa",
-					tarefaRepository.getTarefaVO(tarefaId, testeId));
 		}
 	}
 
@@ -335,7 +360,8 @@ public class TarefaController extends BaseController {
 		double desvioPadrao = estatistica.desvioPadrao(tempoDeTodosFluxos);
 		double mediaAritimetica = estatistica
 				.mediaAritimetica(tempoDeTodosFluxos);
-		estatistica.classificarUsuarios(mediaAritimetica, desvioPadrao, fluxos,tipoConvidado);
+		estatistica.classificarUsuarios(mediaAritimetica, desvioPadrao, fluxos,
+				tipoConvidado);
 		result.include("desvioPadrao_" + tipoConvidado, desvioPadrao);
 		result.include("media_" + tipoConvidado, mediaAritimetica);
 	}

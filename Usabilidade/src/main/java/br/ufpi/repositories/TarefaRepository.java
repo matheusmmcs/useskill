@@ -2,6 +2,7 @@ package br.ufpi.repositories;
 
 import java.util.List;
 
+import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.TipoConvidado;
@@ -106,4 +107,15 @@ public interface TarefaRepository {
 	 * @return
 	 */
 	List<Long> getTempoDeTodosFluxos(Long testeId, Long tarefaId, Long usarioId,TipoConvidado tipoConvidado);
+
+	/**
+	 * @param testeId
+	 * @param tarefaId
+	 * @param usarioId
+	 * @param usuarioCriadorId
+	 * @param fluxoId
+	 * @return
+	 */
+	List<Action> getAcoesFluxo(Long testeId, Long tarefaId, Long usarioId,
+			Long usuarioCriadorId, Long fluxoId);
 }
