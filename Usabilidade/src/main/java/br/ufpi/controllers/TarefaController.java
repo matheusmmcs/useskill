@@ -178,6 +178,7 @@ public class TarefaController extends BaseController {
 	public void saveFluxo(String dados, Long tarefaId) {
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
+		fluxo.setTarefa(tarefaPertenceTeste(testeSessionPlugin.getIdTeste(), tarefaId));
 		// TODO Falta altera o tempo que foi iniciado o fluxo do usuario
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<Collection<Action>>() {
