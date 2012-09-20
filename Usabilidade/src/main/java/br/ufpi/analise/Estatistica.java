@@ -32,7 +32,7 @@ public class Estatistica {
 	 * @return
 	 */
 	public double desvioPadrao(List<Long> objetos) {
-		if (objetos.size() == 1 ) {
+		if (objetos.size() == 1) {
 			return 0.0;
 		} else {
 			double mediaAritimetica = mediaAritimetica(objetos);
@@ -96,15 +96,13 @@ public class Estatistica {
 	public void gerarPorcentagem(
 			List<RespostaAlternativaVO> respostasAlternativas) {
 		if (!respostasAlternativas.isEmpty()) {
-			int somatorio = 0;
-			System.out.println(respostasAlternativas.size());
+			double somatorio = 0;
 			for (RespostaAlternativaVO respostaAlternativaVO : respostasAlternativas) {
-				System.out.println(respostaAlternativaVO);
 				somatorio += respostaAlternativaVO.getQuantidadeRespostas();
 			}
 			for (RespostaAlternativaVO respostaAlternativaVO : respostasAlternativas) {
-				respostaAlternativaVO.setPorcentos(respostaAlternativaVO
-						.getQuantidadeRespostas() * 100 / somatorio);
+				double regra = respostaAlternativaVO.getQuantidadeRespostas() * 100;
+				respostaAlternativaVO.setPorcentos(regra / somatorio);
 			}
 		}
 	}

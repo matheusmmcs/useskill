@@ -70,7 +70,7 @@ import javax.persistence.TemporalType;
 				+ "left join tarefas.fluxos as fluxo "
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
-				+ "and t.usuarioCriador.id= :usuarioCriador "),
+				+ "and t.usuarioCriador.id= :usuarioCriador GROUP BY fluxo.usuario.id"),
 		/*
 		 * obtem o total de fluxo de uma tarefa
 		 * 

@@ -29,7 +29,10 @@ public class RespostaAlternativaVO {
 			Long quantidadeRespostas) {
 		super();
 		this.alternativa = alternativa;
-		this.quantidadeRespostas = quantidadeRespostas;
+		if (quantidadeRespostas == null)
+			this.quantidadeRespostas = 0l;
+		else
+			this.quantidadeRespostas = quantidadeRespostas;
 	}
 
 	/**
@@ -71,13 +74,16 @@ public class RespostaAlternativaVO {
 	}
 
 	/**
-	 * @param porcentos the porcentos to set
+	 * @param porcentos
+	 *            the porcentos to set
 	 */
 	public void setPorcentos(double porcentos) {
 		this.porcentos = porcentos;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -95,5 +101,4 @@ public class RespostaAlternativaVO {
 		this.alternativa = alternativa;
 	}
 
-	
 }
