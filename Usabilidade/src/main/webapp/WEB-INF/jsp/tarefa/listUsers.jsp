@@ -68,9 +68,9 @@
 					<tr>
 						<th style="width: 65px"><fmt:message key="analise.usuarios.convidados"/></th>
 						<th style="width: 65px"><fmt:message key="analise.usuarios.realizaram"/></th>
-						<th style="width: 65px"><fmt:message key="analise.fluxos.realizados"/></th>
 						<th style="width: 65px"><fmt:message key="analise.fluxos.tempo"/></th>
 						<th style="width: 65px"><fmt:message key="analise.fluxos.acoes"/></th>
+						<th style="width: 65px"><fmt:message key="analise.fluxos.realizados"/></th>
 						<th style="width: 65px"><fmt:message key="analise.fluxos.namedia"/></th>
 					</tr>
 				</thead>
@@ -83,13 +83,13 @@
 								10
 							</td>
 							<td class="centertd">
-								15
-							</td>
-							<td class="centertd">
 								80 - 120
 							</td>
 							<td class="centertd">
 								18 - 32
+							</td>
+							<td class="centertd">
+								15
 							</td>
 							<td class="centertd">
 								13/11
@@ -111,9 +111,9 @@
 					<tr>
 						<th style="width: 65px"><fmt:message key="analise.usuarios.convidados"/></th>
 						<th style="width: 65px"><fmt:message key="analise.usuarios.realizaram"/></th>
-						<th style="width: 65px"><fmt:message key="analise.fluxos.realizados"/></th>
 						<th style="width: 65px"><fmt:message key="analise.fluxos.tempo"/></th>
 						<th style="width: 65px"><fmt:message key="analise.fluxos.acoes"/></th>
+						<th style="width: 65px"><fmt:message key="analise.fluxos.realizados"/></th>
 						<th style="width: 65px"><fmt:message key="analise.fluxos.namedia"/></th>
 					</tr>
 				</thead>
@@ -126,13 +126,13 @@
 								10
 							</td>
 							<td class="centertd">
-								15
-							</td>
-							<td class="centertd">
 								80 - 120
 							</td>
 							<td class="centertd">
 								18 - 32
+							</td>
+							<td class="centertd">
+								15
 							</td>
 							<td class="centertd">
 								13/11
