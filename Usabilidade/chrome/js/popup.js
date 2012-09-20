@@ -65,6 +65,7 @@
 				chrome.extension.sendRequest({useskill: "nextElement", lista: objJson, atual: 0});
 			}
 		});
+		
 	});
 
 	/*	FUNCTIONS DEFINITION	*/
@@ -115,7 +116,8 @@
 					htmlReturn+='</td><td class="centertd"><a class="btn teste-info" href="#" rel="tooltip" data-original-title="Tipo: '+arrayTestes[t].tipoConvidado+' <br/>Convidou: '+arrayTestes[t].usuarioCriado+'"><span class="icon-question-sign"></span></a></td><td class="centertd"><div class="btn-group"><a class="btn btn-primary teste-aceitar" href="#" title="Aceitar"><span class="icon-ok icon-white"></span></a><a title="Recusar" class="btn btn-danger teste-recusar" href="#"><span class="icon-remove icon-white"></span></a></div></td></tr>';
 				}
 				$('tbody').html(htmlReturn);
-				$('.teste-info').tooltip();		
+				$('.teste-info').tooltip();	
+				$(".scroll").mCustomScrollbar();
 			}else{
 				var htmlReturn = "Por favor, finalize o teste que esta em execucao!";
 				$('#idConvidados').html(htmlReturn);

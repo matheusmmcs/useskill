@@ -168,7 +168,7 @@ function nextElement(atual, lista){
 		storage.gravando = false;
 		console.log("storage.gravando false");	
 
-		proxUrl = domainUseSkill; //URL pós teste
+		proxUrl = domainUseSkill+"/teste/participar/termino"; //URL pós teste
 	}
 
 	//abrindo a nova aba e fechando as antigas

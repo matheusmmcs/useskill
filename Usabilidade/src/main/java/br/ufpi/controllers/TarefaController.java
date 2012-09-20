@@ -186,7 +186,7 @@ public class TarefaController extends BaseController {
 		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
 		List<Action> acoes = new ArrayList<Action>(ints2);
 		fluxo.setDataRealizacao(new Date(System.currentTimeMillis()));
-		fluxo.setTempoRealizacao(acoes.get(acoes.size() - 1).getsTime());
+		fluxo.setTempoRealizacao(acoes.get(acoes.size() - 1).getsTime()-acoes.get(0).getsTime());
 		fluxo.setAcoes(acoes);
 		fluxo.setTipoConvidado(testeSessionPlugin.getTipoConvidado());
 		fluxoRepository.create(fluxo);
@@ -290,6 +290,7 @@ public class TarefaController extends BaseController {
 		result.include("tarefa", tarefaRepository.find(tarefaId));
 		result.include("fluxos", fluxos);
 		result.include("testeId", testeId);
+		result.include("usuarioId", usuarioId);
 	}
 
 	/**
@@ -316,6 +317,8 @@ public class TarefaController extends BaseController {
 		result.include("acoes", acoes);
 		result.include("tarefaId", tarefaId);
 		result.include("testeId", testeId);
+		result.include("usuarioId", usuarioId);
+		result.include("fluxoId", fluxoId);
 	}
 
 	/**
@@ -361,7 +364,7 @@ public class TarefaController extends BaseController {
 				tarefaRepository.getTarefaVO(tarefaId, testeId));
 		if (!paginacao.getListObjects().isEmpty()) {
 			realizarCalculosEstatisticos(paginacao, tarefaId, testeId,
-					usuarioDonoTeste, TipoConvidado.TESTER);
+					usuarioDonoTeste, TipoConvidado.EXPERT);
 			realizarCalculosEstatisticos(paginacao, tarefaId, testeId,
 					usuarioDonoTeste, TipoConvidado.USER);
 		}

@@ -87,11 +87,14 @@ public class RespostaController extends BaseController {
 
 	@Logado
 	@Post("/teste/salvar/resposta/alternativa")
-	public void salvarRespostaAlternativa(Long alternativaId,
+	public void salvarRespostaAlternativa(Long resposta,
 			Long perguntaId) {
+		System.out.println("Id da alternativa "+ resposta);
+		System.out.println("Id da pergunta "+ perguntaId);
+		
 		RespostaAlternativa respostaAlternativa = new RespostaAlternativa();
 		Alternativa alternativa= new Alternativa();
-		alternativa.setId(alternativaId);
+		alternativa.setId(resposta);		
 		respostaAlternativa.setAlternativa(alternativa);
 		Pergunta pergunta = perguntaPertenceTesteLiberadoEAlternativa(
 				alternativa.getId(), perguntaId,

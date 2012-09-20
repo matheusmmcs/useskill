@@ -34,54 +34,63 @@
 			</a>
 			<span class="divider">/</span>
 		</li>
-		<li class="active">Analise</li>
+		<li class="active">
+			<fmt:message key="analise"/>
+		</li>
 	</ul>
 
 	<div class="form-horizontal form-layout">
 		<fieldset>
 			<legend>
-				<span> Analise </span>
+				<span>
+					<fmt:message key="analise"/> - <fmt:message key="analise.list.tarefaseperguntas"/>
+				</span>
 				<p>
-					${testeView.teste.titulo }
+					<fmt:message key="teste"/> - ${testeView.teste.titulo }
 				</p>
 				<hr />
 			</legend>
 			
-		
-			<ul class="sortable">
-				<c:if test="${not empty elementosTeste}">
+			<table class="table table-striped table-bordered table-condensed">
+				<thead>
+					<tr>
+						<th style="width: 100px"><fmt:message key="analise.tipo" /></th>
+						<th><fmt:message key="analise.titulo.tarefaepergunta" /></th>						
+						<th style="width: 105px"><fmt:message key="analise.detalhar" /></th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:if test="${not empty elementosTeste}">
 					<c:forEach items="${elementosTeste}" var="el">
 								<c:choose>
 									<c:when test="${el.tipo == 'T'}">
-							<li class="ui-state-blue">
-								<div class="titulo">Tarefa - ${el.titulo }</div>
-								<div class="acoes ">
-										<a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/tarefa/${el.id}/analise" title="<fmt:message key="table.editar"/>">
-											<span class="icon-pencil"></span>
-										</a>
-									
-								</div>
-								<input type="hidden" name="tipo" value="T"/>
-								<input type="hidden" name="id" value="${el.id}"/>
-							</li>
+									<tr>
+										<td>
+											<fmt:message key="tarefa"/>
 									</c:when>
 									<c:otherwise>
-									
-							<li class="ui-state-green">
-								<div class="titulo">Pergunta - ${el.titulo }</div>
-								<div class="acoes ">
-										<a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${el.id}/pergunta" title="<fmt:message key="table.editar"/>">
-											<span class="icon-pencil"></span>
-										</a>
-								</div>
-								<input type="hidden" name="tipo" value="P"/>
-								<input type="hidden" name="id" value="${el.id}"/>
-							</li>
+									<tr>
+										<td>
+											<fmt:message key="pergunta"/>
 									</c:otherwise>
 								</c:choose>
+							</td>
+							<td>
+								${el.titulo}
+							</td>
+							<td>
+								<div class="acoes centertd">
+										<a class="btn btn-primary" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/tarefa/${el.id}/analise" title="<fmt:message key="table.editar"/>">
+											<span class="icon-tasks icon-white"></span> <fmt:message key="usuarios"/>
+										</a>
+								</div> 
+							</td>
+						</tr>
 					</c:forEach>
 				</c:if>
-			</ul>
+				</tbody>
+			</table>
+			
 		</fieldset>
 	</div>
 </div>

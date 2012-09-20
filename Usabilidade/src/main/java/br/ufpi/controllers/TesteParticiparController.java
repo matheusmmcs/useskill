@@ -61,7 +61,7 @@ public class TesteParticiparController extends BaseController {
 	}
 
 	@Logado
-	@Get
+	@Get("/termino")
 	public void termino() {
 		testeSessionPlugin.termino();
 

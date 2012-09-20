@@ -32,8 +32,9 @@
 	var url = chrome.extension.getURL("js/jquery.js");
 	window.jQuery || document.write('<script src="'+url+'"><\/script>');
 
-	
+	//define se é pergunta o não, para esconder o topo
 	if(urlAtual.indexOf(urlPergunta)!=-1){
+		console.log("esconde")
 		//é pergunta, esconde o topo
 		$('#USwebclient-topo-todo').hide();
 		$('#USbuttonTopo').hide();
@@ -187,9 +188,48 @@
 
 				$('#USperguntaTeste12z3').click(function(e){
 					e.preventDefault();
-					nextElement();
-					//salvar a pergunta
-					//ajax(domainUseSkill+"/tarefa/save/fluxo", "POST", "{ tarefaId: "++", dados: }");
+					var $form = $(this).parentsUntil("form").parent();
+					var pergId = $form.children("#pergid").val();
+					var urlResp = $form.attr('action');
+					var resposta = "";
+					
+					//separar resposta
+					if(urlResp.indexOf('alternativa')!=-1){
+						var $checked = $('input:checked');
+						if($checked.length!=0){
+							resposta = $checked.val();
+						}
+					}else{
+						resposta = $('textarea').val();
+					}
+
+					//evitar problema localhost de duplicar /Usabilidade
+					if(resposta!=""){
+						domainUseSkill = domainUseSkill.replace("/Usabilidade","");
+						$.ajax({
+							url : domainUseSkill+urlResp,
+							type : 'POST',
+							dataType : 'json',
+							async : false,
+							data : {
+								'perguntaId' 	: pergId,
+								'resposta'		: resposta
+								},
+							success : function(json) {
+								nextElement();
+							},
+							error : function(jqXHR, textStatus, errorThrown){
+								//nextElement();
+								$('.USAlertError').html('Não foi possível responder. Tente Novamente!');
+								$('.alert').fadeIn(300);
+								console.log(jqXHR)
+							}
+						});
+					}else{
+						$('.USAlertError').html('Preencha a resposta antes de enviar!');
+						$('.alert').fadeIn(300);
+						//alert("Preencha a resposta antes de enviar!");
+					}
 				});
 				
 				$('#roteiro').click(function(e){

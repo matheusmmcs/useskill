@@ -150,7 +150,7 @@
 			</ul>
 			
 			<div class="form-actions">
-				<a
+				<a id="USproxPasso"
 				href="${pageContext.request.contextPath}/teste/${testeView.teste.id }/editar/passo3"
 				title="<fmt:message key="testes.proximopasso" />"
 				class="btn btn-primary pull-right"> <fmt:message
@@ -167,6 +167,10 @@
 			this.tipo = tipo;
 		}
 		var arrayElementos = new Array();
+		
+		$('#USproxPasso').click(function(e){
+			$('#USsaveOrdem').trigger('click');			
+		});
 		
 		$('#USsaveOrdem').click(function(e){
 			e.preventDefault();

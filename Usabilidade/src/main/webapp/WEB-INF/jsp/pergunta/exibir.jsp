@@ -20,6 +20,15 @@
 					<hr />
 				</legend>
 				
+				<div class="alert alert-error hide">
+            		<button type="button" class="close" data-dismiss="alert">x</button>
+            		<div class="USAlertError">
+            	
+            		</div>
+          		</div>
+				
+				<input id="pergid" type="hidden" name="pergid" value="${pergunta.id}" />
+				
 				<div class="control-group notop">
 					<div><b><fmt:message key="testeparticipar.titulo" />:</b> ${pergunta.texto}</div>
 				</div>
@@ -50,6 +59,15 @@
 					</span>
 					<hr />
 			</legend>
+			
+			<div class="alert alert-error hide">
+            	<button type="button" class="close" data-dismiss="alert">x</button>
+            	<div class="USAlertError">
+            	
+            	</div>
+          	</div>
+			
+			<input id="pergid" type="hidden" name="pergid" value="${pergunta.id}" />
 
 			<div class="control-group notop">
 				<div><b><fmt:message key="testeparticipar.titulo" />:</b> ${pergunta.texto}</div>
@@ -69,7 +87,14 @@
 				<input id="USperguntaTeste12z3" type="submit" value="<fmt:message key="responde.pergunta"/>" name="salvar" title="<fmt:message key="responde.pergunta"/>" class="btn btn-primary" style="float: right; width: 120px" />
 			</div>
 		</fieldset>
-		
+		<script>
+			(function($){
+				$('.close').click(function(e){
+					e.preventDefault();
+					$(this).parent().fadeOut(300);
+				})
+			})(jQuery);
+		</script>
 	</form>
 	</c:if>
 

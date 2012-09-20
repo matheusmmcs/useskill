@@ -63,7 +63,7 @@ public class Usuario implements Serializable {
 	@NotNull
 	@Column(length = 150, unique = true)
 	private String email;
-	private boolean emailConfirmado;
+	private Boolean emailConfirmado;
 	@Column(length = 32, unique = true)
 	private String confirmacaoEmail;
 	@OneToMany(mappedBy = "usuarioCriador", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

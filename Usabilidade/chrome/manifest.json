@@ -1,7 +1,7 @@
 ﻿{
   "name": "UseSkill for Google Chrome™",
   "version": "0.7.6",
-  "description": "By Cleiton Moura, Matheus Campanhã e Pedro Almir",
+  "description": "Plugin para realização de Testes de Usabilidade Remotos, a partir da ferramenta UseSkill.",
   "content_scripts": [
     {
       "matches": ["*://*/*"],

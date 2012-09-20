@@ -16,64 +16,73 @@
 			</a>
 			<span class="divider">/</span>
 		</li>
-		<li class="active"><fmt:message key="testes.liberado" /></li>
+		<li>
+			<a href="${pageContext.request.contextPath}/testes/liberados"> 
+				<fmt:message key="testes.liberado" />
+			</a>
+			<span class="divider">/</span>
+		</li>
+		<li>
+			<a href="${pageContext.request.contextPath}/teste/${testeId}/analise"> 
+				<fmt:message key="analise.tarefas" />
+			</a>
+			<span class="divider">/</span>     
+		</li>
+		<li>
+			<a href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefaId}/analise"> 
+				<fmt:message key="analise.list.usuarios.min" />
+			</a>
+			<span class="divider">/</span>     
+		</li>
+		<li>
+			<a href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefaId}/usuario/${usuarioId}/analise"> 
+				<fmt:message key="analise.list.fluxos.min" />
+			</a>
+			<span class="divider">/</span>     
+		</li>
+		<li class="active">
+			<fmt:message key="analise.list.acoes" />
+		</li>
 	</ul>
-	
-	<div class="btn-toolbar">
-		<div class="btn-group pull-right">
-			<a class="btn btn-primary"
-				href="${pageContext.request.contextPath}/teste/criar"> <fmt:message
-					key="testes.criar" /> </a>
-		</div>
-	
-		<div class="btn-group pull-left">		
-			<a class="btn"
-				href="${pageContext.request.contextPath}/usuario">
-				<fmt:message key="testes.mini.construcao"/>
-			</a>
-			<a class="btn"
-				href="${pageContext.request.contextPath}/testes/liberados">
-				<fmt:message key="testes.mini.liberados"/>
-			</a>
-			<a class="btn"
-				href="${pageContext.request.contextPath}/testes/convidados">
-				<fmt:message key="testes.mini.convites"/>
-			</a>
-		</div>
-	</div>
 
 	<form class="form-horizontal form-layout"
 		action="${pageContext.request.contextPath}/conta" method="post">
 		<fieldset>
 			<legend>
-				<span><fmt:message key="testes.liberado" />
+				<span><fmt:message key="analise.list.acoes" />
 				</span>
+				<p>
+					<fmt:message key="teste"/> - 
+					<br/>
+					<fmt:message key="tarefa" /> - 
+					<br/>
+					<fmt:message key="usuario" /> - 
+					<br/>
+					<fmt:message key="fluxo" /> - 1/3
+				</p>
 				<hr />
 			</legend>
 
 			<table class="table table-striped table-bordered table-condensed">
 				<thead>
 					<tr>
-						<th style="width: 155px">Tipo da ação</th>
-						<th style="width: 155px">Url</th>
-						<th style="width: 155px">tempo realizacao</th>
-						<th style="width: 155px">local</th>
+						<th style="width: 155px"><fmt:message key="acao" /></th>
+						<th style="width: 155px"><fmt:message key="urldaacao" /></th>
+						<th style="width: 155px"><fmt:message key="tempo" /></th>
+						<th style="width: 155px"><fmt:message key="elemento" /></th>
 					</tr>
 				</thead>
 				<tbody>
 					<c:forEach items="${acoes}" var="acao">
 						<tr>
-							<td>${acao.sActionType}</td>
-							<td>${acao.sUrl}</td>
-							<td>${acao.sTime}</td>
-							<td>${acao.sContent}</td>
+							<td class="centertd">${acao.sActionType}</td>
+							<td class="centertd">${acao.sUrl}</td>
+							<td class="centertd">${acao.sTime}</td>
+							<td class="centertd">${acao.sContent}</td>
 						</tr>
 					</c:forEach>
 				</tbody>
 			</table>
 		</fieldset>
-		<jsp:include page="../paginator.jsp" flush="true">
-			<jsp:param name="link" value="${pageContext.request.contextPath}/testes/liberados/pag/"/>
-		</jsp:include>
 	</form>
 </div>

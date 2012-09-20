@@ -16,65 +16,75 @@
 			</a>
 			<span class="divider">/</span>
 		</li>
-		<li class="active"><fmt:message key="testes.liberado" /></li>
+		<li>
+			<a href="${pageContext.request.contextPath}/testes/liberados"> 
+				<fmt:message key="testes.liberado" />
+			</a>
+			<span class="divider">/</span>
+		</li>
+		<li>
+			<a href="${pageContext.request.contextPath}/teste/${testeId}/analise"> 
+				<fmt:message key="analise.tarefas" />
+			</a>
+			<span class="divider">/</span>     
+		</li>
+		<li>
+			<a href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefa.id}/analise"> 
+				<fmt:message key="analise.list.usuarios.min" />
+			</a>
+			<span class="divider">/</span>     
+		</li>
+		<li class="active">
+			<fmt:message key="analise.list.fluxos" />
+		</li>
 	</ul>
-	
-	<div class="btn-toolbar">
-		<div class="btn-group pull-right">
-			<a class="btn btn-primary"
-				href="${pageContext.request.contextPath}/teste/criar"> <fmt:message
-					key="testes.criar" /> </a>
-		</div>
-	
-		<div class="btn-group pull-left">		
-			<a class="btn"
-				href="${pageContext.request.contextPath}/usuario">
-				<fmt:message key="testes.mini.construcao"/>
-			</a>
-			<a class="btn"
-				href="${pageContext.request.contextPath}/testes/liberados">
-				<fmt:message key="testes.mini.liberados"/>
-			</a>
-			<a class="btn"
-				href="${pageContext.request.contextPath}/testes/convidados">
-				<fmt:message key="testes.mini.convites"/>
-			</a>
-		</div>
-	</div>
 
 	<form class="form-horizontal form-layout"
 		action="${pageContext.request.contextPath}/conta" method="post">
 		<fieldset>
 			<legend>
-				<span>Tarefa - ${tarefa.nome }
+				<span>
+					<fmt:message key="analise.list.fluxos" />
 				</span>
+				<p>
+					<fmt:message key="teste"/> - 
+					<br/>
+					<fmt:message key="tarefa" /> - 
+					<br/>
+					<fmt:message key="usuario" /> - 
+				</p>
 				<hr />
 			</legend>
 
 			<table class="table table-striped table-bordered table-condensed">
 				<thead>
 					<tr>
-						<th><fmt:message key="table.titulo" />
-						</th>
-						<th style="width: 155px"><fmt:message key="table.acoes" /></th>
-						<th style="width: 155px">tempo realizacao</th>
-						<th style="width: 155px">analise</th>
+						<th><fmt:message key="analise.datarealizacao"/></th>
+						<th><fmt:message key="analise.duracao"/></th>
+						<th><fmt:message key="analise.qtdAcoes"/></th>
+						<th><fmt:message key="analise.fluxo.media"/></th>
+						<th style="width: 105px"><fmt:message key="analise.detalhar"/></th>
 					</tr>
 				</thead>
 				<tbody>
 					<c:forEach items="${fluxos}" var="fluxo">
 						<tr>
-							<td>
-								${fluxo.usuario.nome}
-							</td>
-							<td>
+							<td class="centertd">
 								<fmt:formatDate value="${fluxo.dataRealizacao}" type="date" pattern="dd/MM/yyyy"/> 
 							</td>
-							<td>${fluxo.tempoRealizacao}</td>
+							<td class="centertd">
+								${fluxo.tempoRealizacao/1000} <fmt:message key="seg"/>
+							</td>
+							<td class="centertd">
+								x
+							</td>
+							<td class="centertd">
+								OK / ABAIXO
+							</td>
 							<td class="centertd">
 								<a class="btn btn-success" title="<fmt:message key="testes.usuarios.convidados" />"
 								href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefa.id}/usuario/${fluxo.usuario.id}/fluxo/${fluxo.id}/analise">
-								<fmt:message key="analise fluxos" />
+									<span class="icon-tasks icon-white"></span> <fmt:message key="analise.acoes" />
 								</a>
 							</td>
 						</tr>
@@ -82,8 +92,5 @@
 				</tbody>
 			</table>
 		</fieldset>
-		<jsp:include page="../paginator.jsp" flush="true">
-			<jsp:param name="link" value="${pageContext.request.contextPath}/testes/liberados/pag/"/>
-		</jsp:include>
 	</form>
 </div>

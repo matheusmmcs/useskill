@@ -1,7 +1,7 @@
 package br.ufpi.models;
 
 public enum TipoConvidado {
-	TESTER, USER;
+	EXPERT, USER;
 
 	/**
 	 * Obtem o tipo de convidado Foi feito isto pq na view vai ser colocado um
@@ -15,7 +15,7 @@ public enum TipoConvidado {
 	public static TipoConvidado parseTipoConvidado(boolean tipo) {
 		if (tipo)
 			return TipoConvidado.USER;
-		return TipoConvidado.TESTER;
+		return TipoConvidado.EXPERT;
 
 	}
 }

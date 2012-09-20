@@ -6,6 +6,7 @@ import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 
 public class PerguntaVO {
+	private Long id;
 	private String titulo;
 	private String texto;
 	private Boolean tipoRespostaAlternativa;
@@ -13,12 +14,20 @@ public class PerguntaVO {
 
 	public PerguntaVO(Pergunta pergunta) {
 		super();
+		this.id = pergunta.getId();
 		this.titulo = pergunta.getTitulo();
 		this.texto = pergunta.getTitulo();
 		this.setTipoRespostaAlternativa(pergunta.getTipoRespostaAlternativa());
 		this.alternativas=pergunta.getAlternativas();
 	}
 
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+	
 	/**
 	 * @return the texto
 	 */
