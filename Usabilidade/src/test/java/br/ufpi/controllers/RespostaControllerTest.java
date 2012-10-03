@@ -5,7 +5,6 @@
 package br.ufpi.controllers;
 
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,7 +45,7 @@ public class RespostaControllerTest extends AbstractDaoTest {
 				.newInstanceRespostaAlternativaRepository(entityManager);
 		escritaRepositoryImpl = RespostaTestProcedure
 				.newInstanceRespostaEscritaRepositoryImpl(entityManager);
-		testeSession = new TesteSessionPlugin(entityManager);
+		testeSession = new TesteSessionPlugin();
 		testeSession.setIdTeste(testeConvidadoLiberado);
 		instance = RespostaTestProcedure.newInstanceRespostaController(
 				entityManager, result, testeSession);
@@ -132,9 +131,8 @@ public class RespostaControllerTest extends AbstractDaoTest {
 	public void testExibirRespostas() {
 		System.out.println("exibirRespostas");
 		Long perguntaId = 25l;
-		instance.exibirRespostas(testeConvidadoLiberado, perguntaId);
-		Map<String, Object> map = result.included();
-		System.out.println(map);
+		instance.analise(testeConvidadoLiberado, perguntaId,0);
+		
 		
 	}
 

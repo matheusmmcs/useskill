@@ -28,6 +28,8 @@ import javax.persistence.NamedQuery;
 		@NamedQuery(name = "Convidado.Usuarios.Nao.Convidados.Count", query = "Select count(*) From Usuario as u Where u.id not in(SELECT c.chaveComposta.participante FROM Convidado AS c Where c.chaveComposta.teste.id= :teste)"),
 		@NamedQuery(name = "Convidado.Usuarios.Convidados", query = "SELECT new br.ufpi.models.vo.ConvidadoVO(c.chaveComposta.participante,c.tipoConvidado) FROM Convidado AS c Where c.chaveComposta.teste.id= :teste"),
 		@NamedQuery(name = "Convidado.Usuarios.Convidados.Count", query = "SELECT count(*) FROM Convidado AS c Where c.chaveComposta.teste.id= :teste"),
+		@NamedQuery(name = "Convidado.Usuarios.Convidados.Tipo.Count", query = "SELECT new  br.ufpi.models.vo.ConvidadoCount(count(*),c.tipoConvidado) FROM Convidado AS c Where c.chaveComposta.teste.id= :teste GROUP BY c.tipoConvidado"),
+		@NamedQuery(name = "Convidado.Usuarios.Convidados.Tipo.Realizaram.Count", query = "SELECT new  br.ufpi.models.vo.ConvidadoCount(count(*),c.tipoConvidado) FROM Convidado AS c Where c.chaveComposta.teste.id= :teste and c.realizou= true GROUP BY c.tipoConvidado"),
 		})
 public class Convidado {
 

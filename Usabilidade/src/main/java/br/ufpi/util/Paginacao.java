@@ -93,7 +93,6 @@ public class Paginacao<T> {
 	public void geraPaginacao(String nomeObjetosInclud,int numeroPagina,
 			Result result) {
 		Long qtdObjetosNoBanco=this.getCount();
-		System.out.println("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"+qtdObjetosNoBanco);
 		int qtdPaginas = (int) (qtdObjetosNoBanco / OBJETOS_POR_PAGINA);
 		if (qtdObjetosNoBanco % OBJETOS_POR_PAGINA != 0
 				|| qtdObjetosNoBanco == 0) {

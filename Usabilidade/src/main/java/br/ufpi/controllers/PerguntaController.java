@@ -27,6 +27,17 @@ public class PerguntaController extends BaseController {
 	private final TesteRepository testeRepository;
 	private final TesteSessionPlugin sessionPlugin;
 
+	public PerguntaController(Result result, Validator validator,
+			TesteView testeView, UsuarioLogado usuarioLogado,
+			ValidateComponente validateComponente,
+			PerguntaRepository perguntaRepository,
+			TesteRepository testeRepository, TesteSessionPlugin sessionPlugin) {
+		super(result, validator, testeView, usuarioLogado, validateComponente);
+		this.perguntaRepository = perguntaRepository;
+		this.testeRepository = testeRepository;
+		this.sessionPlugin = sessionPlugin;
+	}
+
 	@Logado
 	@Get({ "teste/{testeId}/editar/passo2/criar/pergunta" })
 	public Pergunta criarPergunta(Long testeId) {
@@ -191,26 +202,15 @@ public class PerguntaController extends BaseController {
 		result.use(Results.json()).from(perguntaPertenceTeste).serialize();
 	}
 
-	public PerguntaController(Result result, Validator validator,
-			TesteView testeView, UsuarioLogado usuarioLogado,
-			ValidateComponente validateComponente,
-			PerguntaRepository perguntaRepository,
-			TesteRepository testeRepository, TesteSessionPlugin sessionPlugin) {
-		super(result, validator, testeView, usuarioLogado, validateComponente);
-		this.perguntaRepository = perguntaRepository;
-		this.testeRepository = testeRepository;
-		this.sessionPlugin = sessionPlugin;
-	}
-
 	@Logado
 	@Get("/teste/responder/pergunta/{idPergunta}")
 	public void exibir(Long idPergunta) {
 		validateComponente.validarId(idPergunta);
 		validateComponente.validarId(sessionPlugin.getIdTeste());
-		PerguntaVO perguntaVo = perguntaRepository
-				.perguntVOPertenceTeste(sessionPlugin.getIdTeste(), idPergunta);
+		PerguntaVO perguntaVo = perguntaRepository.perguntVOPertenceTeste(
+				sessionPlugin.getIdTeste(), idPergunta);
 		validateComponente.validarObjeto(perguntaVo);
-		
+
 		System.out.println("pergunta alternativa"
 				+ perguntaVo.getTipoRespostaAlternativa());
 		result.include("pergunta", perguntaVo);

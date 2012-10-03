@@ -33,7 +33,7 @@ public class PerguntaTestProcedure {
 		PerguntaRepository perguntaRepository = newInstancePerguntaRepository(entityManager);
 		TesteRepository testeRepository = TesteTestProcedure
 				.newInstanceTesteRepository(entityManager);
-		TesteSessionPlugin sessionPlugin= new TesteSessionPlugin(entityManager);
+		TesteSessionPlugin sessionPlugin= new TesteSessionPlugin();
 		PerguntaController controller = new PerguntaController(result, validator, testeView, usuarioLogado, validateComponente, perguntaRepository, testeRepository, sessionPlugin);
 		return controller;
 	}

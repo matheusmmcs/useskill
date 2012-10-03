@@ -460,7 +460,6 @@ public class TesteController extends BaseController {
 						numeroPagina, Paginacao.OBJETOS_POR_PAGINA);
 		result.include("testesConvidados", paginacao.getListObjects());
 		Long qttObjetosNoBanco = paginacao.getCount();
-		System.out.println(qttObjetosNoBanco);
 		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA,
 				qttObjetosNoBanco, result);
 	}
@@ -489,7 +488,6 @@ public class TesteController extends BaseController {
 				}
 			}
 		}
-		System.out.println(elementosTestes);
 		return elementosTestes;
 	}
 

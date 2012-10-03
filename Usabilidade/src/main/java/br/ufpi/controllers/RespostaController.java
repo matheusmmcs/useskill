@@ -1,6 +1,5 @@
 package br.ufpi.controllers;
 
-//TODO Validar se as perguntas estão sendo respondida e mostra uma mensagem
 import java.util.List;
 
 import br.com.caelum.vraptor.Get;
@@ -9,7 +8,6 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.view.Results;
-import br.ufpi.analise.Estatistica;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.ObjetoSalvo;
 import br.ufpi.componets.TesteSessionPlugin;
@@ -21,11 +19,13 @@ import br.ufpi.models.Pergunta;
 import br.ufpi.models.RespostaAlternativa;
 import br.ufpi.models.RespostaEscrita;
 import br.ufpi.models.vo.RespostaAlternativaVO;
+import br.ufpi.models.vo.RespostaEscritaVO;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.RespostaAlternativaRepository;
 import br.ufpi.repositories.RespostaEscritaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.EnumObjetoSalvo;
+import br.ufpi.util.Paginacao;
 
 @Resource
 public class RespostaController extends BaseController {
@@ -87,14 +87,13 @@ public class RespostaController extends BaseController {
 
 	@Logado
 	@Post("/teste/salvar/resposta/alternativa")
-	public void salvarRespostaAlternativa(Long resposta,
-			Long perguntaId) {
-		System.out.println("Id da alternativa "+ resposta);
-		System.out.println("Id da pergunta "+ perguntaId);
-		
+	public void salvarRespostaAlternativa(Long resposta, Long perguntaId) {
+		System.out.println("Id da alternativa " + resposta);
+		System.out.println("Id da pergunta " + perguntaId);
+
 		RespostaAlternativa respostaAlternativa = new RespostaAlternativa();
-		Alternativa alternativa= new Alternativa();
-		alternativa.setId(resposta);		
+		Alternativa alternativa = new Alternativa();
+		alternativa.setId(resposta);
 		respostaAlternativa.setAlternativa(alternativa);
 		Pergunta pergunta = perguntaPertenceTesteLiberadoEAlternativa(
 				alternativa.getId(), perguntaId,
@@ -109,8 +108,9 @@ public class RespostaController extends BaseController {
 	}
 
 	@Logado
-	@Get("analise/teste/{testeId}/pergunta/{perguntaId}")
-	public void exibirRespostas(Long testeId, Long perguntaId) {
+	@Get({ "teste/{testeId}/pergunta/{perguntaId}/analise",
+			"teste/{testeId}/pergunta/{perguntaId}/pag/{pag}/analise" })
+	public void analise(Long testeId, Long perguntaId, int pag) {
 		validateComponente.validarId(testeId);
 		validateComponente.validarId(perguntaId);
 		Pergunta pergunta = perguntaPertenceUsuarioTesteLiberado(perguntaId,
@@ -118,10 +118,18 @@ public class RespostaController extends BaseController {
 		if (pergunta.getTipoRespostaAlternativa()) {
 			List<RespostaAlternativaVO> respostasAlternativas = alternativaRepository
 					.getRespostasAlternativas(perguntaId);
-			Estatistica estatistica= new Estatistica();
-			estatistica.gerarPorcentagem(respostasAlternativas);
 			result.include("respostas", respostasAlternativas);
-		} 
+			result.include("isAlternativa", true);
+		} else {
+			if (pag == 0)
+				pag = 1;
+			Paginacao<RespostaEscritaVO> paginacao = escritaRepository
+					.findResposta(perguntaId, pag, Paginacao.OBJETOS_POR_PAGINA);
+			paginacao.geraPaginacao("respostasEscrita", pag, result);
+			result.include("isAlternativa", false);
+
+		}
+
 		result.include("teste", testeRepository.find(testeId));
 		result.include("pergunta", pergunta);
 

@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import br.com.caelum.vraptor.util.test.JSR303MockValidator;
 import br.com.caelum.vraptor.util.test.MockResult;
 import br.com.caelum.vraptor.util.test.MockValidator;
+import br.ufpi.analise.Estatistica;
 import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
@@ -44,8 +45,9 @@ public class TarefaTestProcedure {
 	
 		FluxoRepository fluxoRepository = new FluxoRepositoryImpl(
 				entityManager);
-		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin(entityManager);
-		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin);
+		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
+		Estatistica estatistica= new Estatistica(testeRepository, result, tarefaRepository);
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin,estatistica);
 		return controller;
 	}
 
@@ -62,12 +64,13 @@ public class TarefaTestProcedure {
 		TarefaRepository tarefaRepository = new TarefaRepositoryImpl(
 				entityManager);
 		TesteRepository testeRepository = new TesteRepositoryImpl(entityManager);
-		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin(entityManager);
+		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
 		testeSessionPlugin.setIdTeste(idTeste);
 		testeSessionPlugin.setTipoConvidado(tipoConvidado);
 		FluxoRepository fluxoRepository = new FluxoRepositoryImpl(
 				entityManager);
-		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin);
+		Estatistica estatistica= new Estatistica(testeRepository, result, tarefaRepository);
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin,estatistica);
 		return controller;
 	}
 

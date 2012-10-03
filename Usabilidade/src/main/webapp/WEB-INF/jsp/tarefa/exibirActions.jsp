@@ -52,11 +52,11 @@
 				<span><fmt:message key="analise.list.acoes" />
 				</span>
 				<p>
-					<fmt:message key="teste"/> - 
+					<fmt:message key="teste"/> - ${nomeTeste }
 					<br/>
-					<fmt:message key="tarefa" /> - 
+					<fmt:message key="tarefa" /> - ${nomeTarefa }
 					<br/>
-					<fmt:message key="usuario" /> - 
+					<fmt:message key="usuario" /> - ${nomeUsuario }
 					<br/>
 					<fmt:message key="fluxo" /> - 1/3
 				</p>

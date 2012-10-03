@@ -10,6 +10,7 @@ import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.TipoConvidado;
+import br.ufpi.models.vo.FluxoCountVO;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
@@ -57,38 +58,81 @@ public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 				idUsuario);
 	}
 
-	
-
 	@Override
 	public Paginacao<FluxoVO> getFluxos(Long tarefaId, Long testeId,
 			Long usuarioDonoTeste, int quantidade, int numeroPagina) {
-		
-		return tarefaRepositoryImpl.getFluxos(tarefaId, testeId, usuarioDonoTeste, quantidade, numeroPagina);
+
+		return tarefaRepositoryImpl.getFluxos(tarefaId, testeId,
+				usuarioDonoTeste, quantidade, numeroPagina);
 	}
 
 	@Override
 	public List<Fluxo> getFluxo(Long testeId, Long tarefaId, Long usarioId,
 			Long usuarioCriadorId) {
-		return tarefaRepositoryImpl.getFluxo(testeId, tarefaId, usarioId, usuarioCriadorId);
+		return tarefaRepositoryImpl.getFluxo(testeId, tarefaId, usarioId,
+				usuarioCriadorId);
 	}
 
-	/* (non-Javadoc)
-	 * @see br.ufpi.repositories.TarefaRepository#getTempoDeTodosFluxos(java.lang.Long, java.lang.Long, java.lang.Long)
-	 */
-	@Override
-	public List<Long> getTempoDeTodosFluxos(Long testeId, Long tarefaId,
-			Long usarioId,TipoConvidado tipoConvidado) {
-		return tarefaRepositoryImpl.getTempoDeTodosFluxos(testeId, tarefaId, usarioId,tipoConvidado);
-	}
-
-	/* (non-Javadoc)
-	 * @see br.ufpi.repositories.TarefaRepository#getAcoesFluxo(java.lang.Long, java.lang.Long, java.lang.Long, java.lang.Long, java.lang.Long)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see br.ufpi.repositories.TarefaRepository#getAcoesFluxo(java.lang.Long,
+	 * java.lang.Long, java.lang.Long, java.lang.Long, java.lang.Long)
 	 */
 	@Override
 	public List<Action> getAcoesFluxo(Long testeId, Long tarefaId,
 			Long usarioId, Long usuarioCriadorId, Long fluxoId) {
-		return tarefaRepositoryImpl.getAcoesFluxo(testeId, tarefaId, usarioId, usuarioCriadorId, fluxoId);
+		return tarefaRepositoryImpl.getAcoesFluxo(testeId, tarefaId, usarioId,
+				usuarioCriadorId, fluxoId);
 	}
 
-	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see br.ufpi.repositories.TarefaRepository#getFluxo(java.lang.Long,
+	 * java.lang.Long, java.lang.Long, java.lang.Long, java.lang.Long)
+	 */
+	@Override
+	public Fluxo getFluxo(Long testeId, Long tarefaId, Long usarioId,
+			Long usuarioCriadorId, Long fluxoId) {
+		return tarefaRepositoryImpl.getFluxo(testeId, tarefaId, usarioId,
+				usuarioCriadorId, fluxoId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufpi.repositories.TarefaRepository#quantidadeAcoesETempo(java.lang
+	 * .Long, br.ufpi.models.TipoConvidado)
+	 */
+	@Override
+	public List<FluxoCountVO> quantidadeAcoesETempo(Long tarefa,
+			TipoConvidado tipoConvidado) {
+		return tarefaRepositoryImpl
+				.quantidadeAcoesETempo(tarefa, tipoConvidado);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufpi.repositories.TarefaRepository#getFluxoUsuario(java.lang.Long,
+	 * java.lang.Long)
+	 */
+	@Override
+	public List<FluxoVO> getFluxoUsuario(Long tarefaId, Long usuarioId) {
+		return tarefaRepositoryImpl.getFluxoUsuario(tarefaId, usuarioId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see br.ufpi.repositories.TarefaRepository#getNameUsuario(java.lang.Long)
+	 */
+	@Override
+	public String getNameUsuario(Long fluxoId) {
+		return tarefaRepositoryImpl.getNameUsuario(fluxoId);
+	}
+
 }

@@ -41,9 +41,9 @@
 					<fmt:message key="analise.list.usuarios" />
 				</span>
 				<p>
-					<fmt:message key="tarefa" /> - ${tarefa.titulo }
+					<fmt:message key="tarefa" /> - ${tarefa.nome }
 					<br/>
-					<fmt:message key="teste"/> - ${testeView.teste.titulo }
+					<fmt:message key="teste"/> - ${tarefa.teste.titulo }
 				</p>
 				<hr />
 			</legend>
@@ -77,22 +77,22 @@
 				<tbody>
 						<tr>
 							<td class="centertd">
-								12
+								${convidados_EXPERT}
 							</td>
 							<td class="centertd">
-								10
+								${convidados_realizaram_EXPERT}
 							</td>
 							<td class="centertd">
-								80 - 120
+								${media_tempo_EXPERT}
 							</td>
 							<td class="centertd">
-								18 - 32
+								${media_Acoes_EXPERT}
 							</td>
 							<td class="centertd">
-								15
+								${total_fluxos_EXPERT}
 							</td>
 							<td class="centertd">
-								13/11
+								${total_fluxos_media_tempo_EXPERT} / ${total_fluxos_media_acao_EXPERT}
 							</td>
 						</tr>
 				</tbody>
@@ -120,22 +120,22 @@
 				<tbody>
 						<tr>
 							<td class="centertd">
-								12
+								${convidados_USER}
 							</td>
 							<td class="centertd">
-								10
+								${convidados_realizaram_USER}
 							</td>
 							<td class="centertd">
-								80 - 120
+								${media_tempo_USER}
 							</td>
 							<td class="centertd">
-								18 - 32
+								${media_Acoes_USER}
 							</td>
 							<td class="centertd">
-								15
+								${total_fluxos_USER}
 							</td>
 							<td class="centertd">
-								13/11
+								${total_fluxos_media_tempo_USER} / ${total_fluxos_media_acao_USER}
 							</td>
 						</tr>
 				</tbody>

@@ -47,11 +47,11 @@
 					<fmt:message key="analise.list.fluxos" />
 				</span>
 				<p>
-					<fmt:message key="teste"/> - 
+					<fmt:message key="teste"/> - ${tarefa.teste.titulo }
 					<br/>
-					<fmt:message key="tarefa" /> - 
+					<fmt:message key="tarefa" /> - ${tarefa.nome }
 					<br/>
-					<fmt:message key="usuario" /> - 
+					<fmt:message key="usuario" /> - ${nomeUsuario }
 				</p>
 				<hr />
 			</legend>
@@ -76,14 +76,14 @@
 								${fluxo.tempoRealizacao/1000} <fmt:message key="seg"/>
 							</td>
 							<td class="centertd">
-								x
+								${fluxo.quantidadeAcoes}
 							</td>
 							<td class="centertd">
-								OK / ABAIXO
+								${fluxo.mediaTempo } / ${fluxo.mediaAcoes }
 							</td>
 							<td class="centertd">
 								<a class="btn btn-success" title="<fmt:message key="testes.usuarios.convidados" />"
-								href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefa.id}/usuario/${fluxo.usuario.id}/fluxo/${fluxo.id}/analise">
+								href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefa.id}/usuario/${usuarioId}/fluxo/${fluxo.fluxoId}/analise">
 									<span class="icon-tasks icon-white"></span> <fmt:message key="analise.acoes" />
 								</a>
 							</td>

@@ -39,7 +39,7 @@ public class TesteParticiparControllerTest extends AbstractDaoTest {
 	private Long testeConvidadoEJaParticipou = 12l;
 	private ConvidadoRepository convidadoRepository;
 	private Long usuarioId = 1l;
-	TesteSessionPlugin testeSession= new TesteSessionPlugin(entityManager);
+	TesteSessionPlugin testeSession= new TesteSessionPlugin();
 
 	@Before
 	public void setUp() throws Exception {

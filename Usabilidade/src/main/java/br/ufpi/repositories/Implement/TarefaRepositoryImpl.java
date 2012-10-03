@@ -11,6 +11,7 @@ import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.TipoConvidado;
+import br.ufpi.models.vo.FluxoCountVO;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.Repository;
@@ -86,7 +87,7 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 	public List<Fluxo> getFluxo(Long testeId, Long tarefaId, Long usarioId,
 			Long usuarioCriadorId) {
 
-		Query query = entityManager.createNamedQuery("Fluxo.obterfluxo");
+		Query query = entityManager.createNamedQuery("Fluxo.obterfluxos");
 		query.setParameter("teste", testeId);
 		query.setParameter("tarefa", tarefaId);
 		query.setParameter("usuarioCriador", usuarioCriadorId);
@@ -97,11 +98,29 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 			return null;
 		}
 	}
+
+	@Override
+	public Fluxo getFluxo(Long testeId, Long tarefaId, Long usarioId,
+			Long usuarioCriadorId,Long fluxoId) {
+
+		Query query = entityManager.createNamedQuery("Fluxo.obterfluxo");
+		query.setParameter("teste", testeId);
+		query.setParameter("tarefa", tarefaId);
+		query.setParameter("usuarioCriador", usuarioCriadorId);
+		query.setParameter("usuario", usarioId);
+		query.setParameter("fluxo",fluxoId );
+		try {
+			return (Fluxo) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Action> getAcoesFluxo(Long testeId, Long tarefaId, Long usarioId,
-			Long usuarioCriadorId,Long fluxoId) {
-		
+	public List<Action> getAcoesFluxo(Long testeId, Long tarefaId,
+			Long usarioId, Long usuarioCriadorId, Long fluxoId) {
+
 		Query query = entityManager.createNamedQuery("Fluxo.obterActions");
 		query.setParameter("teste", testeId);
 		query.setParameter("tarefa", tarefaId);
@@ -136,17 +155,41 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 		return paginacao;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufpi.repositories.TarefaRepository#quantidadeAcoes(java.lang.Long)
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Long> getTempoDeTodosFluxos(Long testeId, Long tarefaId,
-			Long usarioId, TipoConvidado tipoConvidado) {
-		String namedQuery = "Fluxo.getFluxos.Tarefa.Lista.Tempo";
-		Query query = entityManager.createNamedQuery(namedQuery);
-		query.setParameter("teste", testeId);
-		query.setParameter("tarefa", tarefaId);
+	public List<FluxoCountVO> quantidadeAcoesETempo(Long tarefa,
+			TipoConvidado tipoConvidado) {
+		Query query = entityManager.createNamedQuery("Fluxo.quantidade.Acoes");
+		query.setParameter("tarefa", tarefa);
 		query.setParameter("tipoConvidado", tipoConvidado);
-		query.setParameter("usuarioCriador", usarioId);
-		return (List<Long>)query.getResultList();
+		return query.getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<FluxoVO> getFluxoUsuario(Long tarefaId, Long usuarioId) {
+		Query query = entityManager.createNamedQuery("Fluxo.fluxosdoUsuario");
+		query.setParameter("tarefa", tarefaId);
+		query.setParameter("usuario", usuarioId);
+		return query.getResultList();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see br.ufpi.repositories.TarefaRepository#getNameUsuario(java.lang.Long)
+	 */
+	@Override
+	public String getNameUsuario(Long fluxoId) {
+		Query query = entityManager.createNamedQuery("Fluxo.getNomeUsuario");
+		query.setParameter("fluxo", fluxoId);
+		return (String) query.getSingleResult();
 	}
 
 }

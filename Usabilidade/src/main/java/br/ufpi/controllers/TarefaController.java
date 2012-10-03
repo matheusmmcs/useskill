@@ -2,6 +2,7 @@ package br.ufpi.controllers;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.TipoConvidado;
+import br.ufpi.models.vo.ConvidadoCount;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
 import br.ufpi.repositories.FluxoRepository;
@@ -44,19 +46,20 @@ public class TarefaController extends BaseController {
 	private final TesteRepository testeRepository;
 	private final FluxoRepository fluxoRepository;
 	private final TesteSessionPlugin testeSessionPlugin;
+	private final Estatistica estatistica;
 
 	public TarefaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
 			TarefaRepository tarefaRepository, TesteRepository testeRepository,
 			FluxoRepository fluxoIdealRepository,
-
-			TesteSessionPlugin testeSessionPlugin) {
+			TesteSessionPlugin testeSessionPlugin, Estatistica estatistica) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
 		this.fluxoRepository = fluxoIdealRepository;
 		this.testeSessionPlugin = testeSessionPlugin;
+		this.estatistica = estatistica;
 	}
 
 	/**
@@ -178,15 +181,16 @@ public class TarefaController extends BaseController {
 	public void saveFluxo(String dados, Long tarefaId) {
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
-		fluxo.setTarefa(tarefaPertenceTeste(testeSessionPlugin.getIdTeste(), tarefaId));
-		// TODO Falta altera o tempo que foi iniciado o fluxo do usuario
+		fluxo.setTarefa(tarefaPertenceTeste(testeSessionPlugin.getIdTeste(),
+				tarefaId));
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<Collection<Action>>() {
 		}.getType();
 		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
 		List<Action> acoes = new ArrayList<Action>(ints2);
 		fluxo.setDataRealizacao(new Date(System.currentTimeMillis()));
-		fluxo.setTempoRealizacao(acoes.get(acoes.size() - 1).getsTime()-acoes.get(0).getsTime());
+		fluxo.setTempoRealizacao(acoes.get(acoes.size() - 1).getsTime()
+				- acoes.get(0).getsTime());
 		fluxo.setAcoes(acoes);
 		fluxo.setTipoConvidado(testeSessionPlugin.getTipoConvidado());
 		fluxoRepository.create(fluxo);
@@ -284,8 +288,17 @@ public class TarefaController extends BaseController {
 		validateComponente.validarId(testeId);
 		validateComponente.validarId(usuarioId);
 		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
-		List<Fluxo> fluxos = tarefaRepository.getFluxo(testeId, tarefaId,
-				usuarioId, usuarioCriadorId);
+		tarefaPertenceAoUsuarioLogado(usuarioCriadorId, tarefaId, testeId);
+		List<FluxoVO> fluxos = tarefaRepository.getFluxoUsuario(tarefaId,
+				usuarioId);
+		estatistica.calculoTempoEAcoesFluxo(tarefaId, fluxos, true);
+		if (!fluxos.isEmpty()) {
+			FluxoVO fluxoVO = fluxos.get(0);
+			String nomeUsuario = tarefaRepository.getNameUsuario(fluxoVO
+					.getFluxoId());
+			result.include("nomeUsuario", nomeUsuario);
+
+		}
 		validateComponente.validarObjeto(fluxos);
 		result.include("tarefa", tarefaRepository.find(tarefaId));
 		result.include("fluxos", fluxos);
@@ -306,15 +319,18 @@ public class TarefaController extends BaseController {
 	public void exibirActions(Long testeId, Long tarefaId, Long usuarioId,
 			Long fluxoId) {
 		validateComponente.validarId(testeId);
-		validateComponente.validarId(testeId);
+		validateComponente.validarId(tarefaId);
 		validateComponente.validarId(usuarioId);
 		validateComponente.validarId(fluxoId);
 		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
-		List<Action> acoes = tarefaRepository.getAcoesFluxo(testeId, tarefaId,
-				usuarioId, usuarioCriadorId, fluxoId);
-		validateComponente.validarObjeto(acoes);
+		Fluxo fluxo = tarefaRepository.getFluxo(testeId, tarefaId, usuarioId,
+				usuarioCriadorId, fluxoId);
+		List<Action> acoes = fluxo.getAcoes();
 		diferencaTempo(acoes);
 		result.include("acoes", acoes);
+		result.include("nomeTarefa", fluxo.getTarefa().getNome());
+		result.include("nomeUsuario", fluxo.getUsuario().getNome());
+		result.include("nomeTeste", fluxo.getTarefa().getTeste().getTitulo());
 		result.include("tarefaId", tarefaId);
 		result.include("testeId", testeId);
 		result.include("usuarioId", usuarioId);
@@ -325,7 +341,8 @@ public class TarefaController extends BaseController {
 	 * Calcula a diferença de cada ação em relacao ao tempo da primeira ação
 	 * realizada
 	 * 
-	 * @param acoes Lista de ações que serão comparadas
+	 * @param acoes
+	 *            Lista de ações que serão comparadas
 	 */
 	public static void diferencaTempo(List<Action> acoes) {
 		if (!acoes.isEmpty()) {
@@ -347,51 +364,49 @@ public class TarefaController extends BaseController {
 	@Logado
 	@Get({ "teste/{testeId}/tarefa/{tarefaId}/analise",
 			"teste/{testeId}/tarefa/{tarefaId}/analise/pag/{numeroPagina}" })
-	public void listUsers(Long testeId, Long tarefaId, int numeroPagina) {
+	public void analise(Long testeId, Long tarefaId, int numeroPagina) {
 		validateComponente.validarId(tarefaId);
 		validateComponente.validarId(testeId);
+		Long usuarioDonoTeste = usuarioLogado.getUsuario().getId();
+		tarefaPertenceAoUsuarioLogado(usuarioDonoTeste, tarefaId, testeId);
 		if (numeroPagina <= 0) {
 			numeroPagina = 1;
 		}
-		Long usuarioDonoTeste = usuarioLogado.getUsuario().getId();
 		Paginacao<FluxoVO> paginacao = tarefaRepository.getFluxos(tarefaId,
 				testeId, usuarioDonoTeste, Paginacao.OBJETOS_POR_PAGINA,
 				numeroPagina);
 		paginacao.geraPaginacao("fluxos", numeroPagina, result);
 		result.include("tarefaId", tarefaId);
 		result.include("testeId", testeId);
-		result.include("tarefa",
-				tarefaRepository.getTarefaVO(tarefaId, testeId));
-		if (!paginacao.getListObjects().isEmpty()) {
-			realizarCalculosEstatisticos(paginacao, tarefaId, testeId,
-					usuarioDonoTeste, TipoConvidado.EXPERT);
-			realizarCalculosEstatisticos(paginacao, tarefaId, testeId,
-					usuarioDonoTeste, TipoConvidado.USER);
+		result.include("tarefa", tarefaRepository.find(tarefaId));
+		estatistica.calculoTempoEAcoesFluxo(tarefaId,
+				paginacao.getListObjects(), false);
+		estatistica.quantidadeUsuariosConvidados(testeId);
+		quantidadeUsuariosQueRealizaramOTeste(testeId);
+	}
+
+	private void quantidadeUsuariosQueRealizaramOTeste(Long testeId) {
+		List<ConvidadoCount> participantesTeste = testeRepository
+				.getRealizaramTeste(testeId);
+		List<TipoConvidado> naoContem = new ArrayList<TipoConvidado>();
+		naoContem.addAll(Arrays.asList(TipoConvidado.values()));
+		for (ConvidadoCount convidadoCount : participantesTeste) {
+			result.include(
+					"convidados_realizaram_"
+							+ convidadoCount.getTipoConvidado(),
+					convidadoCount.getNumeroConvidados());
+			naoContem.remove(convidadoCount.getTipoConvidado());
+		}
+		for (TipoConvidado tipoConvidado : naoContem) {
+			result.include("convidados_realizaram_" + tipoConvidado, 0);
 		}
 	}
 
-	/**
-	 * Realiza o calculo estatistico sobre um grupo de
-	 * 
-	 * @param paginacao
-	 * @param tarefaId
-	 * @param testeId
-	 * @param usuarioDonoTeste
-	 * @param tipoConvidado
-	 */
-	private void realizarCalculosEstatisticos(Paginacao<FluxoVO> paginacao,
-			Long tarefaId, Long testeId, Long usuarioDonoTeste,
-			TipoConvidado tipoConvidado) {
-		Estatistica estatistica = new Estatistica();
-		List<FluxoVO> fluxos = paginacao.getListObjects();
-		List<Long> tempoDeTodosFluxos = tarefaRepository.getTempoDeTodosFluxos(
-				testeId, tarefaId, usuarioDonoTeste, tipoConvidado);
-		double desvioPadrao = estatistica.desvioPadrao(tempoDeTodosFluxos);
-		double mediaAritimetica = estatistica
-				.mediaAritimetica(tempoDeTodosFluxos);
-		estatistica.classificarUsuarios(mediaAritimetica, desvioPadrao, fluxos,
-				tipoConvidado);
-		result.include("desvioPadrao_" + tipoConvidado, desvioPadrao);
-		result.include("media_" + tipoConvidado, mediaAritimetica);
+	private void tarefaPertenceAoUsuarioLogado(Long usuarioDonoTeste,
+			Long tarefaId, Long testeId) {
+		Tarefa pertenceTeste = tarefaRepository.pertenceTeste(tarefaId,
+				testeId, usuarioDonoTeste);
+		validateComponente.validarObjeto(pertenceTeste);
+
 	}
 }

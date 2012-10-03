@@ -38,22 +38,28 @@ import javax.persistence.TemporalType;
 		 * 
 		 * 3º usuario ter realizado o fluxo
 		 */
-		@NamedQuery(name = "Fluxo.obterfluxo", query = "select fluxo from Teste as t "
+		@NamedQuery(name = "Fluxo.obterfluxos", query = "select fluxo from Teste as t "
 				+ "left join t.tarefas as tarefas "
 				+ "left join tarefas.fluxos as fluxo "
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
 				+ "and t.usuarioCriador.id= :usuarioCriador "
 				+ "and fluxo.usuario.id= :usuario order by  fluxo.tempoRealizacao desc"),
-	@NamedQuery(name = "Fluxo.obterActions", query = "select acao from Teste as t "
-						+ "left join t.tarefas as tarefas "
-						+ "left join tarefas.fluxos as fluxo "
-						+ "left join fluxo.acoes as acao "
-						+ "where t.id= :teste "
-						+ "and tarefas.id= :tarefa "
-						+ "and t.usuarioCriador.id= :usuarioCriador "
-						+ "and fluxo.usuario.id= :usuario "
-						+"and fluxo.id= :fluxo"),
+		@NamedQuery(name = "Fluxo.obterfluxo", query = "select fluxo from Teste as t "
+				+ "left join t.tarefas as tarefas "
+				+ "left join tarefas.fluxos as fluxo "
+				+ "where t.id= :teste "
+				+ "and tarefas.id= :tarefa "
+				+ "and t.usuarioCriador.id= :usuarioCriador "
+				+ "and fluxo.usuario.id= :usuario " + "and fluxo.id= :fluxo"),
+		@NamedQuery(name = "Fluxo.obterActions", query = "select acao from Teste as t "
+				+ "left join t.tarefas as tarefas "
+				+ "left join tarefas.fluxos as fluxo "
+				+ "left join fluxo.acoes as acao "
+				+ "where t.id= :teste "
+				+ "and tarefas.id= :tarefa "
+				+ "and t.usuarioCriador.id= :usuarioCriador "
+				+ "and fluxo.usuario.id= :usuario " + "and fluxo.id= :fluxo"),
 		/*
 		 * obtem uma lista de fluxo de uma tarefa
 		 * 
@@ -89,13 +95,11 @@ import javax.persistence.TemporalType;
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
 				+ "and t.usuarioCriador.id= :usuarioCriador "),
-		@NamedQuery(name = "Fluxo.getFluxos.Tarefa.Lista.Tempo", query = "select fluxo.tempoRealizacao from Teste as t "
-				+ "left join t.tarefas as tarefas "
-				+ "left join tarefas.fluxos as fluxo "
-				+ "where t.id= :teste "
-				+ "and tarefas.id= :tarefa "
-				+ "and t.usuarioCriador.id= :usuarioCriador "
-				+"and fluxo.tipoConvidado= :tipoConvidado"), })
+		@NamedQuery(name = "Fluxo.quantidade.Acoes", query = "select new br.ufpi.models.vo.FluxoCountVO(flu.tempoRealizacao,(Select count(*) from Fluxo as flu2 left join flu2.acoes where flu2=flu)) "
+				+ "from Fluxo as flu left join flu.acoes where flu.tarefa.id= :tarefa and flu.tipoConvidado= :tipoConvidado Group by flu.id"),
+		@NamedQuery(name = "Fluxo.fluxosdoUsuario", query = "select new br.ufpi.models.vo.FluxoVO(flu.id,flu.dataRealizacao,flu.tempoRealizacao,flu.tipoConvidado,(Select count(*) from Fluxo as flu2 left join flu2.acoes where flu2=flu)) "
+				+ "from Fluxo as flu left join flu.acoes where flu.tarefa.id= :tarefa and flu.usuario.id= :usuario Group by flu.id"),
+		@NamedQuery(name = "Fluxo.getNomeUsuario", query = "Select fluxo.usuario.nome from Fluxo fluxo left join fluxo.usuario where fluxo.id= :fluxo") })
 @Entity
 public class Fluxo implements Serializable {
 

@@ -16,9 +16,12 @@ public class FluxoVO {
 	private String nomeUsuario;
 	private Long idUsuario;
 	private Date dataRealizacao;
-	private Long tempoRealicao;
-	private TipoMedia media;
+	private Long tempoRealizacao;
+	private TipoMedia mediaTempo;
+	private TipoMedia mediaAcoes;
 	private TipoConvidado tipoConvidado;
+	private Long quantidadeAcoes;
+	private Long fluxoId;
 	/**
 	 * @param nomeUsuario
 	 * @param idUsuario
@@ -31,9 +34,26 @@ public class FluxoVO {
 		this.nomeUsuario = nomeUsuario;
 		this.idUsuario = idUsuario;
 		this.dataRealizacao = dataRealizacao;
-		this.tempoRealicao = tempoRealicao;
+		this.tempoRealizacao = tempoRealicao;
 		this.tipoConvidado=tipoConvidado;
 	}
+	
+	/**
+	 * @param dataRealizacao
+	 * @param tempoRealicao
+	 * @param mediaTempo
+	 * @param tipoConvidado
+	 * @param quantidadeAcoes
+	 */
+	public FluxoVO(Long fluXoId,Date dataRealizacao, Long tempoRealicao,TipoConvidado tipoConvidado, Long quantidadeAcoes) {
+		super();
+		this.dataRealizacao = dataRealizacao;
+		this.tempoRealizacao = tempoRealicao;
+		this.quantidadeAcoes = quantidadeAcoes;
+		this.fluxoId=fluXoId;
+		this.tipoConvidado=tipoConvidado;
+	}
+
 	/**
 	 * @return the nomeUsuario
 	 */
@@ -70,30 +90,50 @@ public class FluxoVO {
 	public void setDataRealizacao(Date dataRealizacao) {
 		this.dataRealizacao = dataRealizacao;
 	}
+
 	/**
-	 * @return the tempoRealicao
+	 * @return the tempoRealizacao
 	 */
-	public Long getTempoRealicao() {
-		return tempoRealicao;
+	public Long getTempoRealizacao() {
+		return tempoRealizacao;
 	}
+
 	/**
-	 * @param tempoRealicao the tempoRealicao to set
+	 * @param tempoRealizacao the tempoRealizacao to set
 	 */
-	public void setTempoRealicao(Long tempoRealicao) {
-		this.tempoRealicao = tempoRealicao;
+	public void setTempoRealizacao(Long tempoRealizacao) {
+		this.tempoRealizacao = tempoRealizacao;
 	}
+
+	
 	/**
-	 * @return the media
+	 * @return the mediaTempo
 	 */
-	public TipoMedia getMedia() {
-		return media;
+	public TipoMedia getMediaTempo() {
+		return mediaTempo;
 	}
+
 	/**
-	 * @param media the media to set
+	 * @param mediaTempo the mediaTempo to set
 	 */
-	public void setMedia(TipoMedia media) {
-		this.media = media;
+	public void setMediaTempo(TipoMedia mediaTempo) {
+		this.mediaTempo = mediaTempo;
 	}
+
+	/**
+	 * @return the mediaAcoes
+	 */
+	public TipoMedia getMediaAcoes() {
+		return mediaAcoes;
+	}
+
+	/**
+	 * @param mediaAcoes the mediaAcoes to set
+	 */
+	public void setMediaAcoes(TipoMedia mediaAcoes) {
+		this.mediaAcoes = mediaAcoes;
+	}
+
 	/**
 	 * @return the tipoConvidado
 	 */
@@ -105,6 +145,34 @@ public class FluxoVO {
 	 */
 	public void setTipoConvidado(TipoConvidado tipoConvidado) {
 		this.tipoConvidado = tipoConvidado;
+	}
+
+	/**
+	 * @return the quantidadeAcoes
+	 */
+	public Long getQuantidadeAcoes() {
+		return quantidadeAcoes;
+	}
+
+	/**
+	 * @param quantidadeAcoes the quantidadeAcoes to set
+	 */
+	public void setQuantidadeAcoes(Long quantidadeAcoes) {
+		this.quantidadeAcoes = quantidadeAcoes;
+	}
+
+	/**
+	 * @return the fluxoId
+	 */
+	public Long getFluxoId() {
+		return fluxoId;
+	}
+
+	/**
+	 * @param fluxoId the fluxoId to set
+	 */
+	public void setFluxoId(Long fluxoId) {
+		this.fluxoId = fluxoId;
 	}
 	
 	

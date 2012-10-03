@@ -32,8 +32,7 @@ public class RespostaTestProcedure {
 		.newInstancePerguntaRepository(entityManager);
 		RespostaEscritaRepository escritaRepository = newInstanceRespostaEscritaRepositoryImpl(entityManager);
 		RespostaAlternativaRepository alternativaRepository = newInstanceRespostaAlternativaRepository(entityManager);
-		
-		TesteRepository testeRepository=new TesteRepositoryImpl(entityManager);
+		TesteRepository testeRepository= new TesteRepositoryImpl(entityManager);
 		return new RespostaController(result, validator, testeView, usuarioLogado, validateComponente, escritaRepository, alternativaRepository, perguntaRepository, testeRepository, testeSessionPlugin);
 	}
 

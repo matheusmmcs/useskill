@@ -2,6 +2,7 @@ package br.ufpi.repositories;
 
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
+import br.ufpi.models.vo.ConvidadoCount;
 import br.ufpi.models.vo.ConvidadoVO;
 import br.ufpi.models.vo.TesteVO;
 import br.ufpi.util.Paginacao;
@@ -142,4 +143,6 @@ public interface TesteRepository {
 			int quantidade);
 
 	Teste findTestePorQuesTionarioID(Long idQuestionario);
+	public List<ConvidadoCount> getParticipantesTeste(Long testeId);
+	public List<ConvidadoCount> getRealizaramTeste(Long testeId);
 }

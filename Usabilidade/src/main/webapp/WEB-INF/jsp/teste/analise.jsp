@@ -80,10 +80,21 @@
 							</td>
 							<td>
 								<div class="acoes centertd">
-										<a class="btn btn-primary" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/tarefa/${el.id}/analise" title="<fmt:message key="table.editar"/>">
+								<c:choose>
+									<c:when test="${el.tipo == 'T'}">
+									<a class="btn btn-primary" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/tarefa/${el.id}/analise" title="<fmt:message key="table.editar"/>">
 											<span class="icon-tasks icon-white"></span> <fmt:message key="usuarios"/>
 										</a>
-								</div> 
+
+									</c:when>
+									<c:otherwise>
+									<a class="btn btn-primary" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/pergunta/${el.id}/analise" title="<fmt:message key="table.editar"/>">
+											<span class="icon-tasks icon-white"></span> <fmt:message key="usuarios"/>
+										</a>
+
+									</c:otherwise>
+								</c:choose>
+																		</div> 
 							</td>
 						</tr>
 					</c:forEach>

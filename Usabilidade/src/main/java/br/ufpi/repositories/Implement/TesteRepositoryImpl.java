@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
+import br.ufpi.models.vo.ConvidadoCount;
 import br.ufpi.models.vo.ConvidadoVO;
 import br.ufpi.models.vo.TesteVO;
 import br.ufpi.repositories.Repository;
@@ -149,19 +150,20 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 		paginacao.setCount((Long) count.getSingleResult());
 		return paginacao;
 	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public Paginacao<ConvidadoVO> findTestesConvidados(Long idUsuario, int numeroPagina, int quantidade) {
+	public Paginacao<ConvidadoVO> findTestesConvidados(Long idUsuario,
+			int numeroPagina, int quantidade) {
 		Paginacao<ConvidadoVO> paginacao = new Paginacao<ConvidadoVO>();
-		Query query =  entityManager.createNamedQuery("Convidado.Teste");
+		Query query = entityManager.createNamedQuery("Convidado.Teste");
 		query.setParameter("usuario", idUsuario);
 		query.setFirstResult(quantidade * (numeroPagina - 1));
 		query.setMaxResults(quantidade);
 		paginacao.setListObjects((List<ConvidadoVO>) query.getResultList());
-		Query count = entityManager
-				.createNamedQuery("Convidado.Teste.Count");
+		Query count = entityManager.createNamedQuery("Convidado.Teste.Count");
 		count.setParameter("usuario", idUsuario);
-//		count.setParameter("realiza", null);
+		// count.setParameter("realiza", null);
 		paginacao.setCount((Long) count.getSingleResult());
 		return paginacao;
 	}
@@ -171,15 +173,13 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 	public Paginacao<TesteVO> findTestesConvidados(int numeroPagina,
 			Long idUsuario, int quantidade) {
 		Paginacao<TesteVO> paginacao = new Paginacao<TesteVO>();
-		//TODO Mudar o convidao.Teste Named Query
-		Query query =  entityManager.createNamedQuery("Convidado.TesteVO");
+		Query query = entityManager.createNamedQuery("Convidado.TesteVO");
 		query.setParameter("usuario", idUsuario);
 		query.setFirstResult(quantidade * (numeroPagina - 1));
 		query.setMaxResults(quantidade);
 		paginacao.setListObjects((List<TesteVO>) query.getResultList());
-		//TODO Mudar o convidao.Teste Named Query
-		Query count = entityManager
-				.createNamedQuery("Convidado.TesteVO.Count");
+		// TODO Mudar o convidao.Teste Named Query
+		Query count = entityManager.createNamedQuery("Convidado.TesteVO.Count");
 		count.setParameter("usuario", idUsuario);
 		paginacao.setCount((Long) count.getSingleResult());
 		return paginacao;
@@ -187,8 +187,27 @@ public class TesteRepositoryImpl extends Repository<Teste, Long> implements
 
 	@Override
 	public Teste findTestePorQuesTionarioID(Long idQuestionario) {
-		Query query=entityManager.createNamedQuery("Teste.findByQuestionario.ID");
+		Query query = entityManager
+				.createNamedQuery("Teste.findByQuestionario.ID");
 		query.setParameter("id", idQuestionario);
 		return (Teste) query.getSingleResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ConvidadoCount> getParticipantesTeste(Long testeId) {
+		Query query = entityManager
+				.createNamedQuery("Convidado.Usuarios.Convidados.Tipo.Count");
+		query.setParameter("teste", testeId);
+		return query.getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ConvidadoCount> getRealizaramTeste(Long testeId) {
+		Query query = entityManager
+				.createNamedQuery("Convidado.Usuarios.Convidados.Tipo.Realizaram.Count");
+		query.setParameter("teste", testeId);
+		return query.getResultList();
 	}
 }
