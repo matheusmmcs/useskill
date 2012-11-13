@@ -7,21 +7,26 @@
 <!-- TOPO INSERIDO -->
 <div id="USwebclient-topo-todo">
 	<div id="USwebclient-topo">
-	<div class="USdireita">
-		<a class="USbotao USbotao-verde USconcluir USdisabled" id="concluir12qz3" href="#">Concluir</a>
-	</div>
-	<div class="UScentro" id="roteiroContent">
-		<a class="USbotao fancybox" id="roteiro" href="#USroteiro">Roteiro</a>
-	</div>
-	<div class="USesquerda">
-		<a class="USbotao USbotao-info">Bom</a> 
-		<a class="USbotao USbotao-vermelho">Ruim</a>
-		<a class="USbotao">Comentario</a>
-	</div>
+		<div class="USdireita">
+			<button type="button" class="USclose UScloseTopo">x</button>
+			<a class="USbotao USbotao-verde USconcluir USdisabled" id="concluir12qz3" href="#">Concluir Etapa</a>
+			<a class="USbotao fancybox" id="USIDroteiro" href="#USroteiro">Visualizar Roteiro</a>
+		</div>
+		<div class="USesquerda">
+			<div id="USinfoTopo">
+				UseSkill - Tarefa
+				<span id="USinfoPassos">
+					1/5
+				</span>
+			</div>
+		</div>
 	</div>
 </div>
 <!-- BOTÃO SHOW TOPO -->
-<a class="USbotao USbotao-info" id="USbuttonTopo">UseSkill</a>
+<div id="USbtnsShow">
+	<a class="USbotao" id="USpergunta">Comentário</a>
+	<a class="USbotao USbotao-info" id="USbuttonTopo">UseSkill &nbsp; \/</a>
+</div>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <script>
 	var domainUseSkill = "http://localhost:8080/Usabilidade";
@@ -56,6 +61,10 @@
     			
 			});
 		}
+		$('.UScloseTopo').live({'click':function(e){
+			e.preventDefault();
+			$('#USbuttonTopo').trigger('click');
+		}})
 
 		/*função para topo*/
 		$('#USbuttonTopo').live({
@@ -64,19 +73,15 @@
 				var $this = $(this);
 				if(topoShow){
 					$topo.fadeToggle(vel, function(){
-						$this.animate({
-							top: '-='+heightTop
-						},vel/2);
+						//$this.animate({top: '-='+heightTop},vel/2);
 					});
-					$this.html('UseSkill');
+					$this.html('UseSkill &nbsp; \\/');
 					topoShow=false;
 				}else{
-					$this.animate({
-						top: '+='+heightTop
-					},vel/2,function(){
+					//$this.animate({ top: '+='+heightTop},vel/2,function(){
 						$topo.fadeToggle(vel);
-					});
-					$this.html('Minimizar');
+					//});
+					$this.html('UseSkill &nbsp; /\\');
 					topoShow=true;
 				}
 			}
@@ -118,6 +123,19 @@
 		}
 
 		$(document).ready(function(){
+				//ao iniciar, carregar as informações do teste atual
+				var numElAtual, listaEl, elAtual, acoes, loadEl;
+
+				chrome.extension.sendRequest({useskill: "getStorageAndAcoes"}, function(resp) {
+					numElAtual = resp.storage.elementoAtualLista;
+					listaEl = parseJSON(resp.storage.listaElementos);
+					elAtual = listaEl[numElAtual];
+					acoes = stringfyJSON(resp.acoes);
+
+					//apos capturar as variaveis, setar texto em cima
+					$("#USinfoPassos").html(numElAtual+1 +"/"+ listaEl.length)
+				});
+
 				//iniciar fancybox e o plugin capt
 				$('.fancybox').fancybox();
 
@@ -157,33 +175,29 @@
 
 				$("#"+btnConcluir).click(function(e){
 					e.preventDefault();
-					chrome.extension.sendRequest({useskill: "getStorageAndAcoes"}, function(resp) {
-						var atual = resp.storage.elementoAtualLista;
-						var listaElementos = parseJSON(resp.storage.listaElementos);
-						var elAtual = listaElementos[atual];
+						
+						chrome.extension.sendRequest({useskill: "getAcoes"}, function(resp) {
+							acoes = stringfyJSON(resp.dados);
 
-						var acoes = stringfyJSON(resp.acoes);
-						
-						$.ajax({
-							url: domainUseSkill+"/tarefa/save/fluxo",
-							cache: false,
-							type: "POST",
-							async: false,
-							data: { 
-								'tarefaId': elAtual.id, 
-								'dados': acoes
-							},
-							success: function(dados){
-								chrome.extension.sendRequest({useskill: "clearAcoes"}, function() {
-					    			nextElement();
-								});
-							},
-							error: function(jqXHR, status, err){
-								console.log(jqXHR);
-							}
+							$.ajax({
+								url: domainUseSkill+"/tarefa/save/fluxo",
+								cache: false,
+								type: "POST",
+								async: false,
+								data: { 
+									'tarefaId': elAtual.id, 
+									'dados': acoes
+								},
+								success: function(dados){
+									chrome.extension.sendRequest({useskill: "clearAcoes"}, function() {
+						    			nextElement();
+									});
+								},
+								error: function(jqXHR, status, err){
+									console.log(jqXHR);
+								}
+							});
 						});
-						
-					});
 				});
 
 				$('#USperguntaTeste12z3').click(function(e){
@@ -219,7 +233,6 @@
 								nextElement();
 							},
 							error : function(jqXHR, textStatus, errorThrown){
-								//nextElement();
 								$('.USAlertError').html('Não foi possível responder. Tente Novamente!');
 								$('.alert').fadeIn(300);
 								console.log(jqXHR)
@@ -228,11 +241,10 @@
 					}else{
 						$('.USAlertError').html('Preencha a resposta antes de enviar!');
 						$('.alert').fadeIn(300);
-						//alert("Preencha a resposta antes de enviar!");
 					}
 				});
 				
-				$('#roteiro').click(function(e){
+				$('#USIDroteiro').click(function(e){
 					getStorage(function(dado){
 						var atual = dado.dados.elementoAtualLista;
 						var listaElementos = parseJSON(dado.dados.listaElementos);
