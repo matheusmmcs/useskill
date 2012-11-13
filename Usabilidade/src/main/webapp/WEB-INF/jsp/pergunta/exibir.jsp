@@ -57,6 +57,9 @@
 					<span>
 						<fmt:message key="questionario" />
 					</span>
+					<span style="font-size: 14px; float: right;">
+						Tarefa - <span id="USinfoPassos" style="padding-left: 3px;"></span>
+					</span>
 					<hr />
 			</legend>
 			

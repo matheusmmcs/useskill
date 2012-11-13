@@ -1,11 +1,6 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/jscripts/libs/jqueryui/css/smoothness/jquery-ui-1.8.18.custom.css">
 	<script src="${pageContext.request.contextPath}/jscripts/libs/jqueryui/js/jquery-ui-1.8.18.custom.min.js"></script>
-	<style>
-		#USsaveOrdem{
-			margin: 0 10px 7px 0;
-		}
-	</style>
 </head>
 <body>
 	<%@include file="../leftmenus/default.jsp"%>
@@ -66,13 +61,9 @@
 			</legend>
 			
 			<div class="alert fade in alert-success hide">
-            	<button type="button" class="close" data-dismiss="alert">x</button>
+            	<button type="button" class="close">x</button>
             	Ordem Alterada com Sucesso!
           	</div>
-		
-			<a id="USsaveOrdem" href="#" title="<fmt:message key="testes.passo2.salvarordem" />" class="btn btn-primary pull-right">
-				<fmt:message key="testes.passo2.salvarordem" />
-			</a>
 			
 			<table class="table table-striped table-bordered table-condensed">
 				<thead>
@@ -161,20 +152,23 @@
 </div>
 <script>
 	(function($){
-		var $sortable = $(".sortable").disableSelection().sortable();
+		var $sortable = $(".sortable").disableSelection().sortable({
+			update: function(event, ui) {
+				salvarOrdem();
+			}
+		});
+		var $li = $sortable.children('li');
 		function ElementosTeste(id, tipo){
 			this.id = id;
 			this.tipo = tipo;
 		}
 		var arrayElementos = new Array();
-		
+
 		$('#USproxPasso').click(function(e){
 			$('#USsaveOrdem').trigger('click');			
 		});
 		
-		$('#USsaveOrdem').click(function(e){
-			e.preventDefault();
-			
+		function salvarOrdem(){
 			arrayElementos = new Array();
 			var posLi = $sortable.children('li');
 			$.each(posLi, function(key, value) { 
@@ -184,7 +178,6 @@
 			
 			var listel = JSON.stringify(arrayElementos);
 			var idt = "${testeView.teste.id}";
-			
 			$.ajax({
 				url: "${pageContext.request.contextPath}/teste/ordenar",
 				cache: false,
@@ -193,13 +186,18 @@
 				data: {idTeste: idt, listaElementos: listel},
 				success: function(dados){
 					if(dados.string == "sucesso"){
-						$(".alert").fadeIn(200)
+						$(".alert").fadeIn(200);//.delay(1000).fadeOut(200)
 					}
 				},
 				error: function(jqXHR, status, err){
 					console.log(jqXHR);
 				}
 			});
+		}
+		
+		$(".close").click(function(e){
+			e.preventDefault();
+			$(".alert").fadeOut(200);
 		});
 	})(jQuery);
 </script>
