@@ -24,8 +24,9 @@
 	  "default_popup": "popup.html"
   },
   "web_accessible_resources": [
-    "images/icon.png",
-    "html/topoteste.html"
+    "html/topoteste.html",
+    "images/glyphicons-halflings-white.png",
+    "images/glyphicons-halflings.png"
   ],
   "manifest_version": 2
 }

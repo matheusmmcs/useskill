@@ -1,16 +1,32 @@
 <!-- ROTEIRO -->
-<div id="USroteiro">
-	<b class="USroteiroClose">X</b>
-	<h3>Roteiro</h3>
-	<p></p>
+<div id="USboxes">
+	<div id="USmodal" class="USwindow">
+		<h3>Roteiro</h3>
+		<a href="#" class="USclose UScloseModal" title="Fechar">x</a>
+		<div></div>
+	</div>
+	<div id="UScomentModal" class="USwindow">
+		<h3>Digite seu Comentário:</h3>
+		<a href="#" class="USclose UScloseModal" title="Fechar">x</a>
+		<div class="UScomentText">
+			<textarea name="UScomentText" id="UScomentText"></textarea>
+		</div>
+		<div class="UScomentBotoes">
+			<a class="USbotao USbotao-verde" id="UScomentEnviar">Enviar</a>
+			<a class="USbotao" id="UScomentCancelar">Cancelar</a>
+		</div>
+	</div>
+	<div id="USmask"></div>
 </div>
+
 <!-- TOPO INSERIDO -->
 <div id="USwebclient-topo-todo">
 	<div id="USwebclient-topo">
 		<div class="USdireita">
-			<button type="button" class="USclose UScloseTopo">x</button>
-			<a class="USbotao USbotao-verde USconcluir USdisabled" id="concluir12qz3" href="#">Concluir Etapa</a>
-			<a class="USbotao fancybox" id="USIDroteiro" href="#USroteiro">Visualizar Roteiro</a>
+			<button type="button" class="USclose UScloseTopo" title="Minimizar">x</button>
+			<a class="USbotao USbotao-verde USconcluir USdisabled" id="concluir12qz3" href="#"><b class="USicon-ok USicon-white"></b> Concluir Etapa</a>
+			<a class="USbotao" id="USIDroteiro" href="#USmodal" name="USmodal"><b class="USicon-list"></b> Visualizar Roteiro</a>
+			<a class="USbotao USbotao-vermelho" id="USadiarTeste"><b class="USicon-remove USicon-white"></b> Adiar Teste</a>
 		</div>
 		<div class="USesquerda">
 			<div id="USinfoTopo">
@@ -24,22 +40,26 @@
 </div>
 <!-- BOTÃO SHOW TOPO -->
 <div id="USbtnsShow">
-	<a class="USbotao" id="USpergunta">Comentário</a>
-	<a class="USbotao USbotao-info" id="USbuttonTopo">UseSkill &nbsp; \/</a>
+	<a class="USbotao" id="UScomentario" href="#UScomentModal" name="USmodal">Comentário</a>
+	<a class="USbotao USbotao-info" id="USbuttonTopo">UseSkill <b class="USicon-chevron-down USicon-white"></b></a>
 </div>
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <script>
 	var domainUseSkill = "http://localhost:8080/Usabilidade";
 	//para saber se está em uma página de pergunta
 	var urlPergunta = "teste/responder/pergunta";
 	var urlAtual = location.protocol+location.host+location.pathname;
+	var urlJquery = chrome.extension.getURL("js/jquery.js");
+	window.jQuery || document.write('<script src="'+urlJquery+'"><\/script>');
+	//inserção das imagens do bootstrap
+	var urlImg = chrome.extension.getURL("images/glyphicons-halflings.png");
+	var urlImg2 = chrome.extension.getURL("images/glyphicons-halflings-white.png");
+	$('[class*="USicon-"]').css("background-image", 'url("'+urlImg+'")');
+	$('.USicon-white').css("background-image", 'url("'+urlImg2+'")');
 
-	var url = chrome.extension.getURL("js/jquery.js");
-	window.jQuery || document.write('<script src="'+url+'"><\/script>');
-
-	//define se é pergunta o não, para esconder o topo
+	//define se é pergunta ou não, para esconder o topo
 	if(urlAtual.indexOf(urlPergunta)!=-1){
-		console.log("esconde")
 		//é pergunta, esconde o topo
 		$('#USwebclient-topo-todo').hide();
 		$('#USbuttonTopo').hide();
@@ -49,7 +69,6 @@
 		var $topo = $('#USwebclient-topo-todo');
 		var vel = 400;
 		var topoShow = false;
-		var animateStoped = true;
 		var heightTop = $topo.css("height").substr(0,2);
 		var btnConcluir = "concluir12qz3";
 
@@ -75,13 +94,15 @@
 					$topo.fadeToggle(vel, function(){
 						//$this.animate({top: '-='+heightTop},vel/2);
 					});
-					$this.html('UseSkill &nbsp; \\/');
+					$this.html('UseSkill <b class="USicon-chevron-down USicon-white"></b>');
+					$('.USicon-white').css("background-image", 'url("'+urlImg2+'")');
 					topoShow=false;
 				}else{
 					//$this.animate({ top: '+='+heightTop},vel/2,function(){
 						$topo.fadeToggle(vel);
 					//});
-					$this.html('UseSkill &nbsp; /\\');
+					$this.html('UseSkill <b class="USicon-chevron-up USicon-white"></b>');
+					$('.USicon-white').css("background-image", 'url("'+urlImg2+'")');
 					topoShow=true;
 				}
 			}
@@ -131,13 +152,9 @@
 					listaEl = parseJSON(resp.storage.listaElementos);
 					elAtual = listaEl[numElAtual];
 					acoes = stringfyJSON(resp.acoes);
-
 					//apos capturar as variaveis, setar texto em cima
 					$("#USinfoPassos").html(numElAtual+1 +"/"+ listaEl.length)
 				});
-
-				//iniciar fancybox e o plugin capt
-				$('.fancybox').fancybox();
 
 				//quando houver click, verifico se há target e se este é diferente de self e _self (abrindo nova aba).
 				$('a').click(function(e){
@@ -167,12 +184,7 @@
 					}
 				});
 
-				//ação de fechar roteiro
-				$('.USroteiroClose').click(function(e){
-					e.preventDefault();
-					$('.fancybox-close').trigger('click')
-				});
-
+				//método para concluir a tarefa
 				$("#"+btnConcluir).click(function(e){
 					e.preventDefault();
 						
@@ -200,6 +212,15 @@
 						});
 				});
 
+				//método para adiar o teste
+				$('#USadiarTeste').click(function(e){
+					var r = confirm("Deseja adiar este teste? Os dados armazenado até o momento serão perdidos!");
+					if (r==true){
+					  chrome.extension.sendRequest({useskill: "testFinish"});
+					}
+				});
+
+				//método para responder questionário
 				$('#USperguntaTeste12z3').click(function(e){
 					e.preventDefault();
 					var $form = $(this).parentsUntil("form").parent();
@@ -243,28 +264,75 @@
 						$('.alert').fadeIn(300);
 					}
 				});
-				
+
+				/*	MODAL	*/
+				$('a[name=USmodal]').click(function(e) {
+					e.preventDefault();
+					var idl = $(this).attr('href');
+					var maskH = $(document).height();
+					var maskW = $(window).width();
+					$('#USmask').css({'width':maskW,'height':maskH}).fadeIn(600);
+					var winH = $(window).height();
+					var winW = $(window).width();
+					$(idl).css({'top':winH/2-$(idl).height()/2,'left':winW/2-$(idl).width()/2}).fadeIn(300);
+				});
+
+				$(window).resize(function () {
+			        var box = $('#USboxes .USwindow');
+			        var maskHeight = $(document).height();
+			        var maskWidth = $(window).width();
+			        var winH = $(window).height();
+			        $('#USmask').css({'width':maskWidth,'height':maskHeight});
+			        box.css({'top':winH/2 - box.height()/2,'left':maskWidth/2 - box.width()/2});
+				});
+
+				$('.USwindow .UScloseModal').click(function (e) {
+					e.preventDefault();
+					$('#USmask, .USwindow').fadeOut(200);
+				});
+
+				$('#USmask').click(function () {
+					$(this).fadeOut(200);
+					$('.USwindow').fadeOut(200);
+				});
+
+				/*	MODAL 1 */
+				//método para visualizar roteiro
 				$('#USIDroteiro').click(function(e){
-					getStorage(function(dado){
-						var atual = dado.dados.elementoAtualLista;
-						var listaElementos = parseJSON(dado.dados.listaElementos);
-						var elAtual = listaElementos[atual];
-						$.ajax({
-							url : domainUseSkill+"/tarefa/roteiro",
-							type : 'POST',
-							dataType : 'json',
-							async : false,
-							data : {
-								'idTarefa' : elAtual.id
-								},
-							success : function(json) {
-								$('#USroteiro').children('p').html(json.string);
+					e.preventDefault();
+					$.ajax({
+						url : domainUseSkill+"/tarefa/roteiro",
+						type : 'POST',
+						dataType : 'json',
+						async : false,
+						data : {
+							'idTarefa' : elAtual.id
 							},
-							error : function(jqXHR, textStatus, errorThrown){
-								console.log(jqXHR);
-							}
-						});
+						success : function(json) {
+							console.log(json);
+							$('#USmodal').children('div').html(json.string);
+						},
+						error : function(jqXHR, textStatus, errorThrown){
+							console.log(jqXHR);
+						}
 					});
+				});
+
+				/*	MODAL 2 */
+				//método para realizar o comentário
+				$('#UScomentario').click(function(e){
+					e.preventDefault();
+					$('#UScomentModal').children('div').html(json.string);
+				});
+
+				$('#UScomentEnviar').click(function(e){
+					e.preventDefault();
+					$('.UScloseModal').trigger('click');
+				});
+
+				$('#UScomentCancelar').click(function(e){
+					e.preventDefault();
+					$('.UScloseModal').trigger('click');
 				});
 			});
 	})(jQuery);

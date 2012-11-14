@@ -50,6 +50,7 @@
 		$('#USlogout').live({
 			"click" : function(e){
 				e.preventDefault();
+				chrome.extension.sendRequest({useskill: "testFinish"});
 				var objJson = ajax(urls.logout, typeEnum.GET);
 				console.log(objJson);
 				getPage("login");
@@ -65,6 +66,14 @@
 				chrome.extension.sendRequest({useskill: "nextElement", lista: objJson, atual: 0});
 			}
 		});
+
+		$('.adiarteste').live({
+			"click" : function(e){
+				e.preventDefault();
+				chrome.extension.sendRequest({useskill: "testFinish"});
+				logged();
+			}
+		})
 		
 	});
 
@@ -119,7 +128,7 @@
 				$('.teste-info').tooltip();	
 				$(".scroll").mCustomScrollbar();
 			}else{
-				var htmlReturn = "Por favor, finalize o teste que esta em execucao!";
+				var htmlReturn = '<div style="text-align: center;">Para iniciar outro teste, finalize o teste que est&aacute; em execu&ccedil;&atilde;o! <br/> <a class="btn btn-danger adiarteste" href="#"><b class="icon-remove icon-white"></b> Adiar Teste</a></div>';
 				$('#idConvidados').html(htmlReturn);
 			}
 		})

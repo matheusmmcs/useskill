@@ -1,4 +1,4 @@
-#USwebclient-topo-todo{display: none; z-index: 2147483640; height: 41px; position: fixed; top: 0; left: 0; width: 100%; background-color: #3A5780;background-image: -webkit-gradient(radial, center center, 0, center center, 460, from(#557BB2), to(#3A5780));background-image: -webkit-radial-gradient(circle, #557BB2, #3A5780);background-image: -moz-radial-gradient(circle, #557BB2, #3A5780);background-image: -ms-radial-gradient(circle, #557BB2, #3A5780);background-image: -o-radial-gradient(circle, #557BB2, #3A5780);background-repeat: no-repeat;background-position: top center; box-shadow: 0px 2px 5px #555; font-family: "Trebuchet MS", sans-serif;}
+#USwebclient-topo-todo{display: none; z-index: 99990; height: 41px; position: fixed; top: 0; left: 0; width: 100%; background-color: #3A5780;background-image: -webkit-gradient(radial, center center, 0, center center, 460, from(#557BB2), to(#3A5780));background-image: -webkit-radial-gradient(circle, #557BB2, #3A5780);background-image: -moz-radial-gradient(circle, #557BB2, #3A5780);background-image: -ms-radial-gradient(circle, #557BB2, #3A5780);background-image: -o-radial-gradient(circle, #557BB2, #3A5780);background-repeat: no-repeat;background-position: top center; box-shadow: 0px 2px 5px #555; font-family: "Trebuchet MS", sans-serif;}
 #USwebclient-topo-todo a{text-decoration: none;}
 #USwebclient-topo {width: 980px;top: 0px;height: 40px;margin:0 auto;position: relative;z-index: 99990;}
 #fancybox-overlay{z-index: 99991 !important;}
@@ -8,15 +8,10 @@
 .USconcluir.disabled, .USconcluir.disabled:hover{background: #999;cursor: default;}
 .USdireita {float: right;height: 60px;}
 .USesquerda {float: left;height: 60px;}
-.USesquerda .USbotao {float: left;margin: 5px 5px;padding: 5px 20px;}
-.USdireita .USbotao {float: right;margin: 5px 10px;padding: 5px 30px;}
+.USesquerda .USbotao {float: left;margin: 5px 5px;padding: 5px 15px;}
+.USdireita .USbotao {float: right;margin: 5px 8px;padding: 5px 15px;}
 
-#USroteiro{font-size:14px !important;min-height:350px;height:auto !important;height:350px;width: 400px; display: none;}
-#USroteiro h3{font-size:18px !important;font-weight:bold;border-bottom:1px solid #ddd;text-align:center;padding:10px 0;}
-.USroteiroClose {width: 20px; height: 20px; color: #511; float: right; cursor: pointer;}
-#USroteiro p{margin-top: 10px;}
-
-#USbtnsShow{ width: 120px;height: 80px;position: fixed;bottom: 30px; left: 0px; z-index: 2147483640; font-size: 16px; font-family: "Arial", sans-serif }
+#USbtnsShow{ width: 100px;height: auto;position: fixed;bottom: 50px; left: 0px; z-index: 99990; font-size: 16px; font-family: "Arial", sans-serif }
 #USbtnsShow .USbotao{opacity: 0.7; width: 100%; height: 17px; padding: 7px 0px;}
 #USinfoTopo{ color: white; font-size: 20px; padding: 7px 0px; }
 /* text-transform: uppercase; */
@@ -31,12 +26,16 @@
 .USbotao-info{text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);color: #ffffff !important;background-color: #49afcd;background-image: -moz-linear-gradient(top, #5bc0de, #2f96b4);background-image: -ms-linear-gradient(top, #5bc0de, #2f96b4);background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5bc0de), to(#2f96b4));background-image: -webkit-linear-gradient(top, #5bc0de, #2f96b4);background-image: -o-linear-gradient(top, #5bc0de, #2f96b4);background-image: linear-gradient(top, #5bc0de, #2f96b4);background-repeat: repeat-x;filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5bc0de', endColorstr='#2f96b4', GradientType=0);border-color: #2f96b4 #2f96b4 #1f6377;border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);filter: progid:dximagetransform.microsoft.gradient(enabled=false);}
 .USbotao-info:hover{background-color: #2f96b4;}
 /*	ICONS	*/
-[class^="icon-"],[class*=" icon-"]{display: inline-block;width: 14px;height: 14px;line-height: 14px;vertical-align: text-top;
-background-image: url("../img/glyphicons-halflings.png");background-position: 14px 14px;background-repeat: no-repeat;*margin-right: .3em;}
-[class^="icon-"]:last-child,[class*=" icon-"]:last-child{*margin-left: 0;}
-.icon-white{background-image: url("../img/glyphicons-halflings-white.png");}
-.icon-plus {background-position: -408px -96px;}
-.icon-minus {background-position: -433px -96px;}
+[class^="USicon-"],[class*=" USicon-"]{display: inline-block;width: 14px;height: 14px;line-height: 14px;vertical-align: text-top; background-position: 14px 14px;background-repeat: no-repeat;*margin-right: .3em;}
+#USbuttonTopo [class^="USicon-"], #USbuttonTopo [class*=" USicon-"] {margin-left: 7px;}
+#USwebclient-topo [class^="USicon-"], #USwebclient-topo [class*=" USicon-"] {margin: 2px 5px 0 0;}
+.USicon-plus {background-position: -408px -96px;}
+.USicon-minus {background-position: -433px -96px;}
+.USicon-chevron-up {background-position: -288px -120px;}
+.USicon-chevron-down {background-position: -313px -119px;}
+.USicon-list {background-position: -360px -48px;}
+.USicon-ok {background-position: -288px 0;}
+.USicon-remove {background-position: -312px 0;}
 .usbtnicon{margin-left: 5px;}
 .USclose {float: right;font-size: 30px;font-weight: bold;line-height: 28px;color: white;text-shadow: 0 1px 0 black;opacity: 0.3;filter: alpha(opacity=30);}
 button.USclose {padding: 3px 0 0 0;cursor: pointer;background: transparent;border: 0;-webkit-appearance: none;}
@@ -49,3 +48,18 @@ button.USclose {padding: 3px 0 0 0;cursor: pointer;background: transparent;borde
 80% { opacity: 1;}
 100% { opacity: 0.7;}
 }
+
+/*	MODAL	*/
+#USmask {top: 0;left: 0;position: absolute; z-index:99995; background-color:#000; display:none;opacity: 0.6;filter: alpha(opacity=60);}
+#USboxes .USwindow {display:none;position:fixed;width:480px;height:300px;z-index:99996;padding:12px;background: white;box-shadow: 2px 2px 10px #333;border-radius: 7px;}
+/* Personalize a janela modal aqui. Você pode adicionar uma imagem de fundo. */
+.UScloseModal {display:block;text-align:right;position: absolute;right: 15px;top: 5px;font: -webkit-small-control; font-size: 30px;font-weight: bold}
+
+#USmodal, #UScomentModal{font-size:14px !important;width: 400px; display: none;font-family: "Arial", sans-serif}
+#USmodal h3, #UScomentModal h3{font-size:18px !important;font-weight:bold;border-bottom:1px solid #ddd;text-align:center;padding:10px 0;}
+#USmodal div {margin-top: 10px;max-height: 240px;overflow: auto;}
+
+#UScomentModal div.UScomentText {width: 100%; text-align: center;}
+#UScomentModal div.UScomentText textarea {width: 90%; height: 190px;resize: none;}
+#UScomentModal div.UScomentBotoes {position:relative; width: 100%; height: auto; padding-top: 10px;margin-top: 10px; border-top:1px solid #ddd;}
+#UScomentModal div.UScomentBotoes .USbotao{float: right; margin-left: 7px;}

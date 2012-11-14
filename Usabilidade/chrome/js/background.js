@@ -210,9 +210,9 @@ function insertOnPage(tabId){
 	chrome.tabs.executeScript(tabId, {file: "js/capt.js"});
 	//chrome.tabs.executeScript(tabId, {file: "js/playback.js"});
 	chrome.tabs.insertCSS(tabId, {file: "css/topoteste.css"});
-	chrome.tabs.insertCSS(tabId, {file: "css/jquery.fancybox.css"});
 	chrome.tabs.executeScript(tabId, {file: "js/topoteste.js"});
-	chrome.tabs.executeScript(tabId, {file: "js/jquery.fancybox.pack.js"});
+	//chrome.tabs.insertCSS(tabId, {file: "css/jquery.fancybox.css"});
+	//chrome.tabs.executeScript(tabId, {file: "js/jquery.fancybox.pack.js"});
 	chrome.browserAction.setIcon({path: 'images/icon16on.png', tabId: tabId});
 }
 
