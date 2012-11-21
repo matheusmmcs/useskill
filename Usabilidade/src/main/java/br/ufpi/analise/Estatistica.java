@@ -164,7 +164,7 @@ public class Estatistica {
 				((mediaAcao - desvioPadraoAcao) + " - " + (mediaAcao + desvioPadraoAcao)));
 		retorno.put(
 				"media_tempo_" + tipoConvidado,
-				((mediaTempo - desvioPadraoTempo) + " - " + (mediaTempo + desvioPadraoTempo)));
+				(((mediaTempo - desvioPadraoTempo)/1000) + " Seg - " + ((mediaTempo + desvioPadraoTempo)/1000))+" Seg");
 		retorno.put("total_fluxos_" + tipoConvidado, fluxos.size());
 		retorno.put("total_fluxos_media_tempo_" + tipoConvidado,
 				quantidadeUsuariosNAmediaTempo);

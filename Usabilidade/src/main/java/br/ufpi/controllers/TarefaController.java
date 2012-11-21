@@ -22,6 +22,7 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.Action;
+import br.ufpi.models.Comentario;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
@@ -29,6 +30,7 @@ import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.vo.ConvidadoCount;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
+import br.ufpi.repositories.ComentarioRepository;
 import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
@@ -43,6 +45,7 @@ import com.google.gson.reflect.TypeToken;
 public class TarefaController extends BaseController {
 
 	private final TarefaRepository tarefaRepository;
+	private final ComentarioRepository comentarioRepository;
 	private final TesteRepository testeRepository;
 	private final FluxoRepository fluxoRepository;
 	private final TesteSessionPlugin testeSessionPlugin;
@@ -53,13 +56,14 @@ public class TarefaController extends BaseController {
 			ValidateComponente validateComponente,
 			TarefaRepository tarefaRepository, TesteRepository testeRepository,
 			FluxoRepository fluxoIdealRepository,
-			TesteSessionPlugin testeSessionPlugin, Estatistica estatistica) {
+			TesteSessionPlugin testeSessionPlugin, Estatistica estatistica,ComentarioRepository comentarioRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
 		this.fluxoRepository = fluxoIdealRepository;
 		this.testeSessionPlugin = testeSessionPlugin;
 		this.estatistica = estatistica;
+		this.comentarioRepository = comentarioRepository;
 	}
 
 	/**
@@ -384,6 +388,16 @@ public class TarefaController extends BaseController {
 		estatistica.quantidadeUsuariosConvidados(testeId);
 		quantidadeUsuariosQueRealizaramOTeste(testeId);
 	}
+	@Logado
+	@Post()
+	public void salvarComentario(String texto,Long idTarefa){
+		Comentario comentario= new Comentario();
+		comentario.setTexto(texto);
+		Tarefa tarefa = tarefaPertenceTeste(testeSessionPlugin.getIdTeste(), idTarefa);
+		comentario.setUsuario(super.usuarioLogado.getUsuario());
+		comentario.setTarefa(tarefa);
+		comentarioRepository.create(comentario);
+	}
 
 	private void quantidadeUsuariosQueRealizaramOTeste(Long testeId) {
 		List<ConvidadoCount> participantesTeste = testeRepository
@@ -407,6 +421,5 @@ public class TarefaController extends BaseController {
 		Tarefa pertenceTeste = tarefaRepository.pertenceTeste(tarefaId,
 				testeId, usuarioDonoTeste);
 		validateComponente.validarObjeto(pertenceTeste);
-
 	}
 }

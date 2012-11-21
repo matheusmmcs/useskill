@@ -54,6 +54,8 @@ public class Tarefa implements Serializable {
 	private List<Impressao> impressoes;
 	@OneToMany(mappedBy="tarefa",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Fluxo> fluxos;
+	@OneToMany(mappedBy="tarefa",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+	private List<Comentario> comentarios;
 	
 	@ManyToOne(cascade = CascadeType.REFRESH)
 	private Teste teste;
@@ -121,6 +123,20 @@ public class Tarefa implements Serializable {
 	 */
 	public void setFluxos(List<Fluxo> fluxo) {
 		this.fluxos = fluxo;
+	}
+
+	/**
+	 * @return the comentarios
+	 */
+	public List<Comentario> getComentarios() {
+		return comentarios;
+	}
+
+	/**
+	 * @param comentarios the comentarios to set
+	 */
+	public void setComentarios(List<Comentario> comentarios) {
+		this.comentarios = comentarios;
 	}
 
 	

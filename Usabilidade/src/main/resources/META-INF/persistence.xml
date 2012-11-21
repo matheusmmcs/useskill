@@ -3,6 +3,7 @@
   <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
     <class>br.ufpi.models.Action</class>
     <class>br.ufpi.models.Alternativa</class>
+    <class>br.ufpi.models.Comentario</class>
     <class>br.ufpi.models.Fluxo</class>
     <class>br.ufpi.models.Impressao</class>
     <class>br.ufpi.models.Pergunta</class>

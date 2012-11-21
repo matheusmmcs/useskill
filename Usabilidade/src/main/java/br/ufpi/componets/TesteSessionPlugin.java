@@ -5,10 +5,8 @@ import java.util.List;
 
 import javax.annotation.PreDestroy;
 
-import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.SessionScoped;
-import br.ufpi.controllers.TesteParticiparController;
 import br.ufpi.models.TipoConvidado;
 
 @SessionScoped
@@ -64,7 +62,6 @@ public class TesteSessionPlugin {
 	}
 
 	public void addObjetosSalvos(ObjetoSalvo objetoSalvo) {
-		System.out.println(objetoSalvo);
 		if (objetosSalvos == null) {
 			objetosSalvos = new ArrayList<ObjetoSalvo>();
 		}

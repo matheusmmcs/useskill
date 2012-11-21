@@ -16,11 +16,13 @@ import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.TarefaController;
 import br.ufpi.models.Action;
+import br.ufpi.models.Comentario;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.Usuario;
+import br.ufpi.repositories.ComentarioRepository;
 import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
@@ -47,7 +49,39 @@ public class TarefaTestProcedure {
 				entityManager);
 		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
 		Estatistica estatistica= new Estatistica(testeRepository, result, tarefaRepository);
-		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin,estatistica);
+		ComentarioRepository comentario = new ComentarioRepository() {
+			
+			@Override
+			public Comentario update(Comentario entity) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<Comentario> findAll() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Comentario find(Long id) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public void destroy(Comentario entity) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void create(Comentario entity) {
+				// TODO Auto-generated method stub
+				
+			}
+		};
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin,estatistica, comentario);
 		return controller;
 	}
 
@@ -70,7 +104,39 @@ public class TarefaTestProcedure {
 		FluxoRepository fluxoRepository = new FluxoRepositoryImpl(
 				entityManager);
 		Estatistica estatistica= new Estatistica(testeRepository, result, tarefaRepository);
-		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin,estatistica);
+		ComentarioRepository comentario= new ComentarioRepository() {
+			
+			@Override
+			public Comentario update(Comentario entity) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<Comentario> findAll() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Comentario find(Long id) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public void destroy(Comentario entity) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void create(Comentario entity) {
+				// TODO Auto-generated method stub
+				
+			}
+		};
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin,estatistica, comentario);
 		return controller;
 	}
 
