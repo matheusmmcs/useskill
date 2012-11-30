@@ -25,14 +25,13 @@ public abstract class AbstractDaoTest {
 	@BeforeClass
 	public static void prepare() {
 		HashMap<String, String> configuracao = new HashMap<String, String>();
-//		configuracao.put("hibernate.connection.url",
-//				"jdbc:mysql://localhost:3306/usabilidadeTest");
+		configuracao.put("hibernate.connection.url",
+				"jdbc:mysql://localhost:3306/usabilidadeTest");
+//		configuracao.put("hibernate.hbm2ddl.auto", "create");
 		entityManagerFactory = Persistence.createEntityManagerFactory(
 				"default", configuracao);
 		populator(entityManagerFactory.createEntityManager());
 	}
-
-	
 
 	@AfterClass
 	public static void destroy() {
@@ -62,6 +61,8 @@ public abstract class AbstractDaoTest {
 		if (find.size() == 0) {
 			Populator.userPopulator(entityManager);
 			Populator.validarIncricao(entityManager, repositoryImpl.find(4l)
+					.getConfirmacaoEmail());
+			Populator.validarIncricao(entityManager, repositoryImpl.find(2l)
 					.getConfirmacaoEmail());
 			Populator.testPopulator(entityManager);
 			Populator.convidarUsuarios(entityManager);

@@ -40,7 +40,7 @@ public class LoginControllerTest extends AbstractDaoTest {
 
 	/**
 	 * Test of conta method, of class LoginController. Usuario não possui senha
-	 * confirmada se usuario possuir senha confirmada o objeto usuarioLogado
+	 * confirmada, se usuario possuir senha confirmada o objeto usuarioLogado
 	 * mudaria
 	 */
 	@Test
@@ -51,7 +51,7 @@ public class LoginControllerTest extends AbstractDaoTest {
 		LoginController instance = LoginTestProcedure
 				.newInstanceUsuarioController(entityManager, result);
 		instance.conta(email, senha);
-		Assert.assertEquals("cleiton", instance.usuarioLogado.getUsuario()
+		Assert.assertEquals("cleiton moura", instance.usuarioLogado.getUsuario()
 				.getNome());
 
 	}

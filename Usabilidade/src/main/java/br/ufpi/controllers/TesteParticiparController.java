@@ -76,6 +76,7 @@ public class TesteParticiparController extends BaseController {
 		Convidado convidado = new Convidado(usuarioLogado.getUsuario().getId(),
 				testeId);
 		convidado.setTipoConvidado(tipoConvidado);
+		convidado.setRealizou(false);
 		convidadoRepository.update(convidado);
 		result.redirectTo(TesteController.class).listarTestesConvidados(0);
 	}

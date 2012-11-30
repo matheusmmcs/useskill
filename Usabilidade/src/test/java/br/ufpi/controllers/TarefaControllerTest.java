@@ -499,8 +499,15 @@ public class TarefaControllerTest extends AbstractDaoTest {
 
 	@Test
 	public void saveFluxo() {
-		
-		instance= TarefaTestProcedure.newInstanceTarefaController(entityManager, result, 8l,TipoConvidado.EXPERT);
-		instance.saveFluxo(this.getGSonDados(), 8l);
+
+		instance = TarefaTestProcedure.newInstanceTarefaController(
+				entityManager, result, 8l, TipoConvidado.EXPERT);
+
+		try {
+			instance.saveFluxo(this.getGSonDados(), 8l);
+		} catch (ValidationException validationException) {
+			List<Message> errors = validationException.getErrors();
+			System.out.println(errors);
+		}
 	}
 }
