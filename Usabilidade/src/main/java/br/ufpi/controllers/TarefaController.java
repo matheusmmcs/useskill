@@ -389,7 +389,7 @@ public class TarefaController extends BaseController {
 		quantidadeUsuariosQueRealizaramOTeste(testeId);
 	}
 	@Logado
-	@Post()
+	@Post({"tarefa/enviarcomentario"})
 	public void salvarComentario(String texto,Long idTarefa){
 		Comentario comentario= new Comentario();
 		comentario.setTexto(texto);
@@ -397,6 +397,7 @@ public class TarefaController extends BaseController {
 		comentario.setUsuario(super.usuarioLogado.getUsuario());
 		comentario.setTarefa(tarefa);
 		comentarioRepository.create(comentario);
+		result.use(Results.json()).from(true).serialize();
 	}
 
 	private void quantidadeUsuariosQueRealizaramOTeste(Long testeId) {
