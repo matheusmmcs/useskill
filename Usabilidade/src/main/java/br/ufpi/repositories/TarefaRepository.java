@@ -46,6 +46,16 @@ public interface TarefaRepository {
 	 * @return
 	 */
 	String getRoteiro(Long idTarefa, Long idTeste);
+	/**
+	 * Obtem o Titulo da Tarefa
+	 * 
+	 * @param idTarefa
+	 *            Identificador da tarefa que esta procurando
+	 * @param idTeste
+	 *            Identificador do teste ao qual a tarefa pertence
+	 * @return
+	 */
+	String getTitulo(Long idTarefa, Long idTeste);
 
 	/**
 	 * Obtem o roteiro da Tarefa

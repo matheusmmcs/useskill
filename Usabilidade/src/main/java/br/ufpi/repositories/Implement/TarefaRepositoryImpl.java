@@ -68,6 +68,18 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 			return null;
 		}
 	}
+	@Override
+	public String getTitulo(Long idTarefa, Long idTeste) {
+		Query query = entityManager
+				.createNamedQuery("Tarefa.pertence.Teste.GetNome");
+		query.setParameter("teste", idTeste);
+		query.setParameter("tarefa", idTarefa);
+		try {
+			return (String) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
 	@Override
 	public TarefaVO getTarefaVO(Long idTarefa, Long idTeste) {

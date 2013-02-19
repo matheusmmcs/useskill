@@ -24,7 +24,7 @@ public class UsuarioRepositoryImpl extends Repository<Usuario, Long> implements
 	@Override
 	public Usuario logar(String email, String senha) {
 		Query query = entityManager.createNamedQuery("Usuario.EmailSenha");
-		query.setParameter("email", email);
+		query.setParameter("login", email);
 		query.setParameter("senha", senha);
 		try {
 

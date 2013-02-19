@@ -57,22 +57,6 @@ public class Teste implements Serializable {
 	private String textoIndroducao;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dataLiberacao;
-	
-
-	/**
-	 * @return the dataLiberacao
-	 */
-	public Date getDataLiberacao() {
-		return dataLiberacao;
-	}
-
-	/**
-	 * @param dataLiberacao the dataLiberacao to set
-	 */
-	public void setDataLiberacao(Date dataLiberacao) {
-		this.dataLiberacao = dataLiberacao;
-	}
-
 	/**
 	 * Indica se o Teste jah foi liberado para os usuarios responderem.
 	 * Diferença do realizao é que se liberado pode ser alterado.
@@ -84,6 +68,21 @@ public class Teste implements Serializable {
 	 */
 	@Column(columnDefinition = "TiNYTEXT")
 	private String elementosTeste;
+
+	/**
+	 * @return the dataLiberacao
+	 */
+	public Date getDataLiberacao() {
+		return dataLiberacao;
+	}
+
+	/**
+	 * @param dataLiberacao
+	 *            the dataLiberacao to set
+	 */
+	public void setDataLiberacao(Date dataLiberacao) {
+		this.dataLiberacao = dataLiberacao;
+	}
 
 	public Long getId() {
 		return id;
