@@ -56,7 +56,8 @@ public class TarefaController extends BaseController {
 			ValidateComponente validateComponente,
 			TarefaRepository tarefaRepository, TesteRepository testeRepository,
 			FluxoRepository fluxoIdealRepository,
-			TesteSessionPlugin testeSessionPlugin, Estatistica estatistica,ComentarioRepository comentarioRepository) {
+			TesteSessionPlugin testeSessionPlugin, Estatistica estatistica,
+			ComentarioRepository comentarioRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
@@ -263,6 +264,16 @@ public class TarefaController extends BaseController {
 		result.use(Results.json()).from(roteiro).serialize();
 	}
 
+	@Post("/tarefa/titulo")
+	@Logado
+	public void getTarefaTitulo(Long idTarefa) {
+		validateComponente.validarId(idTarefa);
+		String roteiro = tarefaRepository.getTitulo(idTarefa,
+				testeSessionPlugin.getIdTeste());
+		validateComponente.validarObjeto(roteiro);
+		result.use(Results.json()).from(roteiro).serialize();
+	}
+
 	@Logado
 	@Get("/tarefa/{idTarefa}/json")
 	public void getTarefa(Long idTarefa) {
@@ -388,12 +399,14 @@ public class TarefaController extends BaseController {
 		estatistica.quantidadeUsuariosConvidados(testeId);
 		quantidadeUsuariosQueRealizaramOTeste(testeId);
 	}
+
 	@Logado
 	@Post({"tarefa/enviarcomentario"})
-	public void salvarComentario(String texto,Long idTarefa){
-		Comentario comentario= new Comentario();
+	public void salvarComentario(String texto, Long idTarefa) {
+		Comentario comentario = new Comentario();
 		comentario.setTexto(texto);
-		Tarefa tarefa = tarefaPertenceTeste(testeSessionPlugin.getIdTeste(), idTarefa);
+		Tarefa tarefa = tarefaPertenceTeste(testeSessionPlugin.getIdTeste(),
+				idTarefa);
 		comentario.setUsuario(super.usuarioLogado.getUsuario());
 		comentario.setTarefa(tarefa);
 		comentarioRepository.create(comentario);
