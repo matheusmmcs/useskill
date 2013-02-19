@@ -135,4 +135,9 @@ public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 		return tarefaRepositoryImpl.getNameUsuario(fluxoId);
 	}
 
+	@Override
+	public String getTitulo(Long idTarefa, Long idTeste) {
+		return tarefaRepositoryImpl.getTitulo(idTarefa, idTeste);
+	}
+
 }
