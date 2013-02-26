@@ -9,7 +9,7 @@ public enum TipoConvidado {
 	 * metodo
 	 * 
 	 * @param tipo
-	 *            True para USER e False para TESTER
+	 *            True para USER e False para EXPERT
 	 * @return o tipo de convidado
 	 */
 	public static TipoConvidado parseTipoConvidado(boolean tipo) {
