@@ -133,30 +133,41 @@ public class TesteParticiparController extends BaseController {
 	/**
 	 * 
 	 */
+	@Get("/adiar")
 	public void removerObjetos() {
-		for (ObjetoSalvo objetoSalvo : testeSessionPlugin.getObjetosSalvos()) {
-			switch (objetoSalvo.getEnumObjetoSalvo()) {
-			case FLUXO:
-				Fluxo fluxo = new Fluxo();
-				fluxo.setId(objetoSalvo.getId());
-				fluxoRepository.destroy(fluxo);
-				break;
-			case OBJETIVA:
-				RespostaAlternativa respostaAlternativa = new RespostaAlternativa();
-				respostaAlternativa.setId(objetoSalvo.getId());
-				respostaAlternativaRepository.destroy(respostaAlternativa);
-				break;
-			case SUBJETIVA:
+		boolean sucesso = false;
+		if(testeSessionPlugin!=null){
+			if(testeSessionPlugin.getObjetosSalvos()!=null){
+				for (ObjetoSalvo objetoSalvo : testeSessionPlugin.getObjetosSalvos()) {
+					switch (objetoSalvo.getEnumObjetoSalvo()) {
+					case FLUXO:
+						Fluxo fluxo = new Fluxo();
+						fluxo.setId(objetoSalvo.getId());
+						fluxoRepository.destroy(fluxo);
+						break;
+					case OBJETIVA:
+						RespostaAlternativa respostaAlternativa = new RespostaAlternativa();
+						respostaAlternativa.setId(objetoSalvo.getId());
+						respostaAlternativaRepository.destroy(respostaAlternativa);
+						break;
+					case SUBJETIVA:
 
-				RespostaEscrita respostaEscrita = new RespostaEscrita();
-				respostaEscrita.setId(objetoSalvo.getId());
-				respostaEscritaRepository.destroy(respostaEscrita);
-				break;
-			default:
-				break;
+						RespostaEscrita respostaEscrita = new RespostaEscrita();
+						respostaEscrita.setId(objetoSalvo.getId());
+						respostaEscritaRepository.destroy(respostaEscrita);
+						break;
+					default:
+						break;
+					}
+				}
+				testeSessionPlugin.setObjetosSalvos(new ArrayList<ObjetoSalvo>());
+				//foram removidas as ações gravadas e o teste é suspenso; 
+				sucesso = true;
 			}
+			//aqui ele ainda nao gravou nada, ou seja, ainda está na primeira tarefa;
+			sucesso = true;
+			System.out.println("Teste Adiado");
 		}
-		testeSessionPlugin.setObjetosSalvos(new ArrayList<ObjetoSalvo>());
-
+		result.use(Results.json()).from(sucesso).serialize();
 	}
 }

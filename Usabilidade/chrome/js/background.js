@@ -99,7 +99,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 		  	break;
 		case "testFinish":
 			//finalizar o teste que está em execução
-		  	removeTabsGravando();
+			suspendTest();
 		  	break;
 	}
 });
@@ -166,7 +166,8 @@ function nextElement(atual, lista){
 		}
 	}else{
 		storage.gravando = false;
-		console.log("storage.gravando false");	
+		console.log("TESTE CONCLUIDO");
+		console.log("storage.gravando false");
 
 		proxUrl = domainUseSkill+"/teste/participar/termino"; //URL pós teste
 	}
@@ -195,12 +196,21 @@ function removeTab(id){
 }
 
 function removeTabsGravando(){
-	var count = storage.tabs.length;
+	var count = storage.tabs.length;	
 	if(count>=0){
 		for(var i = 0; i < count; i++){
 			console.log("ChromeRemoveTabO: "+storage.tabs[i]);
 			chrome.tabs.remove(storage.tabs[i]);
 		}
+	}
+}
+
+function suspendTest(){
+	var responseUseSkill = ajax(domainUseSkill+"/teste/participar/adiar", "GET");
+	console.log(responseUseSkill);
+	if(responseUseSkill.boolean){
+		console.log("Teste Adiado");
+		removeTabsGravando();
 	}
 }
 
