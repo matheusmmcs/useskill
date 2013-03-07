@@ -1,5 +1,10 @@
+<head>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/css/prettify.css"></link>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/src/bootstrap-wysihtml5.css"></link>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/useskill-editor.css"></link>
+</head>
+<body>
 <%@include file="../leftmenus/default.jsp"%>
-
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
 	<div class="alert alert-error">
@@ -57,7 +62,7 @@
             <div class="control-group">
                 <label class="control-label" for="input01"><fmt:message key="testes.passo1.introducao"/>*</label>
                 <div class="controls">
-                    <textarea name="textoIndroducao" id="teste_textoIndroducao" cols="8" rows="5" class="span6">${testeView.teste.textoIndroducao}</textarea>
+                    <textarea name="textoIndroducao" id="teste_textoIndroducao" cols="8" rows="7" class="span6 textarea">${testeView.teste.textoIndroducao}</textarea>
                 </div>
             </div>
 
@@ -69,3 +74,26 @@
 		</fieldset>
 	</form>
 </div>
+
+<script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/js/wysihtml5-0.3.0.js"></script>
+<script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/js/prettify.js"></script>
+<script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/src/bootstrap-wysihtml5.js"></script>
+<script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/src/locales/bootstrap-wysihtml5.pt-BR.js"></script>
+
+<script>
+	var $texts = $('.textarea');
+	$texts.wysihtml5({
+		"font-styles": true,
+		"emphasis": true,
+		"lists": true,
+		"html": true,
+		"link": true,
+		"image": true,
+		"color": true,
+		stylesheets: ["${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/css/wysiwyg-color.css"],
+		locale: "pt-BR"
+	});
+	$texts.siblings(".wysihtml5-toolbar").css("width", $texts.css("width"));
+	$(prettyPrint);
+</script>
+</body>

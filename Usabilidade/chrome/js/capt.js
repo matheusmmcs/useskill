@@ -15,29 +15,48 @@
 
 		$(document).bind({
 			click : function(e) {
-				var action = null;
-				var isUseskill = $(e.target).parents('#UseSkill-nocapt').length;
-				if(isUseskill){
-					var id = $(e.target).attr("id");
-					if(id=="USIDroteiro"){
-						action = "roteiro";
-					}else if(id=="concluir12qz3"){
-						action = "concluir";
-					}
-				}else{
-					action = "click";
-				}
+				var action = getAction($(e.target), "click");
 				if(action){
-					var acao = new Action('click', new Date().getTime(), getUrl(), $(e.target).html(), e.target.tagName, $(e.target.tagName).index(e.target), e.pageX, e.pageY);
+					var acao = new Action(action, new Date().getTime(), getUrl(), $(e.target).html(), e.target.tagName, $(e.target.tagName).index(e.target), e.pageX, e.pageY);
 					addAcao(acao);
 				}
 			}, focusout : function(e) {
-				var acao = new Action('focusout', new Date().getTime(), getUrl(), $(e.target).val(), e.target.tagName, $(e.target.tagName).index(e.target), e.pageX, e.pageY);
-				addAcao(acao);
-				//$(e.target).css("background",'red');
+				var action = getAction($(e.target), "focusout");
+				if(action){
+					var acao = new Action(action, new Date().getTime(), getUrl(), $(e.target).val(), e.target.tagName, $(e.target.tagName).index(e.target), e.pageX, e.pageY);
+					addAcao(acao);
+				}
 			}
 		});
 		/*	FUNÇÕES EXTRAS	*/
+		function getAction($e, defaolt){
+			var parent = $e.parents('#UseSkill-nocapt').length;
+			var id = $e.attr("id");
+			var action = filterIsOnUseSkillDIV(parent, id);
+			console.log(action)
+			if(action == true){
+				action = null;
+			}else if(action == false){
+				action = defaolt;
+			}
+			return action;
+		}
+		function filterIsOnUseSkillDIV(param, id){
+			var action = false;
+			console.log(param)
+			console.log(id)
+			if(param){
+				action = true;
+				if(id=="USIDroteiro"){
+					action = "roteiro";
+				}else if(id=="concluir12qz3"){
+					action = "concluir";
+				}else if(id=="UScomentario"){
+					action = "cometario";
+				}
+			}
+			return action;
+		}
 		printAcoes();
 		function printAcoes(){
 			chrome.extension.sendRequest({useskill: "getAcoes"}, function(response) {

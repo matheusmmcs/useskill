@@ -50,7 +50,7 @@ public class Pergunta implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String titulo;
-	@Column(columnDefinition = "TEXT")
+	@Column(columnDefinition = "LONGTEXT")
 	private String texto;
 	/**
 	 * True para pergunta objetiva

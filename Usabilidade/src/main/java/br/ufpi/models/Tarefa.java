@@ -48,7 +48,7 @@ public class Tarefa implements Serializable {
 	private Long id;
 	@NotBlank
 	private String nome;
-	@Column(columnDefinition = "TINYTEXT")
+	@Column(columnDefinition = "LONGTEXT")
 	@NotBlank
 	private String roteiro;
 	@OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

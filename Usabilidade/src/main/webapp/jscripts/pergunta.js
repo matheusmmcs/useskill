@@ -12,7 +12,7 @@
 				$grupoalternativas.hide();
 			}
 
-			var alternativa = '<div class="controls campoalternativa"><textarea class="span6 alternativa" rows="2" cols="" name="pergunta.alternativas[].textoAlternativa" style="resize: none;"></textarea><a class="btn btn-primary delalternativa" href="#"><i class="icon-trash icon-white"></i></a></div>';
+			var alternativa = '<div class="controls campoalternativa"><input type="text" class="span6 alternativa" name="pergunta.alternativas[].textoAlternativa" /><a class="btn btn-primary delalternativa" href="#"><i class="icon-trash icon-white"></i></a></div>';
 
 			$(".delalternativa").live("click", function(e) {
 				e.preventDefault();

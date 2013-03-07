@@ -1,5 +1,10 @@
+<head>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/css/prettify.css"></link>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/src/bootstrap-wysihtml5.css"></link>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/useskill-editor.css"></link>
+</head>
+<body>
 <%@include file="../leftmenus/default.jsp"%>
-
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
 	<div class="alert alert-error">
@@ -58,7 +63,7 @@
 						key="pergunta.texto" />*</label>
 				<div class="controls">
 					<textarea rows="10" cols="" name="pergunta.texto" id="texto"
-						class="span6">${pergunta.texto}</textarea>
+						class="span6 textarea">${pergunta.texto}</textarea>
 				</div>
 			</div>
 
@@ -97,9 +102,7 @@
 				
 				<c:forEach items="${pergunta.alternativas}" var="alternativa">
 					<div class="controls campoalternativa">
-						<textarea class="span6 alternativa" rows="2" cols="" name="pergunta.alternativas[].textoAlternativa" style="resize: none;">
-							${alternativa.textoAlternativa}
-						</textarea>
+						<input type="text" class="span6 alternativa" name="pergunta.alternativas[].textoAlternativa" value="${alternativa.textoAlternativa}" />
 						<a class="btn btn-primary delalternativa" href="#">
 							<i class="icon-trash icon-white"></i>
 						</a>
@@ -118,3 +121,26 @@
 </div>
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/pergunta.js"></script>
+
+<script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/js/wysihtml5-0.3.0.js"></script>
+<script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/js/prettify.js"></script>
+<script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/src/bootstrap-wysihtml5.js"></script>
+<script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/src/locales/bootstrap-wysihtml5.pt-BR.js"></script>
+
+<script>
+	var $texts = $('.textarea');
+	$texts.wysihtml5({
+		"font-styles": true,
+		"emphasis": true,
+		"lists": true,
+		"html": true,
+		"link": true,
+		"image": true,
+		"color": true,
+		stylesheets: ["${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/css/wysiwyg-color.css"],
+		locale: "pt-BR"
+	});
+	$texts.siblings(".wysihtml5-toolbar").css("width", $texts.css("width"));
+	$(prettyPrint);
+</script>
+</body>

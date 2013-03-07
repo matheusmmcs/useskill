@@ -14,5 +14,6 @@ public class FluxoRepositoryImpl extends Repository<Fluxo, Long>
 	public FluxoRepositoryImpl(EntityManager entityManager) {
 		super(entityManager);
 	}
+	
 
 }

@@ -1,0 +1,9 @@
+.wysihtml5-toolbar{
+	padding: 5px 4px !important;
+	background: #f3f3f3;
+	border: 1px solid #ddd;
+	text-align: center;
+}
+ul.wysihtml5-toolbar > li{
+	margin: 5px 3px !important;
+}
