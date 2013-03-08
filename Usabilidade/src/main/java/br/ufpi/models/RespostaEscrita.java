@@ -41,7 +41,7 @@ public class RespostaEscrita implements Serializable {
 	private Long id;
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Pergunta pergunta;
-	@Column(columnDefinition = "TINYTEXT")
+	@Column(columnDefinition = "LONGTEXT")
 	private String resposta;
 	@OneToOne
 	private Usuario usuario;

@@ -6,6 +6,7 @@ package br.ufpi.models;
 import java.io.Serializable;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -28,7 +29,7 @@ public class Comentario implements Serializable {
 	private Usuario usuario;
 	@ManyToOne(optional=false,fetch=FetchType.LAZY,cascade=CascadeType.REFRESH)
 	private Tarefa tarefa;
-	
+	@Column(columnDefinition = "LONGTEXT")
 	private String texto;
 	/**
 	 * @return the usuario

@@ -53,7 +53,7 @@ public class Teste implements Serializable {
 	 */
 	@Column(length = 200)
 	private String tituloPublico;
-	@Column(columnDefinition = "TiNYTEXT")
+	@Column(columnDefinition = "LONGTEXT")
 	private String textoIndroducao;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dataLiberacao;
@@ -66,7 +66,7 @@ public class Teste implements Serializable {
 	 * Salva a lista de objetos em forma de gson Tendo a ordem dos elementos que
 	 * compoem o teste
 	 */
-	@Column(columnDefinition = "TiNYTEXT")
+	@Column(columnDefinition = "LONGTEXT")
 	private String elementosTeste;
 
 	/**
