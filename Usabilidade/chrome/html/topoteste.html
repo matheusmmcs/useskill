@@ -323,12 +323,28 @@
 				//método para realizar o comentário
 				$('#UScomentario').click(function(e){
 					e.preventDefault();
-					$('#UScomentModal').children('div').html(json.string);
 				});
 
 				$('#UScomentEnviar').click(function(e){
 					e.preventDefault();
-					$('.UScloseModal').trigger('click');
+					//e.stopPropagation();
+					$.ajax({
+						url : domainUseSkill+"/tarefa/enviarcomentario",
+						type : 'POST',
+						dataType : 'json',
+						async : false,
+						data : {
+							'texto' : $('#UScomentText').val(),
+							'idTarefa' : elAtual.id
+							},
+						success : function(json) {
+							$('.UScloseModal').trigger('click');
+						},
+						error : function(jqXHR, textStatus, errorThrown){
+							console.log("não enviou o comentário")
+							console.log(jqXHR);
+						}
+					});
 				});
 
 				$('#UScomentCancelar').click(function(e){

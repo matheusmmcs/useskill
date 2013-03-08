@@ -1,5 +1,15 @@
 (function($){
 	$(document).ready(function(){
+		
+		var actionCapt = {
+  			CLICK : "click", 
+  			FOCUSOUT: "focusout", 
+  			SUBMIT : "submit",
+  			ROTEIRO : "roteiro",
+  			CONCLUIR : "concluir",
+  			COMENTARIO : "comentario"
+		};
+
 		function Action(action, time, url, content, tag, tagIndex, posX, posY) {
 			this.sActionType = action;
 			this.sTime = time;
@@ -12,28 +22,50 @@
 		}
 
 		console.log("capt -> localStorage");
+		printAcoes();
 
-		$(document).bind({
+		$(document).on({
 			click : function(e) {
-				var action = getAction($(e.target), "click");
-				if(action){
-					var acao = new Action(action, new Date().getTime(), getUrl(), $(e.target).html(), e.target.tagName, $(e.target.tagName).index(e.target), e.pageX, e.pageY);
-					addAcao(acao);
-				}
+				insertNewAcao(e, actionCapt.CLICK);
 			}, focusout : function(e) {
-				var action = getAction($(e.target), "focusout");
-				if(action){
-					var acao = new Action(action, new Date().getTime(), getUrl(), $(e.target).val(), e.target.tagName, $(e.target.tagName).index(e.target), e.pageX, e.pageY);
-					addAcao(acao);
-				}
+				insertNewAcao(e, actionCapt.FOCUSOUT);
+			}, submit : function(e) {
+				insertNewAcao(e, actionCapt.SUBMIT);
 			}
 		});
 		/*	FUNÇÕES EXTRAS	*/
-		function getAction($e, defaolt){
+		function insertNewAcao(e, actionType){
+			var target = e.target;
+			var tagName = target.tagName;
+			var $target = $(target);
+			var action = filterAction($target, actionType);
+			if(action){
+				var acao = new Action(action, new Date().getTime(), getUrl(), getContent($target, action), target.tagName, $(tagName).index(target), e.pageX, e.pageY);
+				addAcao(acao);
+			}
+		}
+		function getContent($target, action){
+			var val = null;
+			if(action==actionCapt.COMENTARIO){
+				val = $('#UScomentText').val();
+			}else if(action==actionCapt.CLICK){
+				val = $target.html();
+			}else if(action==actionCapt.FOCUSOUT){
+				val = $target.val();
+			}else if(action==actionCapt.SUBMIT){
+				val = $target.serialize();
+			}
+
+			if(val){
+				return val;
+			}else{
+				return "";
+			}
+		}
+		function filterAction($e, defaolt){
 			var parent = $e.parents('#UseSkill-nocapt').length;
 			var id = $e.attr("id");
-			var action = filterIsOnUseSkillDIV(parent, id);
-			console.log(action)
+			var action = isOnUseSkillDIV(parent, id);
 			if(action == true){
 				action = null;
 			}else if(action == false){
@@ -41,23 +73,21 @@
 			}
 			return action;
 		}
-		function filterIsOnUseSkillDIV(param, id){
+		function isOnUseSkillDIV(param, id){
 			var action = false;
-			console.log(param)
-			console.log(id)
 			if(param){
 				action = true;
 				if(id=="USIDroteiro"){
-					action = "roteiro";
+					action = actionCapt.ROTEIRO;
 				}else if(id=="concluir12qz3"){
-					action = "concluir";
-				}else if(id=="UScomentario"){
-					action = "cometario";
+					action = actionCapt.CONCLUIR;
+				}else if(id=="UScomentEnviar"){
+					action = actionCapt.COMENTARIO;
 				}
 			}
 			return action;
 		}
-		printAcoes();
+		
 		function printAcoes(){
 			chrome.extension.sendRequest({useskill: "getAcoes"}, function(response) {
 				console.log(response.dados);
