@@ -40,8 +40,16 @@
 			var $target = $(target);
 			var action = filterAction($target, actionType);
 			if(action){
-				var acao = new Action(action, new Date().getTime(), getUrl(), getContent($target, action), target.tagName, $(tagName).index(target), e.pageX, e.pageY);
-				addAcao(acao);
+				var conteudo = getContent($target, action);
+				//filtros de captura de dados
+				if(
+					!(action == actionCapt.FOCUSOUT && conteudo == "")//focusout em campo vazio, não preencheu nada
+				){
+					
+					var acao = new Action(action, new Date().getTime(), getUrl(), conteudo, target.tagName, $(tagName).index(target), e.pageX, e.pageY);
+					addAcao(acao);
+					
+				}
 			}
 		}
 		function getContent($target, action){
@@ -63,9 +71,10 @@
 			}
 		}
 		function filterAction($e, defaolt){
-			var parent = $e.parents('#UseSkill-nocapt').length;
+			var isOnUseSkill = $e.parents('#UseSkill-nocapt').length;
 			var id = $e.attr("id");
-			var action = isOnUseSkillDIV(parent, id);
+			var idParent = $e.parent().attr("id");
+			var action = isOnUseSkillDIV(isOnUseSkill, id, idParent);
 			if(action == true){
 				action = null;
 			}else if(action == false){
@@ -73,15 +82,15 @@
 			}
 			return action;
 		}
-		function isOnUseSkillDIV(param, id){
+		function isOnUseSkillDIV(isOnUseSkill, id, idParent){
 			var action = false;
-			if(param){
+			if(isOnUseSkill){
 				action = true;
-				if(id=="USIDroteiro"){
+				if(id=="USIDroteiro"||idParent=="USIDroteiro"){
 					action = actionCapt.ROTEIRO;
-				}else if(id=="concluir12qz3"){
+				}else if(id=="concluir12qz3"||idParent=="concluir12qz3"){
 					action = actionCapt.CONCLUIR;
-				}else if(id=="UScomentEnviar"){
+				}else if(id=="UScomentEnviar"||idParent=="UScomentEnviar"){
 					action = actionCapt.COMENTARIO;
 				}
 			}

@@ -210,6 +210,7 @@ function suspendTest(){
 	console.log(responseUseSkill);
 	if(responseUseSkill.boolean){
 		console.log("Teste Adiado");
+		clearAcoes();
 		removeTabsGravando();
 	}
 }

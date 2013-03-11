@@ -1,5 +1,8 @@
+<head>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/plugin/animatedtablesorter/style.css" type="text/css" />
+</head>
+<body>
 <%@include file="../leftmenus/default.jsp"%>
-
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
 		<div class="alert alert-error">
@@ -63,7 +66,7 @@
 				<hr />
 			</legend>
 
-			<table class="table table-striped table-bordered table-condensed">
+			<table class="table table-striped table-bordered table-condensed tableSorter">
 				<thead>
 					<tr>
 						<th style="width: 155px"><fmt:message key="acao" /></th>
@@ -86,3 +89,10 @@
 		</fieldset>
 	</form>
 </div>
+<script src="${pageContext.request.contextPath}/plugin/animatedtablesorter/tsort.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('table.tableSorter').tableSort();
+	});
+</script>
+</body>

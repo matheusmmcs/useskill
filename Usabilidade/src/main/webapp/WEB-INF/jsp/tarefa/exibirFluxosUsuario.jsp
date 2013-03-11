@@ -1,5 +1,4 @@
 <%@include file="../leftmenus/default.jsp"%>
-
 <div class="span9 container-right">
 	<c:if test="${not empty errors}">
 		<div class="alert alert-error">
@@ -55,7 +54,6 @@
 				</p>
 				<hr />
 			</legend>
-
 			<table class="table table-striped table-bordered table-condensed">
 				<thead>
 					<tr>

@@ -2,18 +2,18 @@
 <div id="UseSkill-nocapt">
 <div id="USboxes">
 	<div id="USmodal" class="USwindow">
-		<h3>Roteiro</h3>
+		<h3>Roteiro desta Tarefa:</h3>
 		<a href="#" class="USclose UScloseModal" title="Fechar">x</a>
 		<div></div>
 	</div>
 	<div id="UScomentModal" class="USwindow">
-		<h3>Digite seu Comentário:</h3>
+		<h3>Comente sobre a Tarefa:</h3>
 		<a href="#" class="USclose UScloseModal" title="Fechar">x</a>
 		<div class="UScomentText">
 			<textarea name="UScomentText" id="UScomentText"></textarea>
 		</div>
 		<div class="UScomentBotoes">
-			<a class="USbotao USbotao-verde" id="UScomentEnviar">Enviar</a>
+			<a class="USbotao USbotao-verde" id="UScomentEnviar">Enviar Comentário</a>
 			<a class="USbotao" id="UScomentCancelar">Cancelar</a>
 		</div>
 	</div>
@@ -26,7 +26,6 @@
 		<div class="USdireita">
 			<button type="button" class="USclose UScloseTopo" title="Minimizar">x</button>
 			<a class="USbotao USbotao-verde USconcluir USdisabled" id="concluir12qz3" href="#"><b class="USicon-ok USicon-white"></b> Concluir Etapa</a>
-			<a class="USbotao" id="USIDroteiro" href="#USmodal" name="USmodal"><b class="USicon-list"></b> Visualizar Roteiro</a>
 			<a class="USbotao USbotao-vermelho" id="USadiarTeste"><b class="USicon-remove USicon-white"></b> Adiar Teste</a>
 		</div>
 		<div class="USesquerda">
@@ -41,8 +40,10 @@
 </div>
 <!-- BOTÃO SHOW TOPO -->
 <div id="USbtnsShow">
-	<a class="USbotao" id="UScomentario" href="#UScomentModal" name="USmodal">Comentário</a>
-	<a class="USbotao USbotao-info" id="USbuttonTopo">UseSkill <b class="USicon-chevron-down USicon-white"></b></a>
+	<a class="USbotao" id="USIDroteiro" href="#USmodal" name="USmodal"><b class="USicon-list"></b> Roteiro</a>
+	<a class="USbotao" id="UScomentario" href="#UScomentModal" name="USmodal"><b class="USicon-envelope"></b> Comentário</a>
+	<a class="USbotao USbotao-info" id="USbuttonTopo"><b class="USicon-chevron-down USicon-white"></b> UseSkill</a>
+	<a class="USbotao" id="USshowOrHide" href="#"><b class="USicon-resize-horizontal"></b></a>
 </div>
 </div>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
@@ -95,14 +96,14 @@
 					$topo.fadeToggle(vel, function(){
 						//$this.animate({top: '-='+heightTop},vel/2);
 					});
-					$this.html('UseSkill <b class="USicon-chevron-down USicon-white"></b>');
+					$this.html('<b class="USicon-chevron-down USicon-white"></b> UseSkill');
 					$('.USicon-white').css("background-image", 'url("'+urlImg2+'")');
 					topoShow=false;
 				}else{
 					//$this.animate({ top: '+='+heightTop},vel/2,function(){
 						$topo.fadeToggle(vel);
 					//});
-					$this.html('UseSkill <b class="USicon-chevron-up USicon-white"></b>');
+					$this.html('<b class="USicon-chevron-up USicon-white"></b> UseSkill');
 					$('.USicon-white').css("background-image", 'url("'+urlImg2+'")');
 					topoShow=true;
 				}
@@ -272,7 +273,7 @@
 					var idl = $(this).attr('href');
 					var maskH = $(document).height();
 					var maskW = $(window).width();
-					$('#USmask').css({'width':maskW,'height':maskH}).fadeIn(600);
+					$('#USmask').css({'width':maskW,'height':maskH}).fadeIn(400);
 					var winH = $(window).height();
 					var winW = $(window).width();
 					$(idl).css({'top':winH/2-$(idl).height()/2,'left':winW/2-$(idl).width()/2}).fadeIn(300);
@@ -350,6 +351,28 @@
 				$('#UScomentCancelar').click(function(e){
 					e.preventDefault();
 					$('.UScloseModal').trigger('click');
+				});
+
+				/* USshowOrHide */
+				$('#USshowOrHide').click(function(e){
+					e.preventDefault();
+					var $parent = $('#USbtnsShow');
+					var isHide = $parent.attr('data-hide');
+					if(isHide==undefined || isHide==null){
+						isHide = false;
+					}
+					console.log(isHide)
+					if(isHide==true||isHide=="true"){
+						$parent.attr('data-hide', false);
+						$parent.animate({
+							left: "+="+$parent.width()
+						}, 500);
+					}else{
+						$parent.attr('data-hide', true);
+						$parent.animate({
+							left: "-="+$parent.width()
+						}, 500);
+					}
 				});
 			});
 	})(jQuery);
