@@ -50,6 +50,7 @@ public class EmailUtils {
 	 */
 	public void enviaEmail(Mensagem mensagem) throws EmailException {
 		conectaEmail();
+		System.out.println("Comentado a parte de envio de Email\nAlterar configurações de usuário de envio de email.");
 //		email.setSubject(mensagem.getTitulo());
 //		email.setMsg(mensagem.getMensagem());
 //		email.addTo(mensagem.getDestino());

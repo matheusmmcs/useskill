@@ -21,6 +21,7 @@ public class RespostaEscritaRepositoryImpl extends
 	/* (non-Javadoc)
 	 * @see br.ufpi.repositories.RespostaEscritaRepository#findResposta(java.lang.Long, int, int)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Paginacao<RespostaEscritaVO> findResposta(Long perguntaId,
 			int numeroPagina, int quantidade) {

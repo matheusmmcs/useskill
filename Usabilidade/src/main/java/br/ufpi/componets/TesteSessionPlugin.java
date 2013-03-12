@@ -69,7 +69,7 @@ public class TesteSessionPlugin {
 	}
 
 	/**
-	 * Classe que ira remover todos os objetos de um teste não completo. Ao
+	 * Método que ira remover todos os objetos de um teste não completo. Ao
 	 * remover ele instancia uma nova lista de objetos
 	 */
 	@PreDestroy

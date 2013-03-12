@@ -57,7 +57,9 @@ public class UsuarioController extends BaseController {
 		}
 		validator.onErrorUsePageOf(this).newUsuario();
 		usuario.criptografarSenhaGerarConfimacaoEmail(true);
+		usuario.setEmailConfirmado(true);
 		usuarioRepository.create(usuario);
+		
 		BaseUrl.getInstance(request);
 		EmailUtils emailUtils = new EmailUtils();
 		emailUtils.enviarEmailConfirmacao(usuario);
