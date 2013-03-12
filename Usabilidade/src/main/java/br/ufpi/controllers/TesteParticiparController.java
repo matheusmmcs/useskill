@@ -88,7 +88,7 @@ public class TesteParticiparController extends BaseController {
 			verificaSeUsuarioConvidado(testeSessionPlugin.getIdTeste());
 			Convidado convidado = new Convidado(usuarioLogado.getUsuario()
 					.getId(), testeSessionPlugin.getIdTeste());
-			convidado.setRealizou(false);
+			convidado.setRealizou(true);
 			convidado.setTipoConvidado(testeSessionPlugin.getTipoConvidado());
 			convidadoRepository.update(convidado);
 			testeSessionPlugin.termino();

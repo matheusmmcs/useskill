@@ -347,6 +347,7 @@ public class TarefaController extends BaseController {
 		result.include("nomeUsuario", fluxo.getUsuario().getNome());
 		result.include("nomeTeste", fluxo.getTarefa().getTeste().getTitulo());
 		result.include("tarefaId", tarefaId);
+		result.include("tarefaRoteiro", fluxo.getTarefa().getRoteiro());
 		result.include("testeId", testeId);
 		result.include("usuarioId", usuarioId);
 		result.include("fluxoId", fluxoId);

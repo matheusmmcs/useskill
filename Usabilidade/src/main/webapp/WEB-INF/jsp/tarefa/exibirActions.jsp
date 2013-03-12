@@ -47,6 +47,11 @@
 			<fmt:message key="analise.list.acoes" />
 		</li>
 	</ul>
+	
+	<h2>Roteiro</h2>
+	<p>
+		${tarefaRoteiro}
+	</p>
 
 	<form class="form-horizontal form-layout"
 		action="${pageContext.request.contextPath}/conta" method="post">
