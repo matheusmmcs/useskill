@@ -7,6 +7,7 @@
 			
 		}
 		var correctDomain = false;
+		
 		$.ajax({
 			url: domainUseSkill,
 			cache: false,
@@ -16,6 +17,7 @@
 				correctDomain = true;
 			},
 			error: function(jqXHR, status, err){
+				console.log(domainUseSkill);
 				var notification = webkitNotifications.createHTMLNotification('html/notifications/404.html');
 				notification.show();
 			}
@@ -96,8 +98,7 @@
 					chrome.extension.sendRequest({useskill: "testFinish"});
 					logged();
 				}
-			})
-			
+			});
 		});
 
 		/*	FUNCTIONS DEFINITION	*/
@@ -184,6 +185,12 @@
 			$content.fadeOut(vel,function(){
 				$('#loader').fadeIn(vel, function(){
 					$content.load('html/'+pagina+'.html', function(){
+						//fazer com que os links para a useskill nao quebrem
+						$.each($('.btn-useskill'), function(){
+							console.log($(this))
+							$(this).attr('href', domainUseSkill+$(this).attr('href'));
+						});
+								
 						$('#loader').fadeOut(vel, function(){
 							$content.fadeIn(vel);
 							

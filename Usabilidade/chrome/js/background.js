@@ -1,4 +1,4 @@
-var domainUseSkill = "http://localhost:8080/Usabilidade";
+var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill/";//"http://localhost:8080/Usabilidade";
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
