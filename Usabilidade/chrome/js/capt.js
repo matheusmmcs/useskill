@@ -45,7 +45,6 @@
 				if(
 					!(action == actionCapt.FOCUSOUT && conteudo == "")//focusout em campo vazio, não preencheu nada
 				){
-					
 					var acao = new Action(action, new Date().getTime(), getUrl(), conteudo, target.tagName, $(tagName).index(target), e.pageX, e.pageY);
 					addAcao(acao);
 					

@@ -18,7 +18,7 @@
 #USbtnsShow [class^="USicon-"], #USbtnsShow [class*=" USicon-"] {margin-right: 5px;}
 #USinfoTopo{ color: white; font-size: 20px; padding: 7px 0px; }
 #USshowOrHide.USbotao{width: 20px; text-indent: 2px; height: 99%; position: absolute; padding: 0; right: -22px; top: 0; line-height: 100%; line-height: 98px;}
-#USshowOrHide b{margin-top: 40px;}
+/*#USshowOrHide b{margin-top: 40px;}*/
 /* text-transform: uppercase; */
 /* #USwebclient-conteudo {top: 80px;} */
 /*	BOTÕES BOOTSTRAP	*/

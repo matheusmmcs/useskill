@@ -1,3 +1,7 @@
+var domainUseSkill = "http://localhost:8080/Usabilidade";
+
+//----------------------------------------------------------------------------------------------------------------------------------------------
+
 Array.prototype.contains = function(o){
 	if(this.indexOf(o)!=-1){
 		return true;
@@ -36,27 +40,28 @@ Array.prototype.toConsole = function(){
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
-
 localStorage.clear("BG");
 var acoes = parseJSON(localStorage.getItem("BG"));
+
 if(!acoes){
 	acoes = new Array();
 }
 
 function addAcao(stringAcao){
 	var acao = parseJSON(stringAcao);
-	console.log(stringAcao);
+	//console.log(stringAcao);
 	console.log(acao);
 	acoes.push(acao);
 	localStorage.setItem("BG",stringfyJSON(acoes));
 }
 
 function clearAcoes(){
+	console.log("CLEAR:");
+	console.log(acoes);
 	acoes = new Array();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
-var domainUseSkill = "http://localhost:8080/Usabilidade";
 
 function Store () {
     this.listaElementos;
@@ -79,6 +84,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 		  	sendResponse({dados: storage});
 		  	break;
 		case "getAcoes":
+			//console.log("Retornou: ");
+			//console.log(acoes);
 			sendResponse({dados: acoes});
 			break;
 		case "addAcao":
@@ -101,6 +108,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 			//finalizar o teste que está em execução
 			suspendTest();
 		  	break;
+		case "getDomain":
+			sendResponse({domain: domainUseSkill});
+			break;
 	}
 });
 

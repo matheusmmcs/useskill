@@ -196,12 +196,35 @@ public class TarefaController extends BaseController {
 		fluxo.setDataRealizacao(new Date(System.currentTimeMillis()));
 		fluxo.setTempoRealizacao(acoes.get(acoes.size() - 1).getsTime()
 				- acoes.get(0).getsTime());
+		diferencaTempo(acoes);
 		fluxo.setAcoes(acoes);
 		fluxo.setTipoConvidado(testeSessionPlugin.getTipoConvidado());
 		fluxoRepository.create(fluxo);
 		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(fluxo.getId(),
 				EnumObjetoSalvo.FLUXO));
 		result.use(Results.json()).from("true").serialize();
+	}
+	
+	/**
+	 * Calcula a diferença de cada ação em relacao ao tempo da primeira ação
+	 * realizada
+	 * 
+	 * @param acoes
+	 *            Lista de ações que serão comparadas
+	 */
+	public static void diferencaTempo(List<Action> acoes) {
+		if (!acoes.isEmpty()) {
+			Long anterior = 0l;
+			for (int i = 0; i < acoes.size(); i++) {
+				if (i != 0) {
+					Long tempo = acoes.get(i).getsTime() - anterior;
+					acoes.get(i).setsTime(tempo);
+				} else {
+					anterior = acoes.get(0).getsTime();
+					acoes.get(0).setsTime(0l);
+				}
+			}
+		}
 	}
 
 	/**
@@ -340,9 +363,8 @@ public class TarefaController extends BaseController {
 		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
 		Fluxo fluxo = tarefaRepository.getFluxo(testeId, tarefaId, usuarioId,
 				usuarioCriadorId, fluxoId);
-		List<Action> acoes = fluxo.getAcoes();
-		diferencaTempo(acoes);
-		result.include("acoes", acoes);
+		
+		result.include("acoes", fluxo.getAcoes());
 		result.include("nomeTarefa", fluxo.getTarefa().getNome());
 		result.include("nomeUsuario", fluxo.getUsuario().getNome());
 		result.include("nomeTeste", fluxo.getTarefa().getTeste().getTitulo());
@@ -351,30 +373,6 @@ public class TarefaController extends BaseController {
 		result.include("testeId", testeId);
 		result.include("usuarioId", usuarioId);
 		result.include("fluxoId", fluxoId);
-	}
-
-	/**
-	 * Calcula a diferença de cada ação em relacao ao tempo da primeira ação
-	 * realizada
-	 * 
-	 * @param acoes
-	 *            Lista de ações que serão comparadas
-	 */
-	public static void diferencaTempo(List<Action> acoes) {
-		if (!acoes.isEmpty()) {
-			Long anterior = 0l;
-			for (int i = 0; i < acoes.size(); i++) {
-				if (i != 0) {
-					Long tempo = acoes.get(i).getsTime() - anterior;
-					acoes.get(i).setsTime(tempo);
-				} else {
-					anterior = acoes.get(0).getsTime();
-					acoes.get(0).setsTime(0l);
-
-				}
-			}
-		}
-
 	}
 
 	@Logado

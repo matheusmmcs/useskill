@@ -1,5 +1,17 @@
 <head>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/plugin/animatedtablesorter/style.css" type="text/css" />
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/plugin/animatedtablesorter/style.css" type="text/css" />
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/css/wysiwyg-color.css" type="text/css" />
+	<style>
+		#roteiro-text{
+			font-size: 12px !important;
+			line-height: 16px;
+			text-align: justify;
+			padding: 5px;
+			margin: 3px 15px 15px;
+			color: #333;
+			border: 1px solid #ddd;
+		}
+	</style>
 </head>
 <body>
 <%@include file="../leftmenus/default.jsp"%>
@@ -47,11 +59,6 @@
 			<fmt:message key="analise.list.acoes" />
 		</li>
 	</ul>
-	
-	<h2>Roteiro</h2>
-	<p>
-		${tarefaRoteiro}
-	</p>
 
 	<form class="form-horizontal form-layout"
 		action="${pageContext.request.contextPath}/conta" method="post">
@@ -68,6 +75,13 @@
 					<br/>
 					<fmt:message key="fluxo" /> - 1/3
 				</p>
+				<hr />
+				<span>
+					Roteiro
+				</span>
+				<div id="roteiro-text">
+					${tarefaRoteiro}
+				</div>
 				<hr />
 			</legend>
 
