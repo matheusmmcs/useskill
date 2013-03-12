@@ -63,7 +63,7 @@ public class Usuario implements Serializable {
 	@NotNull
 	@Column(length = 150, unique = true)
 	private String email;
-	private Boolean emailConfirmado;
+	private boolean emailConfirmado;
 	@Column(length = 32, unique = true)
 	private String confirmacaoEmail;
 	@OneToMany(mappedBy = "usuarioCriador", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -185,5 +185,7 @@ public class Usuario implements Serializable {
 				confirmacaoEmail = Criptografa.criptografar(new Date().toString());
 			} while (getRepository().isContainConfirmacaoEmail(confirmacaoEmail));
 		}
+System.err.println("USER ID:"+ id);
+System.err.println("USER ID:"+ confirmacaoEmail);
 	}
 }
