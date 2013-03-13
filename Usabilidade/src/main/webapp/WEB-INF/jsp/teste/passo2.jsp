@@ -100,39 +100,40 @@
 			
 			<ul class="sortable">
 				<c:if test="${not empty elementosTeste}">
-					<c:forEach items="${elementosTeste}" var="el">
+					<c:forEach items="${elementosTeste}" var="ele">
+						<c:set var="eleTipo" value="${ele.tipo.toString()}" />
 								<c:choose>
-									<c:when test="${el.tipo == 'T'}">
+									<c:when test="${eleTipo eq 'T'}">
 							<li class="ui-state-blue">
 								<span class="ui-azul ui-icon ui-icon-arrowthick-2-n-s"></span>
-								<div class="titulo">Tarefa - ${el.titulo }</div>
+								<div class="titulo">Tarefa - ${ele.titulo } </div>
 								<div class="acoes ">
-										<a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${el.id}/tarefa" title="<fmt:message key="table.editar"/>">
+										<a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${ele.id}/tarefa" title="<fmt:message key="table.editar"/>">
 											<span class="icon-pencil"></span>
 										</a>
-										<a title="<fmt:message key="table.remover"/>" class="btn btn-primary btn-modal" data-href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/tarefa/${el.id}/apagar" data-acao="Remover" data-toggle="modal" href="#modalMessages">
+										<a title="<fmt:message key="table.remover"/>" class="btn btn-primary btn-modal" data-href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/tarefa/${ele.id}/apagar" data-acao="Remover" data-toggle="modal" href="#modalMessages">
 											<span class="icon-trash icon-white"></span>
 										</a>
 								</div>
 								<input type="hidden" name="tipo" value="T"/>
-								<input type="hidden" name="id" value="${el.id}"/>
+								<input type="hidden" name="id" value="${ele.id}"/>
 							</li>
 									</c:when>
 									<c:otherwise>
 									
 							<li class="ui-state-green">
 								<span class="ui-green ui-icon ui-icon-arrowthick-2-n-s"></span>
-								<div class="titulo">Pergunta - ${el.titulo }</div>
+								<div class="titulo">Pergunta - ${ele.titulo }</div>
 								<div class="acoes ">
-										<a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${el.id}/pergunta" title="<fmt:message key="table.editar"/>">
+										<a class="btn" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/editar/passo2/editar/${ele.id}/pergunta" title="<fmt:message key="table.editar"/>">
 											<span class="icon-pencil"></span>
 										</a>
-										<a title="<fmt:message key="table.remover"/>" class="btn btn-primary btn-modal" data-href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/pergunta/${el.id}/apagar" data-acao="Remover" data-toggle="modal" href="#modalMessages">
+										<a title="<fmt:message key="table.remover"/>" class="btn btn-primary btn-modal" data-href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/pergunta/${ele.id}/apagar" data-acao="Remover" data-toggle="modal" href="#modalMessages">
 											<span class="icon-trash icon-white"></span>
 										</a>
 								</div>
 								<input type="hidden" name="tipo" value="P"/>
-								<input type="hidden" name="id" value="${el.id}"/>
+								<input type="hidden" name="id" value="${ele.id}"/>
 							</li>
 									</c:otherwise>
 								</c:choose>

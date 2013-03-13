@@ -37,7 +37,7 @@
 				class="imagem_selected" />
 			<ul>
 				<!--  em comum -->
-				<li><a id="topmenu0" href="${pageContext.request.contextPath}" data-topmenu="4">
+				<li><a id="topmenu0" href="${pageContext.request.contextPath}/" data-topmenu="4">
 				<fmt:message key="inicio" /></a></li>
 				<c:choose>
 					<c:when test="${usuarioLogado.usuario!=null}">

@@ -39,7 +39,8 @@
 		</div>
 	</div>
 
-	<a href="${pageContext.request.contextPath}/files/chrome.crx" title="Download Plugin Google Chrome"><img src="${pageContext.request.contextPath}/img/banner.jpg" /></a>
+	<!--<a href="${pageContext.request.contextPath}/files/chrome.crx" title="Download Plugin Google Chrome"><img src="${pageContext.request.contextPath}/img/banner.jpg" /></a>-->
+	<a href="https://chrome.google.com/webstore/detail/useskill-for-google-chrom/ldobnfnompkepngljogagmhbghmiidgi" target="_blank" title="Download Plugin Google Chrome"><img src="${pageContext.request.contextPath}/img/banner.jpg" /></a>
 
 	<div class="form-horizontal form-layout">
 		<p style="line-height: 20px;padding: 0 20px;font-size: 16px;color: #829abe;margin: 10px 0px 5px;">
