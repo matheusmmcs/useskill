@@ -165,6 +165,8 @@ function nextElement(atual, lista){
 
 		storage.gravando = true;
 		console.log("storage.gravando true");
+		//iniciando nova tarefa/pergunta... reinicia as acoes
+		clearAcoes();
 
 		//diferenciando tarefas, perguntas e quais quer outros tipos
 		if(elemento.tipo == "T"){

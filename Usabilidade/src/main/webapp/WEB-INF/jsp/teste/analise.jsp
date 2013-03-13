@@ -62,8 +62,9 @@
 				<tbody>
 					<c:if test="${not empty elementosTeste}">
 					<c:forEach items="${elementosTeste}" var="el">
+						<c:set var="elTipo" value="${el.tipo.toString()}" />
 								<c:choose>
-									<c:when test="${el.tipo == 'T'}">
+									<c:when test="${elTipo == 'T'}">
 									<tr>
 										<td>
 											<fmt:message key="tarefa"/>
@@ -81,7 +82,7 @@
 							<td>
 								<div class="acoes centertd">
 								<c:choose>
-									<c:when test="${el.tipo == 'T'}">
+									<c:when test="${elTipo == 'T'}">
 									<a class="btn btn-primary" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/tarefa/${el.id}/analise" title="<fmt:message key="table.editar"/>">
 											<span class="icon-tasks icon-white"></span> <fmt:message key="usuarios"/>
 										</a>

@@ -70,7 +70,7 @@
 			}
 		}
 		function filterAction($e, defaolt){
-			var isOnUseSkill = $e.parents('#UseSkill-nocapt').length;
+			var isOnUseSkill = $e.parents('.UseSkill-nocapt').length;
 			var id = $e.attr("id");
 			var idParent = $e.parent().attr("id");
 			var action = isOnUseSkillDIV(isOnUseSkill, id, idParent);

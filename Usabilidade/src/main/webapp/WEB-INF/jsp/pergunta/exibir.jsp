@@ -1,4 +1,4 @@
-<div class="span7 center pergunta" style="margin-top: 70px">
+<div class="span7 center pergunta UseSkill-nocapt" style="margin-top: 70px">
 	<c:if test="${not empty errors}">
 	<div class="alert alert-error">
 		<c:forEach items="${errors}" var="error">
@@ -10,7 +10,7 @@
 
 	<c:if test="${pergunta.tipoRespostaAlternativa!=true}">
 		<form class="form-horizontal form-layout"
-			action="${pageContext.request.contextPath}/teste/salvar/resposta/escrita"
+			action="/teste/salvar/resposta/escrita"
 			method="post">
 			<fieldset>
 				<legend>
@@ -51,7 +51,7 @@
 	</c:if>
 
 	<c:if test="${pergunta.tipoRespostaAlternativa==true}">
-	<form class="form-horizontal form-layout" action="${pageContext.request.contextPath}/teste/salvar/resposta/alternativa" method="post">
+	<form class="form-horizontal form-layout" action="/teste/salvar/resposta/alternativa" method="post">
 		<fieldset>
 			<legend>
 					<span>
