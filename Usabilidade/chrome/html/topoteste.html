@@ -25,14 +25,15 @@
 	<div id="USwebclient-topo">
 		<div class="USdireita">
 			<button type="button" class="USclose UScloseTopo" title="Minimizar">x</button>
-			<a class="USbotao USbotao-verde USconcluir USdisabled" id="concluir12qz3" href="#"><b class="USicon-ok USicon-white"></b> Concluir Etapa</a>
+			<a class="USbotao USbotao-verde USconcluir USdisabled" id="concluir12qz3" href="#"><b class="USicon-ok USicon-white"></b> Concluir Tarefa</a>
+			<a class="USbotao USbotao USdisabled" id="USpularEtapa" href="#">Pular Tarefa</a>
 			<a class="USbotao USbotao-vermelho" id="USadiarTeste"><b class="USicon-remove USicon-white"></b> Adiar Teste</a>
 		</div>
 		<div class="USesquerda">
 			<div id="USinfoTopo">
 				UseSkill - Tarefa
 				<span id="USinfoPassos">
-					1/5
+					
 				</span>
 			</div>
 		</div>
@@ -72,6 +73,7 @@
 			//√© pergunta, esconde o topo
 			$('#USwebclient-topo-todo').hide();
 			$('#USbuttonTopo').hide();
+			$('#USIDroteiro').hide();
 		}
 
 		(function($){
@@ -127,6 +129,7 @@
 
 			/*m√©todo gen√©rico para realizar ajax*/
 			function ajax(caminho, tipo, dados){
+				console.log(caminho);
 				var retorno;
 				$.ajax({
 					url: caminho,
@@ -141,6 +144,7 @@
 						console.log(jqXHR);
 					}
 				});
+				console.log(retorno);
 				return retorno;
 			}
 
@@ -196,34 +200,43 @@
 					//m√©todo para concluir a tarefa
 					$("#"+btnConcluir).click(function(e){
 						e.preventDefault();
+						var enviado = false;
 						//bota um set interval e enquanto n√£o houver o concluir, continua tentando
 						var isConcluded = window.setInterval(function() {
 							chrome.extension.sendRequest({useskill: "getAcoes"}, function(resp) {
 								//verificar se possui o tipo concluir entre as acoes capturadas
 								for(var acao in resp.dados){
 									if(resp.dados[acao].sActionType == "concluir"){
-										console.log("TCHARAM")
-										clearInterval(isConcluded);
-										acoes = stringfyJSON(resp.dados);
-										$.ajax({
-											url: domainUseSkill+"/tarefa/save/fluxo",
-											cache: false,
-											type: "POST",
-											async: false,
-											data: { 
-												'tarefaId': elAtual.id, 
-												'dados': acoes
-											},
-											success: function(dados){
-												chrome.extension.sendRequest({useskill: "clearAcoes"}, function() {
-									    			nextElement();
-												});
-											},
-											error: function(jqXHR, status, err){
-												console.log(jqXHR);
-											}
-										});
-
+										if(!enviado){
+											enviado = true;
+											console.log("AJAX: "+domainUseSkill+"/tarefa/save/fluxo")
+											clearInterval(isConcluded);
+											acoes = stringfyJSON(resp.dados);
+											$.ajax({
+												url: domainUseSkill+"/tarefa/save/fluxo",
+												cache: false,
+												type: "POST",
+												async: false,
+												data: { 
+													'tarefaId': elAtual.id, 
+													'dados': acoes
+												},
+												success: function(dados){
+													console.log(dados)
+													if(dados.string==true||dados.string=="true"){
+														chrome.extension.sendRequest({useskill: "clearAcoes"}, function() {
+									    					nextElement();
+														});
+													}else{
+														alert("Oops, Servidor n„o conseguiu realizar a operaÁ„o!")
+													}
+												},
+												error: function(jqXHR, status, err){
+													console.log(jqXHR);
+													alert("Oops, Servidor incacessÌvel!")
+												}
+											});
+										}
 									}
 								}
 							});
@@ -259,6 +272,7 @@
 						//evitar problema localhost de duplicar /Usabilidade
 						if(resposta!=""){
 							domainUseSkill = domainUseSkill.replace("/Usabilidade","");
+							domainUseSkill = domainUseSkill.replace("/useskill","");
 							$.ajax({
 								url : domainUseSkill+urlResp,
 								type : 'POST',

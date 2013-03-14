@@ -10,7 +10,7 @@
 
 	<c:if test="${pergunta.tipoRespostaAlternativa!=true}">
 		<form class="form-horizontal form-layout"
-			action="/teste/salvar/resposta/escrita"
+			action="${pageContext.request.contextPath}/teste/salvar/resposta/escrita"
 			method="post">
 			<fieldset>
 				<legend>
@@ -30,12 +30,12 @@
 				<input id="pergid" type="hidden" name="pergid" value="${pergunta.id}" />
 				
 				<div class="control-group notop">
-					<div><b><fmt:message key="testeparticipar.titulo" />:</b> ${pergunta.texto}</div>
+					<div><b><fmt:message key="testeparticipar.pergunta" />:</b> ${pergunta.texto}</div>
 				</div>
 
 				<div class="control-group">
                 	<div class="span6 center">
-                		<textarea rows="6" cols="10" name="resposta" class="span6 center" style="resize:none"></textarea>                    	
+                		<textarea rows="6" cols="10" name="resposta" class="span6 center" style="resize:none">&nbsp;&nbsp;</textarea>                    	
                 	</div>
             	</div>
 				
@@ -51,7 +51,7 @@
 	</c:if>
 
 	<c:if test="${pergunta.tipoRespostaAlternativa==true}">
-	<form class="form-horizontal form-layout" action="/teste/salvar/resposta/alternativa" method="post">
+	<form class="form-horizontal form-layout" action="${pageContext.request.contextPath}/teste/salvar/resposta/alternativa" method="post">
 		<fieldset>
 			<legend>
 					<span>
@@ -73,7 +73,7 @@
 			<input id="pergid" type="hidden" name="pergid" value="${pergunta.id}" />
 
 			<div class="control-group notop">
-				<div><b><fmt:message key="testeparticipar.titulo" />:</b> ${pergunta.texto}</div>
+				<div><b><fmt:message key="testeparticipar.pergunta" />:</b> ${pergunta.texto}</div>
 			</div>
 
 			<div class="control-group">

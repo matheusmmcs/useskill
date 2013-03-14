@@ -16,7 +16,7 @@ public class PerguntaVO {
 		super();
 		this.id = pergunta.getId();
 		this.titulo = pergunta.getTitulo();
-		this.texto = pergunta.getTitulo();
+		this.texto = pergunta.getTexto();
 		this.setTipoRespostaAlternativa(pergunta.getTipoRespostaAlternativa());
 		this.alternativas=pergunta.getAlternativas();
 	}

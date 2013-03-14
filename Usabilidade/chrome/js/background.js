@@ -1,4 +1,5 @@
-var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill/";//"http://localhost:8080/Usabilidade";
+var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";//"http://localhost:8080/Usabilidade";
+//var domainUseSkill = "http://localhost:8888/useskill";
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -50,6 +51,7 @@ if(!acoes){
 function addAcao(stringAcao){
 	var acao = parseJSON(stringAcao);
 	//console.log(stringAcao);
+	console.log("ADD ACAO");
 	console.log(acao);
 	acoes.push(acao);
 	localStorage.setItem("BG",stringfyJSON(acoes));
@@ -84,8 +86,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 		  	sendResponse({dados: storage});
 		  	break;
 		case "getAcoes":
-			//console.log("Retornou: ");
-			//console.log(acoes);
+			console.log("Retornou: ");
+			console.log(acoes);
 			sendResponse({dados: acoes});
 			break;
 		case "addAcao":

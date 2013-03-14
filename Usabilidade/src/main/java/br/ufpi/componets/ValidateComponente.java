@@ -79,13 +79,13 @@ public class ValidateComponente {
 	}
 	/**
 	 * Apenas analisa se o teste não é nulo
-	 * @param teste Objeto a ser verificado
+	 * @param object Objeto a ser verificado
 	 */
-	public void validarObjeto(final Object teste) {
+	public void validarObjeto(final Object object) {
 		validator.checking(new Validations() {
 
 			{
-				that((teste!=null ), "campo.form.alterado",
+				that((object!=null ), "campo.form.alterado",
 						"campo.form.alterado");
 			}
 		});	

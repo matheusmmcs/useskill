@@ -53,7 +53,10 @@ public class RespostaController extends BaseController {
 
 	@Logado
 	@Post("/teste/salvar/resposta/escrita")
-	public void salvarRespostaEscrita(final String resposta, Long perguntaId) {
+	public void salvarRespostaEscrita( String resposta, Long perguntaId) {
+		if(resposta==null || resposta.trim().isEmpty()){
+			resposta = " ";
+		}
 		validateComponente.validarString(resposta, "resposta");
 		validator.onErrorUse(Results.json())
 				.from(validator.getErrors(), "erro").serialize();

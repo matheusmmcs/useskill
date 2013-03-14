@@ -186,8 +186,7 @@ public class TarefaController extends BaseController {
 	public void saveFluxo(String dados, Long tarefaId) {
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
-		fluxo.setTarefa(tarefaPertenceTeste(testeSessionPlugin.getIdTeste(),
-				tarefaId));
+		fluxo.setTarefa(tarefaRepository.find(tarefaId));
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<Collection<Action>>() {
 		}.getType();
@@ -200,6 +199,8 @@ public class TarefaController extends BaseController {
 		fluxo.setAcoes(acoes);
 		fluxo.setTipoConvidado(testeSessionPlugin.getTipoConvidado());
 		fluxoRepository.create(fluxo);
+		System.out.println("Tarefa id"+ tarefaId);
+		System.out.println("Identificador do fluxo:"+fluxo.getId());
 		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(fluxo.getId(),
 				EnumObjetoSalvo.FLUXO));
 		result.use(Results.json()).from("true").serialize();
@@ -404,8 +405,8 @@ public class TarefaController extends BaseController {
 	public void salvarComentario(String texto, Long idTarefa) {
 		Comentario comentario = new Comentario();
 		comentario.setTexto(texto);
-		Tarefa tarefa = tarefaPertenceTeste(testeSessionPlugin.getIdTeste(),
-				idTarefa);
+		//TODo RefazertarefaPertenceTeste(testeSessionPlugin.getIdTeste(), idTarefa);
+		Tarefa tarefa =  tarefaRepository.find(idTarefa);
 		comentario.setUsuario(super.usuarioLogado.getUsuario());
 		comentario.setTarefa(tarefa);
 		comentarioRepository.create(comentario);
