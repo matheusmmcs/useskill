@@ -98,9 +98,7 @@ public class RespostaController extends BaseController {
 		Alternativa alternativa = new Alternativa();
 		alternativa.setId(resposta);
 		respostaAlternativa.setAlternativa(alternativa);
-		Pergunta pergunta = perguntaPertenceTesteLiberadoEAlternativa(
-				alternativa.getId(), perguntaId,
-				testeSessionPlugin.getIdTeste());
+		Pergunta pergunta = perguntaPertenceTesteLiberadoEAlternativa(alternativa.getId(), perguntaId,testeSessionPlugin.getIdTeste());
 		validateComponente.validarObjetoJson(pergunta);
 		respostaAlternativa.setPergunta(pergunta);
 		respostaAlternativa.setUsuario(usuarioLogado.getUsuario());

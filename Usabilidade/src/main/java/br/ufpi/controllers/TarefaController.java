@@ -183,7 +183,7 @@ public class TarefaController extends BaseController {
 
 	@Logado
 	@Post("tarefa/save/fluxo")
-	public void saveFluxo(String dados, Long tarefaId) {
+	public void saveFluxo(String dados, Long tarefaId,Boolean isFinished) {
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
 		fluxo.setTarefa(tarefaRepository.find(tarefaId));
@@ -198,6 +198,10 @@ public class TarefaController extends BaseController {
 		diferencaTempo(acoes);
 		fluxo.setAcoes(acoes);
 		fluxo.setTipoConvidado(testeSessionPlugin.getTipoConvidado());
+		if(isFinished!=null){
+			fluxo.setFinished(isFinished);
+		}
+		
 		fluxoRepository.create(fluxo);
 		System.out.println("Tarefa id"+ tarefaId);
 		System.out.println("Identificador do fluxo:"+fluxo.getId());

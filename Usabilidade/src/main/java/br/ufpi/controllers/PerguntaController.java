@@ -1,5 +1,7 @@
 package br.ufpi.controllers;
 
+import java.util.List;
+
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Put;
@@ -12,10 +14,12 @@ import br.ufpi.componets.TesteSessionPlugin;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
+import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Teste;
 import br.ufpi.models.vo.PerguntaVO;
+import br.ufpi.repositories.AlternativaRepository;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.GsonElements;
@@ -26,16 +30,18 @@ public class PerguntaController extends BaseController {
 	private final PerguntaRepository perguntaRepository;
 	private final TesteRepository testeRepository;
 	private final TesteSessionPlugin sessionPlugin;
+	private final AlternativaRepository alternativaRepository;
 
 	public PerguntaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
 			PerguntaRepository perguntaRepository,
-			TesteRepository testeRepository, TesteSessionPlugin sessionPlugin) {
+			TesteRepository testeRepository, TesteSessionPlugin sessionPlugin,AlternativaRepository alternativaRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.perguntaRepository = perguntaRepository;
 		this.testeRepository = testeRepository;
 		this.sessionPlugin = sessionPlugin;
+		this.alternativaRepository=alternativaRepository;
 	}
 
 	@Logado
@@ -119,24 +125,18 @@ public class PerguntaController extends BaseController {
 	public void atualizarPergunta(Long testeId, Pergunta pergunta) {
 		validateComponente.validarId(testeId);
 		validator.validate(pergunta);
-		validateComponente.validarObjeto(perguntaPertenceUsuario(
-				pergunta.getId(), testeId));
-		pergunta.setQuestionario(perguntaRepository.findQuestionario(pergunta
-				.getId()));
-		boolean objetiva = pergunta.getTipoRespostaAlternativa() == null ? true
-				: pergunta.getTipoRespostaAlternativa();
-
-		if (!objetiva) {
-			pergunta.setTipoRespostaAlternativa(false);
-			pergunta.setAlternativas(null);
-		} else {
-			if (pergunta.getAlternativas() == null) {
-				pergunta.setTipoRespostaAlternativa(false);
-				pergunta.setAlternativas(null);
-			}
+		
+		Pergunta pertenceUsuario = perguntaPertenceUsuario(pergunta.getId(), testeId);
+		List<Alternativa> alternativas = pertenceUsuario.getAlternativas();
+		for (Alternativa alternativa : alternativas) {
+			alternativaRepository.destroy(alternativa);
 		}
-		perguntaRepository.deleteAlternativas(pergunta.getId());
-		perguntaRepository.update(pergunta);
+		validateComponente.validarObjeto(pertenceUsuario);
+		pertenceUsuario.setAlternativas(pergunta.getAlternativas());
+		pertenceUsuario.setTexto(pergunta.getTexto());
+		pertenceUsuario.setTipoRespostaAlternativa(pergunta.getTipoRespostaAlternativa());
+		pertenceUsuario.setTitulo(pergunta.getTitulo());
+		perguntaRepository.update(pertenceUsuario);
 
 		result.redirectTo(TesteController.class).passo2(testeId);
 

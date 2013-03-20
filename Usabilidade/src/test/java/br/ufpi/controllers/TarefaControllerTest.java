@@ -504,7 +504,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 				entityManager, result, 8l, TipoConvidado.EXPERT);
 
 		try {
-			instance.saveFluxo(this.getGSonDados(), 8l);
+			instance.saveFluxo(this.getGSonDados(), 8l,true);
 		} catch (ValidationException validationException) {
 			List<Message> errors = validationException.getErrors();
 			System.out.println(errors);

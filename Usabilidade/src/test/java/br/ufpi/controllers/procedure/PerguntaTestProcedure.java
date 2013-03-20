@@ -15,10 +15,12 @@ import br.ufpi.controllers.PerguntaController;
 import br.ufpi.models.Alternativa;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Teste;
+import br.ufpi.repositories.AlternativaRepository;
 import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.PerguntaRepositoryTest;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.repositories.UsuarioRepository;
+import br.ufpi.repositories.Implement.AlternativaRepositoryImpl;
 
 public class PerguntaTestProcedure {
 	public static PerguntaController newInstancePerguntaController(
@@ -34,7 +36,8 @@ public class PerguntaTestProcedure {
 		TesteRepository testeRepository = TesteTestProcedure
 				.newInstanceTesteRepository(entityManager);
 		TesteSessionPlugin sessionPlugin= new TesteSessionPlugin();
-		PerguntaController controller = new PerguntaController(result, validator, testeView, usuarioLogado, validateComponente, perguntaRepository, testeRepository, sessionPlugin);
+		AlternativaRepository alternativaRepository= new AlternativaRepositoryImpl(entityManager);
+		PerguntaController controller = new PerguntaController(result, validator, testeView, usuarioLogado, validateComponente, perguntaRepository, testeRepository, sessionPlugin,alternativaRepository);
 		return controller;
 	}
 
@@ -110,7 +113,8 @@ public class PerguntaTestProcedure {
 		PerguntaRepository perguntaRepository = newInstancePerguntaRepository(entityManager);
 		TesteRepository testeRepository = TesteTestProcedure
 				.newInstanceTesteRepository(entityManager);
-		PerguntaController controller = new PerguntaController(result, validator, testeView, usuarioLogado, validateComponente, perguntaRepository, testeRepository, sessionPlugin);
+		AlternativaRepository alternativaRepository= new AlternativaRepositoryImpl(entityManager);
+		PerguntaController controller = new PerguntaController(result, validator, testeView, usuarioLogado, validateComponente, perguntaRepository, testeRepository, sessionPlugin,alternativaRepository);
 		return controller;
 	}
 

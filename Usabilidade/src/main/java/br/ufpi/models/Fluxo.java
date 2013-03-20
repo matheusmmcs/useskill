@@ -117,6 +117,7 @@ public class Fluxo implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Tarefa tarefa;
 	private TipoConvidado tipoConvidado;
+	private boolean isFinished=true;
 
 	/**
 	 * @return the tarefa
@@ -193,6 +194,14 @@ public class Fluxo implements Serializable {
 
 	public void setTipoConvidado(TipoConvidado tipoConvidado) {
 		this.tipoConvidado = tipoConvidado;
+	}
+
+	public boolean isFinished() {
+		return isFinished;
+	}
+
+	public void setFinished(boolean isFinished) {
+		this.isFinished = isFinished;
 	}
 
 }
