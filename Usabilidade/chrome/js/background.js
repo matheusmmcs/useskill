@@ -1,5 +1,5 @@
-var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";
-//var domainUseSkill = "http://localhost:8080/Usabilidade";
+//var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";
+var domainUseSkill = "http://localhost:8080/Usabilidade";
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -74,6 +74,8 @@ function Store () {
 
 var storage = new Store();
 
+var isOpenned = true;
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 	if(request.useskill){
 		switch(request.useskill){
@@ -81,7 +83,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 			  	nextElement(request.atual, request.lista);
 			  	break;
 			case "getStorageAndAcoes":
-				sendResponse({storage: storage, acoes: acoes});
+				sendResponse({storage: storage, acoes: acoes, isOpenned: isOpenned});
 				break;
 			case "getStorage":
 			  	sendResponse({dados: storage});
@@ -114,8 +116,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 			case "getDomain":
 				sendResponse({domain: domainUseSkill});
 				break;
-			case "getDomain":
-				sendResponse({domain: domainUseSkill});
+			case "setOpenned":
+				console.log("setOpenned");
+				console.log(request);
+				if(request.isOpenned!=null){
+					isOpenned = request.isOpenned;
+				}
 				break;
 		}
 	}else if(request.useskillserver){
@@ -295,6 +301,8 @@ function removeTabsGravando(){
 			chrome.tabs.remove(storage.tabs[i]);
 		}
 	}
+	//reset isOpenned
+	isOpenned = true;
 }
 
 function suspendTest(){

@@ -1,4 +1,4 @@
-<div id="USpluginChrome" class="UseSkill-nocapt">
+<div id="USpluginChrome" class="UseSkill-nocapt UShidden">
 	<div id="USleftMenu" >
 		<div id="UStestTitle">
 			UseSkill - Tarefa
@@ -109,6 +109,12 @@
 			$("#USinfoPassos").html(numElAtual+1 +"/"+ listaEl.length);
 			if(elAtual.tipo=="T"){
 				getRoteiro(elAtual.id);
+				//se n estiver openned, fecha
+				console.log(resp.isOpenned);
+				if(!resp.isOpenned){
+					hideUSleftMenu();
+				}
+				$('#USpluginChrome').removeClass('UShidden');
 			}
 		});
 
@@ -119,6 +125,11 @@
         			callback.call(this, response);
     			}
 			});
+		}
+		function setIsOpenned(booleano){
+			if(booleano!=null){
+				chrome.extension.sendRequest({useskill: "setOpenned", isOpenned: booleano});
+			}
 		}
 		function nextElement(){
 			getStorage(function(dado){
@@ -315,6 +326,7 @@
 			var $this = $('#USleftMenu');
 			
 			if($this.css('left')=="0px"){
+				setIsOpenned(false);
 				$('#USleftMenu').animate({
 				    left: '-='+$this.width()
 				});
@@ -322,6 +334,7 @@
 				    left: '-='+$this.width()
 				});
 			}else{
+				setIsOpenned(true);
 				$('#USleftMenu').animate({
 				    left: '+='+$this.width()
 				});
@@ -329,6 +342,16 @@
 				    left: '+='+$this.width()
 				});
 			}
+		}
+		function hideUSleftMenu(){
+			setIsOpenned(false);
+			var w = $('#USleftMenu').width();
+			$('#USleftMenu').animate({
+			    left: '-='+w
+			}, 0);
+			$('#USbuttonResize').animate({
+			    left: '-='+w
+			}, 0);
 		}
 		function showUSjustificativa(elem, type){
 			var $just = $('.USjustificativa').eq(0);
