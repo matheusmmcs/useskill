@@ -1,0 +1,339 @@
+<div class="UseSkill-nocapt">
+	<div id="USleftMenu" >
+		<div id="UStestTitle">
+			UseSkill - Tarefa
+			<span id="USinfoPassos"></span>
+		</div>
+		<div id="UScontent">
+			<div class="USsection" id="USroteiroSection">
+				<h1>
+					Roteiro
+					<a class="USbotao USpull-right" id="USroteiroFull" href="#"><b class="USicon-fullscreen"></b></a>
+					<a class="USbotao USpull-right" id="USroteiroRefresh" href="#"><b class="USicon-refresh"></b></a>
+				</h1>
+				<div id="USroteiro" class="USsectionContent">
+
+				</div>
+			</div>
+			<div class="USsection" id="USacoesSection">
+				<h1>A&ccedil;&otilde;es</h1>
+				<div class="USsectionContent UStext-center">
+					<a class="USbotao" id="USadiarTeste" href="#"><b class="USicon-remove-sign"></b> Adiar Teste</a>
+					<a class="USbotao" id="USpularTarefa" href="#"><b class="USicon-question-sign"></b> Pular Tarefa</a>
+					<a class="USbotao USbotao-info" id="USconcluirTarefa" href="#"><b class="USicon-ok-sign USicon-white"></b> Concluir Tarefa</a>
+				</div>
+				<div class="USjustificativa UShidden">
+					<h2>Justificativa - <span></span></h2>
+					<div class="USsectionContent UStext-right ">
+						<textarea id="USjustificativaAcao" name="USjustificativaAcao"></textarea>
+
+						<a class="USbotao UScancelarAcao" href="#">Cancelar</a>
+						<a class="USbotao USbotao-info" id="USacoesProsseguir" href="#">Prosseguir</a>
+					</div>
+				</div>
+			</div>
+			<div class="USsection" id="UScomentarioSection">
+				<h1>Coment&aacute;rios</h1>
+				<div id="UScomentarioSubSection" class="USsectionContent UStext-center">
+					<a class="USbotao width100" id="USrealizarComentario" href="#"><b class="USicon-comment"></b> Realizar Coment&aacute;rio</a>
+				</div>
+				<div id="UScomentarioEtapa1" class="UShidden">
+					<h2>Qualifique seu comentário:</h2>
+					<div class="USsectionContent UStext-right ">
+						<a class="USbotao UScancelarComentario" href="#">Cancelar</a>
+						<a class="USbotao USbotao-vermelho UScomentarioQualifique" data-type="bad" href="#"><b class="USicon-thumbs-down USicon-white"></b></a>
+						<a class="USbotao USbotao-verde UScomentarioQualifique" data-type="good" href="#"><b class="USicon-thumbs-up USicon-white"></b></a>
+					</div>
+				</div>
+				<div id="UScomentarioEtapa2" class="UShidden">
+					<h2>Selecione o motivo do comentário:</h2>
+					<div class="USsectionContent UStext-right ">
+						<a class="USbotao UScancelarComentario" href="#">Cancelar</a>
+						<a class="USbotao USbotao-info" id="UScomentarioMotivoProsseguir" href="#">Prosseguir</a>
+					</div>
+				</div>
+				<div id="UScomentarioEtapa3" class="UShidden">
+					<h2>Coment&aacute;rio:</h2>
+					<div class="USsectionContent UStext-right">
+						<textarea id="UScomentarioTexto" name="UScomentarioTexto"></textarea>
+
+						<a class="USbotao UScancelarComentario" href="#">Cancelar</a>
+						<a class="USbotao USbotao-info" id="UScomentarioEnviar" href="#">Enviar</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="USbuttonResize" class="USbuttonResize">
+		<b class="USicon-resize-full USicon-white"></b>
+	</div>
+</div>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+<script type="text/javascript">
+	/*Inserindo imagens ao css*/
+	var urlImg = chrome.extension.getURL("images/glyphicons-halflings.png");
+	var urlImg2 = chrome.extension.getURL("images/glyphicons-halflings-white.png");
+	$('[class*="USicon-"]').css("background-image", 'url("'+urlImg+'")');
+	$('.USicon-white').css("background-image", 'url("'+urlImg2+'")');
+
+	var enumTypeActions = {
+		PULAR:'pular',
+		ADIAR:'adiar'
+	}
+	var enumTypeQualify = {
+		GOOD:'good',
+		BAD:'bad'
+	}
+
+	//evitar plugin em perguntas
+	var urlPergunta = "teste/responder/pergunta";
+	var urlAtual = location.protocol+location.host+location.pathname;
+	if(urlAtual.indexOf(urlPergunta)!=-1){
+		fadeOutUS($('#USacoesSection'));
+		fadeOutUS($('#USroteiroSection'));
+	}
+
+	$(document).ready(function(){
+		//ao iniciar, carregar as informacoes do teste atual
+		var numElAtual, listaEl, elAtual, acoes, loadEl;
+		chrome.extension.sendRequest({useskill: "getStorageAndAcoes"}, function(resp) {
+			numElAtual = resp.storage.elementoAtualLista;
+			listaEl = parseJSON(resp.storage.listaElementos);
+			elAtual = listaEl[numElAtual];
+			acoes = stringfyJSON(resp.acoes);
+			//apos capturar as variaveis, setar texto em cima
+			$("#USinfoPassos").html(numElAtual+1 +"/"+ listaEl.length);
+			getRoteiro(elAtual.id);
+		});
+
+		//Funcoes para comunicacao com o background
+		function getStorage(callback){			
+			chrome.extension.sendRequest({useskill: "getStorage"}, function(response) {
+				if (callback && typeof(callback) === "function") {
+        			callback.call(this, response);
+    			}
+			});
+		}
+		function nextElement(){
+			getStorage(function(dado){
+				var prox = dado.dados.elementoAtualLista;
+				prox++;
+				chrome.extension.sendRequest({useskill: "nextElement", atual: prox});
+			});
+		}
+		function getRoteiro(atual){
+			chrome.extension.sendRequest({useskillserver: "getRoteiro", idTarefa: atual}, function(response) {
+				if(response.dados.string){
+					$('#USroteiro').html(response.dados.string);
+				}else{
+					alertUS("Tente novamente!");
+				}
+			});
+		}
+		function concluirTarefa(atual){
+			chrome.extension.sendRequest({useskillserver: "concluirTarefa", idTarefa: atual}, function(response) {			
+				if(response.success){
+					nextElement();
+				}else{
+					//console.log(response.errorType)
+					alertUS("Tente novamente!");
+					console.log("erro concluir - not success");
+				}
+			});
+		}
+		function pularTarefa(atual, justificativa){
+			chrome.extension.sendRequest({useskillserver: "pularTarefa", idTarefa: atual, justificativa: justificativa}, function(response) {	
+				if(response.success){
+					nextElement();
+					acoesReset();
+				}else{
+					//console.log(response.errorType)
+					alertUS("Tente novamente!");
+					console.log("erro pular - not success");
+				}
+			});
+		}
+		function adiarTeste(justificativa){
+			chrome.extension.sendRequest({useskill: "testFinish", justificativa: justificativa}, function(response) {	
+				if(response.success){
+					nextElement();
+					acoesReset();
+				}else{
+					//console.log(response.errorType)
+					alertUS("Tente novamente!");
+					console.log("erro pular - not success");
+				}
+			});
+		}
+		function enviarComentario(atual, texto, quali){
+			chrome.extension.sendRequest({useskillserver: "enviarComentario", idTarefa: atual, texto: texto, quali: quali}, function(response) {	
+				if(response.success){
+					//nextElement();
+					comentarioReset();
+				}else{
+					//console.log(response.errorType)
+					alertUS("Tente novamente!");
+					console.log("erro comentar - not success");
+				}
+			});
+		}
+
+		//Eventos JQUERY
+		$('#USbuttonResize').on('click', function(e){
+			e.preventDefault();
+			toogleUSleftMenu(this);
+		});
+		$('#USroteiroRefresh').on('click', function(e){
+			e.preventDefault();
+			getRoteiro(elAtual.id);
+		});
+		//Acoes
+		$('#USconcluirTarefa').on('click', function(e){
+			e.preventDefault();
+			concluirTarefa(elAtual.id);
+		});
+		$('#USadiarTeste').on('click', function(e){
+			e.preventDefault();
+			showUSjustificativa(this, enumTypeActions.ADIAR);
+		});
+		$('#USpularTarefa').on('click', function(e){
+			e.preventDefault();
+			showUSjustificativa(this, enumTypeActions.PULAR);
+		});
+		$('.UScancelarAcao').on('click', function(e){
+			e.preventDefault();
+			hideUSjustificativa(this);
+			acoesReset();
+		});
+		$('#USacoesProsseguir').on('click', function(e){
+			var msg = $('#USjustificativaAcao').val();			
+			var type = $('.USjustificativa').eq(0).attr('data-action');
+			if(msg!=null && msg!=""){
+				e.preventDefault();
+				if(type){
+					if(type==enumTypeActions.PULAR){
+						pularTarefa(elAtual.id, msg);
+					}else if(type==enumTypeActions.ADIAR){
+						var r = confirm("Deseja adiar este teste? Os dados armazenado até o momento serão perdidos!");
+						if (r==true){
+							adiarTeste(msg);
+						}
+					}
+				}else{
+					alertUS("Tente novamente!")
+				}
+			}else{
+				alertUS("Preencha a justificativa!")
+			}
+		});
+		//Comentarios
+		$('#USrealizarComentario').on('click', function(e){
+			e.preventDefault();
+			fadeOutUS($('#UScomentarioSubSection'));
+			fadeInUS($('#UScomentarioEtapa1'));
+		});
+		$('.UScancelarComentario').on('click', function(e){
+			e.preventDefault();
+			comentarioReset();
+		});
+		$('.UScomentarioQualifique').on('click', function(e){
+			e.preventDefault();
+			var quali = $(this).attr('data-type');
+			if(quali){
+				fadeOutUS($('#UScomentarioEtapa1'));
+				fadeInUS($('#UScomentarioEtapa2'));
+				$('#UScomentarioEnviar').attr('data-quali', quali);
+			}else{
+				alertUS('Tente novamente!');
+			}
+		});
+		$('#UScomentarioMotivoProsseguir').on('click', function(e){
+			e.preventDefault();
+			fadeOutUS($('#UScomentarioEtapa2'));
+			fadeInUS($('#UScomentarioEtapa3'));
+		});
+		$('#UScomentarioEnviar').on('click', function(e){
+			e.preventDefault();
+			var msg = $('#UScomentarioTexto').val();
+			var qualis = $(this).attr('data-quali');
+			if(msg!=null && msg!=""){
+				e.preventDefault();
+				if(qualis){
+					enviarComentario(elAtual.id, msg, qualis);
+				}else{
+					alertUS("Tente novamente!")
+				}
+			}else{
+				alertUS("Preencha seu Comentário!")
+			}
+		});
+		//Questionario
+
+
+		//Animacoes JQUERY
+		function toogleUSleftMenu(elem){
+			var $this = $('#USleftMenu');
+			
+			if($this.css('left')=="0px"){
+				$('#USleftMenu').animate({
+				    left: '-='+$this.width()
+				});
+				$(elem).animate({
+				    left: '-='+$this.width()
+				});
+			}else{
+				$('#USleftMenu').animate({
+				    left: '+='+$this.width()
+				});
+				$(elem).animate({
+				    left: '+='+$this.width()
+				});
+			}
+		}
+		function showUSjustificativa(elem, type){
+			var $just = $('.USjustificativa').eq(0);
+			fadeOutUS($(elem).parent());
+			fadeInUS($just);
+			$just.attr('data-action', type);
+			$just.find("h2 span").text($(elem).text());
+		}
+		function hideUSjustificativa(elem){
+			var $just = $('.USjustificativa').eq(0);
+			var $sec = $(elem).closest('.USsection');
+			fadeInUS($sec.find('.UShidden'));
+			fadeOutUS($just);
+			$just.attr('data-action', '');
+			$just.find("h2 span").text(' ');
+		}
+		function comentarioReset(){
+			fadeOutUS($('#UScomentarioEtapa1'));
+			fadeOutUS($('#UScomentarioEtapa2'));
+			fadeOutUS($('#UScomentarioEtapa3'));
+			fadeInUS($('#UScomentarioSubSection'));
+			$('#UScomentarioEnviar').attr('data-quali', '');
+			$('#UScomentarioTexto').val("");
+		}
+		function acoesReset(){
+			$('#USjustificativaAcao').val("");
+		}
+	});
+
+	/*converter json to object*/
+	function parseJSON(data) {
+    	return window.JSON && window.JSON.parse ? window.JSON.parse( data ) : (new Function("return " + data))(); 
+	}
+	function stringfyJSON(data){
+		return window.JSON && window.JSON.stringify ? window.JSON.stringify(data) : (new Function("return " + data))();
+	}
+	function alertUS(msg){
+		window.alert(msg);
+	}
+	function fadeInUS($elem){
+		$elem.hide().removeClass('UShidden').fadeIn(400);
+	}
+	function fadeOutUS($elem){
+		$elem.addClass('UShidden').fadeOut(400);
+	}
+</script>

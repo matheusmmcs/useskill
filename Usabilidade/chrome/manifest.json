@@ -25,6 +25,7 @@
   },
   "web_accessible_resources": [
     "html/topoteste.html",
+    "html/useskill.html",
     "images/glyphicons-halflings-white.png",
     "images/glyphicons-halflings.png"
   ],

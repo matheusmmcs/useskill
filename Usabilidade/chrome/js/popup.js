@@ -8,6 +8,7 @@
 		}
 		var correctDomain = false;
 		
+		//testar se tem conexão com o servidor
 		$.ajax({
 			url: domainUseSkill,
 			cache: false,

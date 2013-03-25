@@ -75,44 +75,101 @@ function Store () {
 var storage = new Store();
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
-	switch(request.useskill){
-		case "nextElement":
-		  	nextElement(request.atual, request.lista);
-		  	break;
-		case "getStorageAndAcoes":
-			sendResponse({storage: storage, acoes: acoes});
-			break;
-		case "getStorage":
-		  	sendResponse({dados: storage});
-		  	break;
-		case "getAcoes":
-			//console.log("Retornou: ");
-			//console.log(acoes);
-			sendResponse({dados: acoes});
-			break;
-		case "addAcao":
-			addAcao(request.acao);
-			break;
-		case "clearAcoes":
-			clearAcoes();
-			sendResponse({clear: true});
-			break;
-		case "setNewTab":
-		  	//vem de abas com new target
-    		chrome.tabs.create({'url': request.url}, function(tab) {
-				if(storage.gravando){
-					//adiciono a tab para a lista das tabs monitoradas
-					storage.tabs.add(tab.id);
+	if(request.useskill){
+		switch(request.useskill){
+			case "nextElement":
+			  	nextElement(request.atual, request.lista);
+			  	break;
+			case "getStorageAndAcoes":
+				sendResponse({storage: storage, acoes: acoes});
+				break;
+			case "getStorage":
+			  	sendResponse({dados: storage});
+			  	break;
+			case "getAcoes":
+				//console.log("Retornou: ");
+				//console.log(acoes);
+				sendResponse({dados: acoes});
+				break;
+			case "addAcao":
+				addAcao(request.acao);
+				break;
+			case "clearAcoes":
+				clearAcoes();
+				sendResponse({clear: true});
+				break;
+			case "setNewTab":
+			  	//vem de abas com new target
+	    		chrome.tabs.create({'url': request.url}, function(tab) {
+					if(storage.gravando){
+						//adiciono a tab para a lista das tabs monitoradas
+						storage.tabs.add(tab.id);
+					}
+				});
+			  	break;
+			case "testFinish":
+				//finalizar o teste que está em execução
+				suspendTest();
+			  	break;
+			case "getDomain":
+				sendResponse({domain: domainUseSkill});
+				break;
+		}
+	}else if(request.useskillserver){
+
+		/*area para comunicacao com o servidor*/
+		switch(request.useskillserver){
+			case "getRoteiro":
+				var retorno = null;
+				if(request.idTarefa){
+					retorno = ajax(domainUseSkill+"/tarefa/roteiro", 'POST', {'idTarefa' : request.idTarefa});
+					console.log(retorno)
 				}
-			});
-		  	break;
-		case "testFinish":
-			//finalizar o teste que está em execução
-			suspendTest();
-		  	break;
-		case "getDomain":
-			sendResponse({domain: domainUseSkill});
-			break;
+				sendResponse({dados: retorno});
+			  	break;
+
+			case "concluirTarefa":
+				var dados = concluirOuPularTarefa(request.idTarefa, true);
+				sendResponse({success: dados});
+				break;
+			case "pularTarefa":
+				var dados = concluirOuPularTarefa(request.idTarefa, false, request.justificativa);
+				sendResponse({success: dados});
+				break;
+			case "enviarComentario":
+				if(request.idTarefa){
+					$.ajax({
+						url: domainUseSkill+"/tarefa/enviarcomentario",
+						cache: false,
+						type: 'POST',
+						dataType : 'json',
+						async: false,
+						data: {
+							'idTarefa' : request.idTarefa,
+							'texto' : request.texto,
+							'qualificacao' : request.quali,
+						},
+						success: function(dados){
+							sendResponse({success: true});
+						},
+						error: function(jqXHR, status, err){
+							console.log(jqXHR);
+							sendResponse({success: false});
+						}
+					});
+				}
+				break;
+			
+			case "setNewTab":
+			  	//vem de abas com new target
+	    		chrome.tabs.create({'url': request.url}, function(tab) {
+					if(storage.gravando){
+						//adiciono a tab para a lista das tabs monitoradas
+						storage.tabs.add(tab.id);
+					}
+				});
+			  	break;
+		}
 	}
 });
 
@@ -234,8 +291,8 @@ function insertOnPage(tabId){
 	chrome.tabs.executeScript(tabId, {file: "js/jquery.js"});
 	chrome.tabs.executeScript(tabId, {file: "js/capt.js"});
 	//chrome.tabs.executeScript(tabId, {file: "js/playback.js"});
-	chrome.tabs.insertCSS(tabId, {file: "css/topoteste.css"});
-	chrome.tabs.executeScript(tabId, {file: "js/topoteste.js"});
+	chrome.tabs.insertCSS(tabId, {file: "css/useskill.css"});
+	chrome.tabs.executeScript(tabId, {file: "js/useskill.js"});
 	//chrome.tabs.insertCSS(tabId, {file: "css/jquery.fancybox.css"});
 	//chrome.tabs.executeScript(tabId, {file: "js/jquery.fancybox.pack.js"});
 	chrome.browserAction.setIcon({path: 'images/icon16on.png', tabId: tabId});
@@ -255,6 +312,7 @@ function ajax(caminho, tipo, dados){
 		url: caminho,
 		cache: false,
 		type: tipo,
+		dataType : 'json',
 		async: false,
 		data: dados,
 		success: function(dados){
@@ -271,4 +329,36 @@ function parseJSON(data) {
 }
 function stringfyJSON(data){
 	return window.JSON && window.JSON.stringify ? window.JSON.stringify(data) : (new Function("return " + data))();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------
+/*métodos para auxiliar comunicacao com o servidor*/
+function concluirOuPularTarefa(idTarefa, isFinished, justificativa){
+	var retorno = null;
+	var acoesString = stringfyJSON(acoes);
+	var dados = {
+		'tarefaId': idTarefa, 
+		'dados': acoesString,
+		'isFinished': isFinished,
+	}
+	if(justificativa){
+		dados['comentario'] = justificativa;
+	}
+	console.log(dados);
+	if(idTarefa){
+		retorno = ajax(domainUseSkill+"/tarefa/save/fluxo", 'POST', dados);
+		if(retorno.string==true||retorno.string=="true"){
+			clearAcoes();
+			retorno = true;
+		}else{
+			//problema no servidor
+			retorno = false;
+			console.log('prob servidor');
+		}
+	}else{
+		//problema de id = null
+		retorno = false;
+		console.log('id null');
+	}
+	return retorno;
 }

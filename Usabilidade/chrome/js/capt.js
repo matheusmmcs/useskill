@@ -7,7 +7,8 @@
   			SUBMIT : "submit",
   			ROTEIRO : "roteiro",
   			CONCLUIR : "concluir",
-  			COMENTARIO : "comentario"
+  			COMENTARIO : "comentario",
+  			PULAR : "pular"
 		};
 
 		function Action(action, time, url, content, tag, tagIndex, posX, posY) {
@@ -54,7 +55,7 @@
 		function getContent($target, action){
 			var val = null;
 			if(action==actionCapt.COMENTARIO){
-				val = $('#UScomentText').val();
+				val = $('#UScomentarioTexto').val();
 			}else if(action==actionCapt.CLICK){
 				val = $target.html();
 			}else if(action==actionCapt.FOCUSOUT){
@@ -85,12 +86,14 @@
 			var action = false;
 			if(isOnUseSkill){
 				action = true;
-				if(id=="USIDroteiro"||idParent=="USIDroteiro"){
+				if(id=="USroteiroFull"||idParent=="USroteiroFull"){
 					action = actionCapt.ROTEIRO;
-				}else if(id=="concluir12qz3"||idParent=="concluir12qz3"){
+				}else if(id=="USconcluirTarefa"||idParent=="USconcluirTarefa"){
 					action = actionCapt.CONCLUIR;
-				}else if(id=="UScomentEnviar"||idParent=="UScomentEnviar"){
+				}else if(id=="UScomentarioEnviar"||idParent=="UScomentarioEnviar"){
 					action = actionCapt.COMENTARIO;
+				}else if(id=="USpularTarefa"||idParent=="USpularTarefa"){
+					action = actionCapt.PULAR;
 				}
 			}
 			return action;
