@@ -183,7 +183,8 @@ public class TarefaController extends BaseController {
 
 	@Logado
 	@Post("tarefa/save/fluxo")
-	public void saveFluxo(String dados, Long tarefaId,Boolean isFinished) {
+	public void saveFluxo(String dados, Long tarefaId, Boolean isFinished) {
+		System.out.println(isFinished);
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
 		fluxo.setTarefa(tarefaRepository.find(tarefaId));

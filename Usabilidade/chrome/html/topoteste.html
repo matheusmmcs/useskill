@@ -219,7 +219,56 @@
 												async: false,
 												data: { 
 													'tarefaId': elAtual.id, 
-													'dados': acoes
+													'dados': acoes,
+													'isFinished': true
+												},
+												success: function(dados){
+													console.log(dados)
+													if(dados.string==true||dados.string=="true"){
+														chrome.extension.sendRequest({useskill: "clearAcoes"}, function() {
+									    					nextElement();
+														});
+													}else{
+														alert("Oops, Servidor não conseguiu realizar a operação!")
+													}
+												},
+												error: function(jqXHR, status, err){
+													console.log(jqXHR);
+													alert("Oops, Servidor incacessível!")
+												}
+											});
+										}
+									}
+								}
+							});
+						}, 100);
+					});
+
+					//metodo para pular tarefa
+					// /USpularEtapa
+					$("#USpularEtapa").click(function(e){
+						e.preventDefault();
+						var enviado = false;
+						//bota um set interval e enquanto nÃ£o houver o concluir, continua tentando
+						var isConcluded = window.setInterval(function() {
+							chrome.extension.sendRequest({useskill: "getAcoes"}, function(resp) {
+								//verificar se possui o tipo concluir entre as acoes capturadas
+								for(var acao in resp.dados){
+									if(resp.dados[acao].sActionType == "pular"){
+										if(!enviado){
+											enviado = true;
+											console.log("AJAX PULAR: "+domainUseSkill+"/tarefa/save/fluxo")
+											
+											acoes = stringfyJSON(resp.dados);
+											$.ajax({
+												url: domainUseSkill+"/tarefa/save/fluxo",
+												cache: false,
+												type: "POST",
+												async: false,
+												data: { 
+													'tarefaId': elAtual.id, 
+													'dados': acoes,
+													'isFinished': false
 												},
 												success: function(dados){
 													console.log(dados)
