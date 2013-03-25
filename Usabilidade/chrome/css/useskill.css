@@ -1,9 +1,9 @@
-.UseSkill-nocapt{
+#USpluginChrome{
 	color: #fff;
 	font-family: "Trebuchet MS", sans-serif;
 }
-.UseSkill-nocapt a{
-	text-decoration: none;
+#USpluginChrome a{
+	text-decoration: none !important;
 	color: blue;
 }
 #USleftMenu{
@@ -27,6 +27,22 @@
 	text-align: center;
 	box-shadow: 0 0 5px #425b92;
 }
+#UStestTitle a{
+	display: inline-block;
+	width: 40px;
+	height: 40px;
+	line-height: 40px;
+	vertical-align: text-top;
+}
+#UStestTitle a b{
+	display: inline-block;
+	padding: 0;
+	width: 14px;
+	height: 14px;
+	line-height: 40px;
+	margin-top: 12px;
+	vertical-align: text-top;
+}
 #USbuttonResize{
 	position: fixed;
 	top: 45%;
@@ -40,12 +56,12 @@
 	box-shadow: 0 0 5px #49afcd;
 	border-color: #7787aa #7787aa #425b92;
 	border-radius: 0 50px 50px 0;
-	opacity: 0.3;
+	opacity: 0.5;
 	cursor: pointer;
 	z-index: 999990;
 }
 #USbuttonResize:hover{
-	opacity: 0.8;
+	opacity: 0.9;
 }
 #USbuttonResize b{
 	margin: 33px 0 0 2px;
@@ -88,7 +104,9 @@
 }
 .USsectionContent textarea{
 	width: 100%;
-	margin: 0 auto 5px;
+	margin: 0 auto 10px !important;
+	background: #fff;
+	border: 1px solid #ccc !important;
 	text-align: justify;
 	height: 75px;
 	resize: none;

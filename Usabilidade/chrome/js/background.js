@@ -159,16 +159,34 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 					});
 				}
 				break;
-			
-			case "setNewTab":
-			  	//vem de abas com new target
-	    		chrome.tabs.create({'url': request.url}, function(tab) {
-					if(storage.gravando){
-						//adiciono a tab para a lista das tabs monitoradas
-						storage.tabs.add(tab.id);
-					}
-				});
-			  	break;
+			case "responderPergunta":
+				console.log("resposta: ");
+				console.log(request);
+				if(request.idPergunta){
+					var thisDomainUseSkill = domainUseSkill.replace("/Usabilidade","");
+					thisDomainUseSkill = thisDomainUseSkill.replace("/useskill","");
+					$.ajax({
+						url : thisDomainUseSkill+request.url,
+						cache: false,
+						type : 'POST',
+						dataType : 'json',
+						async : false,
+						data : {
+							'perguntaId' 	: request.idPergunta,
+							'resposta'		: request.resposta
+							},
+						success : function(json) {
+							sendResponse({success: true});
+						},
+						error : function(jqXHR, textStatus, errorThrown){
+							console.log(jqXHR);
+							sendResponse({success: false});
+						}
+					});
+				}else{
+					sendResponse({success: false});
+				}
+				break;
 		}
 	}
 });

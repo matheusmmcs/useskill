@@ -1,8 +1,9 @@
-<div class="UseSkill-nocapt">
+<div id="USpluginChrome" class="UseSkill-nocapt">
 	<div id="USleftMenu" >
 		<div id="UStestTitle">
 			UseSkill - Tarefa
 			<span id="USinfoPassos"></span>
+			<a class="USpull-right" id="USleftmenuMinimize" href="#"><b class="USicon-minus"></b></a>
 		</div>
 		<div id="UScontent">
 			<div class="USsection" id="USroteiroSection">
@@ -91,8 +92,9 @@
 	var urlPergunta = "teste/responder/pergunta";
 	var urlAtual = location.protocol+location.host+location.pathname;
 	if(urlAtual.indexOf(urlPergunta)!=-1){
-		fadeOutUS($('#USacoesSection'));
-		fadeOutUS($('#USroteiroSection'));
+		//fadeOutUS($('#USacoesSection'));
+		//fadeOutUS($('#USroteiroSection'));
+		fadeOutUS($('#USpluginChrome'));
 	}
 
 	$(document).ready(function(){
@@ -105,7 +107,9 @@
 			acoes = stringfyJSON(resp.acoes);
 			//apos capturar as variaveis, setar texto em cima
 			$("#USinfoPassos").html(numElAtual+1 +"/"+ listaEl.length);
-			getRoteiro(elAtual.id);
+			if(elAtual.tipo=="T"){
+				getRoteiro(elAtual.id);
+			}
 		});
 
 		//Funcoes para comunicacao com o background
@@ -179,11 +183,28 @@
 				}
 			});
 		}
+		function responderPergunta(atual, resposta, url){
+			chrome.extension.sendRequest({useskillserver: "responderPergunta", idPergunta: atual, resposta: resposta, url: url}, function(response) {							
+				if(response.success){
+					nextElement();
+				}else{
+					//console.log(response.errorType)
+					$('.USAlertError').html('Não foi possível responder. Tente Novamente!');
+					$('.alert').fadeIn(300);
+					//alertUS("Tente novamente!");
+					console.log("erro responderPergunta - not success");
+				}
+			});
+		}
 
 		//Eventos JQUERY
 		$('#USbuttonResize').on('click', function(e){
 			e.preventDefault();
-			toogleUSleftMenu(this);
+			toogleUSleftMenu();
+		});
+		$('#USleftmenuMinimize').on('click', function(e){
+			e.preventDefault();
+			toogleUSleftMenu();
 		});
 		$('#USroteiroRefresh').on('click', function(e){
 			e.preventDefault();
@@ -196,7 +217,12 @@
 		});
 		$('#USadiarTeste').on('click', function(e){
 			e.preventDefault();
-			showUSjustificativa(this, enumTypeActions.ADIAR);
+			//showUSjustificativa(this, enumTypeActions.ADIAR);
+			var msg = $('#USjustificativaAcao').val();
+			var r = confirm("Deseja adiar este teste? Os dados armazenado até o momento serão perdidos!");
+			if (r==true){
+				adiarTeste(msg);
+			}
 		});
 		$('#USpularTarefa').on('click', function(e){
 			e.preventDefault();
@@ -209,21 +235,9 @@
 		});
 		$('#USacoesProsseguir').on('click', function(e){
 			var msg = $('#USjustificativaAcao').val();			
-			var type = $('.USjustificativa').eq(0).attr('data-action');
 			if(msg!=null && msg!=""){
 				e.preventDefault();
-				if(type){
-					if(type==enumTypeActions.PULAR){
-						pularTarefa(elAtual.id, msg);
-					}else if(type==enumTypeActions.ADIAR){
-						var r = confirm("Deseja adiar este teste? Os dados armazenado até o momento serão perdidos!");
-						if (r==true){
-							adiarTeste(msg);
-						}
-					}
-				}else{
-					alertUS("Tente novamente!")
-				}
+				pularTarefa(elAtual.id, msg);
 			}else{
 				alertUS("Preencha a justificativa!")
 			}
@@ -270,6 +284,30 @@
 			}
 		});
 		//Questionario
+		//metodo para responder questionario
+		$('#USperguntaTeste12z3').click(function(e){
+			e.preventDefault();
+			var $form = $(this).parentsUntil("form").parent();
+			var pergId = $form.children("#pergid").val();
+			var urlResp = $form.attr('action');
+			var resposta = "";
+			//separar resposta
+			if(urlResp.indexOf('alternativa')!=-1){
+				var $checked = $('input:checked');
+				if($checked.length!=0){
+					resposta = $checked.val();
+				}
+			}else{
+				resposta = $('textarea').val();
+			}
+			//evitar problema localhost de duplicar /Usabilidade
+			if(resposta!=""){
+				responderPergunta(pergId, resposta, urlResp);
+			}else{
+				$('.USAlertError').html('Preencha a resposta antes de enviar!');
+				$('.alert').fadeIn(300);
+			}
+		});
 
 
 		//Animacoes JQUERY
@@ -280,14 +318,14 @@
 				$('#USleftMenu').animate({
 				    left: '-='+$this.width()
 				});
-				$(elem).animate({
+				$('#USbuttonResize').animate({
 				    left: '-='+$this.width()
 				});
 			}else{
 				$('#USleftMenu').animate({
 				    left: '+='+$this.width()
 				});
-				$(elem).animate({
+				$('#USbuttonResize').animate({
 				    left: '+='+$this.width()
 				});
 			}
@@ -296,7 +334,6 @@
 			var $just = $('.USjustificativa').eq(0);
 			fadeOutUS($(elem).parent());
 			fadeInUS($just);
-			$just.attr('data-action', type);
 			$just.find("h2 span").text($(elem).text());
 		}
 		function hideUSjustificativa(elem){
@@ -304,7 +341,6 @@
 			var $sec = $(elem).closest('.USsection');
 			fadeInUS($sec.find('.UShidden'));
 			fadeOutUS($just);
-			$just.attr('data-action', '');
 			$just.find("h2 span").text(' ');
 		}
 		function comentarioReset(){

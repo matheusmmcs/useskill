@@ -35,7 +35,7 @@
 
 				<div class="control-group">
                 	<div class="span6 center">
-                		<textarea rows="6" cols="10" name="resposta" class="span6 center" style="resize:none">&nbsp;&nbsp;</textarea>                    	
+                		<textarea rows="6" cols="10" name="resposta" class="span6 center" style="resize:none">&nbsp;</textarea>                    	
                 	</div>
             	</div>
 				
