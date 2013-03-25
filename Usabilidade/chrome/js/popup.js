@@ -133,6 +133,7 @@
 		function getTestesConvidados(){
 			getStorage(function(dados){
 				//se estiver gravando avisa que precisa encerrar
+				console.log(dados)
 				if(!dados.dados.gravando){
 					var objJson = ajax(urls.convidados, typeEnum.GET);
 					objJson = parseJSON(objJson.string);

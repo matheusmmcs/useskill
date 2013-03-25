@@ -6,6 +6,9 @@
 	text-decoration: none !important;
 	color: blue;
 }
+#USpluginChrome b{
+	background-color: transparent !important;
+}
 #USleftMenu{
 	position: fixed;
 	top: 0;
@@ -86,6 +89,7 @@
 	color: #425b92;
 	margin: 5px 0 0 10px;
 	text-transform: uppercase;
+	background: transparent !important;
 }
 .USsection h2{
 	font-size: 16px;
@@ -95,6 +99,7 @@
 	text-transform: uppercase;
 	border: none;
 	padding: 0;
+	background: transparent !important;
 }
 .USsectionContent{
 	position: relative;

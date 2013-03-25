@@ -1,4 +1,4 @@
-//var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill/";
+//var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";
 var domainUseSkill = "http://localhost:8080/Usabilidade";
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -114,6 +114,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 			case "getDomain":
 				sendResponse({domain: domainUseSkill});
 				break;
+			case "getDomain":
+				sendResponse({domain: domainUseSkill});
+				break;
 		}
 	}else if(request.useskillserver){
 
@@ -129,7 +132,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 			  	break;
 
 			case "concluirTarefa":
-				var dados = concluirOuPularTarefa(request.idTarefa, true);
+				var dados = concluirOuPularTarefa(request.idTarefa, true, "");
 				sendResponse({success: dados});
 				break;
 			case "pularTarefa":
