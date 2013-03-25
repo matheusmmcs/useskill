@@ -297,8 +297,7 @@ public class Estatistica {
 		List<TipoConvidado> tiposConvidados = new ArrayList<TipoConvidado>();
 		tiposConvidados.addAll(Arrays.asList(TipoConvidado.values()));
 		for (TipoConvidado tipoConvidado : tiposConvidados) {
-			List<FluxoCountVO> quantidadeAcoes = tarefaRepository
-					.quantidadeAcoesETempo(tarefaId, tipoConvidado);
+			List<FluxoCountVO> quantidadeAcoes = tarefaRepository.quantidadeAcoesETempo(tarefaId, tipoConvidado);
 			HashMap<String, Object> calculosFluxo = this.calculosFluxo(
 					quantidadeAcoes, tipoConvidado, fluxosVOs,
 					isCalcularMediaAcoes);

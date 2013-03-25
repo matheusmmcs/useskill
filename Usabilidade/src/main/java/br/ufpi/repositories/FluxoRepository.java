@@ -17,5 +17,7 @@ public interface FluxoRepository {
 		Fluxo find(Long id);
 
 		List<Fluxo> findAll();
+		
+		Fluxo last();
 
 }

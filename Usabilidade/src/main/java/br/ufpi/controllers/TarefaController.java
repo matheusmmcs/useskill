@@ -183,8 +183,7 @@ public class TarefaController extends BaseController {
 
 	@Logado
 	@Post("tarefa/save/fluxo")
-	public void saveFluxo(String dados, Long tarefaId, Boolean isFinished) {
-		System.out.println(isFinished);
+	public void saveFluxo(String dados, Long tarefaId, Boolean isFinished,	String comentario) {
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
 		fluxo.setTarefa(tarefaRepository.find(tarefaId));
@@ -192,25 +191,32 @@ public class TarefaController extends BaseController {
 		Type collectionType = new TypeToken<Collection<Action>>() {
 		}.getType();
 		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
-		List<Action> acoes = new ArrayList<Action>(ints2);
-		fluxo.setDataRealizacao(new Date(System.currentTimeMillis()));
-		fluxo.setTempoRealizacao(acoes.get(acoes.size() - 1).getsTime()
-				- acoes.get(0).getsTime());
-		diferencaTempo(acoes);
-		fluxo.setAcoes(acoes);
+		if (ints2 != null) {
+			List<Action> acoes = new ArrayList<Action>(ints2);
+			fluxo.setDataRealizacao(new Date(System.currentTimeMillis()));
+			int ultimoFluxo=acoes.size() - 1;
+			if (ultimoFluxo<0)
+				ultimoFluxo = 0;
+			fluxo.setTempoRealizacao(acoes.get(ultimoFluxo).getsTime()
+					- acoes.get(0).getsTime());
+			diferencaTempo(acoes);
+			fluxo.setAcoes(acoes);
+		}
 		fluxo.setTipoConvidado(testeSessionPlugin.getTipoConvidado());
-		if(isFinished!=null){
+		if (isFinished != null) {
 			fluxo.setFinished(isFinished);
 		}
-		
+		if(!fluxo.isFinished()){
+			fluxo.setComentario(comentario);
+		}
 		fluxoRepository.create(fluxo);
-		System.out.println("Tarefa id"+ tarefaId);
-		System.out.println("Identificador do fluxo:"+fluxo.getId());
+		System.out.println("Tarefa id" + tarefaId);
+		System.out.println("Identificador do fluxo:" + fluxo.getId());
 		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(fluxo.getId(),
 				EnumObjetoSalvo.FLUXO));
 		result.use(Results.json()).from("true").serialize();
 	}
-	
+
 	/**
 	 * Calcula a diferença de cada ação em relacao ao tempo da primeira ação
 	 * realizada
@@ -369,7 +375,7 @@ public class TarefaController extends BaseController {
 		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
 		Fluxo fluxo = tarefaRepository.getFluxo(testeId, tarefaId, usuarioId,
 				usuarioCriadorId, fluxoId);
-		
+
 		result.include("acoes", fluxo.getAcoes());
 		result.include("nomeTarefa", fluxo.getTarefa().getNome());
 		result.include("nomeUsuario", fluxo.getUsuario().getNome());
@@ -406,14 +412,16 @@ public class TarefaController extends BaseController {
 	}
 
 	@Logado
-	@Post({"tarefa/enviarcomentario"})
-	public void salvarComentario(String texto, Long idTarefa) {
+	@Post({ "tarefa/enviarcomentario" })
+	public void salvarComentario(String texto, Long idTarefa,boolean qualificacao) {
 		Comentario comentario = new Comentario();
 		comentario.setTexto(texto);
-		//TODo RefazertarefaPertenceTeste(testeSessionPlugin.getIdTeste(), idTarefa);
-		Tarefa tarefa =  tarefaRepository.find(idTarefa);
+		// TODo RefazertarefaPertenceTeste(testeSessionPlugin.getIdTeste(),
+		// idTarefa);
+		Tarefa tarefa = tarefaRepository.find(idTarefa);
 		comentario.setUsuario(super.usuarioLogado.getUsuario());
 		comentario.setTarefa(tarefa);
+		comentario.setGood(qualificacao);
 		comentarioRepository.create(comentario);
 		result.use(Results.json()).from(true).serialize();
 	}

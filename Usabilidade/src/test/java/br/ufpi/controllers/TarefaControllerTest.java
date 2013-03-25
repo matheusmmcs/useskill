@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,10 +16,13 @@ import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.ValidationException;
 import br.ufpi.controllers.procedure.TarefaTestProcedure;
 import br.ufpi.models.Action;
+import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.TipoConvidado;
 import br.ufpi.repositories.AbstractDaoTest;
+import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.TarefaRepository;
+import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
 
 import com.google.gson.Gson;
 
@@ -49,6 +53,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 	private static Long testeLiberado = 11l;
 	private TarefaRepository repository;
 	private TarefaController instance;
+	private FluxoRepository fluxoRepository;
 	private Long testeNaoPertenceUsuario2 = 14l;
 
 	@Before
@@ -58,6 +63,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 				.newInstanceTarefaRepository(entityManager);
 		instance = TarefaTestProcedure.newInstanceTarefaController(
 				entityManager, result);
+		fluxoRepository=new FluxoRepositoryImpl(entityManager);
 	}
 
 	/**
@@ -491,6 +497,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 			acao.setsTag("tag");
 			acao.setsTag("sTagName");
 			acao.setsUrl("www.globo.com");
+			acao.setsTime((long) (i*11));
 			acaos.add(acao);
 		}
 		Gson gson = new Gson();
@@ -504,10 +511,22 @@ public class TarefaControllerTest extends AbstractDaoTest {
 				entityManager, result, 8l, TipoConvidado.EXPERT);
 
 		try {
-			instance.saveFluxo(this.getGSonDados(), 8l,true);
+			instance.saveFluxo(this.getGSonDados(), 8l,true,null);
 		} catch (ValidationException validationException) {
 			List<Message> errors = validationException.getErrors();
 			System.out.println(errors);
 		}
+	}
+	
+	@Test
+	public void saveFluxoComDadosNulos(){
+		
+		instance = TarefaTestProcedure.newInstanceTarefaController(
+				entityManager, result, 8l, TipoConvidado.EXPERT);
+			instance.saveFluxo(null, 8l,false,"Nao consegui por este motivo");
+		Fluxo last = fluxoRepository.last();
+		assertEquals(last.getAcoes(), null);
+		assertFalse(last.isFinished());
+		assertEquals("Nao consegui por este motivo", last.getComentario());
 	}
 }

@@ -32,6 +32,10 @@ public class Comentario implements Serializable {
 	@Column(columnDefinition = "LONGTEXT")
 	private String texto;
 	/**
+	 * Qualifica se o comentario é bom ou ruim
+	 */
+	private boolean isGood;
+	/**
 	 * @return the usuario
 	 */
 	public Usuario getUsuario() {
@@ -78,6 +82,18 @@ public class Comentario implements Serializable {
 	 */
 	public void setId(Long id) {
 		this.id = id;
+	}
+	/**
+	 * @return the isGood
+	 */
+	public boolean isGood() {
+		return isGood;
+	}
+	/**
+	 * @param isGood the isGood to set
+	 */
+	public void setGood(boolean isGood) {
+		this.isGood = isGood;
 	}
 	
 }

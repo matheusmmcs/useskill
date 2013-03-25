@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -80,8 +81,7 @@ import javax.persistence.TemporalType;
 		/*
 		 * obtem o total de fluxo de uma tarefa
 		 * 
-		 * Lista de Condições
-		 * 
+		 * Lista de Condições * 
 		 * 1º usuarioCriador ser dono do teste
 		 * 
 		 * 2º tarefa pertencer ao teste
@@ -117,7 +117,12 @@ public class Fluxo implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Tarefa tarefa;
 	private TipoConvidado tipoConvidado;
-	private boolean isFinished=true;
+	private boolean isFinished = true;
+	/**
+	 * Comentario de por que o usuário pulou a Tarefa
+	 */
+	@Column(columnDefinition = "LONGTEXT")
+	private String comentario;
 
 	/**
 	 * @return the tarefa
@@ -202,6 +207,21 @@ public class Fluxo implements Serializable {
 
 	public void setFinished(boolean isFinished) {
 		this.isFinished = isFinished;
+	}
+
+	/**
+	 * @return the comentario
+	 */
+	public String getComentario() {
+		return comentario;
+	}
+
+	/**
+	 * @param comentario
+	 *            the comentario to set
+	 */
+	public void setComentario(String comentario) {
+		this.comentario = comentario;
 	}
 
 }

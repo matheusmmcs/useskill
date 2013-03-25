@@ -85,19 +85,20 @@ public class LoginController extends BaseController {
 	 * ao logar mostra todos os teste que o usuario foi convidado e os testes
 	 * que ainda não foram liberados
 	 */
-	@Get({"/usuario/pag/{numeroPagina}","/usuario"})
+	@Get({ "/usuario/pag/{numeroPagina}", "/usuario" })
 	@Logado
 	public void logado(int numeroPagina) {
-		if( numeroPagina==0){
-			numeroPagina=1;
+		if (numeroPagina == 0) {
+			numeroPagina = 1;
 		}
-	
 		Paginacao<Teste> paginacao = usuarioRepository
-		 .findTesteNaoLiberadosOrdenadorData(usuarioLogado.getUsuario().getId(),numeroPagina,Paginacao.OBJETOS_POR_PAGINA);
-		
-		result.include("testesCriados",paginacao.getListObjects()) ;
-		 Long qttObjetosNoBanco=paginacao.getCount();
-		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA, qttObjetosNoBanco, result);
+				.findTesteNaoLiberadosOrdenadorData(usuarioLogado.getUsuario()
+						.getId(), numeroPagina, Paginacao.OBJETOS_POR_PAGINA);
+
+		result.include("testesCriados", paginacao.getListObjects());
+		Long qttObjetosNoBanco = paginacao.getCount();
+		paginacao.geraPaginacao(numeroPagina, Paginacao.OBJETOS_POR_PAGINA,
+				qttObjetosNoBanco, result);
 	}
 
 	/**

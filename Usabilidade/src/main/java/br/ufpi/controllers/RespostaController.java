@@ -103,8 +103,7 @@ public class RespostaController extends BaseController {
 		respostaAlternativa.setPergunta(pergunta);
 		respostaAlternativa.setUsuario(usuarioLogado.getUsuario());
 		alternativaRepository.create(respostaAlternativa);
-		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(respostaAlternativa
-				.getId(), EnumObjetoSalvo.SUBJETIVA));
+		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(respostaAlternativa.getId(), EnumObjetoSalvo.SUBJETIVA));
 		result.use(Results.nothing());
 	}
 

@@ -72,7 +72,7 @@
 		<dependency>
 			<groupId>br.com.caelum</groupId>
 			<artifactId>vraptor</artifactId>
-			<version>3.4.0</version>
+			<version>3.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>br.com.caelum</groupId>
 			<artifactId>iogi</artifactId>
-			<version>0.9.0</version>
+			<version>0.9.1</version>
 		</dependency>
 
 		<dependency>

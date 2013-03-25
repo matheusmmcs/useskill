@@ -37,6 +37,13 @@ public abstract class Repository<T, I extends Serializable> {
 		return entityManager.find(clazz, id);
 	}
 
+	@SuppressWarnings("unchecked")
+	public T last() {
+		Query query = entityManager.createQuery("from " + clazz.getName() +" as a "+ "order by a.id desc");
+		query.setMaxResults(1);
+		return (T) query.getSingleResult();
+	}
+
 	public List<T> findAll() {
 		Query query = entityManager.createQuery("from " + clazz.getName());
 
