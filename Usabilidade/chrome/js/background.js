@@ -1,5 +1,5 @@
-//var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";
-var domainUseSkill = "http://localhost:8080/Usabilidade";
+var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";
+//var domainUseSkill = "http://localhost:8080/Usabilidade";
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -61,6 +61,17 @@ function clearAcoes(){
 	console.log("CLEAR:");
 	console.log(acoes);
 	acoes = new Array();
+}
+
+function acoesContainsConcluir(){
+	for(var i in acoes){
+		if(acoes[i].sActionType!=null){
+			if(new String(acoes[i].sActionType).toUpperCase()=="CONCLUIR"){
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -138,8 +149,16 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 			  	break;
 
 			case "concluirTarefa":
-				var dados = concluirOuPularTarefa(request.idTarefa, true, "");
-				sendResponse({success: dados});
+				var enviado = false;
+				var intervalo = window.setInterval(function(){
+					console.log(acoesContainsConcluir());
+					if(acoesContainsConcluir() && !enviado){
+						var dados = concluirOuPularTarefa(request.idTarefa, true, "");
+						enviado = true;
+						sendResponse({success: dados});
+						clearInterval(intervalo);
+					}
+				},200);
 				break;
 			case "pularTarefa":
 				var dados = concluirOuPularTarefa(request.idTarefa, false, request.justificativa);
@@ -154,6 +173,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 						'qualificacao' : request.quali,
 					});
 					*/
+					
 					$.ajax({
 						url: domainUseSkill+"/tarefa/enviarcomentario",
 						cache: false,

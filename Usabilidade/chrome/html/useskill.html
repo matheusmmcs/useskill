@@ -42,14 +42,14 @@
 					<h2>Qualifique seu comentário:</h2>
 					<div class="USsectionContent UStext-right ">
 						<a class="USbotao UScancelarComentario" href="#">Cancelar</a>
-						<a class="USbotao USbotao-vermelho UScomentarioQualifique" data-type="bad" href="#"><b class="USicon-thumbs-down USicon-white"></b></a>
-						<a class="USbotao USbotao-verde UScomentarioQualifique" data-type="good" href="#"><b class="USicon-thumbs-up USicon-white"></b></a>
+						<a class="USbotao USbotao-vermelho UScomentarioQualifique" data-type="false" href="#"><b class="USicon-thumbs-down USicon-white"></b></a>
+						<a class="USbotao USbotao-verde UScomentarioQualifique" data-type="true" href="#"><b class="USicon-thumbs-up USicon-white"></b></a>
 					</div>
 				</div>
 				<div id="UScomentarioEtapa2" class="UShidden">
 					<h2>Selecione o motivo do comentário:</h2>
 					<div class="USsectionContent UStext-right ">
-						<a class="USbotao" id="UScomentarioSelecionar" href="#"><b class="USicon-fullscreen"></b>Selecionar Área</a>
+						<!-- <a class="USbotao" id="UScomentarioSelecionar" href="#"><b class="USicon-fullscreen"></b>Selecionar Área</a> -->
 						<a class="USbotao UScancelarComentario" href="#">Cancelar</a>
 						<a class="USbotao USbotao-info" id="UScomentarioMotivoProsseguir" href="#">Prosseguir</a>
 
@@ -86,8 +86,8 @@
 		ADIAR:'adiar'
 	}
 	var enumTypeQualify = {
-		GOOD:'good',
-		BAD:'bad'
+		GOOD:'true',
+		BAD:'false'
 	}
 
 	//evitar plugin em perguntas
@@ -303,18 +303,21 @@
 			var $form = $(this).parentsUntil("form").parent();
 			var pergId = $form.children("#pergid").val();
 			var urlResp = $form.attr('action');
-			var resposta = "";
+			var resposta = "", respostaVefiry = "";
 			//separar resposta
 			if(urlResp.indexOf('alternativa')!=-1){
 				var $checked = $('input:checked');
 				if($checked.length!=0){
 					resposta = $checked.val();
+					respostaVefiry = $checked.val();
 				}
 			}else{
-				resposta = $('textarea').val();
+				resposta = new String($('textarea').val());
+				respostaVefiry = resposta.replace(" ","");
+				respostaVefiry = resposta.replace("\n","");
 			}
 			//evitar problema localhost de duplicar /Usabilidade
-			if(resposta!=""){
+			if(respostaVefiry!=""){
 				responderPergunta(pergId, resposta, urlResp);
 			}else{
 				$('.USAlertError').html('Preencha a resposta antes de enviar!');
@@ -475,7 +478,7 @@
 	}
 </script>
 
-<div id="jCropSupport" class="UShidden">
+<div id="jCropSupport" class="UseSkill-nocapt UShidden">
 	<div class="jCropAbsolute">
 		<img id="jCrop" src="" />
 		<a id="canvasSelect" class="USbotao USbotao-info jcrop-btn-accept" href="#">Selecionar</a>
