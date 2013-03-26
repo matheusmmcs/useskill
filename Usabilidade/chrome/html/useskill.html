@@ -9,7 +9,7 @@
 			<div class="USsection" id="USroteiroSection">
 				<h1>
 					Roteiro
-					<a class="USbotao USpull-right" id="USroteiroFull" href="#"><b class="USicon-fullscreen"></b></a>
+					<!--<a class="USbotao USpull-right" id="USroteiroFull" href="#"></a>-->
 					<a class="USbotao USpull-right" id="USroteiroRefresh" href="#"><b class="USicon-refresh"></b></a>
 				</h1>
 				<div id="USroteiro" class="USsectionContent">
@@ -49,8 +49,11 @@
 				<div id="UScomentarioEtapa2" class="UShidden">
 					<h2>Selecione o motivo do comentário:</h2>
 					<div class="USsectionContent UStext-right ">
+						<a class="USbotao" id="UScomentarioSelecionar" href="#"><b class="USicon-fullscreen"></b>Selecionar Área</a>
 						<a class="USbotao UScancelarComentario" href="#">Cancelar</a>
 						<a class="USbotao USbotao-info" id="UScomentarioMotivoProsseguir" href="#">Prosseguir</a>
+
+						<canvas id="canvasClone"></canvas>
 					</div>
 				</div>
 				<div id="UScomentarioEtapa3" class="UShidden">
@@ -69,7 +72,6 @@
 		<b class="USicon-resize-full USicon-white"></b>
 	</div>
 </div>
-
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <script type="text/javascript">
@@ -207,7 +209,7 @@
 				}
 			});
 		}
-
+		
 		//Eventos JQUERY
 		$('#USbuttonResize').on('click', function(e){
 			e.preventDefault();
@@ -319,10 +321,85 @@
 				$('.alert').fadeIn(300);
 			}
 		});
+		//Canvas
+		var jcrop_api, jcrop_coords;
+		$('#UScomentarioSelecionar').on('click', function(e){
+			e.preventDefault();
+			try{
+				hideUSleftMenu();
+				var target = $('body');
+				html2canvas(target, {
+		    		onrendered: function(cv) {
+		    			fadeInUS($('#jCropSupport'));
+		    			var imgSrc = cv.toDataURL();
+		    			$('#jCrop').attr('src', imgSrc);
+		    			jcrop_api = $.Jcrop('#jCrop');
+		    			jcrop_api.setOptions({ onSelect: jcropCoords });
+		    		}
+				});
+			}catch(e){
+				removeCrop();
+			}
+		});
+		$('#canvasSelect').on('click', function(e){
+			e.preventDefault();
+			try{
+				var canvas = document.getElementById('myCanvas');
+				var canvasClone = document.getElementById('canvasClone');
+			    var context = canvas.getContext('2d');
+			    var contextClone = canvasClone.getContext('2d');
+			    var imageObj = new Image();
+			    $(canvas).attr('width', jcrop_coords.w);
+			    $(canvas).attr('height', jcrop_coords.h);
+			    imageObj.onload = function() {
+			        // draw cropped image
+			        var sourceX = jcrop_coords.x;
+			        var sourceY = jcrop_coords.y;
+			        var sourceWidth = jcrop_coords.w;
+			        var sourceHeight = jcrop_coords.h;
+			        var destWidth = sourceWidth;
+			        var destHeight = sourceHeight;
+			        var destX = canvas.width / 2 - destWidth / 2;
+			        var destY = canvas.height / 2 - destHeight / 2;
+			        context.clearRect(0, 0, canvas.width, canvas.height);
+			        context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+			        contextClone.clearRect(0, 0, canvasClone.width, canvasClone.height);
+			        contextClone.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+			    };
+			    imageObj.src = $('#jCrop').attr('src');
+			    removeCrop();
+			}catch(e){
+				removeCrop();
+			}
+		});
+		$('#canvasCancel').on('click', function(e){
+			e.preventDefault();
+			removeCrop();
+		});
+		function removeCrop(){
+			fadeOutUS($('#jCropSupport'));
+			try{
+				jcrop_api.destroy();
+			}catch(e){ }
+			$('#jCrop').attr('src','');
+			toogleUSleftMenu();
+		}
+		function jcropCoords(coords){
+			jcrop_coords = coords;
+			console.log(jcrop_coords)
+		}
+		function clearCanvas(){
+			var canvas = document.getElementById('myCanvas');
+			var canvasClone = document.getElementById('canvasClone');
+		    var context = canvas.getContext('2d');
+		    var contextClone = canvasClone.getContext('2d');
+		    context.clearRect(0, 0, canvas.width, canvas.height);
+		    contextClone.clearRect(0, 0, canvasClone.width, canvasClone.height);
+		}
 
 
 		//Animacoes JQUERY
-		function toogleUSleftMenu(elem){
+		function toogleUSleftMenu(){
 			var $this = $('#USleftMenu');
 			
 			if($this.css('left')=="0px"){
@@ -373,6 +450,7 @@
 			fadeInUS($('#UScomentarioSubSection'));
 			$('#UScomentarioEnviar').attr('data-quali', '');
 			$('#UScomentarioTexto').val("");
+			clearCanvas();
 		}
 		function acoesReset(){
 			$('#USjustificativaAcao').val("");
@@ -396,3 +474,12 @@
 		$elem.addClass('UShidden').fadeOut(400);
 	}
 </script>
+
+<div id="jCropSupport" class="UShidden">
+	<div class="jCropAbsolute">
+		<img id="jCrop" src="" />
+		<a id="canvasSelect" class="USbotao USbotao-info jcrop-btn-accept" href="#">Selecionar</a>
+		<a id="canvasCancel" class="USbotao jcrop-btn-cancel" href="#">Cancelar</a>
+	</div>
+	<canvas id="myCanvas"></canvas>
+</div>

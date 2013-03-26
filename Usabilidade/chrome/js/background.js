@@ -147,6 +147,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 				break;
 			case "enviarComentario":
 				if(request.idTarefa){
+					/*
+					processXHR(domainUseSkill+"/tarefa/enviarcomentario", 'POST', {
+						'idTarefa' : request.idTarefa,
+						'texto' : request.texto,
+						'qualificacao' : request.quali,
+					});
+					*/
 					$.ajax({
 						url: domainUseSkill+"/tarefa/enviarcomentario",
 						cache: false,
@@ -319,6 +326,9 @@ function suspendTest(){
 function insertOnPage(tabId){
 	chrome.tabs.executeScript(tabId, {file: "js/jquery.js"});
 	chrome.tabs.executeScript(tabId, {file: "js/capt.js"});
+	chrome.tabs.executeScript(tabId, {file: "js/canvas/jquery.color.js"});
+	chrome.tabs.executeScript(tabId, {file: "js/canvas/jquery.JCrop.js"});
+	chrome.tabs.executeScript(tabId, {file: "js/canvas/html2canvas.js"});
 	//chrome.tabs.executeScript(tabId, {file: "js/playback.js"});
 	chrome.tabs.insertCSS(tabId, {file: "css/useskill.css"});
 	chrome.tabs.executeScript(tabId, {file: "js/useskill.js"});
@@ -352,6 +362,23 @@ function ajax(caminho, tipo, dados){
 		}
 	});
 	return retorno;
+}
+function processXHR(caminho, tipo, dados) {
+    var formData = new FormData();
+    var xhr = new XMLHttpRequest();
+
+    for(var d in dados){
+    	formData.append(d, dados[d]);
+    }
+
+    xhr.open(tipo, caminho, true);
+    //xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xhr.onload = function(e) {
+        console.log("loaded!")
+    };
+
+    xhr.send(formData);
+    return false;
 }
 function parseJSON(data) {
 	return window.JSON && window.JSON.parse ? window.JSON.parse(data) : (new Function("return " + data))(); 
