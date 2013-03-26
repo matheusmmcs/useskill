@@ -48,5 +48,8 @@
 		<param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
 		<param-value>messages</param-value>
 	</context-param>
-
+	
+<session-config>
+		<session-timeout>1200</session-timeout>
+	</session-config>
 </web-app>
