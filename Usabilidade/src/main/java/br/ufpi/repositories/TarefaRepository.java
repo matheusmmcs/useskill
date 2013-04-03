@@ -1,6 +1,7 @@
 package br.ufpi.repositories;
 
 import java.util.List;
+import java.util.Map;
 
 import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
@@ -46,6 +47,7 @@ public interface TarefaRepository {
 	 * @return
 	 */
 	String getRoteiro(Long idTarefa, Long idTeste);
+
 	/**
 	 * Obtem o Titulo da Tarefa
 	 * 
@@ -146,6 +148,17 @@ public interface TarefaRepository {
 
 	public List<FluxoCountVO> quantidadeAcoesETempo(Long tarefa,
 			TipoConvidado tipoConvidado);
+
+	/**
+	 * Obtem a quantidade de usuários que realizaram o experimento de forma
+	 * correta ou incoretta
+	 * 
+	 * @param tarefa
+	 * @param isFishined
+	 * @return
+	 */
+	public Map<TipoConvidado, Long> quantidadeFluxos(Long tarefa,
+			boolean isFinished);
 
 	/**
 	 * @param tarefaId

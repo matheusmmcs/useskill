@@ -1,6 +1,8 @@
 package br.ufpi.repositories.Implement;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -68,6 +70,7 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 			return null;
 		}
 	}
+
 	@Override
 	public String getTitulo(Long idTarefa, Long idTeste) {
 		Query query = entityManager
@@ -113,14 +116,14 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 
 	@Override
 	public Fluxo getFluxo(Long testeId, Long tarefaId, Long usarioId,
-			Long usuarioCriadorId,Long fluxoId) {
+			Long usuarioCriadorId, Long fluxoId) {
 
 		Query query = entityManager.createNamedQuery("Fluxo.obterfluxo");
 		query.setParameter("teste", testeId);
 		query.setParameter("tarefa", tarefaId);
 		query.setParameter("usuarioCriador", usuarioCriadorId);
 		query.setParameter("usuario", usarioId);
-		query.setParameter("fluxo",fluxoId );
+		query.setParameter("fluxo", fluxoId);
 		try {
 			return (Fluxo) query.getSingleResult();
 		} catch (NoResultException e) {
@@ -202,6 +205,21 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 		Query query = entityManager.createNamedQuery("Fluxo.getNomeUsuario");
 		query.setParameter("fluxo", fluxoId);
 		return (String) query.getSingleResult();
+	}
+
+	@Override
+	public Map<TipoConvidado, Long> quantidadeFluxos(Long tarefa,
+			boolean isFinished) {
+		HashMap<TipoConvidado, Long> map = new HashMap<TipoConvidado, Long>();
+		for (TipoConvidado tipoConvidado : TipoConvidado.values()) {
+			Query query = entityManager
+					.createNamedQuery("Fluxo.realizados");
+			query.setParameter("tarefa", tarefa);
+			query.setParameter("tipoConvidado", tipoConvidado);
+			query.setParameter("isFinished", isFinished);
+			map.put(tipoConvidado, (Long) query.getSingleResult());
+		}
+		return map;
 	}
 
 }

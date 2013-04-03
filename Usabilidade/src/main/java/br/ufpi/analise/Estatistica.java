@@ -264,7 +264,7 @@ public class Estatistica {
 	}
 
 	/**
-	 * Inseria quantidade de usuarios convidados em cada Teste
+	 * Inseri a quantidade de usuarios convidados em cada Teste
 	 * 
 	 * @param testeId
 	 */

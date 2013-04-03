@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
@@ -183,7 +184,8 @@ public class TarefaController extends BaseController {
 
 	@Logado
 	@Post("tarefa/save/fluxo")
-	public void saveFluxo(String dados, Long tarefaId, Boolean isFinished,	String comentario) {
+	public void saveFluxo(String dados, Long tarefaId, Boolean isFinished,
+			String comentario) {
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
 		fluxo.setTarefa(tarefaRepository.find(tarefaId));
@@ -194,8 +196,8 @@ public class TarefaController extends BaseController {
 		if (ints2 != null) {
 			List<Action> acoes = new ArrayList<Action>(ints2);
 			fluxo.setDataRealizacao(new Date(System.currentTimeMillis()));
-			int ultimoFluxo=acoes.size() - 1;
-			if (ultimoFluxo<0)
+			int ultimoFluxo = acoes.size() - 1;
+			if (ultimoFluxo < 0)
 				ultimoFluxo = 0;
 			fluxo.setTempoRealizacao(acoes.get(ultimoFluxo).getsTime()
 					- acoes.get(0).getsTime());
@@ -206,7 +208,7 @@ public class TarefaController extends BaseController {
 		if (isFinished != null) {
 			fluxo.setFinished(isFinished);
 		}
-		if(!fluxo.isFinished()){
+		if (!fluxo.isFinished()) {
 			fluxo.setComentario(comentario);
 		}
 		fluxoRepository.create(fluxo);
@@ -411,9 +413,39 @@ public class TarefaController extends BaseController {
 		quantidadeUsuariosQueRealizaramOTeste(testeId);
 	}
 
+	@SuppressWarnings("unused")
+	@Logado
+	@Get("teste/{testeId}/tarefa/{tarefaId}/analise2")
+	/**
+	 * 
+	 * @param testeId
+	 * @param tarefaId
+	 */
+	public void analise(Long testeId, Long tarefaId) {
+		validateComponente.validarId(tarefaId);
+		validateComponente.validarId(testeId);
+		Long usuarioDonoTeste = usuarioLogado.getUsuario().getId();
+		tarefaPertenceAoUsuarioLogado(usuarioDonoTeste, tarefaId, testeId);
+		/**
+		 * quantidade de fluxos que foram concluidos pelos usuários
+		 */
+		Map<TipoConvidado, Long> quantidadeFluxosConcluidos = tarefaRepository
+				.quantidadeFluxos(tarefaId, true);
+		/**
+		 * quantidade de fluxos que não foram concluidos
+		 */
+		Map<TipoConvidado, Long> quantidadeFluxosNaoConcluidos = tarefaRepository
+				.quantidadeFluxos(tarefaId, false);
+		//Adicionar a media de tempo dos usuários que conseguiram realizar as tarefas
+		//
+	}
+	
+
+
 	@Logado
 	@Post({ "tarefa/enviarcomentario" })
-	public void salvarComentario(String texto, Long idTarefa,boolean qualificacao) {
+	public void salvarComentario(String texto, Long idTarefa,
+			boolean qualificacao) {
 		Comentario comentario = new Comentario();
 		comentario.setTexto(texto);
 		// TODo RefazertarefaPertenceTeste(testeSessionPlugin.getIdTeste(),

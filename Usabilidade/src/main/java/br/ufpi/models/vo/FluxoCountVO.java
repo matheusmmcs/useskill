@@ -11,6 +11,7 @@ package br.ufpi.models.vo;
 public class FluxoCountVO {
 	private Long quantidadeAcoes;
 	private Long tempoRealizacao;
+	private boolean isFinished;
 
 	/**
 	 * @param quantidadeAcoes
@@ -52,13 +53,20 @@ public class FluxoCountVO {
 		this.tempoRealizacao = tempoRealizacao;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "FluxoCountVO [quantidadeAcoes=" + quantidadeAcoes
-				+ ", tempoRealizacao=" + tempoRealizacao + "]";
+				+ ", tempoRealizacao=" + tempoRealizacao + ", isFinished="
+				+ isFinished + "]";
 	}
 
+	public boolean isFinished() {
+		return isFinished;
+	}
+
+	public void setFinished(boolean isFinished) {
+		this.isFinished = isFinished;
+	}
+
+	
 }

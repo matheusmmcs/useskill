@@ -78,11 +78,20 @@ import javax.persistence.TemporalType;
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
 				+ "and t.usuarioCriador.id= :usuarioCriador GROUP BY fluxo.usuario.id"),
+		/**
+		 * Obtem todos os Fluxos de uma tarefa passando apenas o id da tarefa
+		 * 
+		 * @author Cleiton Moura
+		 * 
+		 */
+		@NamedQuery(name = "Fluxo.obter.fluxos.Tarefa", query = "select new br.ufpi.models.vo.FluxoVO(fluxo.usuario.nome,fluxo.usuario.id,fluxo.dataRealizacao,fluxo.tempoRealizacao,fluxo.tipoConvidado) from Tarefa as tarefas "
+				+ "left join tarefas.fluxos as fluxo "
+				+ "where "
+				+ "tarefas.id= :tarefa " + "GROUP BY fluxo.usuario.id"),
 		/*
 		 * obtem o total de fluxo de uma tarefa
 		 * 
-		 * Lista de Condições * 
-		 * 1º usuarioCriador ser dono do teste
+		 * Lista de Condições * 1º usuarioCriador ser dono do teste
 		 * 
 		 * 2º tarefa pertencer ao teste
 		 * 
@@ -96,7 +105,14 @@ import javax.persistence.TemporalType;
 				+ "and tarefas.id= :tarefa "
 				+ "and t.usuarioCriador.id= :usuarioCriador "),
 		@NamedQuery(name = "Fluxo.quantidade.Acoes", query = "select new br.ufpi.models.vo.FluxoCountVO(flu.tempoRealizacao,(Select count(*) from Fluxo as flu2 left join flu2.acoes where flu2=flu)) "
-				+ "from Fluxo as flu left join flu.acoes where flu.tarefa.id= :tarefa and flu.tipoConvidado= :tipoConvidado Group by flu.id"),
+				+ "from Fluxo as flu left join flu.acoes where flu.tarefa.id= :tarefa and flu.tipoConvidado= :tipoConvidado and flu.isFinished= true Group by flu.id"),
+		/**
+		 * Obtem a quantidade de fluxos que foram concluidos ou nao
+		 * @author "Cleiton Moura"
+		 * 
+		 */
+		@NamedQuery(name = "Fluxo.realizados", query = "select  count(*) "
+				+ "from Fluxo as flu where flu.tarefa.id= :tarefa and flu.tipoConvidado= :tipoConvidado and flu.isFinished= :isFinished"),
 		@NamedQuery(name = "Fluxo.fluxosdoUsuario", query = "select new br.ufpi.models.vo.FluxoVO(flu.id,flu.dataRealizacao,flu.tempoRealizacao,flu.tipoConvidado,(Select count(*) from Fluxo as flu2 left join flu2.acoes where flu2=flu)) "
 				+ "from Fluxo as flu left join flu.acoes where flu.tarefa.id= :tarefa and flu.usuario.id= :usuario Group by flu.id"),
 		@NamedQuery(name = "Fluxo.getNomeUsuario", query = "Select fluxo.usuario.nome from Fluxo fluxo left join fluxo.usuario where fluxo.id= :fluxo") })
