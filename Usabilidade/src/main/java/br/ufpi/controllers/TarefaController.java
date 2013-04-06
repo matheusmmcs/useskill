@@ -411,6 +411,9 @@ public class TarefaController extends BaseController {
 				paginacao.getListObjects(), false);
 		estatistica.quantidadeUsuariosConvidados(testeId);
 		quantidadeUsuariosQueRealizaramOTeste(testeId);
+		List<Long> quantidadeAcoesETempoPorTipoAcao = tarefaRepository.quantidadeAcoesETempoPorTipoAcao(tarefaId, TipoConvidado.USER, "click");
+		double mediaAritimetica = estatistica.mediaAritimetica(quantidadeAcoesETempoPorTipoAcao);
+		System.out.println(mediaAritimetica);
 	}
 
 	@SuppressWarnings("unused")

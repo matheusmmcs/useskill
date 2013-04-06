@@ -186,6 +186,15 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 		return query.getResultList();
 	}
 
+	public List<Long> quantidadeAcoesETempoPorTipoAcao(Long tarefa,
+			TipoConvidado tipoConvidado, String actionType) {
+		Query query = entityManager.createNamedQuery("Fluxo.quantidade.Acoes.por.tipo");
+		query.setParameter("tarefa", tarefa);
+		query.setParameter("tipoConvidado", tipoConvidado);
+		query.setParameter("actionType", actionType);
+		return query.getResultList();
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<FluxoVO> getFluxoUsuario(Long tarefaId, Long usuarioId) {
@@ -212,8 +221,7 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 			boolean isFinished) {
 		HashMap<TipoConvidado, Long> map = new HashMap<TipoConvidado, Long>();
 		for (TipoConvidado tipoConvidado : TipoConvidado.values()) {
-			Query query = entityManager
-					.createNamedQuery("Fluxo.realizados");
+			Query query = entityManager.createNamedQuery("Fluxo.realizados");
 			query.setParameter("tarefa", tarefa);
 			query.setParameter("tipoConvidado", tipoConvidado);
 			query.setParameter("isFinished", isFinished);

@@ -174,4 +174,8 @@ public interface TarefaRepository {
 	 * @return s
 	 */
 	String getNameUsuario(Long fluxoId);
+
+	public List<Long> quantidadeAcoesETempoPorTipoAcao(Long tarefa,
+			TipoConvidado tipoConvidado, String actionType);
+
 }

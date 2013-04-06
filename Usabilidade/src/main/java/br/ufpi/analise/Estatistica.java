@@ -294,9 +294,7 @@ public class Estatistica {
 	 */
 	public void calculoTempoEAcoesFluxo(Long tarefaId, List<FluxoVO> fluxosVOs,
 			boolean isCalcularMediaAcoes) {
-		List<TipoConvidado> tiposConvidados = new ArrayList<TipoConvidado>();
-		tiposConvidados.addAll(Arrays.asList(TipoConvidado.values()));
-		for (TipoConvidado tipoConvidado : tiposConvidados) {
+		for (TipoConvidado tipoConvidado : TipoConvidado.values()) {
 			List<FluxoCountVO> quantidadeAcoes = tarefaRepository.quantidadeAcoesETempo(tarefaId, tipoConvidado);
 			HashMap<String, Object> calculosFluxo = this.calculosFluxo(
 					quantidadeAcoes, tipoConvidado, fluxosVOs,
@@ -307,5 +305,11 @@ public class Estatistica {
 			}
 		}
 
+	}
+	public void mediaTipoAcoesPorTarefa(Long tarefaId){
+		String typeAction[]= new String[]{"click","focusout","submit"};
+		for (TipoConvidado tipoConvidado : TipoConvidado.values()) {
+			
+		}
 	}
 }

@@ -106,6 +106,7 @@ import javax.persistence.TemporalType;
 				+ "and t.usuarioCriador.id= :usuarioCriador "),
 		@NamedQuery(name = "Fluxo.quantidade.Acoes", query = "select new br.ufpi.models.vo.FluxoCountVO(flu.tempoRealizacao,(Select count(*) from Fluxo as flu2 left join flu2.acoes where flu2=flu)) "
 				+ "from Fluxo as flu left join flu.acoes where flu.tarefa.id= :tarefa and flu.tipoConvidado= :tipoConvidado and flu.isFinished= true Group by flu.id"),
+		@NamedQuery(name = "Fluxo.quantidade.Acoes.por.tipo", query = "select  (Select count(*) from Fluxo as flu2 left join flu2.acoes as action where flu2=flu and action.sActionType= :actionType) from Fluxo as flu where flu.tarefa.id= :tarefa and flu.tipoConvidado= :tipoConvidado and flu.isFinished= true  Group by flu.id"),
 		/**
 		 * Obtem a quantidade de fluxos que foram concluidos ou nao
 		 * @author "Cleiton Moura"

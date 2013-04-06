@@ -185,7 +185,5 @@ public class Usuario implements Serializable {
 				confirmacaoEmail = Criptografa.criptografar(new Date().toString());
 			} while (getRepository().isContainConfirmacaoEmail(confirmacaoEmail));
 		}
-System.err.println("USER ID:"+ id);
-System.err.println("USER ID:"+ confirmacaoEmail);
 	}
 }
