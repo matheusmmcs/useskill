@@ -12,8 +12,8 @@ package br.ufpi.analise.enums;
  */
 public enum TipoMedia {
 	/**
-	 * Abaixo -> para quem fez rapido
-	 * ACIMA -> para quem demorou a responder
+	 * Abaixo -> para quem demorou a responder
+	 * Acima -> para quem fez rapido
 	 */
 	ABAIXO, MEDIA, ACIMA;
 }

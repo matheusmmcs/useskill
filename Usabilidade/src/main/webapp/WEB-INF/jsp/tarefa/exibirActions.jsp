@@ -1,5 +1,5 @@
 <head>
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/plugin/animatedtablesorter/style.css" type="text/css" />
+	<!-- <link rel="stylesheet" href="${pageContext.request.contextPath}/plugin/animatedtablesorter/style.css" type="text/css" />  -->
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/css/wysiwyg-color.css" type="text/css" />
 	<style>
 		#roteiro-text{
@@ -14,8 +14,8 @@
 	</style>
 </head>
 <body>
-<%@include file="../leftmenus/default.jsp"%>
-<div class="span9 container-right">
+
+<div class="span12 container-right">
 	<c:if test="${not empty errors}">
 		<div class="alert alert-error">
 			<c:forEach items="${errors}" var="error">
@@ -84,34 +84,35 @@
 				</div>
 				<hr />
 			</legend>
-
-			<table class="table table-striped table-bordered table-condensed tableSorter">
-				<thead>
-					<tr>
-						<th style="width: 155px"><fmt:message key="acao" /></th>
-						<th style="width: 155px"><fmt:message key="urldaacao" /></th>
-						<th style="width: 155px"><fmt:message key="tempo" /></th>
-						<th style="width: 155px"><fmt:message key="elemento" /></th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach items="${acoes}" var="acao">
+				<div class="row-fluid">
+					
+				<table class="table table-striped span12">
+					<thead>
 						<tr>
-							<td class="centertd">${acao.sActionType}</td>
-							<td class="centertd">${acao.sUrl}</td>
-							<td class="centertd">${acao.sTime}</td>
-							<td class="centertd">${acao.sContent}</td>
+							<th class=""><fmt:message key="acao" /></th>
+							<th class=""><fmt:message key="tempo" /></th>
+							<th class=""><fmt:message key="elemento" /></th>
+							<th class=""><fmt:message key="posicao" /></th>
+							<th class=""><fmt:message key="urldaacao" /></th>
+							<th class=""><fmt:message key="conteudo" /></th>
 						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						<c:forEach items="${acoes}" var="acao">
+							<tr>
+								<td class="centertd">${acao.sActionType}</td>
+								<td class="centertd">${acao.sTime}</td>
+								<td class="centertd">${acao.sTag} [${acao.sTagIndex}]</td>
+								<td class="centertd">${acao.sPosX}x${acao.sPosY}</td>
+								<td class="centertd" style="">${acao.sUrl}</td>
+								<td class="centertd">${acao.sContent}</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+					
+				</div>			
 		</fieldset>
 	</form>
 </div>
-<script src="${pageContext.request.contextPath}/plugin/animatedtablesorter/tsort.min.js"></script>
-<script type="text/javascript">
-	$(document).ready(function() {
-		$('table.tableSorter').tableSort();
-	});
-</script>
 </body>

@@ -159,12 +159,16 @@ public class Estatistica {
 				quantidadeUsuariosNAmediaTempo++;
 			}
 		}
+		int faixaMediaAbaixoAcao=(int) (mediaAcao - desvioPadraoAcao);
+		int faixaMediaAcimaAcao=(int) (mediaAcao + desvioPadraoAcao);
 		retorno.put(
 				"media_Acoes_" + tipoConvidado,
-				((mediaAcao - desvioPadraoAcao) + " - " + (mediaAcao + desvioPadraoAcao)));
+				(faixaMediaAbaixoAcao + " - " + faixaMediaAcimaAcao));
+		int faixaMediaAbaixo=(int) ((mediaTempo - desvioPadraoTempo)/1000);
+		int faixaMediaAcima=(int) ((mediaTempo + desvioPadraoTempo)/1000);
 		retorno.put(
 				"media_tempo_" + tipoConvidado,
-				(((mediaTempo - desvioPadraoTempo)/1000) + " Seg - " + ((mediaTempo + desvioPadraoTempo)/1000))+" Seg");
+				faixaMediaAbaixo+ " Seg  " + faixaMediaAcima+" Seg");
 		retorno.put("total_fluxos_" + tipoConvidado, fluxos.size());
 		retorno.put("total_fluxos_media_tempo_" + tipoConvidado,
 				quantidadeUsuariosNAmediaTempo);
@@ -202,13 +206,11 @@ public class Estatistica {
 			TipoConvidado tipoConvidado) {
 		for (FluxoVO fluxoVO : fluxos) {
 			if (fluxoVO.getTipoConvidado().equals(tipoConvidado)) {
-				if (fluxoVO.getTempoRealizacao() < mediaAritimetica
-						- desvioPadrao)
-					fluxoVO.setMediaTempo(TipoMedia.ACIMA);
+				if (fluxoVO.getTempoRealizacao() < mediaAritimetica - desvioPadrao)
+					fluxoVO.setMediaTempo(TipoMedia.ABAIXO);
 				else {
-					if (fluxoVO.getTempoRealizacao() > mediaAritimetica
-							+ desvioPadrao)
-						fluxoVO.setMediaTempo(TipoMedia.ABAIXO);
+					if (fluxoVO.getTempoRealizacao() > mediaAritimetica + desvioPadrao)
+						fluxoVO.setMediaTempo(TipoMedia.ACIMA);
 					else
 						fluxoVO.setMediaTempo(TipoMedia.MEDIA);
 				}
@@ -230,13 +232,12 @@ public class Estatistica {
 			TipoConvidado tipoConvidado) {
 		for (FluxoVO fluxoVO : fluxos) {
 			if (fluxoVO.getTipoConvidado().equals(tipoConvidado)) {
-				if (fluxoVO.getQuantidadeAcoes() < mediaAritimetica
-						- desvioPadrao)
-					fluxoVO.setMediaAcoes(TipoMedia.ACIMA);
+				if (fluxoVO.getQuantidadeAcoes() < mediaAritimetica			- desvioPadrao)
+					fluxoVO.setMediaAcoes(TipoMedia.ABAIXO);
 				else {
 					if (fluxoVO.getQuantidadeAcoes() > mediaAritimetica
 							+ desvioPadrao)
-						fluxoVO.setMediaAcoes(TipoMedia.ABAIXO);
+						fluxoVO.setMediaAcoes(TipoMedia.ACIMA);
 					else
 						fluxoVO.setMediaAcoes(TipoMedia.MEDIA);
 				}
