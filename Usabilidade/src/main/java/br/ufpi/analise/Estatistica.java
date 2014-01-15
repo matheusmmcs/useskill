@@ -168,7 +168,7 @@ public class Estatistica {
 		int faixaMediaAcima=(int) ((mediaTempo + desvioPadraoTempo)/1000);
 		retorno.put(
 				"media_tempo_" + tipoConvidado,
-				faixaMediaAbaixo+ " Seg  " + faixaMediaAcima+" Seg");
+				faixaMediaAbaixo+ " Seg  à " + faixaMediaAcima+" Seg");
 		retorno.put("total_fluxos_" + tipoConvidado, fluxos.size());
 		retorno.put("total_fluxos_media_tempo_" + tipoConvidado,
 				quantidadeUsuariosNAmediaTempo);
