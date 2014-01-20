@@ -1,18 +1,28 @@
 package br.ufpi.controllers;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import br.com.caelum.vraptor.Delete;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.interceptor.download.Download;
+import br.com.caelum.vraptor.interceptor.download.FileDownload;
 import br.com.caelum.vraptor.validator.Validations;
 import br.com.caelum.vraptor.view.Results;
 import br.ufpi.annotation.Logado;
@@ -20,6 +30,7 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.models.ElementosTeste;
+import br.ufpi.models.Fluxo;
 import br.ufpi.models.Pergunta;
 import br.ufpi.models.Questionario;
 import br.ufpi.models.Tarefa;
@@ -470,8 +481,9 @@ public class TesteController extends BaseController {
 		Gson gson = new Gson();
 		Teste teste = testeView.getTeste();
 		String elementosTeste2 = teste.getElementosTeste();
-		if(elementosTeste2==null)
+		if(elementosTeste2==null){
 			return null;
+		}
 		
 		Type listType = new TypeToken<List<ElementosTeste>>(){}.getType();
 		List<ElementosTeste> elementosTestes = (List<ElementosTeste>) gson.fromJson(elementosTeste2, listType);
@@ -502,10 +514,56 @@ public class TesteController extends BaseController {
 		testeRepository.update(teste);
 		result.use(Results.json()).from("sucesso").serialize();
 	}
+	
 	@Logado
 	@Get("teste/{idTeste}/analise")
 	public void analise(Long idTeste){
 		this.testePertenceUsuarioLogado(idTeste);
 		result.include("elementosTeste", organizarElementos());
+	}
+	
+	@Logado
+	@Get("teste/{idTeste}/relatorio/tarefas")
+	public Download relatorioTarefas(Long idTeste) throws IOException{
+		this.testePertenceUsuarioLogado(idTeste);
+		Teste teste = testeView.getTeste();
+		
+		HashMap<Usuario, String> mapUsuarioFluxo = new HashMap<Usuario, String>();
+		String titulos = new String();
+		String[] colunas;
+		
+		String fileName = "/UseSkill-Report-"+System.currentTimeMillis()+".csv";
+		CSVWriter writer = new CSVWriter(new FileWriter(fileName), ';');
+		titulos = "Usuários;";
+		
+		for (Tarefa tarefa : teste.getTarefas()) {
+			titulos += "TESTE"+tarefa.getId()+"-TYPE;"+"TESTE"+tarefa.getId()+"-ACTIONS;"+"TESTE"+tarefa.getId()+"-TIME;";
+			for(Fluxo fluxo : tarefa.getFluxos()){
+				Usuario usuario = fluxo.getUsuario();
+				String info = fluxo.getTipoConvidado() + ";" + fluxo.getAcoes().size() + ";" + fluxo.getTempoRealizacao()+ ";";
+				if(!mapUsuarioFluxo.containsKey(usuario)){
+					mapUsuarioFluxo.put(usuario, info);
+				}else{
+					mapUsuarioFluxo.put(usuario, mapUsuarioFluxo.get(usuario) + info);
+				}
+			}
+		}
+		
+		writer.writeNext(titulos.split(";"));
+		
+		//print map and reset
+		for(Map.Entry<Usuario, String> entry : mapUsuarioFluxo.entrySet()){
+			String linha = "Usuario "+entry.getKey().getId()+";"+entry.getValue();
+			colunas = linha.split(";");
+			writer.writeNext(colunas);
+		}
+		mapUsuarioFluxo.clear();
+		
+	    writer.close();
+	    
+	    File file = new File(fileName);
+	    String contentType = "csv";  
+	       
+	     return new FileDownload(file, contentType, fileName);
 	}
 }

@@ -50,7 +50,7 @@
 				</p>
 				<hr />
 			</legend>
-			
+			<a class="btn btn-primary" href="${pageContext.request.contextPath}/teste/${testeView.teste.id}/relatorio/tarefas">RELATORIO CSV</a>
 			<table class="table table-striped table-bordered table-condensed">
 				<thead>
 					<tr>
