@@ -1,5 +1,52 @@
-var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";
-//var domainUseSkill = "http://localhost:8080/Usabilidade";
+//var domainUseSkill = "http://www.killline.com/usabilidade";
+//var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";
+var domainUseSkill = "http://localhost:8080/Usabilidade";
+
+//----------------------------------------------------------------------------------------------------------------------------------------------
+//OMNIBOX
+var suggestions = {
+	settings : /settings|options|preferencias|opcoes/gi,
+	help: /h|help|ajuda/gi,
+}
+
+chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
+	var sugestoes = new Array(), sug;
+	//iterar sobre sugestoes
+	for(var x in suggestions){
+		sug = new String(suggestions[x]).replace(/\/gi|\/|\|/g," ");
+		if(sug.indexOf(text)!=-1){
+			sugestoes.push({content: x, description: text + " - " + x})
+		}
+	}
+	suggest(sugestoes);
+});
+
+chrome.omnibox.onInputEntered.addListener(function(text) {
+	omniboxEnteredFunction(text);
+});
+function omniboxEnteredFunction(text){
+	var search = text.toLowerCase().replace(/\s/,"");
+	if(suggestions.settings.test(text)){
+		openPage('options.html');
+		suggestions.settings.test(text);
+	}else if(suggestions.help.test(text)){
+		openPage('help.html');
+		suggestions.help.test(text);
+	}
+}
+
+function openPage(page) {
+    var options_url = chrome.extension.getURL(page);
+    console.log("Open: %s",page);
+    chrome.tabs.query({
+        url: options_url,
+    }, function(tabs) {
+        if (tabs.length)
+            chrome.tabs.update(tabs[0].id, {active:true});
+        else
+            chrome.tabs.create({url:options_url});
+    });
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -199,8 +246,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 				console.log("resposta: ");
 				console.log(request);
 				if(request.idPergunta){
-					var thisDomainUseSkill = domainUseSkill.replace("/Usabilidade","");
-					thisDomainUseSkill = thisDomainUseSkill.replace("/useskill","");
+					var thisDomainUseSkill = domainUseSkill.replace("/Usabilidade","").replace("/usabilidade","").replace("/useskill","").replace("/Useskill","");
 					$.ajax({
 						url : thisDomainUseSkill+request.url,
 						cache: false,
@@ -223,6 +269,32 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 					sendResponse({success: false});
 				}
 				break;
+		}
+	}else if(request.useskillsettings){
+		switch(request.useskillsettings){
+			case "getURL":
+				var urlUseSkillLocalStorage = localStorage["useskill_url"];
+				sendResponse({url: domainUseSkill});
+				break;
+			case "setURL":
+				var newValue = request.newValue;
+				if(newValue.slice(-1)=="/"){
+					newValue = newValue.slice(0,-1);
+				}
+				if(newValue){
+					localStorage["useskill_url"] = newValue;
+					domainUseSkill = newValue;
+					sendResponse({success: true});
+					var notification = webkitNotifications.createNotification(null, 'UseSkill', 'URL alterada com sucesso!');
+					notification.show();
+				}else{
+					sendResponse({success: false});
+				}
+				break;
+			case "omniboxEntered":
+				omniboxEnteredFunction(request.text);
+				break;
+				
 		}
 	}
 });

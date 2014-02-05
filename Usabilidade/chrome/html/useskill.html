@@ -97,6 +97,27 @@
 		//fadeOutUS($('#USacoesSection'));
 		//fadeOutUS($('#USroteiroSection'));
 		fadeOutUS($('#USpluginChrome'));
+
+		//"gambiarra" para corrigir id da pergunta nulo
+		var count = localStorage.getItem("countRefresh");
+		var idPerg = $('#pergid').val();
+		if(!count){
+			count = 0;
+			localStorage.setItem("countRefresh", count);
+		}
+		if(count<4){
+			if(!idPerg){
+				localStorage.setItem("countRefresh", count+1);
+				window.location.reload(true);
+			}
+		}else{
+			if(idPerg){
+				localStorage.setItem("countRefresh", 0);
+			}else{
+				console.error("Error: ID null;");
+			}
+
+		}
 	}
 
 	$(document).ready(function(){

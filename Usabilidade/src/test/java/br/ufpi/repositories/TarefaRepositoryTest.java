@@ -1,6 +1,7 @@
 package br.ufpi.repositories;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
@@ -138,6 +139,20 @@ public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 	@Override
 	public String getTitulo(Long idTarefa, Long idTeste) {
 		return tarefaRepositoryImpl.getTitulo(idTarefa, idTeste);
+	}
+
+	@Override
+	public Map<TipoConvidado, Long> quantidadeFluxos(Long tarefa,
+			boolean isFinished) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Long> quantidadeAcoesETempoPorTipoAcao(Long tarefa,
+			TipoConvidado tipoConvidado, String actionType) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

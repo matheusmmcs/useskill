@@ -1,6 +1,18 @@
+/*
+Melhorias:
+Capturar o tamanho da janela para poder comparar o posicionamento dos itens (posX e posY);
+Capturar eventos de rolagem de barra -> content = posiçao no eixo y;
+Capturar carregamento de páginas -> content = Título da página;
+	Podemos pensar em modificações para agregar grandes mudanças assíncronas em app ricas;
+	Capturar eventos referentes a retorno JSON ou alteração no DOM (inserção/remoção de nós);
+*/
+
 (function($){
 	$(document).ready(function(){
 		
+		//compara a ultima acao com a realizada, evitando duplicacao de acoes
+		ultimaAcao = null;
+
 		var actionCapt = {
   			CLICK : "click", 
   			FOCUSOUT: "focusout", 
@@ -11,7 +23,7 @@
   			PULAR : "pular"
 		};
 
-		function Action(action, time, url, content, tag, tagIndex, posX, posY) {
+		function Action(action, time, url, content, tag, tagIndex, posX, posY, viewportX, viewportY, useragent) {
 			this.sActionType = action;
 			this.sTime = time;
 			this.sUrl = url;
@@ -20,6 +32,9 @@
 			this.sTagIndex = tagIndex;
 			this.sPosX = posX;
 			this.sPosY = posY;
+			this.sViewportX = viewportX;
+			this.sViewportY = viewportY;
+			this.sUserAgent = useragent;
 		}
 
 		console.log("capt -> localStorage");
@@ -46,9 +61,22 @@
 				if(
 					!(action == actionCapt.FOCUSOUT && conteudo == "")//focusout em campo vazio, não preencheu nada
 				){
-					var acao = new Action(action, new Date().getTime(), getUrl(), conteudo, target.tagName, $(tagName).index(target), e.pageX, e.pageY);
-					addAcao(acao);
-					
+					var acao = new Action(action, new Date().getTime(), getUrl(), conteudo, target.tagName, $(tagName).index(target), e.pageX, e.pageY, $(window).width(), $(window).height(), navigator.userAgent);
+					//verificar se a acao eh semelhante com a acao passada
+					if(ultimaAcao){
+						if(ultimaAcao.sTime && acao.sTime && acao.sTime - ultimaAcao.sTime > 10){
+							ultimaAcao = acao;
+							addAcao(acao);
+						}else{
+							ultimaAcao = acao;
+							console.log("Evitou repetição:");
+							console.log(ultimaAcao);
+						}
+					}else{
+						//primeira ação
+						ultimaAcao = acao;
+						addAcao(acao);
+					}
 				}
 			}
 		}

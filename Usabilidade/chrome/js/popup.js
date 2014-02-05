@@ -1,7 +1,8 @@
 (function($){
-	chrome.extension.sendRequest({useskill: "getDomain"},function(response) {
+	chrome.extension.sendRequest({useskill: "getDomain"}, function(response) {
 		var domainUseSkill;
-		if(response.domain){
+		
+		if(response && response.domain){
 			domainUseSkill = response.domain;
 		}else{
 			
@@ -19,6 +20,7 @@
 			},
 			error: function(jqXHR, status, err){
 				console.log(domainUseSkill);
+				chrome.tabs.create({url: "options.html"});
 				var notification = webkitNotifications.createHTMLNotification('html/notifications/404.html');
 				notification.show();
 			}
