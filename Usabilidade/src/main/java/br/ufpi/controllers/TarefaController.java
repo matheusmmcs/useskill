@@ -28,6 +28,8 @@ import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.TipoConvidado;
+import br.ufpi.models.roteiro.ValorRoteiro;
+import br.ufpi.models.roteiro.VariavelRoteiro;
 import br.ufpi.models.vo.ConvidadoCount;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
@@ -35,6 +37,8 @@ import br.ufpi.repositories.ComentarioRepository;
 import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
+import br.ufpi.repositories.ValorRoteiroRepository;
+import br.ufpi.repositories.VariavelRoteiroRepository;
 import br.ufpi.util.EnumObjetoSalvo;
 import br.ufpi.util.GsonElements;
 import br.ufpi.util.Paginacao;
@@ -51,6 +55,8 @@ public class TarefaController extends BaseController {
 	private final FluxoRepository fluxoRepository;
 	private final TesteSessionPlugin testeSessionPlugin;
 	private final Estatistica estatistica;
+	private final VariavelRoteiroRepository variavelRoteiroRepository;
+	private final ValorRoteiroRepository valorRoteiroRepository;
 
 	public TarefaController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
@@ -58,7 +64,9 @@ public class TarefaController extends BaseController {
 			TarefaRepository tarefaRepository, TesteRepository testeRepository,
 			FluxoRepository fluxoIdealRepository,
 			TesteSessionPlugin testeSessionPlugin, Estatistica estatistica,
-			ComentarioRepository comentarioRepository) {
+			ComentarioRepository comentarioRepository,
+			VariavelRoteiroRepository variavelRoteiroRepository,
+			ValorRoteiroRepository valor) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
@@ -66,6 +74,8 @@ public class TarefaController extends BaseController {
 		this.testeSessionPlugin = testeSessionPlugin;
 		this.estatistica = estatistica;
 		this.comentarioRepository = comentarioRepository;
+		this.variavelRoteiroRepository = variavelRoteiroRepository;
+		this.valorRoteiroRepository = valor;
 	}
 
 	/**
@@ -88,21 +98,60 @@ public class TarefaController extends BaseController {
 
 	@Logado
 	@Post("teste/salvar/tarefa")
-	public void salvarTarefa(Tarefa tarefa, Long idTeste) {
+	public void salvarTarefa(Tarefa tarefa, Long idTeste, Collection<String> variaveis) {
 		validateComponente.validarString(tarefa.getNome(), "tarefa.titulo");
 		validateComponente.validarString(tarefa.getRoteiro(), "tarefa.roteito");
 		validateComponente.validarString(tarefa.getUrlInicial(),
 				"tarefa.urlInicial");
 		validator.onErrorRedirectTo(this).criarTarefa(idTeste, tarefa);
+		
+		
 		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
 		Teste teste = testeView.getTeste();
 		tarefa.setTeste(teste);
 		tarefaRepository.create(tarefa);
-		Teste testeUpdate = GsonElements.addTarefa(tarefa.getId(),
-				testeView.getTeste());
+		
+		if(variaveis != null){
+			for(String var : variaveis){
+				
+				String[] arrayVariaveis = var.split(":");
+				if(arrayVariaveis != null && arrayVariaveis.length == 2){
+					String variavel = arrayVariaveis[0];
+					String[] valores = arrayVariaveis[1].split(";");
+					if(variavel != null && !variavel.isEmpty() && valores != null & valores.length > 0){
+						
+						//instanciando variavel a ser iterada
+						VariavelRoteiro variavelDoRoteiro = new VariavelRoteiro();
+						variavelDoRoteiro.setTarefa(tarefa);
+						variavelDoRoteiro.setVariavel(variavel);
+						variavelRoteiroRepository.create(variavelDoRoteiro);
+						
+						for(String val : valores){
+							if(!val.isEmpty()){
+								
+								//cadastrando valores para a variavel definida
+								ValorRoteiro valorDaVariavel = new ValorRoteiro();
+								valorDaVariavel.setValor(val);
+								valorDaVariavel.setVariavelRoteiro(variavelDoRoteiro);
+								valorDaVariavel.setEmUtilizacao(false);
+								
+								valorRoteiroRepository.create(valorDaVariavel);
+								System.out.println("Variavel: "+variavel+" : "+val);
+							}
+						}
+						
+					}
+					
+				}else{
+					System.out.println("Variavel invalida: "+var);
+				}
+				
+			}
+		}
+		
+		Teste testeUpdate = GsonElements.addTarefa(tarefa.getId(), testeView.getTeste());
 		testeRepository.update(testeUpdate);
-		result.redirectTo(TesteController.class).passo2(
-				testeView.getTeste().getId());
+		result.redirectTo(TesteController.class).passo2(testeView.getTeste().getId());
 	}
 
 	/**
@@ -128,8 +177,7 @@ public class TarefaController extends BaseController {
 		if (isErro) {
 			return tarefa;
 		}
-		Tarefa tarefaPertenceTeste = this.tarefaPertenceTeste(idTeste,
-				tarefa.getId());
+		Tarefa tarefaPertenceTeste = this.tarefaPertenceTeste(idTeste, tarefa.getId());
 		testeView.setTeste(testeRepository.find(idTeste));
 		return tarefaPertenceTeste;
 	}

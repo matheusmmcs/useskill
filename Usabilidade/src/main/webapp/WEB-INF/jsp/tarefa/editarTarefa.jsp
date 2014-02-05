@@ -1,3 +1,5 @@
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <head>
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/css/prettify.css"></link>
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/src/bootstrap-wysihtml5.css"></link>
@@ -42,7 +44,9 @@
 				</p>
 				<hr />
 			</legend>
+			
 			<input type="hidden" name="tarefa.id" value="${tarefa.id}" />
+			
 			<div class="control-group">
 				<label class="control-label" for="input01"><fmt:message
 						key="tarefa.titulo" />*</label>
@@ -51,14 +55,7 @@
 						class="span6" />
 				</div>
 			</div>
-			<div class="control-group">
-				<label class="control-label" for="input01"><fmt:message
-						key="tarefa.roteito" />*</label>
-				<div class="controls">
-					<textarea rows="10" cols="" name="tarefa.roteiro"
-						class="span6 textarea"> ${tarefa.roteiro } </textarea>
-				</div>
-			</div>
+			
 			<div class="control-group">
 				<label class="control-label" for="input01"><fmt:message
 						key="tarefa.urlInicial" />*</label>
@@ -67,6 +64,66 @@
 						name="tarefa.urlInicial" class="span6" />
 				</div>
 			</div>
+			
+			<div class="control-group">
+				<label class="control-label" for="input01"><fmt:message
+						key="tarefa.roteito" />*</label>
+				<div class="controls">
+					<textarea rows="10" cols="" name="tarefa.roteiro"
+						class="span6 textarea"> ${tarefa.roteiro } </textarea>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label" for="input01">
+					<fmt:message key="tarefa.valores.dinamicos" />*
+				</label>
+				<div class="controls">
+	                <input id="variavel" class="span2" type="text" style="margin-right: 20px;" placeholder="<fmt:message key="tarefa.variavel" />"/>
+	                :
+	                <input id="valor" class="span3"  type="text" style="margin-left: 20px;" placeholder="<fmt:message key="tarefa.valores.separados" />"/>	                
+	                <a id="addVariavel" class="btn" style="margin-left: 10px;" href="#">
+						<i class="icon-plus"></i> 
+					</a> 
+        	    </div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label"></label>
+				<div class="controls">
+					<div class="span6" style="margin-left: 0;">
+						<table class="table table-bordered" id="tabela_valores_dinamicos" style="padding-top: 0;">
+							<thead>
+								<tr>
+									<th width="33%"><fmt:message key="tarefa.variavel" /></th>
+									<th width="60%"><fmt:message key="tarefa.valores" /></th>
+									<th width="7%"><fmt:message key="tarefa.acoes" /></th>
+								</tr>
+							</thead>
+							<tbody count-tr="${fn:length(tarefa.variaveisRoteiro)}">
+								
+								<c:forEach items="${tarefa.variaveisRoteiro}" var="v">
+									<td>${v.variavel}</td>
+									<td>
+										<c:forEach items="${v.valores}" var="valor">
+											${valor.valor}<br/>
+										</c:forEach>
+									</td>
+									<td>
+										<a class="btn btn-danger valor-remove" href="#">
+											<i class="icon-remove icon-white"></i>
+										</a> 
+										<input type="hidden" name="variaveis[]" value="'+ variavel + ":" + valor +'" />
+									</td>
+								</c:forEach>
+								
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			
+			
 			<input type="hidden" name=idTeste value=${testeView.teste.id }>
 
 			<div class="form-actions">
@@ -77,6 +134,8 @@
 		</fieldset>
 	</form>
 </div>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/variaveis_roteiro.js"></script>
 
 <script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/js/wysihtml5-0.3.0.js"></script>
 <script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/js/prettify.js"></script>

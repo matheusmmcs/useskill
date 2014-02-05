@@ -15,5 +15,7 @@
     <class>br.ufpi.models.Usuario</class>
     <class>br.ufpi.models.Convidado</class>
     <class>br.ufpi.models.UsuarioTestePK</class>
+    <class>br.ufpi.models.roteiro.ValorRoteiro</class>
+    <class>br.ufpi.models.roteiro.VariavelRoteiro</class>
   </persistence-unit>
 </persistence>

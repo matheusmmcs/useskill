@@ -233,4 +233,8 @@ public class LoginController extends BaseController {
 			validator.onErrorForwardTo(this).reenviaEmailConfirmacao(email);
 		}
 	}
+	
+	public static void main(String[] args) {
+		System.out.println(Criptografa.criptografar("java"));
+	}
 }

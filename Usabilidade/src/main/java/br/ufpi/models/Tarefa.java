@@ -21,6 +21,8 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import br.ufpi.models.roteiro.VariavelRoteiro;
+
 /**
  * 
  * @author Cleiton
@@ -58,8 +60,12 @@ public class Tarefa implements Serializable {
 	@OneToMany(mappedBy="tarefa",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
 	private List<Comentario> comentarios;
 	
+	@OneToMany(mappedBy="tarefa",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+	private List<VariavelRoteiro> variaveisRoteiro;
+	
 	@ManyToOne(cascade = CascadeType.REFRESH)
 	private Teste teste;
+	
 	@Column(nullable = false)
 	@NotBlank
 	private String urlInicial;
@@ -138,6 +144,20 @@ public class Tarefa implements Serializable {
 	 */
 	public void setComentarios(List<Comentario> comentarios) {
 		this.comentarios = comentarios;
+	}
+
+	/**
+	 * @return the variaveisRoteiro
+	 */
+	public List<VariavelRoteiro> getVariaveisRoteiro() {
+		return variaveisRoteiro;
+	}
+
+	/**
+	 * @param variaveisRoteiro the variaveisRoteiro to set
+	 */
+	public void setVariaveisRoteiro(List<VariavelRoteiro> variaveisRoteiro) {
+		this.variaveisRoteiro = variaveisRoteiro;
 	}
 
 	

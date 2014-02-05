@@ -52,28 +52,65 @@
         	</div>
         	
         	<div class="control-group">
+            	<label class="control-label" for="input01"><fmt:message key="tarefa.urlInicial" /> *</label>
+            	<div class="controls">
+	                <input type="text" value="${tarefa.urlInicial }" name="tarefa.urlInicial" class="span6"/> 
+            	</div>
+        	</div>
+        	
+        	<div class="control-group">
             	<label class="control-label" for="input01"><fmt:message key="tarefa.roteito" />*</label>
             	<div class="controls">
 	                <textarea rows="10" cols="" name="tarefa.roteiro" class="span6 textarea"> ${tarefa.roteiro } </textarea>
         	    </div>
     	    </div>
     	    
-        	<div class="control-group">
-            	<label class="control-label" for="input01"><fmt:message key="tarefa.urlInicial" /> *</label>
-            	<div class="controls">
-	                <input type="text" value="${tarefa.urlInicial }" name="tarefa.urlInicial" class="span6"/> 
-            	</div>
-        	</div>
+    	    <div class="control-group">
+				<label class="control-label" for="input01">
+					<fmt:message key="tarefa.valores.dinamicos" />*
+				</label>
+				<div class="controls">
+	                <input id="variavel" class="span2" type="text" style="margin-right: 20px;" placeholder="<fmt:message key="tarefa.variavel" />"/>
+	                :
+	                <input id="valor" class="span3"  type="text" style="margin-left: 20px;" placeholder="<fmt:message key="tarefa.valores.separados" />"/>	                
+	                <a id="addVariavel" class="btn" style="margin-left: 10px;" href="#">
+						<i class="icon-plus"></i> 
+					</a> 
+        	    </div>
+			</div>
+			
+			
+			<div class="control-group">
+				<label class="control-label"></label>
+				<div class="controls">
+					<div class="span6" style="margin-left: 0;">
+						<table class="table table-bordered hide" id="tabela_valores_dinamicos" style="padding-top: 0;">
+							<thead>
+								<tr>
+									<th width="33%"><fmt:message key="tarefa.variavel" /></th>
+									<th width="60%"><fmt:message key="tarefa.valores" /></th>
+									<th width="7%"><fmt:message key="tarefa.acoes" /></th>
+								</tr>
+							</thead>
+							<tbody>
+								
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
 
 			<input type="hidden" name=idTeste value=${testeView.teste.id }>
         	<div class="form-actions">
             	<input type="submit" value="<fmt:message key="tarefa.criar" />" 
-            	name="criarTarefa" title="<fmt:message key="tarefa.criar" />" 
-            	class="btn btn-primary" style="float: right; margin-right: 60px"/>
+            		name="criarTarefa" title="<fmt:message key="tarefa.criar" />" 
+            		class="btn btn-primary" style="float: right; margin-right: 60px"/>
         	</div>
 		</fieldset>
 	</form>
 </div>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/variaveis_roteiro.js"></script>
 
 <script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/js/wysihtml5-0.3.0.js"></script>
 <script src="${pageContext.request.contextPath}/plugin/wysiwig/bootstrap/libs/js/prettify.js"></script>
