@@ -1,6 +1,7 @@
 package br.ufpi.controllers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
@@ -19,11 +20,15 @@ import br.ufpi.models.Fluxo;
 import br.ufpi.models.RespostaAlternativa;
 import br.ufpi.models.RespostaEscrita;
 import br.ufpi.models.TipoConvidado;
+import br.ufpi.models.enums.SituacaoDeUsoEnum;
+import br.ufpi.models.roteiro.ValorRoteiro;
 import br.ufpi.models.vo.TesteParticiparVO;
 import br.ufpi.repositories.ConvidadoRepository;
 import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.RespostaAlternativaRepository;
 import br.ufpi.repositories.RespostaEscritaRepository;
+import br.ufpi.repositories.ValorRoteiroRepository;
+import br.ufpi.repositories.Implement.ValorRoteiroRepositoryImpl;
 
 /**
  * @author Cleiton
@@ -37,6 +42,8 @@ public class TesteParticiparController extends BaseController {
 	private final FluxoRepository fluxoRepository;
 	private final RespostaAlternativaRepository respostaAlternativaRepository;
 	private final RespostaEscritaRepository respostaEscritaRepository;
+	private final ValorRoteiroRepository valorRepository;
+	
 
 	public TesteParticiparController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
@@ -45,13 +52,15 @@ public class TesteParticiparController extends BaseController {
 			TesteSessionPlugin testeSessionPlugin,
 			RespostaAlternativaRepository alternativaRepository,
 			RespostaEscritaRepository escritaRepository,
-			FluxoRepository fluxoRepository) {
+			FluxoRepository fluxoRepository,
+			ValorRoteiroRepository valorRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.convidadoRepository = convidadoRepository;
 		this.testeSessionPlugin = testeSessionPlugin;
 		this.respostaAlternativaRepository = alternativaRepository;
 		this.respostaEscritaRepository = escritaRepository;
 		this.fluxoRepository = fluxoRepository;
+		this.valorRepository = valorRepository;
 	}
 
 	/**
@@ -137,12 +146,18 @@ public class TesteParticiparController extends BaseController {
 	public void removerObjetos() {
 		boolean sucesso = false;
 		if(testeSessionPlugin!=null){
+			
+			List<ValorRoteiro> valoresEmUtilizacao = valorRepository.findValorByTesteAndUsuarioInSituacao(usuarioLogado.getUsuario().getId(), testeSessionPlugin.getIdTeste(), SituacaoDeUsoEnum.EM_UTILIZACAO);
+			for(ValorRoteiro valor : valoresEmUtilizacao){
+				valor.setSituacaoDeUso(SituacaoDeUsoEnum.ADIADO);
+				valorRepository.update(valor);
+			}
+			
 			if(testeSessionPlugin.getObjetosSalvos()!=null){
 				for (ObjetoSalvo objetoSalvo : testeSessionPlugin.getObjetosSalvos()) {
 					switch (objetoSalvo.getEnumObjetoSalvo()) {
 					case FLUXO:
-						Fluxo fluxo = new Fluxo();
-						fluxo.setId(objetoSalvo.getId());
+						Fluxo fluxo = fluxoRepository.find(objetoSalvo.getId());
 						fluxoRepository.destroy(fluxo);
 						break;
 					case OBJETIVA:

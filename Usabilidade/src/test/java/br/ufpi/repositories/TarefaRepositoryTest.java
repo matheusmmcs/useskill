@@ -11,6 +11,7 @@ import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.TipoConvidado;
+import br.ufpi.models.Usuario;
 import br.ufpi.models.vo.FluxoCountVO;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
@@ -43,8 +44,8 @@ public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 	}
 
 	@Override
-	public String getRoteiro(Long idTarefa, Long idTeste) {
-		return tarefaRepositoryImpl.getRoteiro(idTarefa, idTeste);
+	public String getRoteiro(Long idTarefa, Long idTeste, Usuario usuario) {
+		return tarefaRepositoryImpl.getRoteiro(idTarefa, idTeste, usuario);
 	}
 
 	@Override

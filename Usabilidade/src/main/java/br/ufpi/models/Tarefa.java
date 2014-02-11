@@ -32,6 +32,7 @@ import br.ufpi.models.roteiro.VariavelRoteiro;
 @NamedQueries({
 		@NamedQuery(name = "Tarefa.pertence.Teste.Usuario", query = "select t from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa and t.teste.usuarioCriador.id= :usuario "),
 		@NamedQuery(name = "Tarefa.pertence.Teste.GetRoteiro", query = "select new java.lang.String(t.roteiro) from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa"),
+		@NamedQuery(name = "Tarefa.pertence.Teste.GetVariaveis", query = "select t.variaveisRoteiro from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa"),
 		@NamedQuery(name = "Tarefa.pertence.Teste.GetNome", query = "select new java.lang.String(t.nome) from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa"),
 		@NamedQuery(name = "Tarefa.pertence.Teste.GetTarefaVO", query = "select new br.ufpi.models.vo.TarefaVO(t.roteiro,t.urlInicial,t.nome) from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa"),
 		@NamedQuery(name = "Tarefa.pertence.Teste.Liberado.Usuario", query = "select t from Tarefa as t left join t.teste where t.teste.id= :teste and t.id= :tarefa and t.teste.usuarioCriador.id= :usuario and t.teste.liberado= true"),

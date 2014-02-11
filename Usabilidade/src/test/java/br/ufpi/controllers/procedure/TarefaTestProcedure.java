@@ -27,26 +27,25 @@ import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.repositories.UsuarioRepository;
+import br.ufpi.repositories.VariavelRoteiroRepository;
 import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 import br.ufpi.repositories.Implement.TesteRepositoryImpl;
+import br.ufpi.repositories.Implement.ValorRoteiroRepositoryImpl;
+import br.ufpi.repositories.Implement.VariavelRoteiroRepositoryImpl;
 
 public class TarefaTestProcedure {
 	public static TarefaController newInstanceTarefaController(
 			EntityManager entityManager, MockResult result) {
 		TesteView testeView = new TesteView();
 		JSR303MockValidator validator = new JSR303MockValidator();
-		UsuarioRepository usuarioRepositoryImpl = UsuarioTestProcedure
-				.newInstanceUsuarioRepository(entityManager);
+		UsuarioRepository usuarioRepositoryImpl = UsuarioTestProcedure.newInstanceUsuarioRepository(entityManager);
 		UsuarioLogado usuarioLogado = new UsuarioLogado(usuarioRepositoryImpl);
-		ValidateComponente validateComponente = new ValidateComponente(
-				validator);
+		ValidateComponente validateComponente = new ValidateComponente(validator);
 		TarefaRepository tarefaRepository = newInstanceTarefaRepository(entityManager);
-		TesteRepository testeRepository = TesteTestProcedure
-				.newInstanceTesteRepository(entityManager);
+		TesteRepository testeRepository = TesteTestProcedure.newInstanceTesteRepository(entityManager);
 	
-		FluxoRepository fluxoRepository = new FluxoRepositoryImpl(
-				entityManager);
+		FluxoRepository fluxoRepository = new FluxoRepositoryImpl(entityManager);
 		TesteSessionPlugin testeSessionPlugin= new TesteSessionPlugin();
 		Estatistica estatistica= new Estatistica(testeRepository, result, tarefaRepository);
 		ComentarioRepository comentario = new ComentarioRepository() {
@@ -81,7 +80,9 @@ public class TarefaTestProcedure {
 				
 			}
 		};
-		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin,estatistica, comentario);
+		ValorRoteiroRepositoryImpl valorRoteiroRepository = new ValorRoteiroRepositoryImpl(entityManager);
+		VariavelRoteiroRepository variavelRoteiroRepository = new VariavelRoteiroRepositoryImpl(entityManager);
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin,estatistica, comentario, variavelRoteiroRepository, valorRoteiroRepository);
 		return controller;
 	}
 
@@ -136,7 +137,9 @@ public class TarefaTestProcedure {
 				
 			}
 		};
-		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin,estatistica, comentario);
+		ValorRoteiroRepositoryImpl valorRoteiroRepository = new ValorRoteiroRepositoryImpl(entityManager);
+		VariavelRoteiroRepository variavelRoteiroRepository = new VariavelRoteiroRepositoryImpl(entityManager);
+		TarefaController controller = new TarefaController(result, validator, testeView, usuarioLogado, validateComponente, tarefaRepository, testeRepository, fluxoRepository, testeSessionPlugin,estatistica, comentario, variavelRoteiroRepository, valorRoteiroRepository);
 		return controller;
 	}
 

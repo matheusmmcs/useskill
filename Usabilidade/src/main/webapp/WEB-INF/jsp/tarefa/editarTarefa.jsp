@@ -103,18 +103,20 @@
 							<tbody count-tr="${fn:length(tarefa.variaveisRoteiro)}">
 								
 								<c:forEach items="${tarefa.variaveisRoteiro}" var="v">
-									<td>${v.variavel}</td>
-									<td>
-										<c:forEach items="${v.valores}" var="valor">
-											${valor.valor}<br/>
-										</c:forEach>
-									</td>
-									<td>
-										<a class="btn btn-danger valor-remove" href="#">
-											<i class="icon-remove icon-white"></i>
-										</a> 
-										<input type="hidden" name="variaveis[]" value="'+ variavel + ":" + valor +'" />
-									</td>
+									<tr id="${fn:toUpperCase(v.variavel)}">
+										<td>${v.variavel}</td>
+										<td>
+											<c:forEach items="${v.valores}" var="valor">
+												${valor.valor}<br/>
+											</c:forEach>
+										</td>
+										<td>
+											<a class="btn btn-danger valor-remove" href="#">
+												<i class="icon-remove icon-white"></i>
+											</a> 
+											<input type="hidden" name="variaveis[]" value="${v.variavel}:<c:forEach items="${v.valores}" var="valor">${valor.valor};</c:forEach>" />
+										</td>
+									</tr>
 								</c:forEach>
 								
 							</tbody>

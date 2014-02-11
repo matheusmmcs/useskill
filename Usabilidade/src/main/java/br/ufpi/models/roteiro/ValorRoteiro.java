@@ -8,6 +8,8 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,6 +22,8 @@ import javax.persistence.OneToOne;
 import org.hibernate.validator.constraints.NotBlank;
 
 import br.ufpi.models.Fluxo;
+import br.ufpi.models.Usuario;
+import br.ufpi.models.enums.SituacaoDeUsoEnum;
 
 /**
  * @author Matheus
@@ -27,14 +31,18 @@ import br.ufpi.models.Fluxo;
  */
 @Entity
 @NamedQueries({
-	@NamedQuery(name = "ValorRoteiro.findAll", query = "SELECT v FROM ValorRoteiro v"),
-	@NamedQuery(name = "ValorRoteiro.findById", query = "SELECT v FROM ValorRoteiro v WHERE v.id = :id"),
-	@NamedQuery(name = "ValorRoteiro.findByValor", query = "SELECT v FROM ValorRoteiro v WHERE v.valor = :valor"),
-	@NamedQuery(name = "ValorRoteiro.findByFluxo", query = "SELECT v FROM ValorRoteiro v WHERE v.fluxo = :fluxo"),
-	@NamedQuery(name = "ValorRoteiro.findByVariavelRoteiro", query = "SELECT v FROM ValorRoteiro v WHERE v.variavelRoteiro = :variavelRoteiro"),
+	@NamedQuery(name = "ValorRoteiro.findAll", query = "SELECT v FROM ValorRoteiro v WHERE v.deleted = false"),
+	@NamedQuery(name = "ValorRoteiro.findById", query = "SELECT v FROM ValorRoteiro v WHERE v.id = :id AND v.deleted = false"),
+	@NamedQuery(name = "ValorRoteiro.findByValor", query = "SELECT v FROM ValorRoteiro v WHERE v.valor = :valor AND v.deleted = false"),
+	@NamedQuery(name = "ValorRoteiro.findByVariavel.Situacao", query = "SELECT v FROM ValorRoteiro v WHERE v.variavelRoteiro.id = :variavel AND v.situacaoDeUso = :situacao AND v.deleted = false"),
+	@NamedQuery(name = "ValorRoteiro.findByVariavel.Usuario.Situacao", query = "SELECT v FROM ValorRoteiro v WHERE v.variavelRoteiro.id = :variavel AND v.usuario.id = :usuario AND v.situacaoDeUso = :situacao AND v.deleted = false"),
+	@NamedQuery(name = "ValorRoteiro.findByTarefa.Usuario.Situacao", query = "SELECT v FROM ValorRoteiro v WHERE v.variavelRoteiro.tarefa.id = :tarefa AND v.usuario.id = :usuario AND v.situacaoDeUso = :situacao AND v.deleted = false"),
+	@NamedQuery(name = "ValorRoteiro.findByTeste.Usuario.Situacao", query = "SELECT v FROM ValorRoteiro v WHERE v.variavelRoteiro.tarefa.teste.id = :teste AND v.usuario.id = :usuario AND v.situacaoDeUso = :situacao AND v.deleted = false"),
+	@NamedQuery(name = "ValorRoteiro.findByFluxo", query = "SELECT v FROM ValorRoteiro v WHERE v.fluxo = :fluxo AND v.deleted = false"),
+	@NamedQuery(name = "ValorRoteiro.findByVariavelRoteiro", query = "SELECT v FROM ValorRoteiro v WHERE v.variavelRoteiro = :variavelRoteiro AND v.deleted = false"),
 
-	@NamedQuery(name = "ValorRoteiro.findByVariavelRoteiro.Count", query = "SELECT count(*) FROM ValorRoteiro v WHERE v.variavelRoteiro = :variavelRoteiro"),
-	@NamedQuery(name = "ValorRoteiro.findByVariavelRoteiro.Livre.Count", query = "SELECT count(*) FROM ValorRoteiro v WHERE v.variavelRoteiro = :variavelRoteiro AND v.emUtilizacao = false AND v.fluxo IS NULL")
+	@NamedQuery(name = "ValorRoteiro.findByVariavelRoteiro.Count", query = "SELECT count(*) FROM ValorRoteiro v WHERE v.variavelRoteiro = :variavelRoteiro AND v.deleted = false"),
+	@NamedQuery(name = "ValorRoteiro.findByVariavelRoteiro.Livre.Count", query = "SELECT count(*) FROM ValorRoteiro v WHERE v.variavelRoteiro = :variavelRoteiro AND v.fluxo IS NULL AND v.situacaoDeUso = br.ufpi.models.enums.SituacaoDeUsoEnum.LIVRE AND v.deleted = false")
 })
 public class ValorRoteiro implements Serializable {
 
@@ -49,10 +57,16 @@ public class ValorRoteiro implements Serializable {
 	private String valor;
 	
 	/**
-	 * Boolean para garantir que não haja outro fluxo utilizando este valor
+	 * Situacao para garantir que não haja outro fluxo utilizando este valor
 	 */
-	@NotBlank
-	private boolean emUtilizacao = false;
+	@Enumerated(EnumType.STRING)
+	private SituacaoDeUsoEnum situacaoDeUso = SituacaoDeUsoEnum.LIVRE;
+	
+	/**
+	 * Caso não esteja livre, buscar por algum em execução por esse usuario
+	 */
+	@OneToOne
+	private Usuario usuario;
 	
 	/**
 	 * Utilizado para determinar se já foi utilizado em algum fluxo ou não
@@ -62,7 +76,9 @@ public class ValorRoteiro implements Serializable {
 	
 	@ManyToOne(optional = false, cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	private VariavelRoteiro variavelRoteiro;
-
+	
+	@Column(nullable = false)
+	private boolean deleted = false;
 
 	public Long getId() {
 		return id;
@@ -78,14 +94,6 @@ public class ValorRoteiro implements Serializable {
 
 	public void setValor(String valor) {
 		this.valor = valor;
-	}
-
-	public boolean isEmUtilizacao() {
-		return emUtilizacao;
-	}
-
-	public void setEmUtilizacao(boolean emUtilizacao) {
-		this.emUtilizacao = emUtilizacao;
 	}
 
 	public Fluxo getFluxo() {
@@ -108,6 +116,48 @@ public class ValorRoteiro implements Serializable {
 	 */
 	public void setVariavelRoteiro(VariavelRoteiro variavelRoteiro) {
 		this.variavelRoteiro = variavelRoteiro;
+	}
+
+	/**
+	 * @return the situacaoDeUso
+	 */
+	public SituacaoDeUsoEnum getSituacaoDeUso() {
+		return situacaoDeUso;
+	}
+
+	/**
+	 * @param situacaoDeUso the situacaoDeUso to set
+	 */
+	public void setSituacaoDeUso(SituacaoDeUsoEnum situacaoDeUso) {
+		this.situacaoDeUso = situacaoDeUso;
+	}
+
+	/**
+	 * @return the deleted
+	 */
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	/**
+	 * @param deleted the deleted to set
+	 */
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	/**
+	 * @return the usuario
+	 */
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	/**
+	 * @param usuario the usuario to set
+	 */
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 	
 }

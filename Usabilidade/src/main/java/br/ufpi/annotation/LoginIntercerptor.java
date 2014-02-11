@@ -22,11 +22,10 @@ public class LoginIntercerptor implements Interceptor {
 	}
 
 	@Override
-	public void intercept(InterceptorStack stack, ResourceMethod method,
-			Object resourceInstance) throws InterceptionException {
-		if (usuarioLogado.islogado())
+	public void intercept(InterceptorStack stack, ResourceMethod method, Object resourceInstance) throws InterceptionException {
+		if (usuarioLogado.islogado()){
 			stack.next(method, resourceInstance);
-		else {
+		}else {
 			result.redirectTo(LoginController.class).login(null);
 		}
 
@@ -37,8 +36,6 @@ public class LoginIntercerptor implements Interceptor {
 	 */
 	@Override
 	public boolean accepts(ResourceMethod method) {
-		return (method.getMethod().isAnnotationPresent(Logado.class) || method
-				.getResource().getType().isAnnotationPresent(Logado.class));
-
+		return (method.getMethod().isAnnotationPresent(Logado.class) || method.getResource().getType().isAnnotationPresent(Logado.class));
 	}
 }

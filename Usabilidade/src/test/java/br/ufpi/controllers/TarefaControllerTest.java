@@ -141,7 +141,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		int qAntes = repository.findAll().size();
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa("urlInicial",
 				"roteiro", "nome");
-		instance.salvarTarefa(tarefa, testePertenceUsuarioNaoLiberado);
+		instance.salvarTarefa(tarefa, testePertenceUsuarioNaoLiberado, null);
 		int qDepois = repository.findAll().size();
 		Assert.assertEquals(qAntes, qDepois - 1);
 	}
@@ -158,7 +158,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 				"roteiro", "nome");
 		List<Message> errors = null;
 		try {
-			instance.salvarTarefa(tarefa, testeNaoPertenceUsuario);
+			instance.salvarTarefa(tarefa, testeNaoPertenceUsuario, null);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
@@ -181,7 +181,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 				"roteiro", "nome");
 		List<Message> errors = null;
 		try {
-			instance.salvarTarefa(tarefa, testeLiberado);
+			instance.salvarTarefa(tarefa, testeLiberado, null);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}
@@ -203,7 +203,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 		Tarefa tarefa = TarefaTestProcedure.newInstanceTarefa("", "", "");
 		List<Message> errors = null;
 		try {
-			instance.salvarTarefa(tarefa, testePertenceUsuarioNaoLiberado);
+			instance.salvarTarefa(tarefa, testePertenceUsuarioNaoLiberado, null);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 			System.out.println(errors);
@@ -225,7 +225,7 @@ public class TarefaControllerTest extends AbstractDaoTest {
 				"roteiro", "nome");
 		List<Message> errors = null;
 		try {
-			instance.salvarTarefa(tarefa, null);
+			instance.salvarTarefa(tarefa, null, null);
 		} catch (ValidationException validationException) {
 			errors = validationException.getErrors();
 		}

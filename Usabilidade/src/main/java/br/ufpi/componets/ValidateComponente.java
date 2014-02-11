@@ -37,11 +37,9 @@ public class ValidateComponente {
 	 *            texto que esta na mensagem.properties
 	 */
 	public void redirecionarHome(final String mensagem) {
-		validator.checking(new Validations() {
-			{
-				that(false, "nao.proprietario", mensagem);
-			}
-		});
+		validator.checking(new Validations(){{
+			that(false, "nao.proprietario", mensagem);
+		}});
 		validator.onErrorRedirectTo(LoginController.class).logado(1);
 	}
 
@@ -49,84 +47,60 @@ public class ValidateComponente {
 	 * Redireciona para termino de Teste
 	 */
 	public void redirecionarTermino() {
-		validator.checking(new Validations() {
-			{
-				that(false, "termino", "termino");
-			}
-		});
+		validator.checking(new Validations(){{
+			that(false, "termino", "termino");
+		}});
 		validator.onErrorRedirectTo(TesteParticiparController.class).termino();
 	}
 
 	public void validarString(final String valorCampo, final String nameCampo) {
-		validator.checking(new Validations() {
-
-			{
-				that((valorCampo!=null && !valorCampo.isEmpty() && !valorCampo.trim().equals("")), "campo." + nameCampo + ".obrigatorio",
-						"campo.obrigatorio", i18n(nameCampo));
-			}
-		});
+		validator.checking(new Validations(){{
+				that((valorCampo!=null && !valorCampo.isEmpty() && !valorCampo.trim().equals("")), "campo." + nameCampo + ".obrigatorio", "campo.obrigatorio", i18n(nameCampo));
+		}});
 	}
 
 	public void validarId(final Long idTeste) {
-		validator.checking(new Validations() {
-
-			{
-				that((idTeste!=null ), "campo.form.alterado",
-						"campo.form.alterado");
-			}
-		});	
+		validator.checking(new Validations(){{ 
+			that((idTeste!=null ), "campo.form.alterado", "campo.form.alterado"); 
+		}});	
 		validator.onErrorRedirectTo(LoginController.class).logado(1);
 	}
+	
 	/**
 	 * Apenas analisa se o teste não é nulo
 	 * @param object Objeto a ser verificado
 	 */
 	public void validarObjeto(final Object object) {
-		validator.checking(new Validations() {
-
-			{
-				that((object!=null ), "campo.form.alterado",
-						"campo.form.alterado");
-			}
-		});	
+		validator.checking(new Validations(){{
+			that((object!=null ), "campo.form.alterado", "campo.form.alterado");
+		}});	
 		validator.onErrorRedirectTo(LoginController.class).logado(1);
 	}
+	
 	/**
 	 * Apenas analisa se o teste não é nulo
 	 * @param object Objeto a ser verificado
 	 */
 	public void validarObjetoJson(final Object object) {
-		validator.checking(new Validations() {
-			
-			{
-				that((object!=null ), "campo.form.alterado",
-						"campo.form.alterado");
-			}
-		});	
+		validator.checking(new Validations(){{
+			that((object!=null ), "campo.form.alterado", "campo.form.alterado");
+		}});	
 		validator.onErrorUse(Results.json()).from(validator.getErrors(),"errors").serialize();
 	}
+	
 	/**
 	 * Gera erro informando que campo forme foi alterado
 	 */
 	public void gerarErroCampoAlterado(){
-		validator.checking(new Validations() {
-
-			{
-				that(false, "campo.form.alterado",
-						"campo.form.alterado");
-			}
-		});	
+		validator.checking(new Validations(){{
+			that(false, "campo.form.alterado", "campo.form.alterado");
+		}});	
 	}
 
 	public void gerarErro(final String category, final String mensagem) {
-		validator.checking(new Validations() {
-
-			{
-				that(false, category,
-						mensagem);
-			}
-		});	
-		
+		validator.checking(new Validations(){{
+			that(false, category, mensagem);
+		}});	
 	}
 	
 }

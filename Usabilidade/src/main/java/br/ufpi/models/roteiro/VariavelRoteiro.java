@@ -28,9 +28,11 @@ import br.ufpi.models.Tarefa;
  */
 @Entity
 @NamedQueries({
-	@NamedQuery(name = "VariavelRoteiro.findAll", query = "SELECT v FROM VariavelRoteiro v"),
-	@NamedQuery(name = "VariavelRoteiro.findById", query = "SELECT v FROM VariavelRoteiro v WHERE v.id = :id"),
-	@NamedQuery(name = "VariavelRoteiro.findByVariavel", query = "SELECT v FROM VariavelRoteiro v WHERE v.variavel = :variavel")
+	@NamedQuery(name = "VariavelRoteiro.findAll", query = "SELECT v FROM VariavelRoteiro as v WHERE v.deleted = false"),
+	@NamedQuery(name = "VariavelRoteiro.findById", query = "SELECT v FROM VariavelRoteiro as v WHERE v.id = :id AND v.deleted = false"),
+	@NamedQuery(name = "VariavelRoteiro.findByVariavel", query = "SELECT v FROM VariavelRoteiro as v WHERE v.variavel = :variavel AND v.deleted = false"),
+	@NamedQuery(name = "VariavelRoteiro.pertence.Tarefa", query = "SELECT v FROM VariavelRoteiro as v LEFT JOIN v.tarefa WHERE v.tarefa.id= :tarefa AND v.id= :variavel AND v.deleted = false"),
+	@NamedQuery(name = "VariavelRoteiro.pertence.Tarefa.com.NomeIgual", query = "SELECT v FROM VariavelRoteiro as v LEFT JOIN v.tarefa WHERE v.tarefa.id= :tarefa AND v.variavel = :nomeVariavel AND v.deleted = false")
 })
 public class VariavelRoteiro implements Serializable {
 
@@ -49,6 +51,9 @@ public class VariavelRoteiro implements Serializable {
 	
 	@ManyToOne(optional = false, cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	private Tarefa tarefa;
+	
+	@Column(nullable = false)
+	private boolean deleted = false;
 	
 	/**
 	 * @return the valores
@@ -97,6 +102,18 @@ public class VariavelRoteiro implements Serializable {
 	 */
 	public void setTarefa(Tarefa tarefa) {
 		this.tarefa = tarefa;
+	}
+	/**
+	 * @return the deleted
+	 */
+	public boolean isDeleted() {
+		return deleted;
+	}
+	/**
+	 * @param deleted the deleted to set
+	 */
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 	
 	

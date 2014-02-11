@@ -1,5 +1,6 @@
 package br.ufpi.repositories.Implement;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,10 @@ import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.TipoConvidado;
+import br.ufpi.models.Usuario;
+import br.ufpi.models.enums.SituacaoDeUsoEnum;
+import br.ufpi.models.roteiro.ValorRoteiro;
+import br.ufpi.models.roteiro.VariavelRoteiro;
 import br.ufpi.models.vo.FluxoCountVO;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
@@ -59,16 +64,69 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 	}
 
 	@Override
-	public String getRoteiro(Long idTarefa, Long idTeste) {
-		Query query = entityManager
-				.createNamedQuery("Tarefa.pertence.Teste.GetRoteiro");
+	public String getRoteiro(Long idTarefa, Long idTeste, Usuario usuario) {
+		Query query = entityManager.createNamedQuery("Tarefa.pertence.Teste.GetRoteiro");
 		query.setParameter("teste", idTeste);
 		query.setParameter("tarefa", idTarefa);
+		
 		try {
-			return (String) query.getSingleResult();
+			String roteiro = (String) query.getSingleResult();
+			
+			Query queryVariaveis = entityManager.createNamedQuery("Tarefa.pertence.Teste.GetVariaveis");
+			queryVariaveis.setParameter("teste", idTeste);
+			queryVariaveis.setParameter("tarefa", idTarefa);
+			
+			Collection<VariavelRoteiro> variaveis = (Collection<VariavelRoteiro>) queryVariaveis.getResultList();
+			
+			//alterar as variaveis no roteiro
+			if(variaveis != null){
+				ValorRoteiroRepositoryImpl valorRoteiroRepositoryImpl = new ValorRoteiroRepositoryImpl(entityManager);
+				
+				for(VariavelRoteiro var : variaveis){
+					ValorRoteiro valor = null;
+					
+					for(ValorRoteiro val: var.getValores()){
+						if(val.getSituacaoDeUso().equals(SituacaoDeUsoEnum.EM_UTILIZACAO) && val.getUsuario().getId().equals(usuario.getId())){
+							valor = val;
+							break;
+						}
+					}
+					
+					//nao encontrou nenhuma livre, parte para outra opcao
+					if(valor == null){
+						for(ValorRoteiro val: var.getValores()){
+							if(val.getSituacaoDeUso().equals(SituacaoDeUsoEnum.LIVRE)){
+								valor = val;
+								break;
+							}
+						}
+					}
+					
+					if(valor == null){
+						for(ValorRoteiro val: var.getValores()){
+							if(val.getSituacaoDeUso().equals(SituacaoDeUsoEnum.ADIADO)){
+								valor = val;
+								break;
+							}
+						}
+					}
+					
+					if(valor != null){
+						valor.setSituacaoDeUso(SituacaoDeUsoEnum.EM_UTILIZACAO);
+						valor.setUsuario(usuario);
+						valorRoteiroRepositoryImpl.update(valor);
+						roteiro = roteiro.replace(var.getVariavel(), valor.getValor());
+					}else{
+						roteiro = roteiro.replace(var.getVariavel(), "-");
+					}
+				}
+			}
+			
+			return roteiro;
 		} catch (NoResultException e) {
 			return null;
 		}
+		
 	}
 
 	@Override

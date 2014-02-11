@@ -18,9 +18,13 @@ public interface VariavelRoteiroRepository {
 	VariavelRoteiro update(VariavelRoteiro entity);
 
 	void destroy(VariavelRoteiro entity);
+	
+	void delete(VariavelRoteiro entity);
 
 	VariavelRoteiro find(Long id);
 
 	List<VariavelRoteiro> findAll();
+	
+	VariavelRoteiro findVariavelDaTarefaComNomeIgual(Long idTarefa, String nomeVariavel);
 	
 }

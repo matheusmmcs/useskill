@@ -26,11 +26,10 @@ public class LivreIntercerptor implements Interceptor {
 	}
 
 	@Override
-	public void intercept(InterceptorStack stack, ResourceMethod method,
-			Object resourceInstance) throws InterceptionException {
-		if (!usuarioLogado.islogado())
+	public void intercept(InterceptorStack stack, ResourceMethod method, Object resourceInstance) throws InterceptionException {
+		if (!usuarioLogado.islogado()){
 			stack.next(method, resourceInstance);
-		else {
+		} else {
 			result.redirectTo(LoginController.class).logado(1);
 		}
 
@@ -41,8 +40,6 @@ public class LivreIntercerptor implements Interceptor {
 	 */
 	@Override
 	public boolean accepts(ResourceMethod method) {
-		return (method.getMethod().isAnnotationPresent(AcessoLivre.class) || method
-				.getResource().getType().isAnnotationPresent(AcessoLivre.class));
-
+		return (method.getMethod().isAnnotationPresent(AcessoLivre.class) || method.getResource().getType().isAnnotationPresent(AcessoLivre.class));
 	}
 }

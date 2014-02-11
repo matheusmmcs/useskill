@@ -28,6 +28,7 @@ import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.Teste;
 import br.ufpi.models.TipoConvidado;
+import br.ufpi.models.enums.SituacaoDeUsoEnum;
 import br.ufpi.models.roteiro.ValorRoteiro;
 import br.ufpi.models.roteiro.VariavelRoteiro;
 import br.ufpi.models.vo.ConvidadoCount;
@@ -66,7 +67,7 @@ public class TarefaController extends BaseController {
 			TesteSessionPlugin testeSessionPlugin, Estatistica estatistica,
 			ComentarioRepository comentarioRepository,
 			VariavelRoteiroRepository variavelRoteiroRepository,
-			ValorRoteiroRepository valor) {
+			ValorRoteiroRepository valorRoteiroRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.tarefaRepository = tarefaRepository;
 		this.testeRepository = testeRepository;
@@ -75,7 +76,7 @@ public class TarefaController extends BaseController {
 		this.estatistica = estatistica;
 		this.comentarioRepository = comentarioRepository;
 		this.variavelRoteiroRepository = variavelRoteiroRepository;
-		this.valorRoteiroRepository = valor;
+		this.valorRoteiroRepository = valorRoteiroRepository;
 	}
 
 	/**
@@ -133,7 +134,7 @@ public class TarefaController extends BaseController {
 								ValorRoteiro valorDaVariavel = new ValorRoteiro();
 								valorDaVariavel.setValor(val);
 								valorDaVariavel.setVariavelRoteiro(variavelDoRoteiro);
-								valorDaVariavel.setEmUtilizacao(false);
+								valorDaVariavel.setSituacaoDeUso(SituacaoDeUsoEnum.LIVRE);
 								
 								valorRoteiroRepository.create(valorDaVariavel);
 								System.out.println("Variavel: "+variavel+" : "+val);
@@ -192,20 +193,66 @@ public class TarefaController extends BaseController {
 	 */
 	@Logado
 	@Post("teste/tarefa/atualizar")
-	public void updateTarefa(Tarefa tarefa, Long idTeste) {
+	public void updateTarefa(Tarefa tarefa, Long idTeste, Collection<String> variaveis) {
 		validateComponente.validarString(tarefa.getNome(), "tarefa.titulo");
 		validateComponente.validarString(tarefa.getRoteiro(), "tarefa.roteito");
-		validateComponente.validarString(tarefa.getUrlInicial(),
-				"tarefa.urlInicial");
+		validateComponente.validarString(tarefa.getUrlInicial(), "tarefa.urlInicial");
 		validator.onErrorRedirectTo(this).editarTarefa(idTeste, tarefa, true);
 		this.tarefaPertenceTesteNaoRealizado(tarefa.getId(), idTeste);
+		
 		Tarefa tarefaUpdate = tarefaRepository.find(tarefa.getId());
 		tarefaUpdate.setRoteiro(tarefa.getRoteiro());
 		tarefaUpdate.setNome(tarefa.getNome());
-
+		
 		if (!tarefaUpdate.getUrlInicial().equals(tarefa.getUrlInicial().trim())) {
 			tarefaUpdate.setUrlInicial(tarefa.getUrlInicial());
 		}
+		
+		if(variaveis != null){
+			for(String var : variaveis){
+				
+				String[] arrayVariaveis = var.split(":");
+				if(arrayVariaveis != null && arrayVariaveis.length == 2){
+					String variavel = arrayVariaveis[0];
+					String[] valores = arrayVariaveis[1].split(";");
+					if(variavel != null && !variavel.isEmpty() && valores != null & valores.length > 0){
+						
+						//buscar a variavel que possua esse nome nessa tarefa
+						VariavelRoteiro variavelDoRoteiro;
+						variavelDoRoteiro = variavelRoteiroRepository.findVariavelDaTarefaComNomeIgual(tarefa.getId(), variavel);
+						
+						//ja existe
+						if(variavelDoRoteiro != null){
+							variavelRoteiroRepository.destroy(variavelDoRoteiro);
+						}
+						
+						variavelDoRoteiro = new VariavelRoteiro();
+						variavelDoRoteiro.setTarefa(tarefa);
+						variavelDoRoteiro.setVariavel(variavel);
+						variavelRoteiroRepository.create(variavelDoRoteiro);
+						
+						for(String val : valores){
+							if(!val.isEmpty()){
+								//cadastrando valores para a variavel definida
+								ValorRoteiro valorDaVariavel = new ValorRoteiro();
+								valorDaVariavel.setValor(val);
+								valorDaVariavel.setVariavelRoteiro(variavelDoRoteiro);
+								valorDaVariavel.setSituacaoDeUso(SituacaoDeUsoEnum.LIVRE);
+								
+								valorRoteiroRepository.create(valorDaVariavel);
+								System.out.println("Variavel: "+variavel+" : "+val);
+							}
+						}
+						
+					}
+					
+				}else{
+					System.out.println("Variavel invalida: "+var);
+				}
+				
+			}
+		}
+		
 		tarefaRepository.update(tarefaUpdate);
 		result.redirectTo(TesteController.class).passo2(idTeste);
 
@@ -234,9 +281,23 @@ public class TarefaController extends BaseController {
 	@Post("tarefa/save/fluxo")
 	public void saveFluxo(String dados, Long tarefaId, Boolean isFinished,
 			String comentario) {
+		Tarefa tarefa = tarefaRepository.find(tarefaId);
+		
+		//altera os valores para concluido
+		for(VariavelRoteiro var : tarefa.getVariaveisRoteiro()){
+			for(ValorRoteiro val : var.getValores()){
+				if(val.getSituacaoDeUso().equals(SituacaoDeUsoEnum.EM_UTILIZACAO)){
+					System.out.println("Em uso: "+val.getValor());
+					val.setSituacaoDeUso(SituacaoDeUsoEnum.CONCLUIDO);
+					valorRoteiroRepository.update(val);
+				}
+			}
+		}
+		
 		Fluxo fluxo = new Fluxo();
 		fluxo.setUsuario(usuarioLogado.getUsuario());
-		fluxo.setTarefa(tarefaRepository.find(tarefaId));
+		fluxo.setTarefa(tarefa);
+		
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<Collection<Action>>() {
 		}.getType();
@@ -343,8 +404,16 @@ public class TarefaController extends BaseController {
 	@Logado
 	public void getRoteiro(Long idTarefa) {
 		validateComponente.validarId(idTarefa);
-		String roteiro = tarefaRepository.getRoteiro(idTarefa,
-				testeSessionPlugin.getIdTeste());
+		String roteiro = tarefaRepository.getRoteiro(idTarefa, testeSessionPlugin.getIdTeste(), usuarioLogado.getUsuario());
+		validateComponente.validarObjeto(roteiro);
+		result.use(Results.json()).from(roteiro).serialize();
+	}
+	
+	@Get("/teste/{idTeste}/tarefa/{idTarefa}/roteiro")
+	@Logado
+	public void getRoteiro2(Long idTeste, Long idTarefa) {
+		validateComponente.validarId(idTarefa);
+		String roteiro = tarefaRepository.getRoteiro(idTarefa, idTeste, usuarioLogado.getUsuario());
 		validateComponente.validarObjeto(roteiro);
 		result.use(Results.json()).from(roteiro).serialize();
 	}

@@ -34,13 +34,14 @@
 			
 			//$tbody
 			var idLinha = stringToId(variavel),
-				$linha = $("#"+idLinha),
+				elLinha = document.getElementById(idLinha),
 				conteudo = '<td>'+ variavel +'</td><td>'+ valorHTML +'</td><td> <a class="btn btn-danger valor-remove" href="#"><i class="icon-remove icon-white"></i></a> <input type="hidden" name="variaveis[]" value="'+ variavel + ":" + valor +'" /> </td>';
-			if($linha.length == 0){
+			
+			if(!elLinha || elLinha.length == 0){
 				$tbody.append('<tr id="'+ idLinha +'">'+conteudo+'</tr>');
 				countTr++;
 			}else{
-				$linha.html(conteudo);
+				$(elLinha).html(conteudo);
 			}
 			
 			$tbody.attr('count-tr', countTr);
