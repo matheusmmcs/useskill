@@ -1,6 +1,6 @@
-//var domainUseSkill = "http://www.killline.com/usabilidade";
+var domainUseSkill = "http://www.killline.com/useskill";
 //var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";
-var domainUseSkill = "http://localhost:8080/Usabilidade";
+//var domainUseSkill = "http://localhost:8080/Usabilidade";
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
 //OMNIBOX
