@@ -54,7 +54,5 @@ public class Alternativa implements Serializable {
 		return "Alternativa [id=" + id + ", textoAlternativa="
 				+ textoAlternativa + "]";
 	}
-
-	
     
 }

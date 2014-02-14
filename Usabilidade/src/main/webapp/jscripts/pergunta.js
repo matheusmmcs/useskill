@@ -18,6 +18,7 @@
 				e.preventDefault();
 				if (contalternativas > 1) {
 					$(this).parent().remove();
+					reorder();
 					contalternativas--;
 				}
 			});
@@ -26,6 +27,7 @@
 				e.preventDefault();
 				if (contalternativas < maxalternativas) {
 					$grupoalternativas.append(alternativa);
+					reorder();
 					contalternativas++;
 				}
 			});
@@ -33,13 +35,22 @@
 			$("#respobj").live('click', function() {
 				$grupoalternativas.show();
 				$grupoalternativas.append(alternativa);
+				reorder();
 				contalternativas++;
 			});
 
 			$("#respsub").live('click', function() {
 				$grupoalternativas.hide();
 				$grupoalternativas.children(".campoalternativa").remove();
-					contalternativas = 0;
-				});
+				reorder();
+				contalternativas = 0;
 			});
+			
+			function reorder(){
+				$grupoalternativas.find(".span6.alternativa").each(function(i){
+					var $this = $(this);
+					$this.attr('name', 'pergunta.alternativas['+i+'].textoAlternativa');
+				});
+			}
+		});
 })(jQuery);

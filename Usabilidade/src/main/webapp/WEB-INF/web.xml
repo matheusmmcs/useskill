@@ -6,10 +6,10 @@
 
 	<display-name>Usabilidade</display-name>
 
+	<!-- 		<param-value> br.com.caelum.vraptor.util.jpa,br.com.caelum.vraptor.http.iogi</param-value> -->
 	<context-param>
 		<param-name>br.com.caelum.vraptor.packages</param-name>
-		<param-value> br.com.caelum.vraptor.util.jpa,br.com.caelum.vraptor.http.iogi</param-value>
-		
+		<param-value> br.com.caelum.vraptor.util.jpa</param-value>
 	</context-param>
 
 	<context-param>

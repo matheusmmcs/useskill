@@ -94,16 +94,29 @@
 			<groupId>br.com.caelum</groupId>
 			<artifactId>vraptor</artifactId>
 			<version>3.4.1</version>
+			<exclusions>
+				<exclusion>
+		          <groupId>br.com.caelum</groupId>
+		          <artifactId>iogi</artifactId>
+		        </exclusion>
+			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>ognl</groupId>
+			<artifactId>ognl</artifactId>
+			<version>2.7.3</version>
+			<optional>true</optional>
+		</dependency>
+		<!-- Removido o ongl e inserido o iogi (problemas com ordenação de listas) -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>br.com.caelum</groupId> -->
+<!-- 			<artifactId>iogi</artifactId> -->
+<!-- 			<version>0.9.2</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.18</version>
-		</dependency>
-		<dependency>
-			<groupId>br.com.caelum</groupId>
-			<artifactId>iogi</artifactId>
-			<version>0.9.1</version>
 		</dependency>
 		<dependency>
 			<groupId>opensymphony</groupId>
