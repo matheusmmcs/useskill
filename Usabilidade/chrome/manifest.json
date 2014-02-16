@@ -1,6 +1,6 @@
 ﻿{
   "name": "UseSkill for Google Chrome™",
-  "version": "0.9.3.7",
+  "version": "0.9.3.10",
   "description": "Plugin para realização de Testes de Usabilidade Remotos, a partir da ferramenta UseSkill.",
   "omnibox": { "keyword" : "useskill" },
   "options_page": "options.html",

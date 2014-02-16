@@ -10,22 +10,57 @@
 		var correctDomain = false;
 		
 		//testar se tem conexão com o servidor
-		$.ajax({
-			url: domainUseSkill,
-			cache: false,
-			type: "GET",
-			async: false,
-			success: function(dados){
-				correctDomain = true;
-			},
-			error: function(jqXHR, status, err){
-				console.log(domainUseSkill);
-				chrome.tabs.create({url: "options.html"});
-				var notification = webkitNotifications.createHTMLNotification('html/notifications/404.html');
-				notification.show();
+		var t1 = Date.now(), t2, max = 7000, XHRfailed = false;
+		var httpReq = (window.XMLHttpRequest)?new XMLHttpRequest():new ActiveXObject("Microsoft.XMLHTTP");
+		if(httpReq == null) {
+		    console.log("Error: XMLHttpRequest failed to initiate.");
+		}
+		function connectUseSkill(){
+			httpReq.onreadystatechange = function() {
+			    var failTimer = setTimeout(function() {
+	               XHRfailed = true;
+	               httpReq.abort();
+	            }, max);
+
+			    if (httpReq.readyState == 4) {
+			        if (!XHRfailed && (httpReq.status == 200 || httpReq.status == 0)) {
+			            clearTimeout(failTimer);
+			            t2 = Date.now();
+			            var timeTotal = (t2 - t1);
+			            if(timeTotal > max) {
+			                onFail();
+			            } else {
+			                onSuccess(timeTotal);
+			            }
+			        }
+			        else {
+			            console.log("Error " + httpReq.status + " has occurred.");
+			            onFail();
+			        }
+			    }
 			}
-		});
-	
+			try {
+			    httpReq.open("GET", domainUseSkill, true);
+			    httpReq.send(null);
+			} catch(e) {
+			    console.log("Error retrieving data httpReq. Some browsers only accept cross-domain request with HTTP.");
+			    onFail();
+			}
+		}
+		function onSuccess(timeTotal) {
+		    console.log("Time needed to connect: " + timeTotal);
+		    correctDomain = true;
+		    init();
+		}
+		function onFail() {
+		    console.log("Cant connect");
+		    console.log(domainUseSkill);
+		    chrome.extension.sendRequest({useskill: "showNotification", title: "UseSkill não está respondendo...", message: 'O servidor da UseSkill não está respondendo, verifique se o endereço da aplicação está correto!'});
+			chrome.tabs.create({url: "options.html"});
+		}
+
+		//iniar conexão com a UseSkill
+		connectUseSkill();
 
 		var urls = new Array();
 		urls['isLogged'] = domainUseSkill+"/services/user/logado";
@@ -38,8 +73,6 @@
 		    POST : "POST",
 		    GET : "GET"
 		}
-
-		init();
 
 		function init() { 
 			var userLogged = isLogged();
@@ -191,7 +224,7 @@
 					$content.load('html/'+pagina+'.html', function(){
 						//fazer com que os links para a useskill nao quebrem
 						$.each($('.btn-useskill'), function(){
-							console.log($(this))
+							//console.log($(this))
 							$(this).attr('href', domainUseSkill+$(this).attr('href'));
 						});
 								
@@ -216,6 +249,3 @@
 		}
 	});
 })(jQuery);
-
-//var notification = webkitNotifications.createHTMLNotification('html/notification.html');
-//notification.show();

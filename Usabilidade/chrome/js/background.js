@@ -171,6 +171,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 				//finalizar o teste que está em execução
 				suspendTest();
 			  	break;
+			case "showNotification":
+				showNotification({title: request.title, message: request.message, timeout: request.timeout});
+				break;
 			case "getDomain":
 				sendResponse({domain: domainUseSkill});
 				break;
@@ -285,8 +288,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 					localStorage["useskill_url"] = newValue;
 					domainUseSkill = newValue;
 					sendResponse({success: true});
-					var notification = webkitNotifications.createNotification(null, 'UseSkill', 'URL alterada com sucesso!');
-					notification.show();
+					showNotification({title: "UseSkill", message: 'Endereço da UseSkill alterado com sucesso!', timeout: 3000});
 				}else{
 					sendResponse({success: false});
 				}
@@ -477,6 +479,27 @@ function parseJSON(data) {
 }
 function stringfyJSON(data){
 	return window.JSON && window.JSON.stringify ? window.JSON.stringify(data) : (new Function("return " + data))();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------
+function showNotification(obj){
+	if(obj && obj.title && obj.message){
+		chrome.notifications.create("redmineTimeTracker", {   
+				type: 'basic', 
+				iconUrl: '../images/icon48.png',
+				title: obj.title, 
+				message: obj.message,
+				priority: 0,
+			},
+			function(newId) {
+				if(obj.timeout){
+					setTimeout(function(){
+						chrome.notifications.clear(newId, function(){});
+					}, obj.timeout);
+				}
+			}
+		);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
