@@ -2,7 +2,7 @@
 	<div id="USleftMenu" >
 		<div id="UStestTitle">
 			UseSkill - Tarefa
-			<span id="USinfoPassos"></span>
+			<span id="USinfoPassos" class="USinfoPassos"></span>
 			<a class="USpull-right" id="USleftmenuMinimize" href="#"><b class="USicon-minus"></b></a>
 		</div>
 		<div id="UScontent">
@@ -90,7 +90,7 @@
 		BAD:'false'
 	}
 
-	//evitar plugin em perguntas
+	//evitar plugin em perguntas e aprimoramentos na pagina de perguntas
 	var urlPergunta = "teste/responder/pergunta";
 	var urlAtual = location.protocol+location.host+location.pathname;
 	if(urlAtual.indexOf(urlPergunta)!=-1){
@@ -129,7 +129,14 @@
 			elAtual = listaEl[numElAtual];
 			acoes = stringfyJSON(resp.acoes);
 			//apos capturar as variaveis, setar texto em cima
-			$("#USinfoPassos").html(numElAtual+1 +"/"+ listaEl.length);
+			$(".USinfoPassos").html(numElAtual+1 +"/"+ listaEl.length);
+			
+			//alterar o botão de aguarde... para responder
+			var btnResponderLabel = "Responder", bntResponder = $('#USperguntaTeste12z3');
+			if(bntResponder){
+				bntResponder.attr('title', btnResponderLabel).val(btnResponderLabel);
+			}
+
 			if(elAtual.tipo=="T"){
 				getRoteiro(elAtual.id);
 				//se n estiver openned, fecha
@@ -321,9 +328,9 @@
 		//metodo para responder questionario
 		$('#USperguntaTeste12z3').click(function(e){
 			e.preventDefault();
-			var $form = $(this).parentsUntil("form").parent();
-			var pergId = $form.children("#pergid").val();
-			var urlResp = $form.attr('action');
+			var $form = $(e.target).closest(".form-pergunta");
+			var pergId = $("#pergid").val();
+			var urlResp = $form.attr('data-action');
 			var resposta = "", respostaVefiry = "";
 			//separar resposta
 			if(urlResp.indexOf('alternativa')!=-1){
@@ -339,12 +346,14 @@
 			}
 			//evitar problema localhost de duplicar /Usabilidade
 			if(respostaVefiry!=""){
+				console.log($form, pergId, resposta, urlResp)
 				responderPergunta(pergId, resposta, urlResp);
 			}else{
 				$('.USAlertError').html('Preencha a resposta antes de enviar!');
 				$('.alert').fadeIn(300);
 			}
 		});
+
 		//Canvas
 		var jcrop_api, jcrop_coords;
 		$('#UScomentarioSelecionar').on('click', function(e){

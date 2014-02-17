@@ -329,6 +329,13 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 });
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
+//WEBNAVEGATION
+
+chrome.webNavigation.onHistoryStateUpdated.addListener(function (e){
+	console.log(e)
+});
+
+//----------------------------------------------------------------------------------------------------------------------------------------------
 
 //função para carregar o próximo elemento do teste ou encerra-lo
 function nextElement(atual, lista){
@@ -384,6 +391,9 @@ function nextElement(atual, lista){
 	});
 }
 
+/**
+Função que remove uma aba das abas que estão sendo analisadas
+*/
 function removeTab(id){
 	storage.tabs.removeElement(id);
 	console.log("removeTab: "+id);
@@ -394,6 +404,9 @@ function removeTab(id){
 	}
 }
 
+/**
+Função que remove todas as abas que estavam sendo gravadas pelo plugin
+*/
 function removeTabsGravando(){
 	var count = storage.tabs.length;	
 	if(count>=0){
@@ -413,6 +426,7 @@ function suspendTest(){
 		console.log("Teste Adiado");
 		clearAcoes();
 		removeTabsGravando();
+		storage = new Store();
 	}
 }
 

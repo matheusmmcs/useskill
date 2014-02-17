@@ -6,6 +6,7 @@ package br.ufpi.models;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,6 +26,7 @@ public class Action implements Serializable {
 	private String sActionType;
 	private Long sTime;
 	private String sUrl;
+	@Column(columnDefinition = "LONGTEXT")
 	private String sContent;
 	private String sTag;
 	private String sTagIndex;

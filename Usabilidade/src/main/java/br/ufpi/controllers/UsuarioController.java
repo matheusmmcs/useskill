@@ -56,6 +56,7 @@ public class UsuarioController extends BaseController {
 			});
 		}
 		validator.onErrorUsePageOf(this).newUsuario();
+		usuario.setRepository(usuarioRepository);
 		usuario.criptografarSenhaGerarConfimacaoEmail(true);
 		usuario.setEmailConfirmado(true);
 		usuarioRepository.create(usuario);

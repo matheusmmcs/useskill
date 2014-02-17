@@ -9,13 +9,14 @@
 	
 
 	<c:if test="${pergunta.tipoRespostaAlternativa!=true}">
-		<form class="form-horizontal form-layout"
-			action="${pageContext.request.contextPath}/teste/salvar/resposta/escrita"
-			method="post">
+		<div class="form-horizontal form-layout form-pergunta" data-action="${pageContext.request.contextPath}/teste/salvar/resposta/escrita">
 			<fieldset>
 				<legend>
 					<span>
 						<fmt:message key="questionario" />
+					</span>
+					<span style="font-size: 14px; float: right;">
+						Tarefa do Teste - <span class="USinfoPassos" style="padding-left: 3px;"></span>
 					</span>
 					<hr />
 				</legend>
@@ -44,21 +45,21 @@
 				</div>
 				
 				<div class="form-actions">
-					<input id="USperguntaTeste12z3" type="submit" value="<fmt:message key="responde.pergunta"/>" name="salvar" title="<fmt:message key="responde.pergunta"/>" class="btn btn-primary" style="float: right; width: 120px" />
+					<input id="USperguntaTeste12z3" type="submit" value="<fmt:message key="responde.loading"/>" name="salvar" title="<fmt:message key="responde.loading"/>" class="btn btn-primary" style="float: right; width: 120px" />
 				</div>
 			</fieldset>
-		</form>
+		</div>
 	</c:if>
 
 	<c:if test="${pergunta.tipoRespostaAlternativa==true}">
-	<form class="form-horizontal form-layout" action="${pageContext.request.contextPath}/teste/salvar/resposta/alternativa" method="post">
+	<div class="form-horizontal form-layout form-pergunta" data-action="${pageContext.request.contextPath}/teste/salvar/resposta/alternativa">
 		<fieldset>
 			<legend>
 					<span>
 						<fmt:message key="questionario" />
 					</span>
 					<span style="font-size: 14px; float: right;">
-						Tarefa - <span id="USinfoPassos" style="padding-left: 3px;"></span>
+						Tarefa do Teste - <span class="USinfoPassos" style="padding-left: 3px;"></span>
 					</span>
 					<hr />
 			</legend>
@@ -87,18 +88,17 @@
           	</div>
 			
 			<div class="form-actions">
-				<input id="USperguntaTeste12z3" type="submit" value="<fmt:message key="responde.pergunta"/>" name="salvar" title="<fmt:message key="responde.pergunta"/>" class="btn btn-primary" style="float: right; width: 120px" />
+				<input id="USperguntaTeste12z3" type="submit" value="<fmt:message key="responde.loading"/>" name="salvar" title="<fmt:message key="responde.loading"/>" class="btn btn-primary" style="float: right; width: 120px" />
 			</div>
 		</fieldset>
-		<script>
-			(function($){
-				$('.close').click(function(e){
-					e.preventDefault();
-					$(this).parent().fadeOut(300);
-				})
-			})(jQuery);
-		</script>
-	</form>
+	</div>
 	</c:if>
-
+	<script>
+		(function($){
+			$(document).on("click", '.close', function(e){
+				e.preventDefault();
+				$(this).parent().fadeOut(300);
+			})
+		})(jQuery);
+	</script>
 </div>

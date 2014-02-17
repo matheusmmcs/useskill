@@ -55,7 +55,7 @@
 		function onFail() {
 		    console.log("Cant connect");
 		    console.log(domainUseSkill);
-		    chrome.extension.sendRequest({useskill: "showNotification", title: "UseSkill não está respondendo...", message: 'O servidor da UseSkill não está respondendo, verifique se o endereço da aplicação está correto!'});
+		    chrome.extension.sendRequest({useskill: "showNotification", title: "Servidor da UseSkill", message: 'O servidor da UseSkill não está respondendo, verifique se o endereço da aplicação está correto e tente novamente!'});
 			chrome.tabs.create({url: "options.html"});
 		}
 
@@ -125,6 +125,7 @@
 
 					var objJson = ajax(domainUseSkill+"/teste/participar/"+id+"/aceitar", "GET");
 					chrome.extension.sendRequest({useskill: "nextElement", lista: objJson, atual: 0});
+					window.close();
 				}
 			});
 

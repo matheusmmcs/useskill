@@ -17,6 +17,8 @@ Capturar carregamento de páginas -> content = Título da página;
   			CLICK : "click", 
   			FOCUSOUT: "focusout", 
   			SUBMIT : "submit",
+  			MOUSEOVER: "mouseover",
+
   			ROTEIRO : "roteiro",
   			CONCLUIR : "concluir",
   			COMENTARIO : "comentario",
@@ -38,8 +40,10 @@ Capturar carregamento de páginas -> content = Título da página;
 		}
 
 		console.log("capt -> localStorage");
+
 		printAcoes();
 
+		var lastMouseMove = 0, lastMouseX, lastMouseY, mouseOffSet = 5;
 		$(document).on({
 			click : function(e) {
 				insertNewAcao(e, actionCapt.CLICK);
@@ -47,6 +51,19 @@ Capturar carregamento de páginas -> content = Título da página;
 				insertNewAcao(e, actionCapt.FOCUSOUT);
 			}, submit : function(e) {
 				insertNewAcao(e, actionCapt.SUBMIT);
+			}, mousemove : function(e) {
+				if(e.timeStamp - lastMouseMove >= 750){
+					if(e.pageX <= lastMouseX+mouseOffSet &&
+					   e.pageX >= lastMouseX-mouseOffSet &&
+					   e.pageY <= lastMouseY+mouseOffSet &&
+					   e.pageY >= lastMouseY-mouseOffSet){
+					   	console.log(e)
+						insertNewAcao(e, actionCapt.MOUSEOVER);
+					}
+				}
+				lastMouseMove = e.timeStamp;
+				lastMouseX = e.pageX;
+				lastMouseY = e.pageY;
 			}
 		});
 		/*	FUNÇÕES EXTRAS	*/
@@ -63,23 +80,33 @@ Capturar carregamento de páginas -> content = Título da página;
 				){
 					var acao = new Action(action, new Date().getTime(), getUrl(), conteudo, target.tagName, $(tagName).index(target), e.pageX, e.pageY, $(window).width(), $(window).height(), navigator.userAgent);
 					//verificar se a acao eh semelhante com a acao passada
-					if(ultimaAcao){
-						if(ultimaAcao.sTime && acao.sTime && acao.sTime - ultimaAcao.sTime > 10){
+					console.log(acao)
+
+					//se for concluir, verificar se já há outro concluir
+					console.log(acoesContainsConcluir())
+					console.log(!(action == actionCapt.CONCLUIR && acoesContainsConcluir()))
+					if(!(action == actionCapt.CONCLUIR && acoesContainsConcluir())){
+						if(ultimaAcao){
+							if(ultimaAcao.sTime && acao.sTime && acao.sTime - ultimaAcao.sTime > 10){
+								ultimaAcao = acao;
+								addAcao(acao);
+							}else{
+								ultimaAcao = acao;
+								console.log("Evitou repetição:");
+								console.log(ultimaAcao);
+							}
+						}else{
+							//primeira ação
 							ultimaAcao = acao;
 							addAcao(acao);
-						}else{
-							ultimaAcao = acao;
-							console.log("Evitou repetição:");
-							console.log(ultimaAcao);
 						}
-					}else{
-						//primeira ação
-						ultimaAcao = acao;
-						addAcao(acao);
 					}
 				}
 			}
 		}
+		/**
+		Receber o conteudo da ação de acordo com o elemento e a ação
+		*/
 		function getContent($target, action){
 			var val = null;
 			if(action==actionCapt.COMENTARIO){
@@ -90,6 +117,20 @@ Capturar carregamento de páginas -> content = Título da página;
 				val = $target.val();
 			}else if(action==actionCapt.SUBMIT){
 				val = $target.serialize();
+			}else if(action==actionCapt.MOUSEOVER){
+				val = getContentMouseOver($target);
+				//receber o title caso seja de um no pai
+				var count = 0, parent = $target;
+				while(val == ""){
+					count++;
+					parent = parent.parent();
+					val = getContentMouseOver(parent);
+					if(count >= 2){
+						val = " ";
+					}
+				}
+			}else if(action==actionCapt.CONCLUIR){
+				val = "";//document.documentElement.outerHTML;
 			}
 
 			if(val){
@@ -98,6 +139,9 @@ Capturar carregamento de páginas -> content = Título da página;
 				return "";
 			}
 		}
+		/**
+		Função para filtrar a ação realizada
+		*/
 		function filterAction($e, defaolt){
 			var isOnUseSkill = $e.parents('.UseSkill-nocapt').length;
 			var id = $e.attr("id");
@@ -110,6 +154,9 @@ Capturar carregamento de páginas -> content = Título da página;
 			}
 			return action;
 		}
+		/**
+		Função para alterar a ação em elementos específicos da UseSkill
+		*/
 		function isOnUseSkillDIV(isOnUseSkill, id, idParent){
 			var action = false;
 			if(isOnUseSkill){
@@ -127,6 +174,12 @@ Capturar carregamento de páginas -> content = Título da página;
 			return action;
 		}
 		
+		function getContentMouseOver($target){
+			var title = $target.attr("title"), alt = $target.attr("alt");
+			val = title ? title : "";
+			val = alt ? (val ? val + " - " + alt : alt) : val;
+			return val;
+		}
 		function printAcoes(){
 			chrome.extension.sendRequest({useskill: "getAcoes"}, function(response) {
 				console.log(response.dados);
@@ -152,6 +205,19 @@ Capturar carregamento de páginas -> content = Título da página;
 		}
 		function stringfyJSON(data){
 			return window.JSON && window.JSON.stringify ? window.JSON.stringify(data) : (new Function("return " + data))();
+		}
+		function acoesContainsConcluir(){
+			chrome.extension.sendRequest({useskill: "getAcoes"}, function(response) {
+				acoes = response.dados;
+				for(var i in acoes){
+					if(acoes[i].sActionType!=null){
+						if(new String(acoes[i].sActionType).toLowerCase()==actionCapt.CONCLUIR){
+							return true;
+						}
+					}
+				}
+				return false;
+			});
 		}
 	});
 })(jQuery);

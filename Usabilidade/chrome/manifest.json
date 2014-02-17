@@ -11,7 +11,12 @@
     }
   ],
   "permissions": [
-    "notifications", "tabs", "http://*/*", "https://*/*", "unlimitedStorage"
+    "notifications", 
+    "tabs", 
+    "webNavigation",
+    "http://*/*", 
+    "https://*/*", 
+    "unlimitedStorage"
   ],
   "background": {
     "scripts": ["js/jquery.js", "js/background.js"]

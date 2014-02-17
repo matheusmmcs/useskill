@@ -186,4 +186,11 @@ public class Usuario implements Serializable {
 			} while (getRepository().isContainConfirmacaoEmail(confirmacaoEmail));
 		}
 	}
+	
+	/**
+	 * Método criado para sanar um problema na injeção de dependência
+	 */
+	public void setRepository(UsuarioRepository usuarioRepository){
+		this.usuarioRepository = usuarioRepository;
+	}
 }
