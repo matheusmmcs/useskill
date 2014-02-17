@@ -99,20 +99,24 @@
 		          <groupId>br.com.caelum</groupId>
 		          <artifactId>iogi</artifactId>
 		        </exclusion>
+		        <exclusion>
+		          <groupId>net.vidageek</groupId>
+		          <artifactId>mirror</artifactId>
+		        </exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>ognl</groupId>
-			<artifactId>ognl</artifactId>
-			<version>2.7.3</version>
-			<optional>true</optional>
-		</dependency>
-		<!-- Removido o ongl e inserido o iogi (problemas com ordenação de listas) -->
 <!-- 		<dependency> -->
-<!-- 			<groupId>br.com.caelum</groupId> -->
-<!-- 			<artifactId>iogi</artifactId> -->
-<!-- 			<version>0.9.2</version> -->
+<!-- 			<groupId>ognl</groupId> -->
+<!-- 			<artifactId>ognl</artifactId> -->
+<!-- 			<version>2.7.3</version> -->
+<!-- 			<optional>true</optional> -->
 <!-- 		</dependency> -->
+		<!-- Removido o ongl e inserido o iogi (problemas com ordenação de listas) -->
+		<dependency>
+			<groupId>br.com.caelum</groupId>
+			<artifactId>iogi</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
