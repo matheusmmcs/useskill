@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 /**
  * 
@@ -26,8 +27,11 @@ public class Action implements Serializable {
 	private String sActionType;
 	private Long sTime;
 	private String sUrl;
-	@Column(columnDefinition = "LONGTEXT")
+	
+	@Lob
+	@Column(length = 10000000)
 	private String sContent;
+	
 	private String sTag;
 	private String sTagIndex;
 	private int sPosX;

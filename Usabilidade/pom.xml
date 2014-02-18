@@ -105,12 +105,12 @@
 		        </exclusion>
 			</exclusions>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>ognl</groupId> -->
-<!-- 			<artifactId>ognl</artifactId> -->
-<!-- 			<version>2.7.3</version> -->
-<!-- 			<optional>true</optional> -->
-<!-- 		</dependency> -->
+		<dependency>
+			<groupId>ognl</groupId>
+			<artifactId>ognl</artifactId>
+			<version>2.7.3</version>
+			<optional>true</optional>
+		</dependency>
 		<!-- Removido o ongl e inserido o iogi (problemas com ordenação de listas) -->
 		<dependency>
 			<groupId>br.com.caelum</groupId>
