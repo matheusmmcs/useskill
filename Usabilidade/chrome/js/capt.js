@@ -29,7 +29,8 @@ Capturar carregamento de páginas -> content = Título da página;
 			this.sActionType = action;
 			this.sTime = time;
 			this.sUrl = url;
-			this.sContent = String(content).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').substr(0, 200);
+			this.sContent = String(content).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+			this.sContent = (action == actionCapt.CONCLUIR) ? this.sContent : this.sContent.substr(0, 200);
 			this.sTag = tag;
 			this.sTagIndex = tagIndex;
 			this.sPosX = posX;
@@ -66,6 +67,9 @@ Capturar carregamento de páginas -> content = Título da página;
 				lastMouseY = e.pageY;
 			}
 		});
+
+		
+
 		/*	FUNÇÕES EXTRAS	*/
 		function insertNewAcao(e, actionType){
 			var target = e.target;
@@ -82,25 +86,23 @@ Capturar carregamento de páginas -> content = Título da página;
 					//verificar se a acao eh semelhante com a acao passada
 					console.log(acao)
 
-					//se for concluir, verificar se já há outro concluir
-					console.log(acoesContainsConcluir())
-					console.log(!(action == actionCapt.CONCLUIR && acoesContainsConcluir()))
-					if(!(action == actionCapt.CONCLUIR && acoesContainsConcluir())){
-						if(ultimaAcao){
-							if(ultimaAcao.sTime && acao.sTime && acao.sTime - ultimaAcao.sTime > 10){
-								ultimaAcao = acao;
-								addAcao(acao);
-							}else{
-								ultimaAcao = acao;
-								console.log("Evitou repetição:");
-								console.log(ultimaAcao);
-							}
-						}else{
-							//primeira ação
+					//TODO: se for concluir, verificar se já há outro concluir
+					
+					if(ultimaAcao){
+						if(ultimaAcao.sTime && acao.sTime && acao.sTime - ultimaAcao.sTime > 10){
 							ultimaAcao = acao;
 							addAcao(acao);
+						}else{
+							ultimaAcao = acao;
+							console.log("Evitou repetição:");
+							console.log(ultimaAcao);
 						}
+					}else{
+						//primeira ação
+						ultimaAcao = acao;
+						addAcao(acao);
 					}
+					
 				}
 			}
 		}
@@ -130,7 +132,7 @@ Capturar carregamento de páginas -> content = Título da página;
 					}
 				}
 			}else if(action==actionCapt.CONCLUIR){
-				val = "";//document.documentElement.outerHTML;
+				val = document.documentElement.outerHTML;
 			}
 
 			if(val){
@@ -205,19 +207,6 @@ Capturar carregamento de páginas -> content = Título da página;
 		}
 		function stringfyJSON(data){
 			return window.JSON && window.JSON.stringify ? window.JSON.stringify(data) : (new Function("return " + data))();
-		}
-		function acoesContainsConcluir(){
-			chrome.extension.sendRequest({useskill: "getAcoes"}, function(response) {
-				acoes = response.dados;
-				for(var i in acoes){
-					if(acoes[i].sActionType!=null){
-						if(new String(acoes[i].sActionType).toLowerCase()==actionCapt.CONCLUIR){
-							return true;
-						}
-					}
-				}
-				return false;
-			});
 		}
 	});
 })(jQuery);
