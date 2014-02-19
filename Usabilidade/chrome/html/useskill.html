@@ -254,7 +254,13 @@
 		//Acoes
 		$('#USconcluirTarefa').on('click', function(e){
 			e.preventDefault();
-			concluirTarefa(elAtual.id);
+			var $this = $(this);
+
+			var clicked = $this.attr("clicked");
+			if(!clicked){
+				$this.html('<b class="USicon-arrow-up USicon-white"></b> Enviando dados...').attr("clicked", "true");
+				concluirTarefa(elAtual.id);
+			}			
 		});
 		$('#USadiarTeste').on('click', function(e){
 			e.preventDefault();
