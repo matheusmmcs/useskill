@@ -14,9 +14,11 @@ import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.RespostaAlternativaRepository;
 import br.ufpi.repositories.RespostaEscritaRepository;
 import br.ufpi.repositories.UsuarioRepository;
+import br.ufpi.repositories.ValorRoteiroRepository;
 import br.ufpi.repositories.Implement.FluxoRepositoryImpl;
 import br.ufpi.repositories.Implement.RespostaAlternativaRepositoryImpl;
 import br.ufpi.repositories.Implement.RespostaEscritaRepositoryImpl;
+import br.ufpi.repositories.Implement.ValorRoteiroRepositoryImpl;
 
 public class TesteParticiparTestProcedure {
 	public static TesteParticiparController newInstanceTesteController(
@@ -33,7 +35,8 @@ public class TesteParticiparTestProcedure {
 		FluxoRepository fluxoRepository=new FluxoRepositoryImpl(entityManager);
 		RespostaEscritaRepository escritaRepository= new RespostaEscritaRepositoryImpl(entityManager);
 		RespostaAlternativaRepository alternativaRepository =new  RespostaAlternativaRepositoryImpl(entityManager);
-		TesteParticiparController controller= new TesteParticiparController(result, validator, testeView, usuarioLogado, validateComponente, convidadoRepository, testeSessionPlugin, alternativaRepository, escritaRepository, fluxoRepository);
+		ValorRoteiroRepository valorRoteiroRepository = new ValorRoteiroRepositoryImpl(entityManager);
+		TesteParticiparController controller= new TesteParticiparController(result, validator, testeView, usuarioLogado, validateComponente, convidadoRepository, testeSessionPlugin, alternativaRepository, escritaRepository, fluxoRepository, valorRoteiroRepository);
 				
 		return controller;
 	}
@@ -50,7 +53,8 @@ public class TesteParticiparTestProcedure {
 		FluxoRepository fluxoRepository=new FluxoRepositoryImpl(entityManager);
 		RespostaEscritaRepository escritaRepository= new RespostaEscritaRepositoryImpl(entityManager);
 		RespostaAlternativaRepository alternativaRepository =new  RespostaAlternativaRepositoryImpl(entityManager);
-		TesteParticiparController controller= new TesteParticiparController(result, validator, testeView, usuarioLogado, validateComponente, convidadoRepository, testeSessionPlugin, alternativaRepository, escritaRepository, fluxoRepository);
+		ValorRoteiroRepository valorRoteiroRepository = new ValorRoteiroRepositoryImpl(entityManager);
+		TesteParticiparController controller= new TesteParticiparController(result, validator, testeView, usuarioLogado, validateComponente, convidadoRepository, testeSessionPlugin, alternativaRepository, escritaRepository, fluxoRepository, valorRoteiroRepository);
 		
 		return controller;
 	}
