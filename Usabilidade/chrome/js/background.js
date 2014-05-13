@@ -331,8 +331,61 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 //----------------------------------------------------------------------------------------------------------------------------------------------
 //WEBNAVEGATION
 
-chrome.webNavigation.onHistoryStateUpdated.addListener(function (e){
-	console.log(e)
+
+function Action(action, time, url, content, tag, tagIndex, id, classe, name, xPath, posX, posY, viewportX, viewportY, useragent) {
+	this.sActionType = action;
+	this.sTime = time;
+	this.sUrl = url;
+	this.sContent = String(content).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	this.sContent = content;
+	this.sTag = tag;
+	this.sTagIndex = tagIndex;
+	this.sId = id;
+	this.sClass = classe;
+	this.sName = name;
+	this.sXPath = xPath;
+	this.sPosX = posX;
+	this.sPosY = posY;
+	this.sViewportX = viewportX;
+	this.sViewportY = viewportY;
+	this.sUserAgent = useragent;
+}
+
+//metodo que captura os eventos de transição de página:
+//click em link, form_submit, url digitada, reload, forward ou back
+chrome.webNavigation.onCommitted.addListener(function(details){
+	var action, transType;
+	//capturar eventos de back e forward
+	var qualifiers = details.transitionQualifiers;
+	// console.log("")
+	// console.log("")
+	// console.log("XXXXXXXXXXXXXXXXXXXX")
+	// console.log(qualifiers, qualifiers[0], details.transitionType)
+	if(qualifiers && qualifiers[0] == "forward_back"){
+		var url = details.url;
+		transType = "forward_back";
+		action = true;
+	}else{
+		//capturar evento que redirecionam para outra página (link, form_submit, typed)
+		transType = details.transitionType.toLowerCase();
+		if(transType == 'link' || transType == 'form_submit' || transType == 'typed' || transType == 'reload'){
+			var url = details.url;
+			action = true;
+		}
+	}
+
+	if(action){
+		console.log("##########################################")
+		action = new Action(transType, new Date().getTime(), url, "", "", "", "", "", "", "", 0, 0, 0, 0, navigator.userAgent);
+		console.log(action)
+		console.log("##########################################")
+		var stringAcao = stringfyJSON(action);
+		addAcao(stringAcao);
+	}
+	// console.log(action)
+	// console.log("XXXXXXXXXXXXXXXXXXXX")
+	// console.log("")
+	// console.log("")
 });
 
 //----------------------------------------------------------------------------------------------------------------------------------------------

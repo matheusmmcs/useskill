@@ -119,12 +119,12 @@ public class TarefaRepositoryTest extends Repository<Tarefa, Long> implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * br.ufpi.repositories.TarefaRepository#getFluxoUsuario(java.lang.Long,
+	 * br.ufpi.repositories.TarefaRepository#getFluxosUsuario(java.lang.Long,
 	 * java.lang.Long)
 	 */
 	@Override
-	public List<FluxoVO> getFluxoUsuario(Long tarefaId, Long usuarioId) {
-		return tarefaRepositoryImpl.getFluxoUsuario(tarefaId, usuarioId);
+	public List<FluxoVO> getFluxosUsuario(Long tarefaId, Long usuarioId) {
+		return tarefaRepositoryImpl.getFluxosUsuario(tarefaId, usuarioId);
 	}
 
 	/*

@@ -458,7 +458,7 @@ public class TarefaController extends BaseController {
 		validateComponente.validarId(usuarioId);
 		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
 		tarefaPertenceAoUsuarioLogado(usuarioCriadorId, tarefaId, testeId);
-		List<FluxoVO> fluxos = tarefaRepository.getFluxoUsuario(tarefaId,
+		List<FluxoVO> fluxos = tarefaRepository.getFluxosUsuario(tarefaId,
 				usuarioId);
 		estatistica.calculoTempoEAcoesFluxo(tarefaId, fluxos, true);
 		if (!fluxos.isEmpty()) {
@@ -601,4 +601,5 @@ public class TarefaController extends BaseController {
 				testeId, usuarioDonoTeste);
 		validateComponente.validarObjeto(pertenceTeste);
 	}
+	
 }

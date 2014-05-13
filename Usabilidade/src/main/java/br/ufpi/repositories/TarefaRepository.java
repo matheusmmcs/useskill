@@ -166,7 +166,7 @@ public interface TarefaRepository {
 	 * @param usuarioId
 	 * @return
 	 */
-	List<FluxoVO> getFluxoUsuario(Long tarefaId, Long usuarioId);
+	List<FluxoVO> getFluxosUsuario(Long tarefaId, Long usuarioId);
 
 	/**
 	 * Obtem o nome do usuario que realizou o fluxo

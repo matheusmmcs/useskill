@@ -11,12 +11,14 @@ Capturar carregamento de páginas -> content = Título da página;
 	$(document).ready(function(){
 		
 		//compara a ultima acao com a realizada, evitando duplicacao de acoes
+		
+		//OBS: Ocorre a captura de back e forward no background
+
 		ultimaAcao = null;
 
 		var actionCapt = {
   			CLICK : "click", 
-  			FOCUSOUT: "focusout", 
-  			SUBMIT : "submit",
+  			FOCUSOUT: "focusout",
   			MOUSEOVER: "mouseover",
 
   			ROTEIRO : "roteiro",
@@ -24,8 +26,8 @@ Capturar carregamento de páginas -> content = Título da página;
   			COMENTARIO : "comentario",
   			PULAR : "pular"
 		};
-
-		function Action(action, time, url, content, tag, tagIndex, posX, posY, viewportX, viewportY, useragent) {
+		//DUPLICADO NO BACKGROUND (WEBNAVIGATION) E JAVA
+		function Action(action, time, url, content, tag, tagIndex, id, classe, name, xPath, posX, posY, viewportX, viewportY, useragent) {
 			this.sActionType = action;
 			this.sTime = time;
 			this.sUrl = url;
@@ -33,6 +35,10 @@ Capturar carregamento de páginas -> content = Título da página;
 			this.sContent = (action == actionCapt.CONCLUIR) ? this.sContent : this.sContent.substr(0, 200);
 			this.sTag = tag;
 			this.sTagIndex = tagIndex;
+			this.sId = id;
+			this.sClass = classe;
+			this.sName = name;
+			this.sXPath = xPath;
 			this.sPosX = posX;
 			this.sPosY = posY;
 			this.sViewportX = viewportX;
@@ -50,15 +56,12 @@ Capturar carregamento de páginas -> content = Título da página;
 				insertNewAcao(e, actionCapt.CLICK);
 			}, focusout : function(e) {
 				insertNewAcao(e, actionCapt.FOCUSOUT);
-			}, submit : function(e) {
-				insertNewAcao(e, actionCapt.SUBMIT);
 			}, mousemove : function(e) {
 				if(e.timeStamp - lastMouseMove >= 750){
 					if(e.pageX <= lastMouseX+mouseOffSet &&
 					   e.pageX >= lastMouseX-mouseOffSet &&
 					   e.pageY <= lastMouseY+mouseOffSet &&
 					   e.pageY >= lastMouseY-mouseOffSet){
-					   	console.log(e)
 						insertNewAcao(e, actionCapt.MOUSEOVER);
 					}
 				}
@@ -75,14 +78,14 @@ Capturar carregamento de páginas -> content = Título da página;
 			var target = e.target;
 			var tagName = target.tagName;
 			var $target = $(target);
-			var action = filterAction($target, actionType);
+			var action = filterAction(e, $target, actionType);
 			if(action){
 				var conteudo = getContent($target, action);
 				//filtros de captura de dados
 				if(
 					!(action == actionCapt.FOCUSOUT && conteudo == "")//focusout em campo vazio, não preencheu nada
 				){
-					var acao = new Action(action, new Date().getTime(), getUrl(), conteudo, target.tagName, $(tagName).index(target), e.pageX, e.pageY, $(window).width(), $(window).height(), navigator.userAgent);
+					var acao = new Action(action, new Date().getTime(), getUrl(), conteudo, target.tagName, $(tagName).index(target), target.id, target.className, target.name, createXPathFromElement(e.target), e.pageX, e.pageY, $(window).width(), $(window).height(), navigator.userAgent);
 					//verificar se a acao eh semelhante com a acao passada
 					console.log(acao)
 
@@ -117,8 +120,6 @@ Capturar carregamento de páginas -> content = Título da página;
 				val = $target.html();
 			}else if(action==actionCapt.FOCUSOUT){
 				val = $target.val();
-			}else if(action==actionCapt.SUBMIT){
-				val = $target.serialize();
 			}else if(action==actionCapt.MOUSEOVER){
 				val = getContentMouseOver($target);
 				//receber o title caso seja de um no pai
@@ -144,16 +145,21 @@ Capturar carregamento de páginas -> content = Título da página;
 		/**
 		Função para filtrar a ação realizada
 		*/
-		function filterAction($e, defaolt){
-			var isOnUseSkill = $e.parents('.UseSkill-nocapt').length;
-			var id = $e.attr("id");
-			var idParent = $e.parent().attr("id");
-			var action = isOnUseSkillDIV(isOnUseSkill, id, idParent);
+		function filterAction(e, $e, defaolt){
+			var action = false;
+			if(e.type != "focusout"){
+				var isOnUseSkill = $e.parents('.UseSkill-nocapt').length;
+				var id = $e.attr("id");
+				var idParent = $e.parent().attr("id");
+				action = isOnUseSkillDIV(isOnUseSkill, id, idParent);
+			}
+
 			if(action == true){
 				action = null;
 			}else if(action == false){
 				action = defaolt;
 			}
+
 			return action;
 		}
 		/**
@@ -200,7 +206,7 @@ Capturar carregamento de páginas -> content = Título da página;
 			return parseJSON(strObj);
 		}
 		function getUrl(){
-			return location.protocol+location.host+location.pathname;
+			return location.protocol+"//"+location.host+location.pathname;
 		}
 		function parseJSON(data) {
 			return window.JSON && window.JSON.parse ? window.JSON.parse(data) : (new Function("return " + data))(); 
@@ -208,5 +214,37 @@ Capturar carregamento de páginas -> content = Título da página;
 		function stringfyJSON(data){
 			return window.JSON && window.JSON.stringify ? window.JSON.stringify(data) : (new Function("return " + data))();
 		}
+
+		function createXPathFromElement(elm) {
+		    var allNodes = document.getElementsByTagName('*');
+		    for (segs = []; elm && elm.nodeType == 1; elm = elm.parentNode){
+		        if (elm.hasAttribute('id')) {
+		                var uniqueIdCount = 0;
+		                for (var n=0;n < allNodes.length;n++) {
+		                    if (allNodes[n].hasAttribute('id') && allNodes[n].id == elm.id) uniqueIdCount++;
+		                    if (uniqueIdCount > 1) break;
+		                };
+		                if ( uniqueIdCount == 1) {
+		                    segs.unshift('id("' + elm.getAttribute('id') + '")');
+		                    return segs.join('/');
+		                } else {
+		                    segs.unshift(elm.localName.toLowerCase() + '[@id="' + elm.getAttribute('id') + '"]');
+		                }
+		        } else if (elm.hasAttribute('class')) {
+		            segs.unshift(elm.localName.toLowerCase() + '[@class="' + elm.getAttribute('class') + '"]');
+		        } else {
+		            for (i = 1, sib = elm.previousSibling; sib; sib = sib.previousSibling) {
+		                if (sib.localName == elm.localName)  i++; };
+		                segs.unshift(elm.localName.toLowerCase() + '[' + i + ']');
+		        };
+		    };
+		    return segs.length ? '/' + segs.join('/') : null;
+		}; 
+
+		function lookupElementByXPath(path) {
+		    var evaluator = new XPathEvaluator();
+		    var result = evaluator.evaluate(path, document.documentElement, null,XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+		    return  result.singleNodeValue;
+		} 
 	});
 })(jQuery);

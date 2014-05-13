@@ -160,7 +160,5 @@ public class Tarefa implements Serializable {
 	public void setVariaveisRoteiro(List<VariavelRoteiro> variaveisRoteiro) {
 		this.variaveisRoteiro = variaveisRoteiro;
 	}
-
 	
-
 }

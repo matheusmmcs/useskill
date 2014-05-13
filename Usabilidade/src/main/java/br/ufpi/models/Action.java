@@ -16,6 +16,8 @@ import javax.persistence.Lob;
 /**
  * 
  * @author Cleiton
+ * @changes Matheus
+ * 
  */
 @Entity
 public class Action implements Serializable {
@@ -31,9 +33,15 @@ public class Action implements Serializable {
 	@Lob
 	@Column(length = 10000000)
 	private String sContent;
+	@Lob
+	@Column(length = 10000000)
+	private String sXPath;
 	
 	private String sTag;
 	private String sTagIndex;
+	private String sId;
+	private String sClass;
+	private String sName;
 	private int sPosX;
 	private int sPosY;
 
@@ -176,13 +184,51 @@ public class Action implements Serializable {
 		this.sPosY = sPosY;
 	}
 
+	public String getsId() {
+		return sId;
+	}
+
+	public void setsId(String sId) {
+		this.sId = sId;
+	}
+
+	public String getsClass() {
+		return sClass;
+	}
+
+	public void setsClass(String sClass) {
+		this.sClass = sClass;
+	}
+
+	public String getsName() {
+		return sName;
+	}
+
+	public void setsName(String sName) {
+		this.sName = sName;
+	}
+
+	/**
+	 * @return the sXPath
+	 */
+	public String getsXPath() {
+		return sXPath;
+	}
+
+	/**
+	 * @param sXPath the sXPath to set
+	 */
+	public void setsXPath(String sXPath) {
+		this.sXPath = sXPath;
+	}
+	
 	@Override
 	public String toString() {
 		return "Action [id=" + id 
 				+ ", sActionType=" + sActionType + ", sTime=" + sTime
-				+ ", sUrl=" + sUrl + ", sContent=" + sContent + ", sTag="
-				+ sTag + ", sTagIndex=" + sTagIndex + ", sPosX=" + sPosX
-				+ ", sPosY=" + sPosY + "]";
+				+ ", sUrl=" + sUrl + ", sTag="
+				+ sTag + ", sTagIndex=" + sTagIndex + ", sId=" + sId 
+				+  ", sClass=" + sClass + ", sName=" + sName + ", sPosX=" 
+				+ sPosX	+ ", sPosY=" + sPosY + ", sXPath=" + sXPath + "]";
 	}
-
 }

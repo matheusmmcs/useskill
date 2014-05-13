@@ -1,11 +1,13 @@
 package br.ufpi.repositories.Implement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
@@ -16,6 +18,7 @@ import br.ufpi.models.Tarefa;
 import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.Usuario;
 import br.ufpi.models.enums.SituacaoDeUsoEnum;
+import br.ufpi.models.enums.TipoAcaoEnum;
 import br.ufpi.models.roteiro.ValorRoteiro;
 import br.ufpi.models.roteiro.VariavelRoteiro;
 import br.ufpi.models.vo.FluxoCountVO;
@@ -32,6 +35,23 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 	public TarefaRepositoryImpl(EntityManager entityManager) {
 		super(entityManager);
 	}
+	
+	private List<String> getAcoesReais(){
+		List<String> types = new ArrayList<String>();
+		
+		types.add(TipoAcaoEnum.CLICK.getAbreviacao());
+		types.add(TipoAcaoEnum.FOCUSOUT.getAbreviacao());
+		types.add(TipoAcaoEnum.MOUSEOVER.getAbreviacao());
+		//
+		types.add(TipoAcaoEnum.FORM_SUBMIT.getAbreviacao());
+		types.add(TipoAcaoEnum.FORWARD_BACK.getAbreviacao());
+		types.add(TipoAcaoEnum.LINK.getAbreviacao());
+		types.add(TipoAcaoEnum.TYPED.getAbreviacao());
+		types.add(TipoAcaoEnum.RELOAD.getAbreviacao());
+		
+		return types;
+	}
+	
 
 	@Override
 	public Tarefa pertenceTeste(Long idTarefa, Long idTeste, Long idUsuario) {
@@ -252,10 +272,36 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 		query.setParameter("actionType", actionType);
 		return query.getResultList();
 	}
+	
+	/**
+	 * Apenas as acoes que sao contabilizadas
+	 * 
+	 * @param fluxo
+	 * @param actionType
+	 * @return
+	 */
+	public List<Action> getAcoesReais(Long fluxo) {
+		return getAcoesPorTipoAcao(fluxo, getAcoesReais());
+	}
+	
+	public List<Action> getAcoesPorTipoAcao(Long fluxo, String ... actionType) {
+		List<String> types = new ArrayList<String>();
+		for(String s : actionType){
+			types.add(s);
+		}
+		return getAcoesPorTipoAcao(fluxo, types);
+	}
+	
+	public List<Action> getAcoesPorTipoAcao(Long fluxo, List<String> actionTypes) {
+		Query query = entityManager.createNamedQuery("Fluxo.Acoes.por.tipos");
+		query.setParameter("fluxo", fluxo);
+		query.setParameter("actionType", actionTypes);
+		return query.getResultList();
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<FluxoVO> getFluxoUsuario(Long tarefaId, Long usuarioId) {
+	public List<FluxoVO> getFluxosUsuario(Long tarefaId, Long usuarioId) {
 		Query query = entityManager.createNamedQuery("Fluxo.fluxosdoUsuario");
 		query.setParameter("tarefa", tarefaId);
 		query.setParameter("usuario", usuarioId);
