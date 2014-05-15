@@ -90,9 +90,10 @@ Capturar carregamento de páginas -> content = Título da página;
 					console.log(acao)
 
 					//TODO: se for concluir, verificar se já há outro concluir
-					
 					if(ultimaAcao){
-						if(ultimaAcao.sTime && acao.sTime && acao.sTime - ultimaAcao.sTime > 10){
+						var acoesRapidas = (action == actionCapt.CLICK);
+						//se for acao permitida, nao houver acao anterir ou se for mais demorado que 10ms
+						if(acoesRapidas || !ultimaAcao.sTime || (acao.sTime && acao.sTime - ultimaAcao.sTime > 10)){
 							ultimaAcao = acao;
 							addAcao(acao);
 						}else{

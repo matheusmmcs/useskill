@@ -1,6 +1,6 @@
-var domainUseSkill = "http://www.killline.com/useskill";
+//var domainUseSkill = "http://www.killline.com/useskill";
 //var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";
-//var domainUseSkill = "http://localhost:8080/Usabilidade";
+var domainUseSkill = "http://localhost:8080/Usabilidade";
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
 //OMNIBOX
@@ -320,6 +320,8 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 	if(storage.gravando){
 		if(changeInfo.status == "loading"){
+			//adicionar abas abertas durante os testes
+			storage.tabs.add(tabId);
 			if(storage.tabs.contains(tabId)){
 				console.log("update: "+tabId);
 				insertOnPage(tabId);

@@ -13,6 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 
+import br.ufpi.models.vo.ActionVO;
+
 /**
  * 
  * @author Cleiton
@@ -220,6 +222,10 @@ public class Action implements Serializable {
 	 */
 	public void setsXPath(String sXPath) {
 		this.sXPath = sXPath;
+	}
+	
+	public ActionVO toVO(){
+		return new ActionVO(this.sActionType, this.sUrl, this.sXPath);
 	}
 	
 	@Override

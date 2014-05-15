@@ -20,6 +20,10 @@ legend{
   text-align: center;
   color: #324B6F;
 }
+legend a{
+  cursor: pointer;
+  color: #324B6F;
+}
 label{
   color: #324B6F;
 }

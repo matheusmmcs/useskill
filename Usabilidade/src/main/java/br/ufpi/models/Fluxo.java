@@ -109,6 +109,7 @@ import javax.persistence.TemporalType;
 		@NamedQuery(name = "Fluxo.quantidade.Acoes.por.tipo", query = "select  (Select count(*) from Fluxo as flu2 left join flu2.acoes as action where flu2=flu and action.sActionType= :actionType) from Fluxo as flu where flu.tarefa.id= :tarefa and flu.tipoConvidado= :tipoConvidado and flu.isFinished= true  Group by flu.id"),
 		
 		@NamedQuery(name = "Fluxo.Acoes.por.tipos", query = "select acoes from Fluxo as flu left join flu.acoes as acoes where flu.id= :fluxo and flu.isFinished= true and acoes.sActionType in (:actionType)"),
+		@NamedQuery(name = "Fluxos.tipo.convite.Acoes.por.tipos", query = "select flu from Fluxo as flu where flu.tarefa.id= :tarefaId and flu.tipoConvidado= :tipoConvidado and flu.isFinished= true"),
 		/**
 		 * Obtem a quantidade de fluxos que foram concluidos ou nao
 		 * @author "Cleiton Moura"

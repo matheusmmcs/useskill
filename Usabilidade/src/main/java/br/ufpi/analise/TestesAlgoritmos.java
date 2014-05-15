@@ -2,23 +2,113 @@ package br.ufpi.analise;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-
-import org.apache.bcel.generic.ACONST_NULL;
 
 import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.TipoConvidado;
-import br.ufpi.models.enums.TipoAcaoEnum;
+import br.ufpi.models.Usuario;
+import br.ufpi.models.vo.ActionVO;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 
 public class TestesAlgoritmos {
 
+	
+	private static List<ActionVO> getListAcoesObrigatorias(Tarefa tarefa, TarefaRepositoryImpl tarefaRepositoryImpl){
+		List<ActionVO> acoesObrigatorias = new ArrayList<ActionVO>();
+		List<Fluxo> fluxos = tarefaRepositoryImpl.getFluxos(tarefa.getId(), TipoConvidado.EXPERT);
+		for(Fluxo fluxo : fluxos){
+			List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
+			for(Action acao : acoes){
+				ActionVO acaoVO = acao.toVO();
+				int contFluxos = 0;
+				for(Fluxo fluxo2 : fluxos){
+					for(Action acao2 : tarefaRepositoryImpl.getAcoesReais(fluxo2.getId())){
+						ActionVO acao2VO = acao2.toVO();
+						if(acaoVO.equals(acao2VO)){
+							contFluxos++;
+							break;
+						}
+					}
+				}
+				if(contFluxos == fluxos.size() && !acoesObrigatorias.contains(acaoVO)){
+					acoesObrigatorias.add(acaoVO);
+				}
+			}
+			
+		}
+		return acoesObrigatorias;
+	}
+	
+	private static List<ActionVO> getListAcoesMelhorCaminho(Tarefa tarefa, TarefaRepositoryImpl tarefaRepositoryImpl) {
+		List<Fluxo> fluxos = tarefaRepositoryImpl.getFluxos(tarefa.getId(), TipoConvidado.EXPERT);
+		List<Action> melhorCaminho = null;
+		List<ActionVO> melhorCaminhoVO = new ArrayList<ActionVO>();
+		int contMinFluxo = 0;
+		Fluxo melhorFluxo = null;
+		for(Fluxo fluxo : fluxos){
+			List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
+			if(contMinFluxo == 0 || contMinFluxo > acoes.size()){
+				contMinFluxo = acoes.size();
+				melhorCaminho = acoes;
+				melhorFluxo = fluxo;
+			}
+		}
+		if(melhorCaminho != null){
+			for(Action a : melhorCaminho){
+				ActionVO vo = a.toVO();
+				vo.setUsuario(melhorFluxo.getUsuario());
+				melhorCaminhoVO.add(vo);
+			}
+		}
+		return melhorCaminhoVO;
+	}
+	
+	private static HashMap<ActionVO, Integer> getMapAcoesObrigatorias(Tarefa tarefa, TarefaRepositoryImpl tarefaRepositoryImpl){
+		HashMap<ActionVO, Integer> acoesObrigatorias = new HashMap<ActionVO, Integer>();
+		List<Fluxo> fluxos = tarefaRepositoryImpl.getFluxos(tarefa.getId(), TipoConvidado.EXPERT);
+		for(Fluxo fluxo : fluxos){
+			List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
+			for(Action acao : acoes){
+				ActionVO acaoVO = acao.toVO();
+				Integer contPrevious = acoesObrigatorias.get(acaoVO);
+				if(contPrevious != null){
+					acoesObrigatorias.put(acaoVO, contPrevious + 1);
+				}else{
+					acoesObrigatorias.put(acaoVO, 1);
+				}
+			}
+			
+		}
+		return acoesObrigatorias;
+	}
+	
+	private static HashMap<ActionVO, BigDecimal> normalizeMapAcoesObrigatorias(HashMap<ActionVO, Integer> mapAcoesObrigatorias){
+		int max = 0;
+		Set<ActionVO> mapAcoesObrigatoriaskeySet = mapAcoesObrigatorias.keySet();
+		for(ActionVO key : mapAcoesObrigatoriaskeySet){
+			if(mapAcoesObrigatorias.get(key) > max){
+				max = mapAcoesObrigatorias.get(key); 
+			}
+		}
+		HashMap<ActionVO, BigDecimal> newMap = new HashMap<ActionVO, BigDecimal>();
+		for(ActionVO key : mapAcoesObrigatoriaskeySet){
+			BigDecimal normalized = new BigDecimal(mapAcoesObrigatorias.get(key));
+			normalized = normalized.divide(new BigDecimal(max), 2, RoundingMode.HALF_UP);
+			newMap.put(key, normalized);
+		}
+		return newMap;
+	}
 
 	public static void main(String[] args) {
 		EntityManagerFactory emf = javax.persistence.Persistence.createEntityManagerFactory("default");
@@ -26,15 +116,78 @@ public class TestesAlgoritmos {
 		TarefaRepositoryImpl tarefaRepositoryImpl = new TarefaRepositoryImpl(entityManager);
 		
 		
-		long[] ids = {21};//{19, 20}; - 3, 4, 5
+		long[] ids = {22};//{19, 20}; - 3, 4, 5
 		for(long id: ids){
 			Tarefa tarefa = tarefaRepositoryImpl.find(id);
+			System.out.println("Tarefa: "+tarefa.getId());
+			
+			
+			List<ActionVO> acoesObrigatorias = TestesAlgoritmos.getListAcoesObrigatorias(tarefa, tarefaRepositoryImpl);
+			System.out.println("ACOES OBRIGATORIAS: ");
+			for(ActionVO a : acoesObrigatorias){
+				System.out.println(a);
+			}
+			System.out.println(acoesObrigatorias.size());
+			System.out.println();
+			//
+			List<ActionVO> acoesMelhorCaminho = TestesAlgoritmos.getListAcoesMelhorCaminho(tarefa, tarefaRepositoryImpl);
+			System.out.println("ACOES MELHOR CAMINHO: "+acoesMelhorCaminho.get(0).getUsuario().getNome());
+			for(ActionVO a : acoesMelhorCaminho){
+				System.out.println(a);
+			}
+			System.out.println(acoesMelhorCaminho.size());
+			System.out.println();
+			
+			
 			for(Fluxo fluxo : tarefa.getFluxos()){
 				List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
+				System.out.println("Fluxo: "+fluxo.getId());
+				int contAcao = 0, contAcaoObrigatoria = 0, contMelhorCaminho = 0;
+				long timeInit = 0, timeEnd = 0;
 				for(Action acao : acoes){
-					System.out.println(acao);
+					if(contAcao == 0){
+						timeInit = acao.getsTime();
+					}else if(contAcao == acoes.size() - 1){
+						timeEnd = acao.getsTime();
+					}
+					
+					ActionVO vo = acao.toVO();
+					if(acoesObrigatorias.contains(vo)){
+						contAcaoObrigatoria++;
+					}else{
+						System.out.print("#O");
+					}
+					
+					if(acoesMelhorCaminho.contains(vo)){
+						contMelhorCaminho++;
+					}else{
+						System.out.print("#M");
+					}
+					
+					System.out.println("-> " + vo);
+					contAcao++;
 				}
+				timeInit = timeEnd - timeInit;
+				
+				
+				BigDecimal qtdAcoesObrigatorias = new BigDecimal(acoesObrigatorias.size());
+				BigDecimal qtdAcoesObrigatoriasFeitas = new BigDecimal(contAcaoObrigatoria);
+				BigDecimal qtdAcoesMelhorCaminho = new BigDecimal(contMelhorCaminho);
+				BigDecimal qtdAcoes = new BigDecimal(contAcao);
+				
+				//eficacia (completude das acoes obrigatorias) -> fazer o que deve ser feito
+				BigDecimal eficacia = qtdAcoesObrigatoriasFeitas.divide(qtdAcoesObrigatorias, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+				
+				//eficiencia (qtd eventos) -> fazer da melhor forma
+				BigDecimal eficiencia = qtdAcoesObrigatorias.divide(qtdAcoes, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+				BigDecimal eficiencia2 = qtdAcoesMelhorCaminho.divide(qtdAcoes, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+				
+				System.out.println("User["+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getEmail() + " / Tempo: "+ timeInit + " - Acoes: "+ contAcao + " - Eficacia: " + eficacia + " - Eficiencia: " + eficiencia+"/"+ eficiencia2);
+				System.out.println("");
 			}
+			
+			
+			System.out.println("");
 			//generateLog("TaskLog-EX-New-"+tarefa.getId(), tarefa.getFluxos(TipoConvidado.EXPERT));
 			//generateLog("TaskLog-US-New-"+tarefa.getId(), tarefa.getFluxos(TipoConvidado.USER));
 		}
@@ -45,7 +198,7 @@ public class TestesAlgoritmos {
 	
 	
 	
-	
+
 	public static String lcs(String a, String b) {
 	    int[][] lengths = new int[a.length()+1][b.length()+1];
 	 

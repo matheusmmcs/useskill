@@ -191,6 +191,18 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 			return null;
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Fluxo> getFluxos(Long tarefaId, TipoConvidado tipoConvidado) {
+		Query query = entityManager.createNamedQuery("Fluxos.tipo.convite.Acoes.por.tipos");
+		query.setParameter("tarefaId", tarefaId);
+		query.setParameter("tipoConvidado", tipoConvidado);
+		try {
+			return (List<Fluxo>) query.getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
 	@Override
 	public Fluxo getFluxo(Long testeId, Long tarefaId, Long usarioId,
