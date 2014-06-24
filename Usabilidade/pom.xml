@@ -73,7 +73,13 @@
 	    </repository>
 	</repositories>
 	<dependencies>
-		
+		<dependency>
+			<groupId>jFuzzyLogic</groupId>
+			<artifactId>jFuzzyLogic</artifactId>
+			<scope>system</scope>
+			<version>2.1.2</version>
+			<systemPath>${basedir}/lib/jFuzzyLogic.jar</systemPath>
+		</dependency>
 		<!-- Report (https://github.com/wpivotto/vraptor-jasperreport) -->
 		<dependency>
 		    <groupId>br.com.prixma</groupId>

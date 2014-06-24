@@ -1,0 +1,51 @@
+
+
+FUNCTION_BLOCK fuzzy		// Block definition (there may be more than one block per file)
+
+VAR_INPUT					// Define input variables
+	time : REAL;
+	action : REAL;
+END_VAR
+
+VAR_OUTPUT					// Define output variable
+	effectiveness : REAL;
+END_VAR
+
+FUZZIFY time				// Fuzzify input variable 'time': {'little', 'average' , 'much'}
+	TERM little := 			(0, 1) (0.4, 0) ; 
+	TERM average := 		(0.2, 0) (0.5,1) (0.8,0);
+	TERM much := 			(0.6, 0) (1, 1);
+END_FUZZIFY
+
+FUZZIFY action				// Fuzzify input variable 'action': {'little', 'average' , 'much'}
+	TERM little := 			(0, 1) (0.4, 0) ; 
+	TERM average := 		(0.2, 0) (0.5,1) (0.8,0);
+	TERM much := 			(0.6, 0) (1, 1);
+END_FUZZIFY
+
+DEFUZZIFY effectiveness		// Defuzzify output variable 'effectiveness' : {'poor', 'moderate' , 'excellent'}
+	TERM poor := 			(0, 1) (0.25, 0) ; 
+	TERM moderate := 		(0.25, 0) (0.5,1) (0.75,0);
+	TERM good := 			(0.75, 0) (1, 1);
+	METHOD : COG;			// Use 'Center Of Gravity' defuzzification method
+	DEFAULT := 0;			// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+RULEBLOCK No1
+	AND : MIN;				// Use 'min' for 'and' (also implicit use 'max' for 'or' to fulfill DeMorgan's Law)
+	ACT : MIN;				// Use 'min' activation method
+	ACCU : MAX;				// Use 'max' accumulation method
+
+	RULE 1 : 	IF time IS little 	AND action IS little 	THEN effectiveness IS good;
+	RULE 2 : 	IF time IS little 	AND action IS average 	THEN effectiveness IS good;
+	RULE 3 : 	IF time IS little 	AND action IS much	 	THEN effectiveness IS moderate;
+	RULE 4 : 	IF time IS average 	AND action IS little 	THEN effectiveness IS good;
+	RULE 5 : 	IF time IS average 	AND action IS average 	THEN effectiveness IS moderate;
+	RULE 6 : 	IF time IS average 	AND action IS much 		THEN effectiveness IS poor;
+	RULE 7 : 	IF time IS much 	AND action IS little 	THEN effectiveness IS moderate;
+	RULE 8 : 	IF time IS much 	AND action IS average 	THEN effectiveness IS poor;
+	RULE 9 : 	IF time IS much 	AND action IS much 		THEN effectiveness IS poor;
+	
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

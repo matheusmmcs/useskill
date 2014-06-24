@@ -2,6 +2,7 @@ package br.ufpi.analise;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -9,10 +10,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import net.sourceforge.jFuzzyLogic.FIS;
+import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
+import net.sourceforge.jFuzzyLogic.rule.Rule;
+import net.sourceforge.jFuzzyLogic.rule.RuleBlock;
+import net.sourceforge.jFuzzyLogic.rule.Variable;
 import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
@@ -109,14 +116,69 @@ public class TestesAlgoritmos {
 		}
 		return newMap;
 	}
+	
+	private static double fuzzyEffectiveness(double time, double action) throws IOException {
+        return fuzzyTwoParams("src/main/webapp/files/fuzzy/funceffectiveness.fcl", "time", time, "action", action, "effectiveness", false);
+	}
+	
+	private static double fuzzyPriority(double efficiency, double effectiveness) throws IOException {
+        return fuzzyTwoParams("src/main/webapp/files/fuzzy/funcpriority.fcl", "efficiency", efficiency, "effectiveness", effectiveness, "priority", false);
+	}
+	
+	private static double fuzzyTwoParams(String filePath, String sParam1, double param1, String sParam2, double param2, String sResult, boolean debug) throws IOException {
+        // Load from 'FCL' file
+        FIS fis = FIS.load(filePath,true);
 
-	public static void main(String[] args) {
+        // Error while loading?
+        if( fis == null ) { 
+            System.err.println("Can't load file: '" + filePath + "'");
+            throw new IOException("Error reading file '" + filePath + "'");
+        }
+
+        // Set inputs
+        fis.setVariable(sParam1, param1);
+        fis.setVariable(sParam2, param2);
+
+        // Evaluate
+        fis.evaluate();
+        double value = fis.getVariable(sResult).getValue();
+        
+        if(debug){
+        	// Show 
+            JFuzzyChart.get().chart(fis);
+            // Show output variable's chart
+            Variable tip = fis.getVariable(sResult);
+            JFuzzyChart.get().chart(tip, tip.getDefuzzifier(), true);
+
+            // Print ruleSet
+            System.out.println(fis);
+            System.out.println("Input value: " + param1 + "("+sParam1+"), " + param2 + "("+sParam2+")");
+            System.out.println("Output value: " + fis.getVariable(sResult).getValue()); 
+            
+            // Show each rule (and degree of support)
+            Set<Entry<String, RuleBlock>> ruleBlocksSet = fis.getFunctionBlock("fuzzy").getRuleBlocks().entrySet();
+    		for(Entry<String, RuleBlock> entry : ruleBlocksSet){
+            	System.out.println("RuleBlock: "+entry.getKey());
+            	for(Rule rule : entry.getValue()){
+            		System.out.println(rule);
+            	}
+            }
+        }
+        
+        return value;
+	}
+	
+	public static void main(String[] args) throws IOException {
 		EntityManagerFactory emf = javax.persistence.Persistence.createEntityManagerFactory("default");
 		EntityManager entityManager = emf.createEntityManager();
 		TarefaRepositoryImpl tarefaRepositoryImpl = new TarefaRepositoryImpl(entityManager);
 		
 		
 		long[] ids = {22};//{19, 20}; - 3, 4, 5
+		RoundingMode roundingMode = RoundingMode.UP;
+		int rounding = 3, roundingPlus = 6;
+		
+		
 		for(long id: ids){
 			Tarefa tarefa = tarefaRepositoryImpl.find(id);
 			System.out.println("Tarefa: "+tarefa.getId());
@@ -138,61 +200,89 @@ public class TestesAlgoritmos {
 			System.out.println(acoesMelhorCaminho.size());
 			System.out.println();
 			
+			long maxTime = 0, maxActions = 0;
+			for(Fluxo fluxo : tarefa.getFluxos()){
+				if(maxTime < fluxo.getTempoRealizacao()){
+					maxTime = fluxo.getTempoRealizacao();
+				}
+				if(maxActions < fluxo.getAcoes().size()){
+					maxActions = fluxo.getAcoes().size();
+				}
+			}
+			
+			//valores para normalização
+			double maxTempoAcoes = 0, maxAcoesMelhorCaminho = 0;
+			for(Fluxo fluxo : tarefa.getFluxos()){
+				List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
+				
+				BigDecimal qtdAcoes = new BigDecimal(acoes.size());
+				
+				BigDecimal actionTime = qtdAcoes.divide(new BigDecimal(calculateTimeActions(acoes)), roundingPlus, roundingMode);
+				if(maxTempoAcoes < actionTime.doubleValue()){
+					maxTempoAcoes = actionTime.doubleValue();
+				}
+
+				BigDecimal eficienciaAcoes = new BigDecimal(acoesMelhorCaminho.size()).divide(qtdAcoes, rounding, roundingMode);
+				if(maxAcoesMelhorCaminho < eficienciaAcoes.doubleValue()){
+					maxAcoesMelhorCaminho = eficienciaAcoes.doubleValue();
+				}
+			}
+			
+			System.out.println("maxTempoAcoes: "+ maxTempoAcoes+", maxAcoesMelhorCaminho: "+maxAcoesMelhorCaminho);
 			
 			for(Fluxo fluxo : tarefa.getFluxos()){
 				List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
 				System.out.println("Fluxo: "+fluxo.getId());
-				int contAcao = 0, contAcaoObrigatoria = 0, contMelhorCaminho = 0;
-				long timeInit = 0, timeEnd = 0;
-				for(Action acao : acoes){
-					if(contAcao == 0){
-						timeInit = acao.getsTime();
-					}else if(contAcao == acoes.size() - 1){
-						timeEnd = acao.getsTime();
-					}
-					
-					ActionVO vo = acao.toVO();
-					if(acoesObrigatorias.contains(vo)){
-						contAcaoObrigatoria++;
-					}else{
-						System.out.print("#O");
-					}
-					
-					if(acoesMelhorCaminho.contains(vo)){
-						contMelhorCaminho++;
-					}else{
-						System.out.print("#M");
-					}
-					
-					System.out.println("-> " + vo);
-					contAcao++;
-				}
-				timeInit = timeEnd - timeInit;
 				
+				int contAcao = acoes.size(), contAcaoObrigatoria = countEqualsActions(acoes, acoesObrigatorias), contMelhorCaminho = countEqualsActions(acoes, acoesMelhorCaminho);
+				long timeTotal = calculateTimeActions(acoes);
 				
 				BigDecimal qtdAcoesObrigatorias = new BigDecimal(acoesObrigatorias.size());
-				BigDecimal qtdAcoesObrigatoriasFeitas = new BigDecimal(contAcaoObrigatoria);
-				BigDecimal qtdAcoesMelhorCaminho = new BigDecimal(contMelhorCaminho);
+				BigDecimal qtdAcoesObrigatoriasFeitas = new BigDecimal(contAcaoObrigatoria);				
+				BigDecimal qtdAcoesMelhorCaminho = new BigDecimal(acoesMelhorCaminho.size());//qtd acoes no melhor caminho -> contMelhorCaminho 
 				BigDecimal qtdAcoes = new BigDecimal(contAcao);
 				
 				//eficacia (completude das acoes obrigatorias) -> fazer o que deve ser feito
-				BigDecimal eficacia = qtdAcoesObrigatoriasFeitas.divide(qtdAcoesObrigatorias, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+				BigDecimal eficacia = qtdAcoesObrigatoriasFeitas.divide(qtdAcoesObrigatorias, rounding, roundingMode);
 				
 				//eficiencia (qtd eventos) -> fazer da melhor forma
-				BigDecimal eficiencia = qtdAcoesObrigatorias.divide(qtdAcoes, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-				BigDecimal eficiencia2 = qtdAcoesMelhorCaminho.divide(qtdAcoes, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+				BigDecimal time = new BigDecimal(timeTotal);
+				time = time.divide(new BigDecimal(maxTime), rounding, roundingMode);
+				BigDecimal action = new BigDecimal(contAcao);
+				action = action.divide(new BigDecimal(maxActions), rounding, roundingMode);
 				
-				System.out.println("User["+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getEmail() + " / Tempo: "+ timeInit + " - Acoes: "+ contAcao + " - Eficacia: " + eficacia + " - Eficiencia: " + eficiencia+"/"+ eficiencia2);
+				BigDecimal eficienciaFuzzy = new BigDecimal(fuzzyEffectiveness(time.doubleValue(), action.doubleValue())).setScale(rounding, roundingMode);
+				BigDecimal eficienciaAcoes = qtdAcoesMelhorCaminho.divide(new BigDecimal(contAcao * maxAcoesMelhorCaminho), rounding, roundingMode);
+				BigDecimal eficienciaTempo = qtdAcoes.divide(new BigDecimal(timeTotal * maxTempoAcoes), rounding, roundingMode);
+				BigDecimal eficiencia = eficienciaTempo;
+				
+				//prioridade
+				BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficiencia.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
+				
+				System.out.println("User["+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getEmail() + " / Tempo: "+ timeTotal + " - Acoes: "+ contAcao + " (" + eficienciaTempo + ") | Eficacia: " + eficacia + " - Eficiencia: " + eficiencia + " | Prioridade: " + prioridadeFuzzy );
 				System.out.println("");
 			}
 			
 			
 			System.out.println("");
-			//generateLog("TaskLog-EX-New-"+tarefa.getId(), tarefa.getFluxos(TipoConvidado.EXPERT));
-			//generateLog("TaskLog-US-New-"+tarefa.getId(), tarefa.getFluxos(TipoConvidado.USER));
 		}
 		
 		//System.out.println(lcs("Matheus", "Artesateste"));
+	}
+	
+	private static int countEqualsActions(List<Action> acoes, List<ActionVO> acoes2){
+		int contAcoes = 0;
+		for(Action acao : acoes){			
+			ActionVO vo = acao.toVO();
+			if(acoes2.contains(vo)){
+				contAcoes++;
+			}
+		}
+		return contAcoes;
+	}
+	
+	private static long calculateTimeActions(List<Action> acoes){
+		return acoes.get(acoes.size()-1).getsTime() - acoes.get(0).getsTime();
 	}
 	
 	
