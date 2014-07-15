@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1= title
+  p This is Sequelize greeting you :)
+
+  h2 Actions
+
+  ul
+    each action in actions
+      li 
+        = action.id + ' / ' + action.sActionType
