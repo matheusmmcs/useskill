@@ -1,76 +1,114 @@
-Eficiência Fuzzy:
+minTempoParaCadaAcao: 3798.44, maxAcaoPorTempo: 6.41E-4, maxAcoesMelhorCaminho: 1.572, melhorCaminho: 11
 
-Fluxo: 1227
-User[USER]: user1@user1.com / Tempo: 19606 - Acoes: 7 | Eficacia: 0.143 - Eficiencia: 0.894 | Prioridade: 0.909
+Acoes / Tempo (Normalizado)
+User[EXPERT]: user4@user4.com / Tempo: 32402 - Acoes: 13 | Eficacia: 1.000 - Eficiencia: 0.626 | Prioridade: 0.094
+User[USER]: user3@user3.com / Tempo: 94961 - Acoes: 25 | Eficacia: 0.858 - Eficiencia: 0.411 | Prioridade: 0.091
+User[USER]: user2@user2.com / Tempo: 61269 - Acoes: 22 | Eficacia: 1.000 - Eficiencia: 0.561 | Prioridade: 0.086
+User[USER]: user1@user1.com / Tempo: 19606 - Acoes: 7 | Eficacia: 0.143 - Eficiencia: 0.557 | Prioridade: 0.909
+User[EXPERT]: user5@user5.com / Tempo: 21309 - Acoes: 12 | Eficacia: 1.000 - Eficiencia: 0.879 | Prioridade: 0.089
+User[EXPERT]: matheusmmcs@gmail.com / Tempo: 27294 - Acoes: 11 | Eficacia: 1.000 - Eficiencia: 0.629 | Prioridade: 0.094
+User[EXPERT]: cleitonmoura18@gmail.com / Tempo: 18721 - Acoes: 12 | Eficacia: 1.000 - Eficiencia: 1.000 | Prioridade: 0.083
 
-Fluxo: 1225
-User[USER]: user2@user2.com / Tempo: 61269 - Acoes: 22 | Eficacia: 1.000 - Eficiencia: 0.092 | Prioridade: 0.501
-
-Fluxo: 1223
-User[USER]: user3@user3.com / Tempo: 94961 - Acoes: 25 | Eficacia: 0.858 - Eficiencia: 0.085 | Prioridade: 0.500
-
-Fluxo: 1231
-User[EXPERT]: matheusmmcs@gmail.com / Tempo: 27294 - Acoes: 11 | Eficacia: 1.000 - Eficiencia: 0.657 | Prioridade: 0.099
-
-Fluxo: 1229
-User[EXPERT]: user5@user5.com / Tempo: 21309 - Acoes: 12 | Eficacia: 1.000 - Eficiencia: 0.835 | Prioridade: 0.094
-
-Fluxo: 1221
-User[EXPERT]: user4@user4.com / Tempo: 32402 - Acoes: 13 | Eficacia: 1.000 - Eficiencia: 0.585 | Prioridade: 0.089
-
-Fluxo: 1233
-User[EXPERT]: cleitonmoura18@gmail.com / Tempo: 18721 - Acoes: 12 | Eficacia: 1.000 - Eficiencia: 0.905 | Prioridade: 0.087
-
-
-############################################
-
-
-Eficiência melhores ações:
-
-Fluxo: 1227
-User[USER]: user1@user1.com / Tempo: 19606 - Acoes: 7 | Eficacia: 0.143 - Eficiencia: 1.000 | Prioridade: 0.909
-
-Fluxo: 1223
+Qtd Acoes Melhor Caminho / Acoes (Normalizado)
+User[EXPERT]: user4@user4.com / Tempo: 32402 - Acoes: 13 | Eficacia: 1.000 - Eficiencia: 0.539 | Prioridade: 0.085
 User[USER]: user3@user3.com / Tempo: 94961 - Acoes: 25 | Eficacia: 0.858 - Eficiencia: 0.280 | Prioridade: 0.378
-
-Fluxo: 1225
 User[USER]: user2@user2.com / Tempo: 61269 - Acoes: 22 | Eficacia: 1.000 - Eficiencia: 0.319 | Prioridade: 0.315
-
-Fluxo: 1231
+User[USER]: user1@user1.com / Tempo: 19606 - Acoes: 7 | Eficacia: 0.143 - Eficiencia: 1.000 | Prioridade: 0.909
+User[EXPERT]: user5@user5.com / Tempo: 21309 - Acoes: 12 | Eficacia: 1.000 - Eficiencia: 0.584 | Prioridade: 0.089
 User[EXPERT]: matheusmmcs@gmail.com / Tempo: 27294 - Acoes: 11 | Eficacia: 1.000 - Eficiencia: 0.637 | Prioridade: 0.096
-
-Fluxo: 1233
 User[EXPERT]: cleitonmoura18@gmail.com / Tempo: 18721 - Acoes: 12 | Eficacia: 1.000 - Eficiencia: 0.584 | Prioridade: 0.089
 
-Fluxo: 1229
-User[EXPERT]: user5@user5.com / Tempo: 21309 - Acoes: 12 | Eficacia: 1.000 - Eficiencia: 0.584 | Prioridade: 0.089
+Fuzzy:
+User[EXPERT]: user4@user4.com / Tempo: 32402 - Acoes: 13 | Eficacia: 1.000 - Eficiencia: 0.585 | Prioridade: 0.089
+User[USER]: user3@user3.com / Tempo: 94961 - Acoes: 25 | Eficacia: 0.858 - Eficiencia: 0.085 | Prioridade: 0.500
+User[USER]: user2@user2.com / Tempo: 61269 - Acoes: 22 | Eficacia: 1.000 - Eficiencia: 0.092 | Prioridade: 0.501
+User[USER]: user1@user1.com / Tempo: 19606 - Acoes: 7 | Eficacia: 0.143 - Eficiencia: 0.894 | Prioridade: 0.909
+User[EXPERT]: user5@user5.com / Tempo: 21309 - Acoes: 12 | Eficacia: 1.000 - Eficiencia: 0.835 | Prioridade: 0.094
+User[EXPERT]: matheusmmcs@gmail.com / Tempo: 27294 - Acoes: 11 | Eficacia: 1.000 - Eficiencia: 0.657 | Prioridade: 0.099
+User[EXPERT]: cleitonmoura18@gmail.com / Tempo: 18721 - Acoes: 12 | Eficacia: 1.000 - Eficiencia: 0.905 | Prioridade: 0.087
 
-Fluxo: 1221
-User[EXPERT]: user4@user4.com / Tempo: 32402 - Acoes: 13 | Eficacia: 1.000 - Eficiencia: 0.539 | Prioridade: 0.085
+Fuzzy 3 params:
+User[EXPERT]: user4@user4.com / Tempo: 32402(0.320) - Acoes: 13(0.500) | Eficacia: 1.000 - Eficiencia: 0.585 | Prioridade: 0.313
+User[USER]: user3@user3.com / Tempo: 94961(0.937) - Acoes: 25(0.962) | Eficacia: 0.858 - Eficiencia: 0.085 | Prioridade: 0.091
+User[USER]: user2@user2.com / Tempo: 61269(0.605) - Acoes: 22(0.847) | Eficacia: 1.000 - Eficiencia: 0.092 | Prioridade: 0.092
+User[USER]: user1@user1.com / Tempo: 19606(0.194) - Acoes: 7(0.270) | Eficacia: 0.143 - Eficiencia: 0.894 | Prioridade: 0.894
+User[EXPERT]: user5@user5.com / Tempo: 21309(0.211) - Acoes: 12(0.462) | Eficacia: 1.000 - Eficiencia: 0.835 | Prioridade: 0.483
+User[EXPERT]: matheusmmcs@gmail.com / Tempo: 27294(0.270) - Acoes: 11(0.424) | Eficacia: 1.000 - Eficiencia: 0.657 | Prioridade: 0.393
+User[EXPERT]: cleitonmoura18@gmail.com / Tempo: 18721(0.185) - Acoes: 12(0.462) | Eficacia: 1.000 - Eficiencia: 0.905 | Prioridade: 0.501
 
 
-############################################
+
+########## NOVO PADRÃO ###########
+##### Acoes / Tempo (Normalizado) #####
+User[EXPERT]: user4 / Acoes: 13; Time: 20,7697 => Eficiência: 0.626 | Eficacia: 1.000 | Prioridade: 0.094
+User[USER]: user3 / Acoes: 25; Time: 60,8700 => Eficiência: 0.411 | Eficacia: 0.858 | Prioridade: 0.091
+User[USER]: user2 / Acoes: 22; Time: 39,2734 => Eficiência: 0.561 | Eficacia: 1.000 | Prioridade: 0.086
+User[USER]: user1 / Acoes: 7; Time: 12,5674 => Eficiência: 0.557 | Eficacia: 0.143 | Prioridade: 0.909
+User[EXPERT]: user5 / Acoes: 12; Time: 13,6591 => Eficiência: 0.879 | Eficacia: 1.000 | Prioridade: 0.089
+User[EXPERT]: Matheus Campanhã / Acoes: 11; Time: 17,4955 => Eficiência: 0.629 | Eficacia: 1.000 | Prioridade: 0.094
+User[EXPERT]: cleiton Moura / Acoes: 12; Time: 12,0002 => Eficiência: 1.000 | Eficacia: 1.000 | Prioridade: 0.083
+
+##### Qtd Acoes Melhor Caminho / Acoes (Normalizado) #####
+User[EXPERT]: user4 / AcoesMelhorCaminho: 11; Acoes: 20,4360 => Eficiência: 0.539 | Eficacia: 1.000 | Prioridade: 0.085
+User[USER]: user3 / AcoesMelhorCaminho: 11; Acoes: 39,3000 => Eficiência: 0.280 | Eficacia: 0.858 | Prioridade: 0.378
+User[USER]: user2 / AcoesMelhorCaminho: 11; Acoes: 34,5840 => Eficiência: 0.319 | Eficacia: 1.000 | Prioridade: 0.315
+User[USER]: user1 / AcoesMelhorCaminho: 11; Acoes: 11,0040 => Eficiência: 1.000 | Eficacia: 0.143 | Prioridade: 0.909
+User[EXPERT]: user5 / AcoesMelhorCaminho: 11; Acoes: 18,8640 => Eficiência: 0.584 | Eficacia: 1.000 | Prioridade: 0.089
+User[EXPERT]: Matheus Campanhã / AcoesMelhorCaminho: 11; Acoes: 17,2920 => Eficiência: 0.637 | Eficacia: 1.000 | Prioridade: 0.096
+User[EXPERT]: cleiton Moura / AcoesMelhorCaminho: 11; Acoes: 18,8640 => Eficiência: 0.584 | Eficacia: 1.000 | Prioridade: 0.089
+
+##### Dois Fuzzy #####
+User[EXPERT]: user4 / Tempo: 0.320; Acoes: 0.500 => Eficiência: 0.585 | Eficacia: 1.000 | Prioridade: 0.089
+User[USER]: user3 / Tempo: 0.937; Acoes: 0.962 => Eficiência: 0.085 | Eficacia: 0.858 | Prioridade: 0.500
+User[USER]: user2 / Tempo: 0.605; Acoes: 0.847 => Eficiência: 0.092 | Eficacia: 1.000 | Prioridade: 0.501
+User[USER]: user1 / Tempo: 0.194; Acoes: 0.270 => Eficiência: 0.894 | Eficacia: 0.143 | Prioridade: 0.909
+User[EXPERT]: user5 / Tempo: 0.211; Acoes: 0.462 => Eficiência: 0.835 | Eficacia: 1.000 | Prioridade: 0.094
+User[EXPERT]: Matheus Campanhã / Tempo: 0.270; Acoes: 0.424 => Eficiência: 0.657 | Eficacia: 1.000 | Prioridade: 0.099
+User[EXPERT]: cleiton Moura / Tempo: 0.185; Acoes: 0.462 => Eficiência: 0.905 | Eficacia: 1.000 | Prioridade: 0.087
+
+##### Fuzzy Tres Parametros #####
+User[EXPERT]: user4 / Tempo: 0.320 | Acoes: 0.500 | Eficacia: 1.000 | Prioridade: 0.313
+User[USER]: user3 / Tempo: 0.937 | Acoes: 0.962 | Eficacia: 0.858 | Prioridade: 0.091
+User[USER]: user2 / Tempo: 0.605 | Acoes: 0.847 | Eficacia: 1.000 | Prioridade: 0.092
+User[USER]: user1 / Tempo: 0.194 | Acoes: 0.270 | Eficacia: 0.143 | Prioridade: 0.894
+User[EXPERT]: user5 / Tempo: 0.211 | Acoes: 0.462 | Eficacia: 1.000 | Prioridade: 0.483
+User[EXPERT]: Matheus Campanhã / Tempo: 0.270 | Acoes: 0.424 | Eficacia: 1.000 | Prioridade: 0.393
+User[EXPERT]: cleiton Moura / Tempo: 0.185 | Acoes: 0.462 | Eficacia: 1.000 | Prioridade: 0.501
 
 
-Eficiência Razao Acoes/Tempo:
+######### ORDENADOS #########
+AcoesPorTempo Ordenada: 
+User[USER]: user1 / Acoes: 7.0; Time: 12,5674 => Eficiência: 0.557 | Eficacia: 0.143 | Prioridade: 0.909
+User[EXPERT]: user4 / Acoes: 13.0; Time: 20,7697 => Eficiência: 0.626 | Eficacia: 1.0 | Prioridade: 0.094
+User[EXPERT]: Matheus Campanhã / Acoes: 11.0; Time: 17,4955 => Eficiência: 0.629 | Eficacia: 1.0 | Prioridade: 0.094
+User[USER]: user3 / Acoes: 25.0; Time: 60,8700 => Eficiência: 0.411 | Eficacia: 0.858 | Prioridade: 0.091
+User[EXPERT]: user5 / Acoes: 12.0; Time: 13,6591 => Eficiência: 0.879 | Eficacia: 1.0 | Prioridade: 0.089
+User[USER]: user2 / Acoes: 22.0; Time: 39,2734 => Eficiência: 0.561 | Eficacia: 1.0 | Prioridade: 0.086
+User[EXPERT]: cleiton Moura / Acoes: 12.0; Time: 12,0002 => Eficiência: 1.0 | Eficacia: 1.0 | Prioridade: 0.083
 
-Fluxo: 1227
-User[USER]: user1@user1.com / Tempo: 19606 - Acoes: 7 (0.557) | Eficacia: 0.143 - Eficiencia: 0.557 | Prioridade: 0.909
+FuzzyTresParams Ordenada: 
+User[USER]: user1 / Tempo: 0.194 | Acoes: 0.27 | Eficacia: 0.143 | Prioridade: 0.894
+User[EXPERT]: cleiton Moura / Tempo: 0.185 | Acoes: 0.462 | Eficacia: 1.0 | Prioridade: 0.501
+User[EXPERT]: user5 / Tempo: 0.211 | Acoes: 0.462 | Eficacia: 1.0 | Prioridade: 0.483
+User[EXPERT]: Matheus Campanhã / Tempo: 0.27 | Acoes: 0.424 | Eficacia: 1.0 | Prioridade: 0.393
+User[EXPERT]: user4 / Tempo: 0.32 | Acoes: 0.5 | Eficacia: 1.0 | Prioridade: 0.313
+User[USER]: user2 / Tempo: 0.605 | Acoes: 0.847 | Eficacia: 1.0 | Prioridade: 0.092
+User[USER]: user3 / Tempo: 0.937 | Acoes: 0.962 | Eficacia: 0.858 | Prioridade: 0.091
 
-Fluxo: 1221
-User[EXPERT]: user4@user4.com / Tempo: 32402 - Acoes: 13 (0.626) | Eficacia: 1.000 - Eficiencia: 0.626 | Prioridade: 0.094
+DoisFuzzy Ordenada: 
+User[USER]: user1 / Tempo: 0.194; Acoes: 0.27 => Eficiência: 0.894 | Eficacia: 0.143 | Prioridade: 0.909
+User[USER]: user2 / Tempo: 0.605; Acoes: 0.847 => Eficiência: 0.092 | Eficacia: 1.0 | Prioridade: 0.501
+User[USER]: user3 / Tempo: 0.937; Acoes: 0.962 => Eficiência: 0.085 | Eficacia: 0.858 | Prioridade: 0.5
+User[EXPERT]: Matheus Campanhã / Tempo: 0.27; Acoes: 0.424 => Eficiência: 0.657 | Eficacia: 1.0 | Prioridade: 0.099
+User[EXPERT]: user5 / Tempo: 0.211; Acoes: 0.462 => Eficiência: 0.835 | Eficacia: 1.0 | Prioridade: 0.094
+User[EXPERT]: user4 / Tempo: 0.32; Acoes: 0.5 => Eficiência: 0.585 | Eficacia: 1.0 | Prioridade: 0.089
+User[EXPERT]: cleiton Moura / Tempo: 0.185; Acoes: 0.462 => Eficiência: 0.905 | Eficacia: 1.0 | Prioridade: 0.087
 
-Fluxo: 1231
-User[EXPERT]: matheusmmcs@gmail.com / Tempo: 27294 - Acoes: 11 (0.629) | Eficacia: 1.000 - Eficiencia: 0.629 | Prioridade: 0.094
-
-Fluxo: 1223
-User[USER]: user3@user3.com / Tempo: 94961 - Acoes: 25 (0.411) | Eficacia: 0.858 - Eficiencia: 0.411 | Prioridade: 0.091
-
-Fluxo: 1229
-User[EXPERT]: user5@user5.com / Tempo: 21309 - Acoes: 12 (0.879) | Eficacia: 1.000 - Eficiencia: 0.879 | Prioridade: 0.089
-
-Fluxo: 1225
-User[USER]: user2@user2.com / Tempo: 61269 - Acoes: 22 (0.561) | Eficacia: 1.000 - Eficiencia: 0.561 | Prioridade: 0.086
-
-Fluxo: 1233
-User[EXPERT]: cleitonmoura18@gmail.com / Tempo: 18721 - Acoes: 12 (1.000) | Eficacia: 1.000 - Eficiencia: 1.000 | Prioridade: 0.083
+AcoesMelhorCaminhoPorAcoes Ordenada: 
+User[USER]: user1 / AcoesMelhorCaminho: 11.0; Acoes: 11,0040 => Eficiência: 1.0 | Eficacia: 0.143 | Prioridade: 0.909
+User[USER]: user3 / AcoesMelhorCaminho: 11.0; Acoes: 39,3000 => Eficiência: 0.28 | Eficacia: 0.858 | Prioridade: 0.378
+User[USER]: user2 / AcoesMelhorCaminho: 11.0; Acoes: 34,5840 => Eficiência: 0.319 | Eficacia: 1.0 | Prioridade: 0.315
+User[EXPERT]: Matheus Campanhã / AcoesMelhorCaminho: 11.0; Acoes: 17,2920 => Eficiência: 0.637 | Eficacia: 1.0 | Prioridade: 0.096
+User[EXPERT]: user5 / AcoesMelhorCaminho: 11.0; Acoes: 18,8640 => Eficiência: 0.584 | Eficacia: 1.0 | Prioridade: 0.089
+User[EXPERT]: cleiton Moura / AcoesMelhorCaminho: 11.0; Acoes: 18,8640 => Eficiência: 0.584 | Eficacia: 1.0 | Prioridade: 0.089
+User[EXPERT]: user4 / AcoesMelhorCaminho: 11.0; Acoes: 20,4360 => Eficiência: 0.539 | Eficacia: 1.0 | Prioridade: 0.085

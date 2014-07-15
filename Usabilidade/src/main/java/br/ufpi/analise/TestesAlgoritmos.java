@@ -1,16 +1,16 @@
 package br.ufpi.analise;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -20,11 +20,11 @@ import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import net.sourceforge.jFuzzyLogic.rule.Rule;
 import net.sourceforge.jFuzzyLogic.rule.RuleBlock;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
+import br.ufpi.analise.enums.TipoAlgoritmoPrioridade;
 import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.TipoConvidado;
-import br.ufpi.models.Usuario;
 import br.ufpi.models.vo.ActionVO;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 
@@ -118,26 +118,43 @@ public class TestesAlgoritmos {
 	}
 	
 	private static double fuzzyEffectiveness(double time, double action) throws IOException {
-        return fuzzyTwoParams("src/main/webapp/files/fuzzy/funceffectiveness.fcl", "time", time, "action", action, "effectiveness", false);
+		HashMap<String, Double> params = new HashMap<String, Double>();
+		params.put("time", time);
+		params.put("action", action);
+        return fuzzyParams("src/main/webapp/files/fuzzy/funceffectiveness.fcl", params, "effectiveness", false);
 	}
 	
 	private static double fuzzyPriority(double efficiency, double effectiveness) throws IOException {
-        return fuzzyTwoParams("src/main/webapp/files/fuzzy/funcpriority.fcl", "efficiency", efficiency, "effectiveness", effectiveness, "priority", false);
+		HashMap<String, Double> params = new HashMap<String, Double>();
+		params.put("efficiency", efficiency);
+		params.put("effectiveness", effectiveness);
+        return fuzzyParams("src/main/webapp/files/fuzzy/funcpriority.fcl", params, "priority", false);
 	}
 	
-	private static double fuzzyTwoParams(String filePath, String sParam1, double param1, String sParam2, double param2, String sResult, boolean debug) throws IOException {
-        // Load from 'FCL' file
+	private static double fuzzyPriorityThreeParams(double effectiveness, double time, double action) throws IOException {
+		HashMap<String, Double> params = new HashMap<String, Double>();
+		params.put("time", time);
+		params.put("action", action);
+		params.put("effectiveness", effectiveness);
+        return fuzzyParams("src/main/webapp/files/fuzzy/funcpriority-time-actions-effectiveness.fcl", params, "priority", false);
+	}	
+	
+	private static double fuzzyParams(String filePath, HashMap<String, Double> params, String sResult, boolean debug) throws IOException {
         FIS fis = FIS.load(filePath,true);
 
-        // Error while loading?
         if( fis == null ) { 
             System.err.println("Can't load file: '" + filePath + "'");
             throw new IOException("Error reading file '" + filePath + "'");
         }
+        
+        Set<String> keySet = params.keySet();
 
         // Set inputs
-        fis.setVariable(sParam1, param1);
-        fis.setVariable(sParam2, param2);
+        Iterator<String> it = keySet.iterator();
+        while (it.hasNext()) {
+        	String key = it.next();
+            fis.setVariable(key, params.get(key));
+        }
 
         // Evaluate
         fis.evaluate();
@@ -152,8 +169,13 @@ public class TestesAlgoritmos {
 
             // Print ruleSet
             System.out.println(fis);
-            System.out.println("Input value: " + param1 + "("+sParam1+"), " + param2 + "("+sParam2+")");
-            System.out.println("Output value: " + fis.getVariable(sResult).getValue()); 
+            System.out.print("Input value: ");
+            it = keySet.iterator();
+            while (it.hasNext()) {
+            	String key = it.next();
+                System.out.print(params.get(key) + "(" + key + "), ");
+            }
+            System.out.println("\nOutput value: " + fis.getVariable(sResult).getValue()); 
             
             // Show each rule (and degree of support)
             Set<Entry<String, RuleBlock>> ruleBlocksSet = fis.getFunctionBlock("fuzzy").getRuleBlocks().entrySet();
@@ -168,13 +190,46 @@ public class TestesAlgoritmos {
         return value;
 	}
 	
+
 	public static void main(String[] args) throws IOException {
+		long[] ids = {22};
+		HashMap<TipoAlgoritmoPrioridade, List<ResultadoPrioridade>> generatedPriority = generatePriority(ids); //{19, 20}; - 3, 4, 5
+		
+		System.out.println("\n\n######### ORDENADOS #########");
+		
+		Set<TipoAlgoritmoPrioridade> keySet = generatedPriority.keySet();
+		Iterator<TipoAlgoritmoPrioridade> iterator = keySet.iterator();
+		while(iterator.hasNext()){
+			TipoAlgoritmoPrioridade key = iterator.next();
+			ArrayList<ResultadoPrioridade> list = (ArrayList<ResultadoPrioridade>) generatedPriority.get(key);
+			Collections.sort(list, new Comparator<ResultadoPrioridade>() {
+		        @Override
+		        public int compare(ResultadoPrioridade o1, ResultadoPrioridade o2) {
+		        	if(o1.getPrioridade() < o2.getPrioridade()){
+		        		return 1;
+		        	}else if(o1.getPrioridade() > o2.getPrioridade()){
+		        		return -1;
+		        	}else{
+		        		return 0;
+		        	}
+		        }
+		    });
+			
+			System.out.println(key+" Ordenada: ");
+			for(ResultadoPrioridade r : list){
+				System.out.println(r.toPrintString());
+			}
+			System.out.println("");
+		}
+	}
+	
+	public static HashMap<TipoAlgoritmoPrioridade, List<ResultadoPrioridade>> generatePriority(long[] ids) throws IOException {
 		EntityManagerFactory emf = javax.persistence.Persistence.createEntityManagerFactory("default");
 		EntityManager entityManager = emf.createEntityManager();
 		TarefaRepositoryImpl tarefaRepositoryImpl = new TarefaRepositoryImpl(entityManager);
 		
+		HashMap<TipoAlgoritmoPrioridade, List<ResultadoPrioridade>> resultado  = new HashMap<TipoAlgoritmoPrioridade, List<ResultadoPrioridade>>();
 		
-		long[] ids = {22};//{19, 20}; - 3, 4, 5
 		RoundingMode roundingMode = RoundingMode.UP;
 		int rounding = 3, roundingPlus = 6;
 		
@@ -211,63 +266,113 @@ public class TestesAlgoritmos {
 			}
 			
 			//valores para normalização
-			double maxTempoAcoes = 0, maxAcoesMelhorCaminho = 0;
+			double minTempoPorAcao = Integer.MAX_VALUE, maxAcaoPorTempo = 0, maxAcoesMelhorCaminho = 0;
+			
+			BigDecimal qtdAcoesMelhorCaminho = new BigDecimal(acoesMelhorCaminho.size());
+			BigDecimal qtdAcoesObrigatorias = new BigDecimal(acoesObrigatorias.size());
+			BigDecimal qtdMaxActions = new BigDecimal(maxActions);
+			
 			for(Fluxo fluxo : tarefa.getFluxos()){
 				List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
 				
 				BigDecimal qtdAcoes = new BigDecimal(acoes.size());
+				BigDecimal qtdTempo = new BigDecimal(calculateTimeActions(acoes));
 				
-				BigDecimal actionTime = qtdAcoes.divide(new BigDecimal(calculateTimeActions(acoes)), roundingPlus, roundingMode);
-				if(maxTempoAcoes < actionTime.doubleValue()){
-					maxTempoAcoes = actionTime.doubleValue();
+				BigDecimal timeAction = qtdTempo.divide(qtdAcoes, roundingPlus, roundingMode);
+				if(minTempoPorAcao > timeAction.doubleValue()){
+					minTempoPorAcao = timeAction.doubleValue();
+				}
+				
+				BigDecimal actionTime = qtdAcoes.divide(qtdTempo, roundingPlus, roundingMode);
+				if(maxAcaoPorTempo < actionTime.doubleValue()){
+					maxAcaoPorTempo = actionTime.doubleValue();
 				}
 
-				BigDecimal eficienciaAcoes = new BigDecimal(acoesMelhorCaminho.size()).divide(qtdAcoes, rounding, roundingMode);
+				BigDecimal eficienciaAcoes = qtdAcoesMelhorCaminho.divide(qtdAcoes, rounding, roundingMode);
 				if(maxAcoesMelhorCaminho < eficienciaAcoes.doubleValue()){
 					maxAcoesMelhorCaminho = eficienciaAcoes.doubleValue();
 				}
 			}
 			
-			System.out.println("maxTempoAcoes: "+ maxTempoAcoes+", maxAcoesMelhorCaminho: "+maxAcoesMelhorCaminho);
+			System.out.println("minTempoParaCadaAcao: "+ minTempoPorAcao+", maxAcaoPorTempo: "+maxAcaoPorTempo+", maxAcoesMelhorCaminho: "+maxAcoesMelhorCaminho+", melhorCaminho: "+qtdAcoesMelhorCaminho);
 			
-			for(Fluxo fluxo : tarefa.getFluxos()){
-				List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
-				System.out.println("Fluxo: "+fluxo.getId());
+			for (TipoAlgoritmoPrioridade type : TipoAlgoritmoPrioridade.values()) {
+				System.out.println("\n\n##### "+type+" #####");
 				
-				int contAcao = acoes.size(), contAcaoObrigatoria = countEqualsActions(acoes, acoesObrigatorias), contMelhorCaminho = countEqualsActions(acoes, acoesMelhorCaminho);
-				long timeTotal = calculateTimeActions(acoes);
+				List<ResultadoPrioridade> list = new ArrayList<ResultadoPrioridade>();
 				
-				BigDecimal qtdAcoesObrigatorias = new BigDecimal(acoesObrigatorias.size());
-				BigDecimal qtdAcoesObrigatoriasFeitas = new BigDecimal(contAcaoObrigatoria);				
-				BigDecimal qtdAcoesMelhorCaminho = new BigDecimal(acoesMelhorCaminho.size());//qtd acoes no melhor caminho -> contMelhorCaminho 
-				BigDecimal qtdAcoes = new BigDecimal(contAcao);
+				for(Fluxo fluxo : tarefa.getFluxos()){
+					List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
+					
+					int contAcao = acoes.size(), contAcoesObrigatorias = countEqualsActions(acoes, acoesObrigatorias), contAcoesNoMelhorCaminho = countEqualsActions(acoes, acoesMelhorCaminho);
+					long timeTotal = calculateTimeActions(acoes);
+					
+					BigDecimal qtdAcoesObrigatoriasFeitas = new BigDecimal(contAcoesObrigatorias);				
+					BigDecimal qtdAcoes = new BigDecimal(contAcao);
+					BigDecimal tempoNormalizado = new BigDecimal(timeTotal).divide(new BigDecimal(maxTime), rounding, roundingMode);
+					BigDecimal acoesNormalizadas = qtdAcoes.divide(qtdMaxActions, rounding, roundingMode);
+					
+					//eficacia (completude das acoes obrigatorias) -> fazer o que deve ser feito
+					BigDecimal eficacia = qtdAcoesObrigatoriasFeitas.divide(qtdAcoesObrigatorias, rounding, roundingMode);
+					
+					
+					//eficiencia (qtd eventos) -> fazer da melhor forma					
+					if(type.equals(TipoAlgoritmoPrioridade.AcoesPorTempo)){
+						BigDecimal time = new BigDecimal(timeTotal * maxAcaoPorTempo);
+						BigDecimal eficienciaTempo = qtdAcoes.divide(time, rounding, roundingMode);
+						BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficienciaTempo.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
+
+						ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.AcoesPorTempo, fluxo, prioridadeFuzzy.doubleValue());
+						r.addParametro("acoes", qtdAcoes.doubleValue());
+						r.addParametro("tempo", time.doubleValue());
+						r.addParametro("eficiencia", eficienciaTempo.doubleValue());
+						r.addParametro("eficacia", eficacia.doubleValue());
+						list.add(r);
+						System.out.println(r.toPrintString());
+						
+					}else if(type.equals(TipoAlgoritmoPrioridade.AcoesMelhorCaminhoPorAcoes)){
+						BigDecimal contAcoes = new BigDecimal(contAcao * maxAcoesMelhorCaminho);
+						BigDecimal eficienciaAcoesNormalizadas = qtdAcoesMelhorCaminho.divide(contAcoes, rounding, roundingMode);
+						BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficienciaAcoesNormalizadas.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
+						
+						ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.AcoesMelhorCaminhoPorAcoes, fluxo, prioridadeFuzzy.doubleValue());
+						r.addParametro("acoesMelhorCaminho", qtdAcoesMelhorCaminho.doubleValue());
+						r.addParametro("acoes", contAcoes.doubleValue());
+						r.addParametro("eficiencia", eficienciaAcoesNormalizadas.doubleValue());
+						r.addParametro("eficacia", eficacia.doubleValue());
+						list.add(r);
+						System.out.println(r.toPrintString());
+						
+					}else if(type.equals(TipoAlgoritmoPrioridade.DoisFuzzy)){
+						BigDecimal eficienciaFuzzy = new BigDecimal(fuzzyEffectiveness(tempoNormalizado.doubleValue(), acoesNormalizadas.doubleValue())).setScale(rounding, roundingMode);
+						BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficienciaFuzzy.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
+						
+						ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.DoisFuzzy, fluxo, prioridadeFuzzy.doubleValue());
+						r.addParametro("acoes", acoesNormalizadas.doubleValue());
+						r.addParametro("tempo", tempoNormalizado.doubleValue());
+						r.addParametro("eficiencia", eficienciaFuzzy.doubleValue());
+						r.addParametro("eficacia", eficacia.doubleValue());
+						list.add(r);
+						System.out.println(r.toPrintString());
+						
+					}else if(type.equals(TipoAlgoritmoPrioridade.FuzzyTresParams)){
+						BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriorityThreeParams(eficacia.doubleValue(), tempoNormalizado.doubleValue(), acoesNormalizadas.doubleValue())).setScale(rounding, roundingMode);
+						
+						ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.FuzzyTresParams, fluxo, prioridadeFuzzy.doubleValue());
+						r.addParametro("acoes", acoesNormalizadas.doubleValue());
+						r.addParametro("tempo", tempoNormalizado.doubleValue());
+						r.addParametro("eficacia", eficacia.doubleValue());
+						list.add(r);
+						System.out.println(r.toPrintString());
+						
+					}
+				}
 				
-				//eficacia (completude das acoes obrigatorias) -> fazer o que deve ser feito
-				BigDecimal eficacia = qtdAcoesObrigatoriasFeitas.divide(qtdAcoesObrigatorias, rounding, roundingMode);
-				
-				//eficiencia (qtd eventos) -> fazer da melhor forma
-				BigDecimal time = new BigDecimal(timeTotal);
-				time = time.divide(new BigDecimal(maxTime), rounding, roundingMode);
-				BigDecimal action = new BigDecimal(contAcao);
-				action = action.divide(new BigDecimal(maxActions), rounding, roundingMode);
-				
-				BigDecimal eficienciaFuzzy = new BigDecimal(fuzzyEffectiveness(time.doubleValue(), action.doubleValue())).setScale(rounding, roundingMode);
-				BigDecimal eficienciaAcoes = qtdAcoesMelhorCaminho.divide(new BigDecimal(contAcao * maxAcoesMelhorCaminho), rounding, roundingMode);
-				BigDecimal eficienciaTempo = qtdAcoes.divide(new BigDecimal(timeTotal * maxTempoAcoes), rounding, roundingMode);
-				BigDecimal eficiencia = eficienciaTempo;
-				
-				//prioridade
-				BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficiencia.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
-				
-				System.out.println("User["+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getEmail() + " / Tempo: "+ timeTotal + " - Acoes: "+ contAcao + " (" + eficienciaTempo + ") | Eficacia: " + eficacia + " - Eficiencia: " + eficiencia + " | Prioridade: " + prioridadeFuzzy );
-				System.out.println("");
+				resultado.put(type, list);
 			}
-			
-			
-			System.out.println("");
 		}
 		
-		//System.out.println(lcs("Matheus", "Artesateste"));
+		return resultado;
 	}
 	
 	private static int countEqualsActions(List<Action> acoes, List<ActionVO> acoes2){
@@ -284,10 +389,7 @@ public class TestesAlgoritmos {
 	private static long calculateTimeActions(List<Action> acoes){
 		return acoes.get(acoes.size()-1).getsTime() - acoes.get(0).getsTime();
 	}
-	
-	
-	
-	
+		
 
 	public static String lcs(String a, String b) {
 	    int[][] lengths = new int[a.length()+1][b.length()+1];
@@ -320,73 +422,6 @@ public class TestesAlgoritmos {
 	    }
 	 
 	    return sb.reverse().toString();
-	}
-	
-	private static void generateLog(String name, List<Fluxo> fluxos){
-		SimpleDateFormat dateFormatInit = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat dateFormatEnd = new SimpleDateFormat("hh:mm:ss.SSS");
-		String log = getLogHeader(name);
-		//TipoConvidado
-		for(Fluxo fluxo : fluxos){
-			log += "<trace><string key=\"concept:name\" value=\"Case"+fluxo.getId()+".0\"/>";
-			for(Action acao : fluxo.getAcoes()){
-				String date = dateFormatInit.format(acao.getsTime())+"T"+dateFormatEnd.format(acao.getsTime())+"+03:00";
-				String attrs = (acao.getsId() == null || acao.getsId().equals("")) && (acao.getsName() == null || acao.getsName().equals("")) ? acao.getsClass() : acao.getsId() + "-" + acao.getsName();
-				String element = acao.getsActionType()+"-"+acao.getsTag()+"-"+acao.getsTagIndex()+"-"+ attrs;
-				
-				log += "<event>"
-							+ "<string key=\"org:resource\" value=\"UNDEFINED\"/>"
-							+ "<string key=\"id\" value=\""+acao.getId()+"\"/>"
-							+ "<date key=\"time:timestamp\" value=\""+date+"\"/>"
-							+ "<string key=\"concept:name\" value=\""+element+"\"/>"
-							+ "<string key=\"content\" value=\""+(acao.getsContent().length() < 300 ? acao.getsContent().replaceAll("&lt;", "(").replaceAll("&gt;", ")").replaceAll("&quot;", "").replaceAll("&", "").trim() : "null")+"\"/>"
-							+ "<string key=\"location\" value=\""+acao.getsUrl()+"\"/>"
-							+ "<string key=\"position\" value=\""+acao.getsPosX()+":"+acao.getsPosY()+"\"/>"
-							+ "<string key=\"lifecycle:transition\" value=\""+fluxo.getTipoConvidado()+"\"/>"
-						+ "</event>";
-			}
-			log += "</trace>";
-		}
-		log += "</log>";
-		
-		FileWriter arquivo;  
-        try {  
-            arquivo = new FileWriter(new File("C:/"+name+".xes"));  
-            arquivo.write(log);  
-            arquivo.close();
-        } catch (Exception e) {  
-            e.printStackTrace();  
-        }
-	}
-	
-	private static String getLogHeader(String name){
-		return "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-				+ "<!-- This file has been generated with the OpenXES library. It conforms -->"
-				+ "<!-- to the XML serialization of the XES standard for log storage and -->"
-				+ "<!-- management. -->"
-				+ "<!-- XES standard version: 1.0 -->"
-				+ "<!-- OpenXES library version: 1.0RC7 -->"
-				+ "<!-- OpenXES is available from http://www.openxes.org/ -->"
-				+ "<log xes.version=\"1.0\" xes.features=\"nested-attributes\" openxes.version=\"1.0RC7\" xmlns=\"http://www.xes-standard.org/\">"
-				+ "<extension name=\"Lifecycle\" prefix=\"lifecycle\" uri=\"http://www.xes-standard.org/lifecycle.xesext\"/>"
-				+ "<extension name=\"Organizational\" prefix=\"org\" uri=\"http://www.xes-standard.org/org.xesext\"/>"
-				+ "<extension name=\"Time\" prefix=\"time\" uri=\"http://www.xes-standard.org/time.xesext\"/>"
-				+ "<extension name=\"Concept\" prefix=\"concept\" uri=\"http://www.xes-standard.org/concept.xesext\"/>"
-				+ "<extension name=\"Semantic\" prefix=\"semantic\" uri=\"http://www.xes-standard.org/semantic.xesext\"/>"
-				+ "<global scope=\"trace\">"
-				+ "<string key=\"concept:name\" value=\"__INVALID__\"/>"
-				+ "<string key=\"concept:value\" value=\"__INVALID__\"/>"
-				+ "</global>"
-				+ "<global scope=\"event\">"
-				+ "<string key=\"concept:name\" value=\"__INVALID__\"/>"
-				+ "<string key=\"lifecycle:transition\" value=\"complete\"/>"
-				+ "</global>"
-				+ "<classifier name=\"MXML Legacy Classifier\" keys=\"concept:name lifecycle:transition\"/>"
-				+ "<classifier name=\"Event Name\" keys=\"concept:name\"/>"
-				+ "<classifier name=\"Resource\" keys=\"org:resource\"/>"
-				+ "<string key=\"source\" value=\"Rapid Synthesizer\"/>"
-				+ "<string key=\"concept:name\" value=\""+name+".mxml\"/>"
-				+ "<string key=\"lifecycle:model\" value=\"standard\"/>";
 	}
 	
 }
