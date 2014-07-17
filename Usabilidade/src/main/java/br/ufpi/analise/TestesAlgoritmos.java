@@ -192,15 +192,15 @@ public class TestesAlgoritmos {
 	
 
 	public static void main(String[] args) throws IOException {
-		long[] ids = {22};
-		HashMap<TipoAlgoritmoPrioridade, List<ResultadoPrioridade>> generatedPriority = generatePriority(ids); //{19, 20}; - 3, 4, 5
+		long[] ids = {25};//{22}; 24,25,26
+		HashMap<String, List<ResultadoPrioridade>> generatedPriority = generatePriority(ids, false); //{19, 20}; - 3, 4, 5
 		
 		System.out.println("\n\n######### ORDENADOS #########");
 		
-		Set<TipoAlgoritmoPrioridade> keySet = generatedPriority.keySet();
-		Iterator<TipoAlgoritmoPrioridade> iterator = keySet.iterator();
+		Set<String> keySet = generatedPriority.keySet();
+		Iterator<String> iterator = keySet.iterator();
 		while(iterator.hasNext()){
-			TipoAlgoritmoPrioridade key = iterator.next();
+			String key = iterator.next();
 			ArrayList<ResultadoPrioridade> list = (ArrayList<ResultadoPrioridade>) generatedPriority.get(key);
 			Collections.sort(list, new Comparator<ResultadoPrioridade>() {
 		        @Override
@@ -223,12 +223,12 @@ public class TestesAlgoritmos {
 		}
 	}
 	
-	public static HashMap<TipoAlgoritmoPrioridade, List<ResultadoPrioridade>> generatePriority(long[] ids) throws IOException {
+	public static HashMap<String, List<ResultadoPrioridade>> generatePriority(long[] ids, boolean debug) throws IOException {
 		EntityManagerFactory emf = javax.persistence.Persistence.createEntityManagerFactory("default");
 		EntityManager entityManager = emf.createEntityManager();
 		TarefaRepositoryImpl tarefaRepositoryImpl = new TarefaRepositoryImpl(entityManager);
 		
-		HashMap<TipoAlgoritmoPrioridade, List<ResultadoPrioridade>> resultado  = new HashMap<TipoAlgoritmoPrioridade, List<ResultadoPrioridade>>();
+		HashMap<String, List<ResultadoPrioridade>> resultado  = new HashMap<String, List<ResultadoPrioridade>>();
 		
 		RoundingMode roundingMode = RoundingMode.UP;
 		int rounding = 3, roundingPlus = 6;
@@ -236,24 +236,30 @@ public class TestesAlgoritmos {
 		
 		for(long id: ids){
 			Tarefa tarefa = tarefaRepositoryImpl.find(id);
-			System.out.println("Tarefa: "+tarefa.getId());
+			if(debug){
+				System.out.println("Tarefa: "+tarefa.getId());
+			}
 			
 			
 			List<ActionVO> acoesObrigatorias = TestesAlgoritmos.getListAcoesObrigatorias(tarefa, tarefaRepositoryImpl);
-			System.out.println("ACOES OBRIGATORIAS: ");
-			for(ActionVO a : acoesObrigatorias){
-				System.out.println(a);
-			}
-			System.out.println(acoesObrigatorias.size());
-			System.out.println();
-			//
+			//if(debug){
+				System.out.println("ACOES OBRIGATORIAS: ");
+				for(ActionVO a : acoesObrigatorias){
+					System.out.println(a);
+				}
+				System.out.println(acoesObrigatorias.size());
+				System.out.println();
+			//}
+
 			List<ActionVO> acoesMelhorCaminho = TestesAlgoritmos.getListAcoesMelhorCaminho(tarefa, tarefaRepositoryImpl);
-			System.out.println("ACOES MELHOR CAMINHO: "+acoesMelhorCaminho.get(0).getUsuario().getNome());
-			for(ActionVO a : acoesMelhorCaminho){
-				System.out.println(a);
+			if(debug){
+				System.out.println("ACOES MELHOR CAMINHO: "+acoesMelhorCaminho.get(0).getUsuario().getNome());
+				for(ActionVO a : acoesMelhorCaminho){
+					System.out.println(a);
+				}
+				System.out.println(acoesMelhorCaminho.size());
+				System.out.println();
 			}
-			System.out.println(acoesMelhorCaminho.size());
-			System.out.println();
 			
 			long maxTime = 0, maxActions = 0;
 			for(Fluxo fluxo : tarefa.getFluxos()){
@@ -294,10 +300,14 @@ public class TestesAlgoritmos {
 				}
 			}
 			
-			System.out.println("minTempoParaCadaAcao: "+ minTempoPorAcao+", maxAcaoPorTempo: "+maxAcaoPorTempo+", maxAcoesMelhorCaminho: "+maxAcoesMelhorCaminho+", melhorCaminho: "+qtdAcoesMelhorCaminho);
+			if(debug){
+				System.out.println("minTempoParaCadaAcao: "+ minTempoPorAcao+", maxAcaoPorTempo: "+maxAcaoPorTempo+", maxAcoesMelhorCaminho: "+maxAcoesMelhorCaminho+", melhorCaminho: "+qtdAcoesMelhorCaminho);
+			}
 			
 			for (TipoAlgoritmoPrioridade type : TipoAlgoritmoPrioridade.values()) {
-				System.out.println("\n\n##### "+type+" #####");
+				if(debug){
+					System.out.println("\n\n##### "+type+" #####");
+				}
 				
 				List<ResultadoPrioridade> list = new ArrayList<ResultadoPrioridade>();
 				
@@ -328,7 +338,9 @@ public class TestesAlgoritmos {
 						r.addParametro("eficiencia", eficienciaTempo.doubleValue());
 						r.addParametro("eficacia", eficacia.doubleValue());
 						list.add(r);
-						System.out.println(r.toPrintString());
+						if(debug){
+							System.out.println(r.toPrintString());
+						}
 						
 					}else if(type.equals(TipoAlgoritmoPrioridade.AcoesMelhorCaminhoPorAcoes)){
 						BigDecimal contAcoes = new BigDecimal(contAcao * maxAcoesMelhorCaminho);
@@ -341,7 +353,9 @@ public class TestesAlgoritmos {
 						r.addParametro("eficiencia", eficienciaAcoesNormalizadas.doubleValue());
 						r.addParametro("eficacia", eficacia.doubleValue());
 						list.add(r);
-						System.out.println(r.toPrintString());
+						if(debug){
+							System.out.println(r.toPrintString());
+						}
 						
 					}else if(type.equals(TipoAlgoritmoPrioridade.DoisFuzzy)){
 						BigDecimal eficienciaFuzzy = new BigDecimal(fuzzyEffectiveness(tempoNormalizado.doubleValue(), acoesNormalizadas.doubleValue())).setScale(rounding, roundingMode);
@@ -353,7 +367,9 @@ public class TestesAlgoritmos {
 						r.addParametro("eficiencia", eficienciaFuzzy.doubleValue());
 						r.addParametro("eficacia", eficacia.doubleValue());
 						list.add(r);
-						System.out.println(r.toPrintString());
+						if(debug){
+							System.out.println(r.toPrintString());
+						}
 						
 					}else if(type.equals(TipoAlgoritmoPrioridade.FuzzyTresParams)){
 						BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriorityThreeParams(eficacia.doubleValue(), tempoNormalizado.doubleValue(), acoesNormalizadas.doubleValue())).setScale(rounding, roundingMode);
@@ -363,12 +379,14 @@ public class TestesAlgoritmos {
 						r.addParametro("tempo", tempoNormalizado.doubleValue());
 						r.addParametro("eficacia", eficacia.doubleValue());
 						list.add(r);
-						System.out.println(r.toPrintString());
+						if(debug){
+							System.out.println(r.toPrintString());
+						}
 						
 					}
 				}
 				
-				resultado.put(type, list);
+				resultado.put(String.valueOf(id)+"-"+type, list);
 			}
 		}
 		
@@ -377,10 +395,13 @@ public class TestesAlgoritmos {
 	
 	private static int countEqualsActions(List<Action> acoes, List<ActionVO> acoes2){
 		int contAcoes = 0;
-		for(Action acao : acoes){			
-			ActionVO vo = acao.toVO();
-			if(acoes2.contains(vo)){
-				contAcoes++;
+		for(ActionVO acao2 : acoes2){
+			for(Action acao : acoes){
+				ActionVO vo = acao.toVO();
+				if(vo.equals(acao2)){
+					contAcoes++;
+					break;
+				}
 			}
 		}
 		return contAcoes;

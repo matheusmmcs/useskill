@@ -102,6 +102,9 @@ MUDOU HASH
 			this.sViewportY = viewportY;
 			this.sUserAgent = useragent;
 
+			this.sRealTime = new Date().getTime();
+			this.sTimezoneOffset = new Date().getTimezoneOffset();
+			
 			this.sClient = CLIENT;
 			this.sVersion = VERSION;
 		}

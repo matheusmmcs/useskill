@@ -101,13 +101,13 @@ public class ResultadoPrioridade {
 	public String toPrintString(){
 		DecimalFormat df = new DecimalFormat("#.0000");
 		if(tipoAlgoritmo.equals(TipoAlgoritmoPrioridade.AcoesPorTempo)){
-			return "User["+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getNome() + " / Acoes: "+ parametros.get("acoes") +"; Time: "+ df.format(parametros.get("tempo")) +" => Eficiência: "+ parametros.get("eficiencia") +" | Eficacia: " + parametros.get("eficacia") + " | Prioridade: " + prioridade;
+			return "User["+fluxo.getTarefa().getId()+"-"+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getNome() + " / Acoes: "+ parametros.get("acoes") +"; Time: "+ df.format(parametros.get("tempo")) +" => Eficiência: "+ parametros.get("eficiencia") +" | Eficacia: " + parametros.get("eficacia") + " | Prioridade: " + prioridade;
 		}else if(tipoAlgoritmo.equals(TipoAlgoritmoPrioridade.AcoesMelhorCaminhoPorAcoes)){
-			return "User["+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getNome() + " / AcoesMelhorCaminho: "+ parametros.get("acoesMelhorCaminho") +"; Acoes: "+ df.format(parametros.get("acoes")) +" => Eficiência: "+ parametros.get("eficiencia") +" | Eficacia: " + parametros.get("eficacia") + " | Prioridade: " + prioridade;
+			return "User["+fluxo.getTarefa().getId()+"-"+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getNome() + " / AcoesMelhorCaminho: "+ parametros.get("acoesMelhorCaminho") +"; Acoes: "+ df.format(parametros.get("acoes")) +" => Eficiência: "+ parametros.get("eficiencia") +" | Eficacia: " + parametros.get("eficacia") + " | Prioridade: " + prioridade;
 		}else if(tipoAlgoritmo.equals(TipoAlgoritmoPrioridade.DoisFuzzy)){
-			return "User["+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getNome() + " / Tempo: "+ parametros.get("tempo") +"; Acoes: "+ parametros.get("acoes") +" => Eficiência: "+ parametros.get("eficiencia") +" | Eficacia: " + parametros.get("eficacia") + " | Prioridade: " + prioridade;
+			return "User["+fluxo.getTarefa().getId()+"-"+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getNome() + " / Tempo: "+ parametros.get("tempo") +"; Acoes: "+ parametros.get("acoes") +" => Eficiência: "+ parametros.get("eficiencia") +" | Eficacia: " + parametros.get("eficacia") + " | Prioridade: " + prioridade;
 		}else if(tipoAlgoritmo.equals(TipoAlgoritmoPrioridade.FuzzyTresParams)){
-			return "User["+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getNome() + " / Tempo: "+ parametros.get("tempo") +" | Acoes: "+ parametros.get("acoes") +" | Eficacia: " + parametros.get("eficacia") + " | Prioridade: " + prioridade;
+			return "User["+fluxo.getTarefa().getId()+"-"+fluxo.getTipoConvidado()+"]: "+fluxo.getUsuario().getNome() + " / Tempo: "+ parametros.get("tempo") +" | Acoes: "+ parametros.get("acoes") +" | Eficacia: " + parametros.get("eficacia") + " | Prioridade: " + prioridade;
 		}else{
 			return "";
 		}

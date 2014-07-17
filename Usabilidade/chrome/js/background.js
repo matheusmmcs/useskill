@@ -337,6 +337,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 function Action(action, time, url, content, tag, tagIndex, id, classe, name, xPath, posX, posY, viewportX, viewportY, useragent) {
 	this.sActionType = action;
 	this.sTime = time;
+	this.sRealTime = new Date().getTime();
+	this.sTimezoneOffset = new Date().getTimezoneOffset();
 	this.sUrl = url;
 	this.sContent = String(content).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 	this.sContent = content;

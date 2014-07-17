@@ -1,3 +1,23 @@
+Para escrever o artigo:
+- referencias fortes para a necessidade de priorização de análise de fluxos em ferramentas de captura de logs;
+- analisar terceira variável para o sistema fuzzy;
+- calibrar base de regras do sistema fuzzy;
+
+- pensar em como agrupar os resultados utilizando FCM;
+- rodar pequenos experimentos;
+
+
+Escrita:
+- Abstract e Introdução;
+- Trabalhos Relacionados;
+- Referencial Teórico;
+- Abordagem Proposta;
+- Experimentação;
+- Pontos Fraco e Melhorias;
+- Resultados;
+
+
+
 minTempoParaCadaAcao: 3798.44, maxAcaoPorTempo: 6.41E-4, maxAcoesMelhorCaminho: 1.572, melhorCaminho: 11
 
 Acoes / Tempo (Normalizado)

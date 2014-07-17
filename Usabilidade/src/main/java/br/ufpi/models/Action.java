@@ -30,6 +30,8 @@ public class Action implements Serializable {
 	private Long id;
 	private String sActionType;
 	private Long sTime;
+	private Long sRealTime;
+	private int sTimezoneOffset;
 	private String sUrl;
 	
 	@Lob
@@ -236,5 +238,33 @@ public class Action implements Serializable {
 				+ sTag + ", sTagIndex=" + sTagIndex + ", sId=" + sId 
 				+  ", sClass=" + sClass + ", sName=" + sName + ", sPosX=" 
 				+ sPosX	+ ", sPosY=" + sPosY + ", sXPath=" + sXPath + "]";
+	}
+
+	/**
+	 * @return the sRealTime
+	 */
+	public Long getsRealTime() {
+		return sRealTime;
+	}
+
+	/**
+	 * @param sRealTime the sRealTime to set
+	 */
+	public void setsRealTime(Long sRealTime) {
+		this.sRealTime = sRealTime;
+	}
+
+	/**
+	 * @return the sTimezoneOffset
+	 */
+	public int getsTimezoneOffset() {
+		return sTimezoneOffset;
+	}
+
+	/**
+	 * @param sTimezoneOffset the sTimezoneOffset to set
+	 */
+	public void setsTimezoneOffset(int sTimezoneOffset) {
+		this.sTimezoneOffset = sTimezoneOffset;
 	}
 }
