@@ -54,7 +54,7 @@
 				</p>
 				<hr />
 			</legend>
-			<table class="table table-striped table-bordered table-condensed">
+			<table class="table blue-table table-striped table-bordered table-condensed">
 				<thead>
 					<tr>
 						<th><fmt:message key="analise.datarealizacao"/></th>

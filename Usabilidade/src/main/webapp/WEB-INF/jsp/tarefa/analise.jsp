@@ -58,7 +58,7 @@
 			<p class="legend">
 				<fmt:message key="analise.dados.usuarios.tipo"/><fmt:message key="testes.tipo.TESTER"/>
 			</p>
-			<table class="table table-striped table-bordered table-condensed">
+			<table class="table blue-table table-striped table-bordered table-condensed">
 				<thead>
 					<tr>
 						<!-- <th rowspan="2" style="width: 65px"></th> -->
@@ -66,12 +66,12 @@
     					<th colspan="4"><fmt:message key="fluxos"/></th>
   					</tr>
 					<tr>
-						<th style="width: 65px"><fmt:message key="analise.usuarios.convidados"/></th>
-						<th style="width: 65px"><fmt:message key="analise.usuarios.realizaram"/></th>
-						<th style="width: 65px"><fmt:message key="analise.fluxos.tempo"/></th>
-						<th style="width: 65px"><fmt:message key="analise.fluxos.acoes"/></th>
-						<th style="width: 65px"><fmt:message key="analise.fluxos.realizados"/></th>
-						<th style="width: 65px"><fmt:message key="analise.fluxos.namedia"/></th>
+						<th class="sub-th"><fmt:message key="analise.usuarios.convidados"/></th>
+						<th class="sub-th"><fmt:message key="analise.usuarios.realizaram"/></th>
+						<th class="sub-th"><fmt:message key="analise.fluxos.tempo"/></th>
+						<th class="sub-th"><fmt:message key="analise.fluxos.acoes"/></th>
+						<th class="sub-th"><fmt:message key="analise.fluxos.realizados"/></th>
+						<th class="sub-th"><fmt:message key="analise.fluxos.namedia"/></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -101,7 +101,7 @@
 			<p class="legend">
 				<fmt:message key="analise.dados.usuarios.tipo"/><fmt:message key="testes.tipo.USER"/>
 			</p>
-			<table class="table table-striped table-bordered table-condensed">
+			<table class="table blue-table table-striped table-bordered table-condensed">
 				<thead>
 					<tr>
 						<!-- <th rowspan="2" style="width: 65px"></th> -->
@@ -109,12 +109,12 @@
     					<th colspan="4"><fmt:message key="fluxos"/></th>
   					</tr>
 					<tr>
-						<th style="width: 65px"><fmt:message key="analise.usuarios.convidados"/></th>
-						<th style="width: 65px"><fmt:message key="analise.usuarios.realizaram"/></th>
-						<th style="width: 65px"><fmt:message key="analise.fluxos.tempo"/></th>
-						<th style="width: 65px"><fmt:message key="analise.fluxos.acoes"/></th>
-						<th style="width: 65px"><fmt:message key="analise.fluxos.realizados"/></th>
-						<th style="width: 65px"><fmt:message key="analise.fluxos.namedia"/></th>
+						<th class="sub-th"><fmt:message key="analise.usuarios.convidados"/></th>
+						<th class="sub-th"><fmt:message key="analise.usuarios.realizaram"/></th>
+						<th class="sub-th"><fmt:message key="analise.fluxos.tempo"/></th>
+						<th class="sub-th"><fmt:message key="analise.fluxos.acoes"/></th>
+						<th class="sub-th"><fmt:message key="analise.fluxos.realizados"/></th>
+						<th class="sub-th"><fmt:message key="analise.fluxos.namedia"/></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -150,30 +150,36 @@
 					<fmt:message key="analise.detalhamento.usuarios" />
 				</span>
 			</legend>
-			<table class="table table-striped table-bordered table-condensed">
+			<table class="table blue-table table-striped table-bordered table-condensed">
+				<colgroup>
+					<col span="1" style="width: 60%;">
+			       	<col span="1" style="width: 15%;">
+			       	<col span="1" style="width: 10%;">
+			       	<col span="1" style="width: 15%;">
+			    </colgroup>
 				<thead>
 					<tr>
 						<th><fmt:message key="analise.nome.usuario" /></th>
-						<th style="width: 110px"><fmt:message key="analise.qtdfluxos" /></th>
-						<th style="width: 45px"><fmt:message key="analise.tipo" /></th>
-						<th style="width: 80px"><fmt:message key="analise.detalhar" /></th>
+						<th><fmt:message key="analise.prioridade" /></th>
+						<th><fmt:message key="analise.tipo" /></th>
+						<th><fmt:message key="analise.detalhar" /></th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach items="${fluxos}" var="fluxo">
+					<c:forEach items="${listaPrioridade}" var="resultado">
 						<tr>
 							<td>
-								${fluxo.nomeUsuario}
+								${resultado.fluxo.usuario.nome}
 							</td>
 							<td class="centertd">
-								
+								${resultado.prioridade}
 							</td>
 							<td class="centertd">
-								${fluxo.tipoConvidado}
+								${resultado.fluxo.tipoConvidado}
 							</td>
 							<td class="centertd">
 								<a class="btn btn-success" title="<fmt:message key="testes.usuarios.convidados" />"
-								href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefaId}/usuario/${fluxo.idUsuario}/analise">
+								href="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefaId}/usuario/${resultado.fluxo.usuario.id}/analise">
 									<span class="icon-tasks icon-white"></span> <fmt:message key="analise.fluxos" />
 								</a>
 							</td>
@@ -182,6 +188,7 @@
 				</tbody>
 			</table>
 		</fieldset>
+		
 		<jsp:include page="../paginator.jsp" flush="true">
 			<jsp:param name="link" value="${pageContext.request.contextPath}/teste/${testeId}/tarefa/${tarefaId}/analise/pag/"/>
 		</jsp:include>

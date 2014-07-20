@@ -60,8 +60,7 @@
 		</li>
 	</ul>
 
-	<form class="form-horizontal form-layout"
-		action="${pageContext.request.contextPath}/conta" method="post">
+	<div class="form-horizontal form-layout">
 		<fieldset>
 			<legend>
 				<span><fmt:message key="analise.list.acoes" />
@@ -77,7 +76,7 @@
 				</p>
 				<hr />
 				<span>
-					Roteiro
+					<fmt:message key="roteiro" />
 				</span>
 				<div id="roteiro-text">
 					${tarefaRoteiro}
@@ -85,27 +84,83 @@
 				<hr />
 			</legend>
 				<div class="row-fluid">
-					
-				<table class="table table-striped span12">
+				
+				<p class="legend"><fmt:message key="analise.acoes.obrigatorias" /> - ${acoesObrigatorias.size()}</p>
+				<table class="table blue-table">
+					<colgroup>
+						<col span="1" style="width: 10%;">
+				       <col span="1" style="width: 15%;">
+				       <col span="1" style="width: 25%;">
+				       <col span="1" style="width: 50%;">
+				    </colgroup>
 					<thead>
 						<tr>
-							<th class=""><fmt:message key="acao" /></th>
 							<th class=""><fmt:message key="tempo" /></th>
+							<th class=""><fmt:message key="acao" /></th>
 							<th class=""><fmt:message key="elemento" /></th>
-							<th class=""><fmt:message key="posicao" /></th>
 							<th class=""><fmt:message key="urldaacao" /></th>
-							<th class=""><fmt:message key="conteudo" /></th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach items="${acoesObrigatorias}" var="acao">
+							<tr class="action-path 
+								<c:choose>
+									<c:when test="${acao.acaoEspecialista}">right-path</c:when>
+								    <c:otherwise>wrong-path</c:otherwise> 
+								</c:choose>"
+								 data-toggle="popover" title="<fmt:message key="analise.acao.detalhes" />" 
+								 data-content='ActionType = ${acao.sActionType} </br> Time = ${acao.sTime} </br> XPath = ${acao.sXPath} </br> Element Tag = ${acao.sTag} [${acao.sTagIndex}] </br> Position = [${acao.sPosX}, ${acao.sPosY}] </br> URL = ${acao.sUrl} </br> Content = ${acao.shortContent()} '
+								 >
+								<td class="centertd">${acao.sTime}</td>
+								<td class="centertd">${acao.sActionType}</td>
+								<td class="centertd long">${acao.getDescricaoElemento()}</td>
+								<td class="centertd long">${acao.sUrl}</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+				
+				
+				<p class="legend"><fmt:message key="analise.acoes.usuario" /> - ${acoes.size()}</p>
+				<table class="table blue-table">
+					<colgroup>
+						<col span="1" style="width: 10%;">
+				       <col span="1" style="width: 15%;">
+				       <col span="1" style="width: 25%;">
+				       <col span="1" style="width: 50%;">
+				    </colgroup>
+					<thead>
+						<tr>
+							<th class=""><fmt:message key="tempo" /></th>
+							<th class=""><fmt:message key="acao" /></th>
+							<th class=""><fmt:message key="elemento" /></th>
+							<th class=""><fmt:message key="urldaacao" /></th>
 						</tr>
 					</thead>
 					<tbody>
 						<c:forEach items="${acoes}" var="acao">
-							<tr>
-								<td class="centertd">${acao.sActionType}</td>
+							<tr class="action-path 
+								<c:choose>
+									<c:when test="${acao.obrigatorio}">right-path</c:when>
+								    <c:otherwise> 
+								        <c:choose>
+								            <c:when test="${acao.melhorCaminho}">best-path</c:when>
+								            <c:otherwise> 
+								                <c:choose>
+										            <c:when test="${not acao.acaoEspecialista}">wrong-path</c:when> 
+										            <c:otherwise></c:otherwise>
+										        </c:choose>
+								            </c:otherwise>
+								        </c:choose>
+								    </c:otherwise> 
+								</c:choose>"
+								 data-toggle="popover" title="<fmt:message key="analise.acao.detalhes" />" 
+								 data-content='ActionType = ${acao.sActionType} </br> Time = ${acao.sTime} </br> XPath = ${acao.sXPath} </br> Element Tag = ${acao.sTag} [${acao.sTagIndex}] </br> Position = [${acao.sPosX}, ${acao.sPosY}] </br> URL = ${acao.sUrl} </br> Content = ${acao.shortContent()} '
+								 >
 								<td class="centertd">${acao.sTime}</td>
-								<td class="centertd">${acao.sTag} [${acao.sTagIndex}]</td>
-								<td class="centertd">${acao.sPosX}x${acao.sPosY}</td>
-								<td class="centertd" style="">${acao.sUrl}</td>
-								<td class="centertd">${acao.sContent}</td>
+								<td class="centertd">${acao.sActionType}</td>
+								<td class="centertd long">${acao.getDescricaoElemento()}</td>
+								<td class="centertd long">${acao.sUrl}</td>
 							</tr>
 						</c:forEach>
 					</tbody>
@@ -113,6 +168,28 @@
 					
 				</div>			
 		</fieldset>
-	</form>
+	</div>
+	
 </div>
+
+<script>
+	(function($){
+		$(document).ready(function(){
+			$("[data-toggle=popover]").popover({
+			    html: true,
+			    trigger: 'hover',
+			    placement: get_popover_placement,
+			    animation: true
+			});
+			
+			function get_popover_placement(pop, dom_el) {
+				var docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
+				var top_pos = $(dom_el).offset().top;
+				console.log(docHeight - top_pos)
+				if (docHeight - top_pos < 300) return 'top';
+				return 'bottom';
+		    }
+		});
+	})(jQuery);
+</script>
 </body>

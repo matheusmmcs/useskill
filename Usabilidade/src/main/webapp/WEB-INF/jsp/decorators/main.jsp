@@ -56,11 +56,9 @@
 	</center>
 	</footer>
 
-	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/jscripts/libs/bootstrap.min.js"></script>
-	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/jscripts/useskill.js"></script>
-	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/jscripts/libs/jquery.easing1.3.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap/bootstrap.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap/bootstrap-popover.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/useskill.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.easing1.3.js"></script>
 </body>
 </html>
