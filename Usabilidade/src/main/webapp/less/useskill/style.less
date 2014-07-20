@@ -219,3 +219,73 @@ footer{
 		}
 	}
 }
+
+// Ações dos fluxos
+// ------------------------------
+.table tbody tr.action-path:hover td, .table tbody tr.action-path:hover th {
+	background: none;
+}
+.table.blue-table{
+	table-layout: fixed;
+	width: 97%;
+	float: none;
+	padding: 0;
+	margin: 10px auto 20px;
+	border: 1px solid @borderColorTable;
+
+	tr th {
+		background: @colorDark;
+		color: white;
+	}
+  	tr td, tr th {
+		white-space: nowrap;
+		width: auto;
+		border-right: 1px solid @borderColorTable;
+		border-top: 1px solid @borderColorTable;
+	}
+	tr td.long {
+		white-space: normal;   
+		word-break: break-all;
+		word-wrap: break-word;
+		width: auto;
+	}
+	
+	tr th.sub-th{
+		vertical-align: middle;
+		white-space: normal;
+		background: @color;
+		width: 65px;
+	}
+}
+.action-path{
+	&.best-path{
+		background: @correctColor;
+		&:hover{
+			background: @correctColorOver;
+		} 
+	}
+	&.right-path{
+		background: @rightColor;
+		&:hover{
+			background: @rightColorOver;
+		}
+	}
+	&.wrong-path{
+		background: @wrongColor;
+		&:hover{
+			background: @wrongColorOver;
+		}
+	}
+}
+.popover{
+	&.bottom .arrow{
+		border-bottom: 5px solid @grayLight;
+	}
+	&-content, &-title{
+		border: 1px solid @grayLight;
+	}
+	&-title{
+		color: #999;
+		border-bottom: none;
+	}
+}
