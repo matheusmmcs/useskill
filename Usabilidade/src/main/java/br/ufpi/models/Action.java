@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.Transient;
 
 import br.ufpi.models.vo.ActionVO;
 
@@ -48,6 +49,13 @@ public class Action implements Serializable {
 	private String sName;
 	private int sPosX;
 	private int sPosY;
+	
+	@Transient
+	private boolean melhorCaminho = false;
+	@Transient
+	private boolean obrigatorio = false;
+	@Transient
+	private boolean acaoEspecialista = false;
 
 	/**
 	 * @return the id
@@ -266,5 +274,74 @@ public class Action implements Serializable {
 	 */
 	public void setsTimezoneOffset(int sTimezoneOffset) {
 		this.sTimezoneOffset = sTimezoneOffset;
+	}
+
+	/**
+	 * @return the melhorCaminho
+	 */
+	public boolean isMelhorCaminho() {
+		return melhorCaminho;
+	}
+
+	/**
+	 * @param melhorCaminho the melhorCaminho to set
+	 */
+	public void setMelhorCaminho(boolean melhorCaminho) {
+		this.melhorCaminho = melhorCaminho;
+	}
+
+	/**
+	 * @return the obrigatorio
+	 */
+	public boolean isObrigatorio() {
+		return obrigatorio;
+	}
+
+	/**
+	 * @param obrigatorio the obrigatorio to set
+	 */
+	public void setObrigatorio(boolean obrigatorio) {
+		this.obrigatorio = obrigatorio;
+	}
+	
+	public String shortContent(){
+		if(this.sContent.length() > 100){
+			return this.sContent.substring(0, 97) + "...";
+		}else{
+			return this.sContent;
+		}
+	}
+	
+	public String getDescricaoElemento(){
+		String elemento = "";
+		if(this.getsXPath() != null && !this.getsXPath().isEmpty()){
+			if(this.getsTag() != null && this.getsTagIndex() != null && !this.getsTag().isEmpty() && !this.getsTagIndex().isEmpty()){
+				elemento += this.getsTag() + "[" + this.getsTagIndex() + "]";
+			}
+			if(this.getsId() != null && !this.getsId().isEmpty()){
+				elemento += " id="+this.getsId();
+			}
+			if(this.getsClass() != null && !this.getsClass().isEmpty()){
+				elemento += " class="+this.getsClass();
+			}
+			if(this.getsName() != null && !this.getsName().isEmpty()){
+				elemento += " name="+this.getsName();
+			}
+		}
+		return elemento;
+	}
+
+	/**
+	 * @return the acaoEspecialista
+	 */
+	public boolean isAcaoEspecialista() {
+		return acaoEspecialista;
+	}
+
+	/**
+	 * @param acaoEspecialista the acaoEspecialista to set
+	 */
+	public void setAcaoEspecialista(boolean acaoEspecialista) {
+		this.acaoEspecialista = acaoEspecialista;
 	}
 }

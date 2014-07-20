@@ -10,6 +10,9 @@ public class ActionVO {
 	private String sUrl;
 	private String sXPath;
 	
+	private boolean melhorCaminho;
+	private boolean obrigatorio;
+	
 	/**
 	 * Usuario definido 
 	 */
@@ -19,6 +22,8 @@ public class ActionVO {
 		this.sActionType = actionType;
 		this.sUrl = url;
 		this.sXPath = xPath;
+		this.melhorCaminho = false;
+		this.obrigatorio = false;
 	}
 	
 	public String getsActionType() {
@@ -76,6 +81,34 @@ public class ActionVO {
 	@Override
 	public String toString() {
 		return "Action [actionType=" + sActionType + ", url=" + sUrl + ", xPath=" + sXPath + "]";
+	}
+
+	/**
+	 * @return the obrigatorio
+	 */
+	public boolean isObrigatorio() {
+		return obrigatorio;
+	}
+
+	/**
+	 * @param obrigatorio the obrigatorio to set
+	 */
+	public void setObrigatorio(boolean obrigatorio) {
+		this.obrigatorio = obrigatorio;
+	}
+
+	/**
+	 * @return the melhorCaminho
+	 */
+	public boolean isMelhorCaminho() {
+		return melhorCaminho;
+	}
+
+	/**
+	 * @param melhorCaminho the melhorCaminho to set
+	 */
+	public void setMelhorCaminho(boolean melhorCaminho) {
+		this.melhorCaminho = melhorCaminho;
 	}
 
 }

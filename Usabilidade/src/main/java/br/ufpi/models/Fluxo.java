@@ -39,28 +39,28 @@ import javax.persistence.TemporalType;
 		 * 
 		 * 3º usuario ter realizado o fluxo
 		 */
-		@NamedQuery(name = "Fluxo.obterfluxos", query = "select fluxo from Teste as t "
+		@NamedQuery(name = "Fluxo.obterfluxos", query = "select f from Teste as t "
 				+ "left join t.tarefas as tarefas "
-				+ "left join tarefas.fluxos as fluxo "
+				+ "left join tarefas.fluxos as f "
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
 				+ "and t.usuarioCriador.id= :usuarioCriador "
-				+ "and fluxo.usuario.id= :usuario order by  fluxo.tempoRealizacao desc"),
-		@NamedQuery(name = "Fluxo.obterfluxo", query = "select fluxo from Teste as t "
+				+ "and f.usuario.id= :usuario order by  f.tempoRealizacao desc"),
+		@NamedQuery(name = "Fluxo.obterfluxo", query = "select f from Teste as t "
 				+ "left join t.tarefas as tarefas "
-				+ "left join tarefas.fluxos as fluxo "
+				+ "left join tarefas.fluxos as f "
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
 				+ "and t.usuarioCriador.id= :usuarioCriador "
-				+ "and fluxo.usuario.id= :usuario " + "and fluxo.id= :fluxo"),
+				+ "and f.usuario.id= :usuario " + "and f.id= :fluxo"),
 		@NamedQuery(name = "Fluxo.obterActions", query = "select acao from Teste as t "
 				+ "left join t.tarefas as tarefas "
-				+ "left join tarefas.fluxos as fluxo "
-				+ "left join fluxo.acoes as acao "
+				+ "left join tarefas.fluxos as f "
+				+ "left join f.acoes as acao "
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
 				+ "and t.usuarioCriador.id= :usuarioCriador "
-				+ "and fluxo.usuario.id= :usuario " + "and fluxo.id= :fluxo"),
+				+ "and f.usuario.id= :usuario " + "and f.id= :fluxo"),
 		/*
 		 * obtem uma lista de fluxo de uma tarefa
 		 * 
@@ -72,22 +72,22 @@ import javax.persistence.TemporalType;
 		 * 
 		 * 3º usuario ter realizado o fluxo
 		 */
-		@NamedQuery(name = "Fluxo.getFluxos.Tarefa", query = "select new br.ufpi.models.vo.FluxoVO(fluxo.usuario.nome,fluxo.usuario.id,fluxo.dataRealizacao,fluxo.tempoRealizacao,fluxo.tipoConvidado) from Teste as t "
+		@NamedQuery(name = "Fluxo.getFluxos.Tarefa", query = "select new br.ufpi.models.vo.FluxoVO(f.usuario.nome,f.usuario.id,f.dataRealizacao,f.tempoRealizacao,f.tipoConvidado) from Teste as t "
 				+ "left join t.tarefas as tarefas "
-				+ "left join tarefas.fluxos as fluxo "
+				+ "left join tarefas.fluxos as f "
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
-				+ "and t.usuarioCriador.id= :usuarioCriador GROUP BY fluxo.usuario.id"),
+				+ "and t.usuarioCriador.id= :usuarioCriador GROUP BY f.usuario.id"),
 		/**
 		 * Obtem todos os Fluxos de uma tarefa passando apenas o id da tarefa
 		 * 
 		 * @author Cleiton Moura
 		 * 
 		 */
-		@NamedQuery(name = "Fluxo.obter.fluxos.Tarefa", query = "select new br.ufpi.models.vo.FluxoVO(fluxo.usuario.nome,fluxo.usuario.id,fluxo.dataRealizacao,fluxo.tempoRealizacao,fluxo.tipoConvidado) from Tarefa as tarefas "
-				+ "left join tarefas.fluxos as fluxo "
+		@NamedQuery(name = "Fluxo.obter.fluxos.Tarefa", query = "select new br.ufpi.models.vo.FluxoVO(f.usuario.nome,f.usuario.id,f.dataRealizacao,f.tempoRealizacao,f.tipoConvidado) from Tarefa as tarefas "
+				+ "left join tarefas.fluxos as f "
 				+ "where "
-				+ "tarefas.id= :tarefa " + "GROUP BY fluxo.usuario.id"),
+				+ "tarefas.id= :tarefa " + "GROUP BY f.usuario.id"),
 		/*
 		 * obtem o total de fluxo de uma tarefa
 		 * 

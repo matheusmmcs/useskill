@@ -1,12 +1,22 @@
 package br.ufpi.controllers;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
@@ -16,6 +26,9 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.ufpi.analise.Estatistica;
+import br.ufpi.analise.ResultadoPrioridade;
+import br.ufpi.analise.TestesAlgoritmos;
+import br.ufpi.analise.enums.TipoAlgoritmoPrioridade;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.ObjetoSalvo;
 import br.ufpi.componets.TesteSessionPlugin;
@@ -31,6 +44,7 @@ import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.enums.SituacaoDeUsoEnum;
 import br.ufpi.models.roteiro.ValorRoteiro;
 import br.ufpi.models.roteiro.VariavelRoteiro;
+import br.ufpi.models.vo.ActionVO;
 import br.ufpi.models.vo.ConvidadoCount;
 import br.ufpi.models.vo.FluxoVO;
 import br.ufpi.models.vo.TarefaVO;
@@ -491,11 +505,42 @@ public class TarefaController extends BaseController {
 		validateComponente.validarId(tarefaId);
 		validateComponente.validarId(usuarioId);
 		validateComponente.validarId(fluxoId);
+		
 		Long usuarioCriadorId = usuarioLogado.getUsuario().getId();
-		Fluxo fluxo = tarefaRepository.getFluxo(testeId, tarefaId, usuarioId,
-				usuarioCriadorId, fluxoId);
+		Fluxo fluxo = tarefaRepository.getFluxo(testeId, tarefaId, usuarioId, usuarioCriadorId, fluxoId);
 
-		result.include("acoes", fluxo.getAcoes());
+		Tarefa tarefa = fluxo.getTarefa();
+		List<ActionVO> acoesVOObrigatorias = TestesAlgoritmos.getListAcoesObrigatoriasVO(tarefa, tarefaRepository);
+		List<ActionVO> acoesMelhorCaminho = TestesAlgoritmos.getListAcoesMelhorCaminho(tarefa, tarefaRepository);
+		Set<ActionVO> acoesVOEspecialistas = TestesAlgoritmos.getSetAcoesEspecialistas(tarefa, tarefaRepository);
+		
+		List<Action> acoesObrigatorias = TestesAlgoritmos.getListAcoesObrigatorias(tarefa, tarefaRepository);
+		List<Action> acoes = fluxo.getAcoes();
+		
+		for(Action a : fluxo.getAcoes()){
+			ActionVO actionVO = a.toVO();
+			if(acoesVOObrigatorias.contains(actionVO)){
+				a.setObrigatorio(true);
+				
+				//verificar as acoes obrigatorias que foram realizadas
+				for(Action a2 : acoesObrigatorias){
+					if(actionVO.equals(a2.toVO())){
+						a2.setAcaoEspecialista(true);
+						break;
+					}
+				}
+				
+			}
+			if(acoesMelhorCaminho.contains(actionVO)){
+				a.setMelhorCaminho(true);
+			}
+			if(acoesVOEspecialistas.contains(actionVO)){
+				a.setAcaoEspecialista(true);
+			}
+		}
+		
+		result.include("acoes", acoes);
+		result.include("acoesObrigatorias", acoesObrigatorias);
 		result.include("nomeTarefa", fluxo.getTarefa().getNome());
 		result.include("nomeUsuario", fluxo.getUsuario().getNome());
 		result.include("nomeTeste", fluxo.getTarefa().getTeste().getTitulo());
@@ -517,20 +562,39 @@ public class TarefaController extends BaseController {
 		if (numeroPagina <= 0) {
 			numeroPagina = 1;
 		}
-		Paginacao<FluxoVO> paginacao = tarefaRepository.getFluxos(tarefaId,
-				testeId, usuarioDonoTeste, Paginacao.OBJETOS_POR_PAGINA,
-				numeroPagina);
+		
+		Paginacao<FluxoVO> paginacao = tarefaRepository.getFluxos(tarefaId, testeId, usuarioDonoTeste, Paginacao.OBJETOS_POR_PAGINA, numeroPagina);
 		paginacao.geraPaginacao("fluxos", numeroPagina, result);
 		result.include("tarefaId", tarefaId);
 		result.include("testeId", testeId);
 		result.include("tarefa", tarefaRepository.find(tarefaId));
-		estatistica.calculoTempoEAcoesFluxo(tarefaId,
-				paginacao.getListObjects(), false);
+		
+		List<ResultadoPrioridade> listaPrioridade = new ArrayList<ResultadoPrioridade>();
+		try {
+			HashMap<String, List<ResultadoPrioridade>> hashPrioridade = TestesAlgoritmos.generatePriority(tarefaId, false);
+			listaPrioridade = hashPrioridade.get(String.valueOf(tarefaId)+"-"+TipoAlgoritmoPrioridade.FuzzyTresParams);
+			Collections.sort(listaPrioridade, new Comparator<ResultadoPrioridade>() {
+		        @Override
+		        public int compare(ResultadoPrioridade o1, ResultadoPrioridade o2) {
+		        	if(o1.getPrioridade() < o2.getPrioridade()){
+		        		return 1;
+		        	}else if(o1.getPrioridade() > o2.getPrioridade()){
+		        		return -1;
+		        	}else{
+		        		return 0;
+		        	}
+		        }
+		    });
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		result.include("listaPrioridade", listaPrioridade);
+		
+		estatistica.calculoTempoEAcoesFluxo(tarefaId, paginacao.getListObjects(), false);
 		estatistica.quantidadeUsuariosConvidados(testeId);
 		quantidadeUsuariosQueRealizaramOTeste(testeId);
 		List<Long> quantidadeAcoesETempoPorTipoAcao = tarefaRepository.quantidadeAcoesETempoPorTipoAcao(tarefaId, TipoConvidado.USER, "click");
 		double mediaAritimetica = estatistica.mediaAritimetica(quantidadeAcoesETempoPorTipoAcao);
-		System.out.println(mediaAritimetica);
 	}
 
 	@SuppressWarnings("unused")

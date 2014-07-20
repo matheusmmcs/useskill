@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,13 +27,24 @@ import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.models.TipoConvidado;
 import br.ufpi.models.vo.ActionVO;
+import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
+import br.ufpi.util.ApplicationPath;
 
 public class TestesAlgoritmos {
 
+	public static List<ActionVO> getListAcoesObrigatoriasVO(Tarefa tarefa, TarefaRepository tarefaRepository){
+		List<Action> listAcoesObrigatorias = getListAcoesObrigatorias(tarefa, tarefaRepository);
+		List<ActionVO> acoesObrigatoriasVO = new ArrayList<ActionVO>();
+		for(Action a : listAcoesObrigatorias){
+			acoesObrigatoriasVO.add(a.toVO());
+		}
+		return acoesObrigatoriasVO;
+	}
 	
-	private static List<ActionVO> getListAcoesObrigatorias(Tarefa tarefa, TarefaRepositoryImpl tarefaRepositoryImpl){
-		List<ActionVO> acoesObrigatorias = new ArrayList<ActionVO>();
+	public static List<Action> getListAcoesObrigatorias(Tarefa tarefa, TarefaRepository tarefaRepository){
+		TarefaRepositoryImpl tarefaRepositoryImpl = ((TarefaRepositoryImpl) tarefaRepository);
+		List<Action> acoesObrigatorias = new ArrayList<Action>();
 		List<Fluxo> fluxos = tarefaRepositoryImpl.getFluxos(tarefa.getId(), TipoConvidado.EXPERT);
 		for(Fluxo fluxo : fluxos){
 			List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
@@ -40,7 +52,8 @@ public class TestesAlgoritmos {
 				ActionVO acaoVO = acao.toVO();
 				int contFluxos = 0;
 				for(Fluxo fluxo2 : fluxos){
-					for(Action acao2 : tarefaRepositoryImpl.getAcoesReais(fluxo2.getId())){
+					List<Action> acoesFluxo2 = tarefaRepositoryImpl.getAcoesReais(fluxo2.getId());
+					for(Action acao2 : acoesFluxo2){
 						ActionVO acao2VO = acao2.toVO();
 						if(acaoVO.equals(acao2VO)){
 							contFluxos++;
@@ -48,8 +61,17 @@ public class TestesAlgoritmos {
 						}
 					}
 				}
-				if(contFluxos == fluxos.size() && !acoesObrigatorias.contains(acaoVO)){
-					acoesObrigatorias.add(acaoVO);
+				if(contFluxos == fluxos.size()){
+					boolean contains = false;
+					for(Action a : acoesObrigatorias){
+						if(acaoVO.equals(a.toVO())){
+							contains = true;
+							break;
+						}
+					}
+					if(!contains){
+						acoesObrigatorias.add(acao);
+					}
 				}
 			}
 			
@@ -57,7 +79,21 @@ public class TestesAlgoritmos {
 		return acoesObrigatorias;
 	}
 	
-	private static List<ActionVO> getListAcoesMelhorCaminho(Tarefa tarefa, TarefaRepositoryImpl tarefaRepositoryImpl) {
+	public static Set<ActionVO> getSetAcoesEspecialistas(Tarefa tarefa, TarefaRepository tarefaRepository) {
+		TarefaRepositoryImpl tarefaRepositoryImpl = ((TarefaRepositoryImpl) tarefaRepository);
+		List<Fluxo> fluxos = tarefaRepositoryImpl.getFluxos(tarefa.getId(), TipoConvidado.EXPERT);
+		Set<ActionVO> acoesEspecialistas = new LinkedHashSet<ActionVO>();
+		for(Fluxo fluxo : fluxos){
+			List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
+			for(Action acao : acoes){
+				acoesEspecialistas.add(acao.toVO());
+			}
+		}
+		return acoesEspecialistas;
+	}
+	
+	public static List<ActionVO> getListAcoesMelhorCaminho(Tarefa tarefa, TarefaRepository tarefaRepository) {
+		TarefaRepositoryImpl tarefaRepositoryImpl = ((TarefaRepositoryImpl) tarefaRepository);
 		List<Fluxo> fluxos = tarefaRepositoryImpl.getFluxos(tarefa.getId(), TipoConvidado.EXPERT);
 		List<Action> melhorCaminho = null;
 		List<ActionVO> melhorCaminhoVO = new ArrayList<ActionVO>();
@@ -117,18 +153,18 @@ public class TestesAlgoritmos {
 		return newMap;
 	}
 	
-	private static double fuzzyEffectiveness(double time, double action) throws IOException {
+	private static double fuzzyEfficiency(double time, double action) throws IOException {
 		HashMap<String, Double> params = new HashMap<String, Double>();
 		params.put("time", time);
 		params.put("action", action);
-        return fuzzyParams("src/main/webapp/files/fuzzy/funceffectiveness.fcl", params, "effectiveness", false);
+        return fuzzyParams(ApplicationPath.getFilePath("files/fuzzy/funcefficiency.fcl"), params, "efficiency", false);
 	}
 	
 	private static double fuzzyPriority(double efficiency, double effectiveness) throws IOException {
 		HashMap<String, Double> params = new HashMap<String, Double>();
 		params.put("efficiency", efficiency);
 		params.put("effectiveness", effectiveness);
-        return fuzzyParams("src/main/webapp/files/fuzzy/funcpriority.fcl", params, "priority", false);
+        return fuzzyParams(ApplicationPath.getFilePath("files/fuzzy/funcpriority.fcl"), params, "priority", false);
 	}
 	
 	private static double fuzzyPriorityThreeParams(double effectiveness, double time, double action) throws IOException {
@@ -136,7 +172,7 @@ public class TestesAlgoritmos {
 		params.put("time", time);
 		params.put("action", action);
 		params.put("effectiveness", effectiveness);
-        return fuzzyParams("src/main/webapp/files/fuzzy/funcpriority-time-actions-effectiveness.fcl", params, "priority", false);
+        return fuzzyParams(ApplicationPath.getFilePath("files/fuzzy/funcpriority-time-actions-effectiveness.fcl"), params, "priority", false);
 	}	
 	
 	private static double fuzzyParams(String filePath, HashMap<String, Double> params, String sResult, boolean debug) throws IOException {
@@ -192,8 +228,8 @@ public class TestesAlgoritmos {
 	
 
 	public static void main(String[] args) throws IOException {
-		long[] ids = {25};//{22}; 24,25,26
-		HashMap<String, List<ResultadoPrioridade>> generatedPriority = generatePriority(ids, false); //{19, 20}; - 3, 4, 5
+		long id = 24;//{22}; 24,25,26
+		HashMap<String, List<ResultadoPrioridade>> generatedPriority = generatePriority(id, false); //{19, 20}; - 3, 4, 5
 		
 		System.out.println("\n\n######### ORDENADOS #########");
 		
@@ -223,7 +259,7 @@ public class TestesAlgoritmos {
 		}
 	}
 	
-	public static HashMap<String, List<ResultadoPrioridade>> generatePriority(long[] ids, boolean debug) throws IOException {
+	public static HashMap<String, List<ResultadoPrioridade>> generatePriority(long id, boolean debug) throws IOException {
 		EntityManagerFactory emf = javax.persistence.Persistence.createEntityManagerFactory("default");
 		EntityManager entityManager = emf.createEntityManager();
 		TarefaRepositoryImpl tarefaRepositoryImpl = new TarefaRepositoryImpl(entityManager);
@@ -234,160 +270,158 @@ public class TestesAlgoritmos {
 		int rounding = 3, roundingPlus = 6;
 		
 		
-		for(long id: ids){
-			Tarefa tarefa = tarefaRepositoryImpl.find(id);
-			if(debug){
-				System.out.println("Tarefa: "+tarefa.getId());
+		Tarefa tarefa = tarefaRepositoryImpl.find(id);
+		if(debug){
+			System.out.println("Tarefa: "+tarefa.getId());
+		}
+		
+		
+		List<ActionVO> acoesObrigatorias = TestesAlgoritmos.getListAcoesObrigatoriasVO(tarefa, tarefaRepositoryImpl);
+		//if(debug){
+			System.out.println("ACOES OBRIGATORIAS: ");
+			for(ActionVO a : acoesObrigatorias){
+				System.out.println(a);
 			}
-			
-			
-			List<ActionVO> acoesObrigatorias = TestesAlgoritmos.getListAcoesObrigatorias(tarefa, tarefaRepositoryImpl);
-			//if(debug){
-				System.out.println("ACOES OBRIGATORIAS: ");
-				for(ActionVO a : acoesObrigatorias){
-					System.out.println(a);
-				}
-				System.out.println(acoesObrigatorias.size());
-				System.out.println();
-			//}
+			System.out.println(acoesObrigatorias.size());
+			System.out.println();
+		//}
 
-			List<ActionVO> acoesMelhorCaminho = TestesAlgoritmos.getListAcoesMelhorCaminho(tarefa, tarefaRepositoryImpl);
+		List<ActionVO> acoesMelhorCaminho = TestesAlgoritmos.getListAcoesMelhorCaminho(tarefa, tarefaRepositoryImpl);
+		if(debug){
+			System.out.println("ACOES MELHOR CAMINHO: "+acoesMelhorCaminho.get(0).getUsuario().getNome());
+			for(ActionVO a : acoesMelhorCaminho){
+				System.out.println(a);
+			}
+			System.out.println(acoesMelhorCaminho.size());
+			System.out.println();
+		}
+		
+		long maxTime = 0, maxActions = 0;
+		for(Fluxo fluxo : tarefa.getFluxos()){
+			if(maxTime < fluxo.getTempoRealizacao()){
+				maxTime = fluxo.getTempoRealizacao();
+			}
+			if(maxActions < fluxo.getAcoes().size()){
+				maxActions = fluxo.getAcoes().size();
+			}
+		}
+		
+		//valores para normalização
+		double minTempoPorAcao = Integer.MAX_VALUE, maxAcaoPorTempo = 0, maxAcoesMelhorCaminho = 0;
+		
+		BigDecimal qtdAcoesMelhorCaminho = new BigDecimal(acoesMelhorCaminho.size());
+		BigDecimal qtdAcoesObrigatorias = new BigDecimal(acoesObrigatorias.size());
+		BigDecimal qtdMaxActions = new BigDecimal(maxActions);
+		
+		for(Fluxo fluxo : tarefa.getFluxos()){
+			List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
+			
+			BigDecimal qtdAcoes = new BigDecimal(acoes.size());
+			BigDecimal qtdTempo = new BigDecimal(calculateTimeActions(acoes));
+			
+			BigDecimal timeAction = qtdTempo.divide(qtdAcoes, roundingPlus, roundingMode);
+			if(minTempoPorAcao > timeAction.doubleValue()){
+				minTempoPorAcao = timeAction.doubleValue();
+			}
+			
+			BigDecimal actionTime = qtdAcoes.divide(qtdTempo, roundingPlus, roundingMode);
+			if(maxAcaoPorTempo < actionTime.doubleValue()){
+				maxAcaoPorTempo = actionTime.doubleValue();
+			}
+
+			BigDecimal eficienciaAcoes = qtdAcoesMelhorCaminho.divide(qtdAcoes, rounding, roundingMode);
+			if(maxAcoesMelhorCaminho < eficienciaAcoes.doubleValue()){
+				maxAcoesMelhorCaminho = eficienciaAcoes.doubleValue();
+			}
+		}
+		
+		if(debug){
+			System.out.println("minTempoParaCadaAcao: "+ minTempoPorAcao+", maxAcaoPorTempo: "+maxAcaoPorTempo+", maxAcoesMelhorCaminho: "+maxAcoesMelhorCaminho+", melhorCaminho: "+qtdAcoesMelhorCaminho);
+		}
+		
+		for (TipoAlgoritmoPrioridade type : TipoAlgoritmoPrioridade.values()) {
 			if(debug){
-				System.out.println("ACOES MELHOR CAMINHO: "+acoesMelhorCaminho.get(0).getUsuario().getNome());
-				for(ActionVO a : acoesMelhorCaminho){
-					System.out.println(a);
-				}
-				System.out.println(acoesMelhorCaminho.size());
-				System.out.println();
+				System.out.println("\n\n##### "+type+" #####");
 			}
 			
-			long maxTime = 0, maxActions = 0;
-			for(Fluxo fluxo : tarefa.getFluxos()){
-				if(maxTime < fluxo.getTempoRealizacao()){
-					maxTime = fluxo.getTempoRealizacao();
-				}
-				if(maxActions < fluxo.getAcoes().size()){
-					maxActions = fluxo.getAcoes().size();
-				}
-			}
-			
-			//valores para normalização
-			double minTempoPorAcao = Integer.MAX_VALUE, maxAcaoPorTempo = 0, maxAcoesMelhorCaminho = 0;
-			
-			BigDecimal qtdAcoesMelhorCaminho = new BigDecimal(acoesMelhorCaminho.size());
-			BigDecimal qtdAcoesObrigatorias = new BigDecimal(acoesObrigatorias.size());
-			BigDecimal qtdMaxActions = new BigDecimal(maxActions);
+			List<ResultadoPrioridade> list = new ArrayList<ResultadoPrioridade>();
 			
 			for(Fluxo fluxo : tarefa.getFluxos()){
 				List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
 				
-				BigDecimal qtdAcoes = new BigDecimal(acoes.size());
-				BigDecimal qtdTempo = new BigDecimal(calculateTimeActions(acoes));
+				int contAcao = acoes.size(), contAcoesObrigatorias = countEqualsActions(acoes, acoesObrigatorias), contAcoesNoMelhorCaminho = countEqualsActions(acoes, acoesMelhorCaminho);
+				long timeTotal = calculateTimeActions(acoes);
 				
-				BigDecimal timeAction = qtdTempo.divide(qtdAcoes, roundingPlus, roundingMode);
-				if(minTempoPorAcao > timeAction.doubleValue()){
-					minTempoPorAcao = timeAction.doubleValue();
-				}
+				BigDecimal qtdAcoesObrigatoriasFeitas = new BigDecimal(contAcoesObrigatorias);				
+				BigDecimal qtdAcoes = new BigDecimal(contAcao);
+				BigDecimal tempoNormalizado = new BigDecimal(timeTotal).divide(new BigDecimal(maxTime), rounding, roundingMode);
+				BigDecimal acoesNormalizadas = qtdAcoes.divide(qtdMaxActions, rounding, roundingMode);
 				
-				BigDecimal actionTime = qtdAcoes.divide(qtdTempo, roundingPlus, roundingMode);
-				if(maxAcaoPorTempo < actionTime.doubleValue()){
-					maxAcaoPorTempo = actionTime.doubleValue();
-				}
+				//eficacia (completude das acoes obrigatorias) -> fazer o que deve ser feito
+				BigDecimal eficacia = qtdAcoesObrigatoriasFeitas.divide(qtdAcoesObrigatorias, rounding, roundingMode);
+				
+				
+				//eficiencia (qtd eventos) -> fazer da melhor forma					
+				if(type.equals(TipoAlgoritmoPrioridade.AcoesPorTempo)){
+					BigDecimal time = new BigDecimal(timeTotal * maxAcaoPorTempo);
+					BigDecimal eficienciaTempo = qtdAcoes.divide(time, rounding, roundingMode);
+					BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficienciaTempo.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
 
-				BigDecimal eficienciaAcoes = qtdAcoesMelhorCaminho.divide(qtdAcoes, rounding, roundingMode);
-				if(maxAcoesMelhorCaminho < eficienciaAcoes.doubleValue()){
-					maxAcoesMelhorCaminho = eficienciaAcoes.doubleValue();
-				}
-			}
-			
-			if(debug){
-				System.out.println("minTempoParaCadaAcao: "+ minTempoPorAcao+", maxAcaoPorTempo: "+maxAcaoPorTempo+", maxAcoesMelhorCaminho: "+maxAcoesMelhorCaminho+", melhorCaminho: "+qtdAcoesMelhorCaminho);
-			}
-			
-			for (TipoAlgoritmoPrioridade type : TipoAlgoritmoPrioridade.values()) {
-				if(debug){
-					System.out.println("\n\n##### "+type+" #####");
-				}
-				
-				List<ResultadoPrioridade> list = new ArrayList<ResultadoPrioridade>();
-				
-				for(Fluxo fluxo : tarefa.getFluxos()){
-					List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
-					
-					int contAcao = acoes.size(), contAcoesObrigatorias = countEqualsActions(acoes, acoesObrigatorias), contAcoesNoMelhorCaminho = countEqualsActions(acoes, acoesMelhorCaminho);
-					long timeTotal = calculateTimeActions(acoes);
-					
-					BigDecimal qtdAcoesObrigatoriasFeitas = new BigDecimal(contAcoesObrigatorias);				
-					BigDecimal qtdAcoes = new BigDecimal(contAcao);
-					BigDecimal tempoNormalizado = new BigDecimal(timeTotal).divide(new BigDecimal(maxTime), rounding, roundingMode);
-					BigDecimal acoesNormalizadas = qtdAcoes.divide(qtdMaxActions, rounding, roundingMode);
-					
-					//eficacia (completude das acoes obrigatorias) -> fazer o que deve ser feito
-					BigDecimal eficacia = qtdAcoesObrigatoriasFeitas.divide(qtdAcoesObrigatorias, rounding, roundingMode);
-					
-					
-					//eficiencia (qtd eventos) -> fazer da melhor forma					
-					if(type.equals(TipoAlgoritmoPrioridade.AcoesPorTempo)){
-						BigDecimal time = new BigDecimal(timeTotal * maxAcaoPorTempo);
-						BigDecimal eficienciaTempo = qtdAcoes.divide(time, rounding, roundingMode);
-						BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficienciaTempo.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
-
-						ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.AcoesPorTempo, fluxo, prioridadeFuzzy.doubleValue());
-						r.addParametro("acoes", qtdAcoes.doubleValue());
-						r.addParametro("tempo", time.doubleValue());
-						r.addParametro("eficiencia", eficienciaTempo.doubleValue());
-						r.addParametro("eficacia", eficacia.doubleValue());
-						list.add(r);
-						if(debug){
-							System.out.println(r.toPrintString());
-						}
-						
-					}else if(type.equals(TipoAlgoritmoPrioridade.AcoesMelhorCaminhoPorAcoes)){
-						BigDecimal contAcoes = new BigDecimal(contAcao * maxAcoesMelhorCaminho);
-						BigDecimal eficienciaAcoesNormalizadas = qtdAcoesMelhorCaminho.divide(contAcoes, rounding, roundingMode);
-						BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficienciaAcoesNormalizadas.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
-						
-						ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.AcoesMelhorCaminhoPorAcoes, fluxo, prioridadeFuzzy.doubleValue());
-						r.addParametro("acoesMelhorCaminho", qtdAcoesMelhorCaminho.doubleValue());
-						r.addParametro("acoes", contAcoes.doubleValue());
-						r.addParametro("eficiencia", eficienciaAcoesNormalizadas.doubleValue());
-						r.addParametro("eficacia", eficacia.doubleValue());
-						list.add(r);
-						if(debug){
-							System.out.println(r.toPrintString());
-						}
-						
-					}else if(type.equals(TipoAlgoritmoPrioridade.DoisFuzzy)){
-						BigDecimal eficienciaFuzzy = new BigDecimal(fuzzyEffectiveness(tempoNormalizado.doubleValue(), acoesNormalizadas.doubleValue())).setScale(rounding, roundingMode);
-						BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficienciaFuzzy.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
-						
-						ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.DoisFuzzy, fluxo, prioridadeFuzzy.doubleValue());
-						r.addParametro("acoes", acoesNormalizadas.doubleValue());
-						r.addParametro("tempo", tempoNormalizado.doubleValue());
-						r.addParametro("eficiencia", eficienciaFuzzy.doubleValue());
-						r.addParametro("eficacia", eficacia.doubleValue());
-						list.add(r);
-						if(debug){
-							System.out.println(r.toPrintString());
-						}
-						
-					}else if(type.equals(TipoAlgoritmoPrioridade.FuzzyTresParams)){
-						BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriorityThreeParams(eficacia.doubleValue(), tempoNormalizado.doubleValue(), acoesNormalizadas.doubleValue())).setScale(rounding, roundingMode);
-						
-						ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.FuzzyTresParams, fluxo, prioridadeFuzzy.doubleValue());
-						r.addParametro("acoes", acoesNormalizadas.doubleValue());
-						r.addParametro("tempo", tempoNormalizado.doubleValue());
-						r.addParametro("eficacia", eficacia.doubleValue());
-						list.add(r);
-						if(debug){
-							System.out.println(r.toPrintString());
-						}
-						
+					ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.AcoesPorTempo, fluxo, prioridadeFuzzy.doubleValue());
+					r.addParametro("acoes", qtdAcoes.doubleValue());
+					r.addParametro("tempo", time.doubleValue());
+					r.addParametro("eficiencia", eficienciaTempo.doubleValue());
+					r.addParametro("eficacia", eficacia.doubleValue());
+					list.add(r);
+					if(debug){
+						System.out.println(r.toPrintString());
 					}
+					
+				}else if(type.equals(TipoAlgoritmoPrioridade.AcoesMelhorCaminhoPorAcoes)){
+					BigDecimal contAcoes = new BigDecimal(contAcao * maxAcoesMelhorCaminho);
+					BigDecimal eficienciaAcoesNormalizadas = qtdAcoesMelhorCaminho.divide(contAcoes, rounding, roundingMode);
+					BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficienciaAcoesNormalizadas.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
+					
+					ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.AcoesMelhorCaminhoPorAcoes, fluxo, prioridadeFuzzy.doubleValue());
+					r.addParametro("acoesMelhorCaminho", qtdAcoesMelhorCaminho.doubleValue());
+					r.addParametro("acoes", contAcoes.doubleValue());
+					r.addParametro("eficiencia", eficienciaAcoesNormalizadas.doubleValue());
+					r.addParametro("eficacia", eficacia.doubleValue());
+					list.add(r);
+					if(debug){
+						System.out.println(r.toPrintString());
+					}
+					
+				}else if(type.equals(TipoAlgoritmoPrioridade.DoisFuzzy)){
+					BigDecimal eficienciaFuzzy = new BigDecimal(fuzzyEfficiency(tempoNormalizado.doubleValue(), acoesNormalizadas.doubleValue())).setScale(rounding, roundingMode);
+					BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficienciaFuzzy.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
+					
+					ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.DoisFuzzy, fluxo, prioridadeFuzzy.doubleValue());
+					r.addParametro("acoes", acoesNormalizadas.doubleValue());
+					r.addParametro("tempo", tempoNormalizado.doubleValue());
+					r.addParametro("eficiencia", eficienciaFuzzy.doubleValue());
+					r.addParametro("eficacia", eficacia.doubleValue());
+					list.add(r);
+					if(debug){
+						System.out.println(r.toPrintString());
+					}
+					
+				}else if(type.equals(TipoAlgoritmoPrioridade.FuzzyTresParams)){
+					BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriorityThreeParams(eficacia.doubleValue(), tempoNormalizado.doubleValue(), acoesNormalizadas.doubleValue())).setScale(rounding, roundingMode);
+					
+					ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.FuzzyTresParams, fluxo, prioridadeFuzzy.doubleValue());
+					r.addParametro("acoes", acoesNormalizadas.doubleValue());
+					r.addParametro("tempo", tempoNormalizado.doubleValue());
+					r.addParametro("eficacia", eficacia.doubleValue());
+					list.add(r);
+					if(debug){
+						System.out.println(r.toPrintString());
+					}
+					
 				}
-				
-				resultado.put(String.valueOf(id)+"-"+type, list);
 			}
+			
+			resultado.put(String.valueOf(id)+"-"+type, list);
 		}
 		
 		return resultado;
