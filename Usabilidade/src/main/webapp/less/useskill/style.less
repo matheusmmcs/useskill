@@ -240,6 +240,7 @@ footer{
   	tr td, tr th {
 		white-space: nowrap;
 		width: auto;
+		vertical-align: middle;
 		border-right: 1px solid @borderColorTable;
 		border-top: 1px solid @borderColorTable;
 	}
@@ -270,10 +271,22 @@ footer{
 			background: @rightColorOver;
 		}
 	}
+	&.right-repeat-path{
+		background: @rightRepeatColor;
+		&:hover{
+			background: @rightRepeatColorOver;
+		}
+	}
 	&.wrong-path{
 		background: @wrongColor;
 		&:hover{
 			background: @wrongColorOver;
+		}
+	}
+	&.normal-path{
+		background: @normalColor;
+		&:hover{
+			background: @normalColorOver;
 		}
 	}
 }
