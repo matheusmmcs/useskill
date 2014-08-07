@@ -41,8 +41,8 @@ import br.ufpi.models.enums.SituacaoDeUsoEnum;
 	@NamedQuery(name = "ValorRoteiro.findByFluxo", query = "SELECT v FROM ValorRoteiro v WHERE v.fluxo = :fluxo AND v.deleted = false"),
 	@NamedQuery(name = "ValorRoteiro.findByVariavelRoteiro", query = "SELECT v FROM ValorRoteiro v WHERE v.variavelRoteiro = :variavelRoteiro AND v.deleted = false"),
 
-	@NamedQuery(name = "ValorRoteiro.findByVariavelRoteiro.Count", query = "SELECT count(*) FROM ValorRoteiro v WHERE v.variavelRoteiro = :variavelRoteiro AND v.deleted = false"),
-	@NamedQuery(name = "ValorRoteiro.findByVariavelRoteiro.Livre.Count", query = "SELECT count(*) FROM ValorRoteiro v WHERE v.variavelRoteiro = :variavelRoteiro AND v.fluxo IS NULL AND v.situacaoDeUso = br.ufpi.models.enums.SituacaoDeUsoEnum.LIVRE AND v.deleted = false")
+	@NamedQuery(name = "ValorRoteiro.findByVariavelRoteiro.Count", query = "SELECT count(v) FROM ValorRoteiro v WHERE v.variavelRoteiro = :variavelRoteiro AND v.deleted = false"),
+	@NamedQuery(name = "ValorRoteiro.findByVariavelRoteiro.Livre.Count", query = "SELECT count(v) FROM ValorRoteiro v WHERE v.variavelRoteiro = :variavelRoteiro AND v.fluxo IS NULL AND v.situacaoDeUso = br.ufpi.models.enums.SituacaoDeUsoEnum.LIVRE AND v.deleted = false")
 })
 public class ValorRoteiro implements Serializable {
 

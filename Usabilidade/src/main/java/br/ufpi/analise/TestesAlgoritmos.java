@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -42,9 +43,29 @@ public class TestesAlgoritmos {
 		return acoesObrigatoriasVO;
 	}
 	
-	public static List<Action> getListAcoesObrigatorias(Tarefa tarefa, TarefaRepository tarefaRepository){
+	public static HashMap<ActionVO, Integer> getHashMapCountAcoesVO(List<ActionVO> acoes){
+		HashMap<ActionVO, Integer> mapCountAcoes = new HashMap<ActionVO, Integer>();
+		for(ActionVO a : acoes){
+			if(!mapCountAcoes.containsKey(a)){
+				mapCountAcoes.put(a, 1);
+			}else{
+				mapCountAcoes.put(a, mapCountAcoes.get(a) + 1);
+			}
+		}
+		return mapCountAcoes;
+	}
+	
+	/**
+	 * Método que retorna todas as ações consideradas obrigatórias, que determinam a eficácia da utilização.
+	 * 
+	 * @param tarefa
+	 * @param tarefaRepository
+	 * @return
+	 */
+	public static LinkedList<Action> getListAcoesObrigatorias(Tarefa tarefa, TarefaRepository tarefaRepository){
+		//TODO Corrigir o método, levando em consideração a ordem de cada ação realizada. Isso deve impactar em todas as features de comparação de açoes.
 		TarefaRepositoryImpl tarefaRepositoryImpl = ((TarefaRepositoryImpl) tarefaRepository);
-		List<Action> acoesObrigatorias = new ArrayList<Action>();
+		LinkedList<Action> acoesObrigatorias = new LinkedList<Action>();
 		List<Fluxo> fluxos = tarefaRepositoryImpl.getFluxos(tarefa.getId(), TipoConvidado.EXPERT);
 		for(Fluxo fluxo : fluxos){
 			List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
@@ -79,6 +100,13 @@ public class TestesAlgoritmos {
 		return acoesObrigatorias;
 	}
 	
+	/**
+	 * Todas as ações realizadas por especialistas
+	 * 
+	 * @param tarefa
+	 * @param tarefaRepository
+	 * @return
+	 */
 	public static Set<ActionVO> getSetAcoesEspecialistas(Tarefa tarefa, TarefaRepository tarefaRepository) {
 		TarefaRepositoryImpl tarefaRepositoryImpl = ((TarefaRepositoryImpl) tarefaRepository);
 		List<Fluxo> fluxos = tarefaRepositoryImpl.getFluxos(tarefa.getId(), TipoConvidado.EXPERT);
@@ -92,6 +120,13 @@ public class TestesAlgoritmos {
 		return acoesEspecialistas;
 	}
 	
+	/**
+	 * Retorna uma lista contendo as açoes que fazem parte do melhor caminho percorrido
+	 * 
+	 * @param tarefa
+	 * @param tarefaRepository
+	 * @return
+	 */
 	public static List<ActionVO> getListAcoesMelhorCaminho(Tarefa tarefa, TarefaRepository tarefaRepository) {
 		TarefaRepositoryImpl tarefaRepositoryImpl = ((TarefaRepositoryImpl) tarefaRepository);
 		List<Fluxo> fluxos = tarefaRepositoryImpl.getFluxos(tarefa.getId(), TipoConvidado.EXPERT);
@@ -115,42 +150,6 @@ public class TestesAlgoritmos {
 			}
 		}
 		return melhorCaminhoVO;
-	}
-	
-	private static HashMap<ActionVO, Integer> getMapAcoesObrigatorias(Tarefa tarefa, TarefaRepositoryImpl tarefaRepositoryImpl){
-		HashMap<ActionVO, Integer> acoesObrigatorias = new HashMap<ActionVO, Integer>();
-		List<Fluxo> fluxos = tarefaRepositoryImpl.getFluxos(tarefa.getId(), TipoConvidado.EXPERT);
-		for(Fluxo fluxo : fluxos){
-			List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
-			for(Action acao : acoes){
-				ActionVO acaoVO = acao.toVO();
-				Integer contPrevious = acoesObrigatorias.get(acaoVO);
-				if(contPrevious != null){
-					acoesObrigatorias.put(acaoVO, contPrevious + 1);
-				}else{
-					acoesObrigatorias.put(acaoVO, 1);
-				}
-			}
-			
-		}
-		return acoesObrigatorias;
-	}
-	
-	private static HashMap<ActionVO, BigDecimal> normalizeMapAcoesObrigatorias(HashMap<ActionVO, Integer> mapAcoesObrigatorias){
-		int max = 0;
-		Set<ActionVO> mapAcoesObrigatoriaskeySet = mapAcoesObrigatorias.keySet();
-		for(ActionVO key : mapAcoesObrigatoriaskeySet){
-			if(mapAcoesObrigatorias.get(key) > max){
-				max = mapAcoesObrigatorias.get(key); 
-			}
-		}
-		HashMap<ActionVO, BigDecimal> newMap = new HashMap<ActionVO, BigDecimal>();
-		for(ActionVO key : mapAcoesObrigatoriaskeySet){
-			BigDecimal normalized = new BigDecimal(mapAcoesObrigatorias.get(key));
-			normalized = normalized.divide(new BigDecimal(max), 2, RoundingMode.HALF_UP);
-			newMap.put(key, normalized);
-		}
-		return newMap;
 	}
 	
 	private static double fuzzyEfficiency(double time, double action) throws IOException {
@@ -287,14 +286,14 @@ public class TestesAlgoritmos {
 		//}
 
 		List<ActionVO> acoesMelhorCaminho = TestesAlgoritmos.getListAcoesMelhorCaminho(tarefa, tarefaRepositoryImpl);
-		if(debug){
+		//if(debug){
 			System.out.println("ACOES MELHOR CAMINHO: "+acoesMelhorCaminho.get(0).getUsuario().getNome());
 			for(ActionVO a : acoesMelhorCaminho){
 				System.out.println(a);
 			}
 			System.out.println(acoesMelhorCaminho.size());
 			System.out.println();
-		}
+		//}
 		
 		long maxTime = 0, maxActions = 0;
 		for(Fluxo fluxo : tarefa.getFluxos()){
@@ -349,7 +348,14 @@ public class TestesAlgoritmos {
 			for(Fluxo fluxo : tarefa.getFluxos()){
 				List<Action> acoes = tarefaRepositoryImpl.getAcoesReais(fluxo.getId());
 				
-				int contAcao = acoes.size(), contAcoesObrigatorias = countEqualsActions(acoes, acoesObrigatorias), contAcoesNoMelhorCaminho = countEqualsActions(acoes, acoesMelhorCaminho);
+				System.out.println("\n Usuario: "+fluxo.getUsuario().getNome());
+				for(Action a : acoes){
+					System.out.println(a.toVO());
+				}
+				
+				HashMap<ActionVO,Integer> mapCountAcoesObrigatoriasVO = getHashMapCountAcoesVO(acoesObrigatorias);
+				HashMap<ActionVO,Integer> mapCountAcoesMelhorCaminhoVO = getHashMapCountAcoesVO(acoesMelhorCaminho);
+				int contAcao = acoes.size(), contAcoesObrigatorias = countEqualsActions(acoes, acoesObrigatorias, mapCountAcoesObrigatoriasVO), contAcoesNoMelhorCaminho = countEqualsActions(acoes, acoesMelhorCaminho, mapCountAcoesMelhorCaminhoVO);
 				long timeTotal = calculateTimeActions(acoes);
 				
 				BigDecimal qtdAcoesObrigatoriasFeitas = new BigDecimal(contAcoesObrigatorias);				
@@ -427,16 +433,34 @@ public class TestesAlgoritmos {
 		return resultado;
 	}
 	
-	private static int countEqualsActions(List<Action> acoes, List<ActionVO> acoes2){
+	/**
+	 * Método que busca a semelhança entre duas listas de acoes. Se for passado um map como parâmetro, será contado apenas os que estiverem no map.
+	 * 
+	 * @param acoes = acoes originais, que serão comparadas
+	 * @param acoes2 = lista de ações desejadas, ou seja, que servirá de base para comparação
+	 * @param mapAcoes = map que contem a quantidade de cada ação na lista de acoes obrigatorias
+	 * 
+	 * @return
+	 */
+	private static int countEqualsActions(List<Action> acoes, List<ActionVO> acoes2, HashMap<ActionVO, Integer> mapAcoes){
 		int contAcoes = 0;
-		for(ActionVO acao2 : acoes2){
-			for(Action acao : acoes){
-				ActionVO vo = acao.toVO();
+		for(Action acao : acoes){
+			ActionVO vo = acao.toVO();
+			
+			for(ActionVO acao2 : acoes2){				
 				if(vo.equals(acao2)){
+					if(mapAcoes != null){
+						if(mapAcoes.get(vo) > 0){
+							mapAcoes.put(vo, mapAcoes.get(vo) - 1);
+						}else{
+							break;
+						}
+					}
 					contAcoes++;
 					break;
 				}
 			}
+			
 		}
 		return contAcoes;
 	}

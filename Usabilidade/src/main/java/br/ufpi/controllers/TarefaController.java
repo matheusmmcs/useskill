@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
@@ -54,6 +57,7 @@ import br.ufpi.repositories.TarefaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.repositories.ValorRoteiroRepository;
 import br.ufpi.repositories.VariavelRoteiroRepository;
+import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 import br.ufpi.util.EnumObjetoSalvo;
 import br.ufpi.util.GsonElements;
 import br.ufpi.util.Paginacao;
@@ -511,20 +515,29 @@ public class TarefaController extends BaseController {
 
 		Tarefa tarefa = fluxo.getTarefa();
 		List<ActionVO> acoesVOObrigatorias = TestesAlgoritmos.getListAcoesObrigatoriasVO(tarefa, tarefaRepository);
+		List<Action> acoesObrigatorias = TestesAlgoritmos.getListAcoesObrigatorias(tarefa, tarefaRepository);
 		List<ActionVO> acoesMelhorCaminho = TestesAlgoritmos.getListAcoesMelhorCaminho(tarefa, tarefaRepository);
 		Set<ActionVO> acoesVOEspecialistas = TestesAlgoritmos.getSetAcoesEspecialistas(tarefa, tarefaRepository);
+	
 		
-		List<Action> acoesObrigatorias = TestesAlgoritmos.getListAcoesObrigatorias(tarefa, tarefaRepository);
+		HashMap<ActionVO,Integer> mapCountAcoesObrigatoriasVO = TestesAlgoritmos.getHashMapCountAcoesVO(acoesVOObrigatorias);
+		HashMap<ActionVO,Integer> mapCountAcoesMelhorCaminhoVO = TestesAlgoritmos.getHashMapCountAcoesVO(acoesMelhorCaminho);
 		List<Action> acoes = fluxo.getAcoes();
 		
-		for(Action a : fluxo.getAcoes()){
+		for(Action a : acoes){
 			ActionVO actionVO = a.toVO();
 			if(acoesVOObrigatorias.contains(actionVO)){
-				a.setObrigatorio(true);
+				if(mapCountAcoesObrigatoriasVO.get(actionVO) > 0){
+					mapCountAcoesObrigatoriasVO.put(actionVO, mapCountAcoesObrigatoriasVO.get(actionVO) - 1);
+					a.setObrigatorio(true);
+				}else{
+					a.setAcaoRepetida(true);
+				}
 				
-				//verificar as acoes obrigatorias que foram realizadas
+				//verificar as acoes obrigatorias que foram realizadas (primeira lista de acoes)
 				for(Action a2 : acoesObrigatorias){
 					if(actionVO.equals(a2.toVO())){
+						//acaoEspecialista informa que foi realizada
 						a2.setAcaoEspecialista(true);
 						break;
 					}
@@ -532,12 +545,17 @@ public class TarefaController extends BaseController {
 				
 			}
 			if(acoesMelhorCaminho.contains(actionVO)){
-				a.setMelhorCaminho(true);
+				if(mapCountAcoesMelhorCaminhoVO.get(actionVO) > 0){
+					mapCountAcoesMelhorCaminhoVO.put(actionVO, mapCountAcoesMelhorCaminhoVO.get(actionVO) - 1);
+					a.setMelhorCaminho(true);
+				}
 			}
 			if(acoesVOEspecialistas.contains(actionVO)){
 				a.setAcaoEspecialista(true);
 			}
 		}
+		
+		//TODO corrigir repetição de acoes que pertencem ao melhor caminho/caminho correto (hashmap)
 		
 		result.include("acoes", acoes);
 		result.include("acoesObrigatorias", acoesObrigatorias);
@@ -595,6 +613,15 @@ public class TarefaController extends BaseController {
 		quantidadeUsuariosQueRealizaramOTeste(testeId);
 		List<Long> quantidadeAcoesETempoPorTipoAcao = tarefaRepository.quantidadeAcoesETempoPorTipoAcao(tarefaId, TipoConvidado.USER, "click");
 		double mediaAritimetica = estatistica.mediaAritimetica(quantidadeAcoesETempoPorTipoAcao);
+	}
+	
+	public static void main(String[] args) {
+		EntityManagerFactory emf = javax.persistence.Persistence.createEntityManagerFactory("default");
+		EntityManager entityManager = emf.createEntityManager();
+		TarefaRepositoryImpl tarefaRepositoryImpl = new TarefaRepositoryImpl(entityManager);
+		String nameUsuario = tarefaRepositoryImpl.getNameUsuario(73l);
+		//tarefaRepositoryImpl.quantidadeAcoesETempoPorTipoAcao(26l, TipoConvidado.USER, "click");
+		
 	}
 
 	@SuppressWarnings("unused")
