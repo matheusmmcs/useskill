@@ -56,6 +56,8 @@ public class Action implements Serializable {
 	private boolean obrigatorio = false;
 	@Transient
 	private boolean acaoEspecialista = false;
+	@Transient
+	private boolean acaoRepetida = false;
 
 	/**
 	 * @return the id
@@ -343,5 +345,13 @@ public class Action implements Serializable {
 	 */
 	public void setAcaoEspecialista(boolean acaoEspecialista) {
 		this.acaoEspecialista = acaoEspecialista;
+	}
+
+	public boolean isAcaoRepetida() {
+		return acaoRepetida;
+	}
+
+	public void setAcaoRepetida(boolean acaoRepetida) {
+		this.acaoRepetida = acaoRepetida;
 	}
 }

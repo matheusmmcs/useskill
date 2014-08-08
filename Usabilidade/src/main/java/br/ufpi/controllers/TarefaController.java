@@ -503,8 +503,7 @@ public class TarefaController extends BaseController {
 	 * */
 	@Logado
 	@Get({ "teste/{testeId}/tarefa/{tarefaId}/usuario/{usuarioId}/fluxo/{fluxoId}/analise" })
-	public void exibirActions(Long testeId, Long tarefaId, Long usuarioId,
-			Long fluxoId) {
+	public void exibirActions(Long testeId, Long tarefaId, Long usuarioId, Long fluxoId) {
 		validateComponente.validarId(testeId);
 		validateComponente.validarId(tarefaId);
 		validateComponente.validarId(usuarioId);

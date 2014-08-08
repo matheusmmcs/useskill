@@ -12,6 +12,12 @@ exports.create = function(req, res) {
 	if(req.body){
 		var acoes = JSON.parse(req.body.acoes);
 		acoes.sort(propComparator('sTime'));
+
+		console.log("Mais "+acoes.length+" acoes:");
+		if(acoes[0]){
+			console.log(acoes[0].sUsername + " - " + acoes[0].sRole);
+		}
+
 		if(acoes){
 			for(var idx in acoes){
 				var acao = acoes[idx];
@@ -34,7 +40,8 @@ exports.create = function(req, res) {
 			  		sClient: acao['sClient'],
 			  		sVersion: acao['sVersion'],
 			  		sUsername: acao['sUsername'],
-			  		sRole: acao['sRole']
+			  		sRole: acao['sRole'],
+			  		sJhm: acao['sJhm']
 			  	});
 			}
 			status = "success";

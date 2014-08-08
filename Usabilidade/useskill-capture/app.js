@@ -36,7 +36,7 @@ app.get('/actions/clear/:hour', action.clear);
 //app.post('/actions/:user_id/tasks/create', task.create);
 
 db.sequelize
-  .sync({ force: true })
+  .sync({ force: false })
   .complete(function(err) {
     if (err) {
       throw err
