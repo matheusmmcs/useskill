@@ -19,7 +19,10 @@ module.exports = function(sequelize, DataTypes) {
 
 			sUsername: DataTypes.STRING,
 			sRole: DataTypes.STRING,
+
 			sJhm: DataTypes.STRING,
+			sActionJhm: DataTypes.STRING,
+			sSectionJhm: DataTypes.STRING,
 
 			sDeleted: {
 				type: DataTypes.BOOLEAN,

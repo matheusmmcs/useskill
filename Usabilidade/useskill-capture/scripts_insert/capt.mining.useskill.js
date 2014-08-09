@@ -32,11 +32,14 @@ function useskill_capt_onthefly(obj){
 				obj = {};
 			}
 
+			//"http://localhost:3000/actions/create";
+			//"http://96.126.116.159:3000/actions/create"
+			var URL = obj.url ? obj.url : "";
 			var CLIENT = obj.client ? obj.client : "";
 			var VERSION = obj.version ? obj.version : 0;
 			var USERNAME = obj.username ? obj.username : "";
 			var ROLE = obj.role ? obj.role : "";
-			var JHM = obj.jhm ? obj.jhm : "";
+			var SEND_MESSAGES = obj.sendactions ? obj.sendactions : false;
 
 			var TIME_SUBMIT_SEG = 300;
 			var TIME_SUBMIT = TIME_SUBMIT_SEG * 1000;
@@ -54,30 +57,32 @@ function useskill_capt_onthefly(obj){
 			// };
 
 			var sending = false;
+			
 	    	function sendAcoes(){
 				//return "Are you sure?";
-				var URL = "http://localhost:3000/actions/create";//"http://96.126.116.159:3000/actions/create"
-				var acoesString = getAcoesString();
-				if(acoesString && !sending){
-					sending = true;
-					$.ajax({
-				        url: URL,
-				       	type: "POST",
-			            async: false,
-			            cache: false,
-			            data: ({ "acoes" : acoesString }),
-			            success: function(result) { 
-			            	console.log("SUCESS: ", result);
-			            	clearStorage();
-			            	sending = false;
-			            },
-			            error: function(data) { 
-			            	//location.reload(); 
-			            	console.log(data);
-			            	sending = false;
-			            }
-				    });
-				}
+	    		if(SEND_MESSAGES){
+	    			var acoesString = getAcoesString();
+					if(acoesString && !sending){
+						sending = true;
+						$.ajax({
+					        url: URL,
+					       	type: "POST",
+				            async: false,
+				            cache: false,
+				            data: ({ "acoes" : acoesString }),
+				            success: function(result) { 
+				            	console.log("SUCESS: ", result);
+				            	clearStorage();
+				            	sending = false;
+				            },
+				            error: function(data) { 
+				            	//location.reload(); 
+				            	console.log(data);
+				            	sending = false;
+				            }
+					    });
+					}
+	    		}
 	    	}
 			
 			ultimaAcao = null;
@@ -94,7 +99,6 @@ function useskill_capt_onthefly(obj){
 	  			BROWSER_CLOSE : "close",
 			};
 
-			//DUPLICADO NO BACKGROUND (WEBNAVIGATION) E JAVA
 			function Action(action, time, url, content, tag, tagIndex, id, classe, name, xPath, posX, posY, viewportX, viewportY, useragent) {
 				this.sActionType = action;
 				this.sTime = time;
@@ -118,33 +122,56 @@ function useskill_capt_onthefly(obj){
 
 				this.sUsername = USERNAME;
 				this.sRole = ROLE;
+				this.sJhm = getJhmName();
+				this.sActionJhm = getActionJhm();
+				this.sSectionJhm = getSectionJhm();
 				
 				this.sClient = CLIENT;
 				this.sVersion = VERSION;
 			}
 
 			var lastMouseMove = 0, lastMouseX, lastMouseY, mouseOffSet = 5;
-			$(document).on({
-				click : function(e) {
-					insertNewAcao(e, actionCapt.CLICK);
-				}, focusout : function(e) {
-					insertNewAcao(e, actionCapt.FOCUSOUT);
-				}, mousemove : function(e) {
-					if(e.timeStamp - lastMouseMove >= 750){
-						if(e.pageX <= lastMouseX+mouseOffSet &&
-						   e.pageX >= lastMouseX-mouseOffSet &&
-						   e.pageY <= lastMouseY+mouseOffSet &&
-						   e.pageY >= lastMouseY-mouseOffSet){
-							insertNewAcao(e, actionCapt.MOUSEOVER);
-						}
-					}
-					lastMouseMove = e.timeStamp;
-					lastMouseX = e.pageX;
-					lastMouseY = e.pageY;
-				}, submit : function(e){
-					insertNewAcao(e, actionCapt.BROWSER_FORM_SUBMIT);
-				}
+			$(document).on("click", function(e) {
+				insertNewAcao(e, actionCapt.CLICK);
 			});
+			$(document).on("focusout", function(e) {
+				insertNewAcao(e, actionCapt.FOCUSOUT);
+			});
+			$(document).on("mousemove", function(e) {
+				if(e.timeStamp - lastMouseMove >= 750){
+					if(e.pageX <= lastMouseX+mouseOffSet &&
+					   e.pageX >= lastMouseX-mouseOffSet &&
+					   e.pageY <= lastMouseY+mouseOffSet &&
+					   e.pageY >= lastMouseY-mouseOffSet){
+						insertNewAcao(e, actionCapt.MOUSEOVER);
+					}
+				}
+				lastMouseMove = e.timeStamp;
+				lastMouseX = e.pageX;
+				lastMouseY = e.pageY;
+			});
+			$(document).on("submit", function(e) {
+				insertNewAcao(e, actionCapt.BROWSER_FORM_SUBMIT);
+			});
+			
+			//capturar dados do jheat
+			function getJhmName(){
+				return getRegexValue(/(reportName|flowName|className)\=([^\&|\#]*)/g, true);
+			}
+
+			function getSectionJhm(){
+				return getRegexValue(/(sectionName)\=([^\&|\#]*)/g, false);
+			}
+
+			function getActionJhm(){
+				return getRegexValue(/(action)\=([^\&|\#]*)/g, false);
+			}
+
+			function getRegexValue(reg, fullSize){
+				var matches = reg.exec(window.location.href);
+				//{type: matches[1], value: matches[2]} : {type:"", value: ""};
+				return matches != null ? (fullSize ? matches[1]+"="+matches[2] : matches[2]) : "";
+			}
 
 			//eventos extras, referentes ao carregamento da página e ao botao voltar
 			window.onload = function(e){

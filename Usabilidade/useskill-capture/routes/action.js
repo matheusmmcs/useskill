@@ -39,9 +39,13 @@ exports.create = function(req, res) {
 
 			  		sClient: acao['sClient'],
 			  		sVersion: acao['sVersion'],
+
 			  		sUsername: acao['sUsername'],
 			  		sRole: acao['sRole'],
-			  		sJhm: acao['sJhm']
+
+			  		sJhm: acao['sJhm'],
+			  		sActionJhm: acao['sActionJhm'],
+			  		sSectionJhm: acao['sSectionJhm']
 			  	});
 			}
 			status = "success";
