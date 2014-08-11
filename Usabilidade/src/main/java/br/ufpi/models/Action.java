@@ -347,10 +347,16 @@ public class Action implements Serializable {
 		this.acaoEspecialista = acaoEspecialista;
 	}
 
-	public boolean isAcaoRepetida() {
+	/**
+	 * @return the acaoRepetida
+	 */
+	public boolean getAcaoRepetida() {
 		return acaoRepetida;
 	}
 
+	/**
+	 * @param acaoRepetida the acaoRepetida to set
+	 */
 	public void setAcaoRepetida(boolean acaoRepetida) {
 		this.acaoRepetida = acaoRepetida;
 	}

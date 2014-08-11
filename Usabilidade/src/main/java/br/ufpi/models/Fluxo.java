@@ -98,15 +98,15 @@ import javax.persistence.TemporalType;
 		 * 3º usuario ter realizado o fluxo
 		 */
 
-		@NamedQuery(name = "Fluxo.getFluxos.Tarefa.Count", query = "select count(*) from Teste as t "
+		@NamedQuery(name = "Fluxo.getFluxos.Tarefa.Count", query = "select count(f) from Teste as t "
 				+ "left join t.tarefas as tarefas "
-				+ "left join tarefas.fluxos as fluxo "
+				+ "left join tarefas.fluxos as f "
 				+ "where t.id= :teste "
 				+ "and tarefas.id= :tarefa "
 				+ "and t.usuarioCriador.id= :usuarioCriador "),
 		@NamedQuery(name = "Fluxo.quantidade.Acoes", query = "select new br.ufpi.models.vo.FluxoCountVO(flu.tempoRealizacao,(Select count(*) from Fluxo as flu2 left join flu2.acoes where flu2=flu)) "
 				+ "from Fluxo as flu left join flu.acoes where flu.tarefa.id= :tarefa and flu.tipoConvidado= :tipoConvidado and flu.isFinished= true Group by flu.id"),
-		@NamedQuery(name = "Fluxo.quantidade.Acoes.por.tipo", query = "select  (Select count(*) from Fluxo as flu2 left join flu2.acoes as action where flu2=flu and action.sActionType= :actionType) from Fluxo as flu where flu.tarefa.id= :tarefa and flu.tipoConvidado= :tipoConvidado and flu.isFinished= true  Group by flu.id"),
+		@NamedQuery(name = "Fluxo.quantidade.Acoes.por.tipo", query = "select (Select count(action) from Fluxo as flu2 left join flu2.acoes as action where flu2=flu and action.sActionType= :actionType) from Fluxo as flu where flu.tarefa.id= :tarefa and flu.tipoConvidado= :tipoConvidado and flu.isFinished= true  Group by flu.id"),
 		
 		@NamedQuery(name = "Fluxo.Acoes.por.tipos", query = "select acoes from Fluxo as flu left join flu.acoes as acoes where flu.id= :fluxo and flu.isFinished= true and acoes.sActionType in (:actionType)"),
 		@NamedQuery(name = "Fluxos.tipo.convite.Acoes.por.tipos", query = "select flu from Fluxo as flu where flu.tarefa.id= :tarefaId and flu.tipoConvidado= :tipoConvidado and flu.isFinished= true"),
@@ -115,11 +115,11 @@ import javax.persistence.TemporalType;
 		 * @author "Cleiton Moura"
 		 * 
 		 */
-		@NamedQuery(name = "Fluxo.realizados", query = "select  count(*) "
+		@NamedQuery(name = "Fluxo.realizados", query = "select  count(flu) "
 				+ "from Fluxo as flu where flu.tarefa.id= :tarefa and flu.tipoConvidado= :tipoConvidado and flu.isFinished= :isFinished"),
 		@NamedQuery(name = "Fluxo.fluxosdoUsuario", query = "select new br.ufpi.models.vo.FluxoVO(flu.id,flu.dataRealizacao,flu.tempoRealizacao,flu.tipoConvidado,(Select count(*) from Fluxo as flu2 left join flu2.acoes where flu2=flu)) "
 				+ "from Fluxo as flu left join flu.acoes where flu.tarefa.id= :tarefa and flu.usuario.id= :usuario Group by flu.id"),
-		@NamedQuery(name = "Fluxo.getNomeUsuario", query = "Select fluxo.usuario.nome from Fluxo fluxo left join fluxo.usuario where fluxo.id= :fluxo") })
+		@NamedQuery(name = "Fluxo.getNomeUsuario", query = "Select f.usuario.nome from Fluxo as f left join f.usuario as u where f.usuario = u and f.id= :fluxo") })
 @Entity
 public class Fluxo implements Serializable {
 
