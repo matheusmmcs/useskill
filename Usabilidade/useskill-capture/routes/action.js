@@ -63,7 +63,7 @@ exports.clear = function(req, res) {
 		result.val = date.getHours();
 
 		if(hours == date.getHours()){
-			db.Action.destroy();
+			//db.Action.destroy();
 			result.status = true;
 		}
 	}

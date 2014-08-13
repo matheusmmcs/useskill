@@ -6,3 +6,21 @@ body {
 a {
   color: #00B7FF;
 }
+
+table{
+	border: 1px solid #aaa;
+}
+
+table tr{
+	border: 1px solid #aaa;
+	border-collapse: collapse;
+	border-spacing: 0px;
+}
+
+table tr td{
+	border: 1px solid #aaa;
+}
+
+table tr th{
+	border: 1px solid #aaa;
+}

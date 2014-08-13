@@ -20,12 +20,12 @@
 	</form>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/view/scripts/useskill/backfix.min.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/view/scripts/useskill/capt.mining.useskill.js"></script>
+	<script type="text/javascript" src="backfix.min.js"></script>
+	<script type="text/javascript" src="capt.mining.useskill.js"></script>
 	<script>
 		useskill_capt_onthefly({
 			url: "http://localhost:3000/actions/create",
-			sendactions: false,
+			sendactions: true,
 			version: 1,
 			client: "TESTE",
 			username: "${usuario.login}",

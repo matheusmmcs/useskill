@@ -6,6 +6,7 @@ var express = require('express')
   , db      = require('./models');
 
 var app = express();
+app.locals.moment = require('moment');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -31,6 +32,7 @@ app.all('*', function(req, res, next) {
 });
 
 app.get('/', routes.index);
+app.post('/', routes.index);
 app.post('/actions/create', action.create);
 app.get('/actions/clear/:hour', action.clear);
 //app.post('/actions/:user_id/tasks/create', task.create);
