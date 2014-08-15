@@ -36,6 +36,7 @@ exports.create = function(req, res) {
 			  		sId: acao['sId'],
 			  		sName: acao['sName'],
 			  		sXPath: acao['sXPath'],
+			  		sUserAgent: acao['sUserAgent'],
 
 			  		sClient: acao['sClient'],
 			  		sVersion: acao['sVersion'],

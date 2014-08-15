@@ -2,6 +2,8 @@ var db = require('../models')
 
 function getValueTypeFromView(view) {
 	switch(view){
+		case 'id':
+			return 'id';
 		case 'time':
 			return 'sTime';
 		case 'username':
@@ -59,8 +61,8 @@ exports.index = function(req, res){
 
 function doSearch (req, res, callback) {
 	var findData = {
-		limit: 50,
-		order: [['sTime', 'DESC']]
+		limit: 10,
+		order: [['id', 'DESC']]
 	};
 
 	if(!isEmptyObject(req.query)){
@@ -95,11 +97,8 @@ function doSearch (req, res, callback) {
 				}
 			}
 			findData['where'] = where;
-		}
-		
+		}	
 	}
-
-	console.log(findData)
 
 	db.Action.findAll(findData).success(function(actions) {
 		if (callback && typeof callback === 'function'){

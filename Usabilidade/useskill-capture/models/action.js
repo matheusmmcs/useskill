@@ -13,6 +13,7 @@ module.exports = function(sequelize, DataTypes) {
 			sId: DataTypes.STRING,
 			sName: DataTypes.STRING,
 			sXPath: DataTypes.TEXT,
+			sUserAgent: DataTypes.TEXT,
 
 			sClient: DataTypes.STRING,
 			sVersion: DataTypes.INTEGER,
