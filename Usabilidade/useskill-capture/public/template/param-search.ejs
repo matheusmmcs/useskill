@@ -1,0 +1,35 @@
+<div class="row">
+  <div class="form-group col-xs-4">
+    <label for="paramSearch[]">Param</label>
+    <select name="paramSearch[]" id="paramSearch[]" class="form-control">
+      <option value="time">Time</option>
+      <option value="username">UserName</option>
+      <option value="role">Role</option>
+      <option value="version">Version</option>
+      <option value="jhm">JHM Name</option>
+      <option value="tag">Tag</option>
+      <option value="type">Type</option>
+    </select>
+  </div>
+  <div class="form-group col-xs-3">
+    <label for="operationSearch[]">Operation</label>
+    <select name="operationSearch[]" id="operationSearch[]" class="form-control">
+      <option value="equal">EQUALS</option>
+      <option value="ne">NOT EQUALS</option>
+      <option value="like">LIKE</option>
+      <option value="in">IN (x,y,z)</option>
+      <option value="gt">GT</option>
+      <option value="gte">GTE</option>
+      <option value="lt">LT</option>
+      <option value="lte">LTE</option>
+    </select>
+  </div>
+  <div class="form-group col-xs-3">
+    <label for="valueSearch[]">Value</label>
+    <input type="text" class="form-control" id="valueSearch[]" name="valueSearch[]" placeholder="Value">
+  </div>
+  <div class="form-group col-xs-2">
+    <label class="display-block" for="">Actions</label>
+    <a type="submit" class="btn btn-danger remove-row"><span class="glyphicon glyphicon-trash"></span></a>
+  </div>
+</div>

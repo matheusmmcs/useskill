@@ -1,0 +1,92 @@
+<% include header.ejs %>
+
+<div class="row">
+  <div class="col-xs-10 margin-auto">
+    <form id="searchForm" role="form" type="GET" action="/actions">
+      <div class="row">
+        <h3>Order Filter</h3>
+        <div class="form-group col-xs-4">
+          <label for="orderParam">Param</label>
+          <select name="orderParam" id="orderParam" class="form-control">
+            <% var fullOptions = false; %>
+            <% include options-select-type-action.ejs %>
+          </select>
+        </div>
+        <div class="form-group col-xs-3">
+          <label for="orderValue">Order</label>
+          <select name="orderValue" id="orderValue" class="form-control">
+            <option value="DESC">DESC</option>
+            <option value="ASC">ASC</option>
+          </select>
+        </div>
+        <div class="form-group col-xs-3">
+          <label for="limit">Limit</label>
+          <input type="text" value="50" class="form-control" id="limit" name="limit" placeholder="Limit">
+        </div>
+        <div class="form-group col-xs-2">
+          <label class="display-block" for="">Action</label>
+          <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+      </div>
+      <div class="row">
+        <h3>Search Filter <a class="btn btn-info" href="#" id="mais">Add</a></h3>
+        <div id="filtros"></div>
+      </div>
+      <br>
+    </form>
+  </div>
+</div>
+
+<hr>
+<br>
+
+<h2>Tabela de Ações</h2>
+
+<div id="actionTable" class="table-responsive">
+  <% include /../public/template/action-table.ejs %>
+</div>
+
+
+<script src="/js/jquery-1.11.1.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/ejs_production.js"></script>
+<script type="text/javascript">
+      (function($){
+        $(document).ready(function(){
+          
+          $(document).on('click', '#mais', function(e){
+            e.preventDefault();
+            var html = new EJS({url: '/template/param-search.ejs'}).render({fullOptions: true});
+            $('#filtros').append(html);
+          });
+          
+          $(document).on('click', '.remove-row', function(e) {
+            e.preventDefault();
+            $(this).closest('.row').remove();
+          });
+
+          $(document).on('submit', '#searchForm', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            var data = $(this).serialize();
+            $.ajax({
+              url: $(this).attr('action'),
+              data: data,
+              type: $(this).attr('type'),
+              complete: function(data) {
+                var html = new EJS({url: '/template/action-table.ejs'}).render(data.responseJSON);
+                $('#actionTable').html(html);
+              },
+              error: function(err) {
+                console.log(err);
+              }
+            });
+
+          });
+
+        });
+      })(jQuery);
+</script>
+
+<% include footer.ejs %>

@@ -2,7 +2,7 @@ var fs        = require('fs')
   , path      = require('path')
   , Sequelize = require('sequelize')
   , lodash    = require('lodash')
-  , sequelize = new Sequelize('usabilidade_onthefly', 'root', 'java', {
+  , sequelize = new Sequelize('usabilidade_onthefly', 'root', '', {
       logging: false
   })
   , db        = {}

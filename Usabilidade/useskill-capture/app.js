@@ -11,7 +11,7 @@ app.locals.moment = require('moment');
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
@@ -32,7 +32,7 @@ app.all('*', function(req, res, next) {
 });
 
 app.get('/', routes.index);
-app.post('/', routes.index);
+app.get('/actions', routes.actions)
 app.post('/actions/create', action.create);
 app.get('/actions/clear/:hour', action.clear);
 //app.post('/actions/:user_id/tasks/create', task.create);

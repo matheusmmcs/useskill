@@ -1,0 +1,60 @@
+<%
+function fillLeftZero(obj){
+  return obj && obj < 10 ? "0"+obj : obj;
+}
+
+function timeConverter(t){
+    var a = new Date(t);
+    var year = a.getFullYear();
+    var month = fillLeftZero(a.getMonth() + 1);
+    var date = fillLeftZero(a.getDate());
+    var hour = fillLeftZero(a.getHours());
+    var min = fillLeftZero(a.getMinutes());
+    var sec = fillLeftZero(a.getSeconds());
+    var time = date + '/' + month + '/' + year + ' ' + hour + ':' + min + ':' + sec;
+    return time;
+}
+%>
+
+<h4>Count: <%= actions.length %></h5>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>TIME</th>
+      <th>TYPE</th>
+      <th>TAG</th>
+      <th>TAG-INFO</th>
+      <th>CONTENT</th>
+      <th>USER</th>
+      <th>ROLE</th>
+      <th>JHM</th>
+      <th>VERSION</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% actions.forEach(function(action){ %>
+    <tr>
+        <td><%= action.id %></td>
+        <td title="<%= action.sTime %>"><%= timeConverter(action.sTime) %></td>
+        <td><%= action.sActionType %></td>
+        <td>
+          <%  if(action.sTag){ %><%= action.sTag + " [" + action.sTagIndex + "]" %><% } %>
+        </td>
+        <td>
+            <%  if(action.sId){ %><%= "#"+action.sId+"," %><% } %>
+            <%  if(action.sClass){ %><%= "."+action.sClass+"," %><% } %>
+            <%  if(action.sName){ %><%= action.sName %><% } %>
+        <td><%= action.sContent %></td>
+        <td><%= action.sUsername %></td>
+        <td><%= action.sRole %></td>
+        <td>
+            <%  if(action.sJhm){ %><%= action.sJhm + "; " %><% } %>
+            <%  if(action.sActionJhm){ %><%= action.sActionJhm + "; " %><% } %>
+            <%  if(action.sSectionJhm){ %><%= action.sSectionJhm %><% } %>
+        </td>
+        <td><%= action.sClient+ "[" + action.sVersion + "]" %></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
