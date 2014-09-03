@@ -1,6 +1,7 @@
 //var domainUseSkill = "http://www.killline.com/useskill";
 //var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";
 var domainUseSkill = "http://localhost:8080/Usabilidade";
+var SEND_BROWSER_EVENT = false;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
 //OMNIBOX
@@ -358,38 +359,29 @@ function Action(action, time, url, content, tag, tagIndex, id, classe, name, xPa
 //metodo que captura os eventos de transição de página:
 //click em link, form_submit, url digitada, reload, forward ou back
 chrome.webNavigation.onCommitted.addListener(function(details){
-	var action, transType;
-	//capturar eventos de back e forward
-	var qualifiers = details.transitionQualifiers;
-	// console.log("")
-	// console.log("")
-	// console.log("XXXXXXXXXXXXXXXXXXXX")
-	// console.log(qualifiers, qualifiers[0], details.transitionType)
-	if(qualifiers && qualifiers[0] == "forward_back"){
-		var url = details.url;
-		transType = "forward_back";
-		action = true;
-	}else{
-		//capturar evento que redirecionam para outra página (link, form_submit, typed)
-		transType = details.transitionType.toLowerCase();
-		if(transType == 'link' || transType == 'form_submit' || transType == 'typed' || transType == 'reload'){
+	if(SEND_BROWSER_EVENT){
+		var action, transType;
+		//capturar eventos de back e forward
+		var qualifiers = details.transitionQualifiers;
+		if(qualifiers && qualifiers[0] == "forward_back"){
 			var url = details.url;
+			transType = "forward_back";
 			action = true;
+		}else{
+			//capturar evento que redirecionam para outra página (link, form_submit, typed)
+			transType = details.transitionType.toLowerCase();
+			if(transType == 'link' || transType == 'form_submit' || transType == 'typed' || transType == 'reload'){
+				var url = details.url;
+				action = true;
+			}
+		}
+
+		if(action){
+			action = new Action(transType, new Date().getTime(), url, "", "", "", "", "", "", "", 0, 0, 0, 0, navigator.userAgent);
+			var stringAcao = stringfyJSON(action);
+			addAcao(stringAcao);
 		}
 	}
-
-	if(action){
-		console.log("##########################################")
-		action = new Action(transType, new Date().getTime(), url, "", "", "", "", "", "", "", 0, 0, 0, 0, navigator.userAgent);
-		console.log(action)
-		console.log("##########################################")
-		var stringAcao = stringfyJSON(action);
-		addAcao(stringAcao);
-	}
-	// console.log(action)
-	// console.log("XXXXXXXXXXXXXXXXXXXX")
-	// console.log("")
-	// console.log("")
 });
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -490,6 +482,7 @@ function suspendTest(){
 
 function insertOnPage(tabId){
 	chrome.tabs.executeScript(tabId, {file: "js/jquery.js"});
+	chrome.tabs.executeScript(tabId, {file: "js/backfix.min.js"});
 	chrome.tabs.executeScript(tabId, {file: "js/capt.js"});
 	chrome.tabs.executeScript(tabId, {file: "js/canvas/jquery.color.js"});
 	chrome.tabs.executeScript(tabId, {file: "js/canvas/jquery.JCrop.js"});
