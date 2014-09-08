@@ -10,7 +10,7 @@
 		<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugin/fancybox/jquery.fancybox.css" media="screen" />
 
 		<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.js"></script>
-		<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/capt.js"></script>
+		<!-- <script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/capt.js"></script> -->
 		<script type="text/javascript" src="${pageContext.request.contextPath}/plugin/fancybox/jquery.fancybox.js"></script>
 		<script type="text/javascript" language="javascript">
 		var rotate = 1;
