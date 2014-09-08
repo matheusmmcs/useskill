@@ -22,23 +22,30 @@ LOAD
 MUDOU HASH
 
 */
-useskill_capt_onthefly({
-	sendactions: false,
-	plugin: true,
-	version: 1,
-	client: "Plugin"
-});
 
-function useskill_capt_onthefly(obj){
-	(function($){
-		$(document).ready(function(){
 
-			console.log(getAcoes());
+(function($){
+	$(document).ready(function(){
+		
+		if(!window.USESKILL_IS_RUNNING){
+			UseSkillCapt({
+				sendactions: false,
+				plugin: true,
+				version: 1,
+				client: "Plugin"
+			});
+		}
+		
+		function UseSkillCapt(obj){
+			
+			window.USESKILL_IS_RUNNING = true;
 
 			if(!obj){
 				obj = {};
 			}
 
+			//Inicializando variáveis
+			
 			//"http://localhost:3000/actions/create";
 			//"http://96.126.116.159:3000/actions/create"
 			var URL = obj.url ? obj.url : "";
@@ -48,6 +55,8 @@ function useskill_capt_onthefly(obj){
 			var ROLE = obj.role ? obj.role : "";
 			var SEND_MESSAGES = obj.sendactions ? obj.sendactions : false;
 			var CONNECTED_PLUGIN = obj.plugin ? obj.plugin : false;
+			
+			printAcoes();
 
 			var TIME_SUBMIT_SEG = 300;
 			var TIME_SUBMIT = TIME_SUBMIT_SEG * 1000;
@@ -337,6 +346,16 @@ function useskill_capt_onthefly(obj){
 				var str = localStorage.getItem("useskill_actions");
 				return parseJSON(str);
 			}
+			
+			function printAcoes(){
+				if(CONNECTED_PLUGIN){
+					chrome.extension.sendRequest({useskill: "getAcoes"}, function(dados){
+						console.log("Acoes: ", dados);
+					});
+				}else{
+					console.log(getAcoes());
+				}
+			}
 
 			function addAcao(acao){				
 				if(CONNECTED_PLUGIN){
@@ -350,7 +369,7 @@ function useskill_capt_onthefly(obj){
 						arr = [acao];
 					}
 					var str = stringfyJSON(arr);
-					//console.log("ADD_ACAO: ", acao)
+					//console.log("ADD_ACAO: ", acao);
 					localStorage.setItem("useskill_actions", str);
 				}
 			}
@@ -412,7 +431,7 @@ function useskill_capt_onthefly(obj){
 			    var result = evaluator.evaluate(path, document.documentElement, null,XPathResult.FIRST_ORDERED_NODE_TYPE, null);
 			    return  result.singleNodeValue;
 			}
+		}
 
-		});
-	})(jQuery);
-}
+	});
+})(jQuery);
