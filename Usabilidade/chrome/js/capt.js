@@ -147,6 +147,7 @@ MUDOU HASH
 				this.sJhm = getJhmName();
 				this.sActionJhm = getActionJhm();
 				this.sSectionJhm = getSectionJhm();
+				this.sStepJhm = getStepJhm();
 				
 				this.sClient = CLIENT;
 				this.sVersion = VERSION;
@@ -178,15 +179,39 @@ MUDOU HASH
 			
 			//capturar dados do jheat
 			function getJhmName(){
-				return getRegexValue(/(reportName|flowName|className)\=([^\&|\#]*)/g, true);
+				var $elem = $('[name="flowName"]');
+				if($elem.length > 0 && $elem.val() != ''){
+					return $elem.val();
+				}else{
+					return getRegexValue(/(reportName|flowName|className)\=([^\&|\#]*)/g, true);
+				}
 			}
 
 			function getSectionJhm(){
-				return getRegexValue(/(sectionName)\=([^\&|\#]*)/g, false);
+				var $elem = $('[name="sectionName"]');
+				if($elem.length > 0 && $elem.val() != ''){
+					return $elem.val();
+				}else{
+					return getRegexValue(/(sectionName)\=([^\&|\#]*)/g, false);
+				}
 			}
 
 			function getActionJhm(){
-				return getRegexValue(/(action)\=([^\&|\#]*)/g, false);
+				var $elem = $('[name="action"]');
+				if($elem.length > 0 && $elem.val() != ''){
+					return $elem.val();
+				}else{
+					return getRegexValue(/(action)\=([^\&|\#]*)/g, false);
+				}
+			}
+			
+			function getStepJhm(){
+				var $elem = $('[name="step"]');
+				if($elem.length > 0 && $elem.val() != ''){
+					return $elem.val();
+				}else{
+					return '';
+				}
 			}
 
 			function getRegexValue(reg, fullSize){
