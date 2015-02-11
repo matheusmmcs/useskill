@@ -46,7 +46,8 @@ exports.create = function(req, res) {
 
 			  		sJhm: acao['sJhm'],
 			  		sActionJhm: acao['sActionJhm'],
-			  		sSectionJhm: acao['sSectionJhm']
+			  		sSectionJhm: acao['sSectionJhm'],
+			  		sStepJhm: acao['sStepJhm']
 			  	});
 			}
 			status = "success";

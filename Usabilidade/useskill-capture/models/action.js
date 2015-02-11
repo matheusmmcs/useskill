@@ -24,6 +24,7 @@ module.exports = function(sequelize, DataTypes) {
 			sJhm: DataTypes.STRING,
 			sActionJhm: DataTypes.STRING,
 			sSectionJhm: DataTypes.STRING,
+			sStepJhm: DataTypes.STRING,
 
 			sDeleted: {
 				type: DataTypes.BOOLEAN,
