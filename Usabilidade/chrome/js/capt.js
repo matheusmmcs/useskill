@@ -24,27 +24,13 @@ MUDOU HASH
 */
 
 
-(function($){
-	$(document).ready(function(){
-		
-		if(!window.USESKILL_IS_RUNNING){
-			UseSkillCapt({
-				sendactions: false,
-				plugin: true,
-				version: 1,
-				client: "Plugin"
-			});
-		}
-		
-		function UseSkillCapt(obj){
-			
-			window.USESKILL_IS_RUNNING = true;
+function useskill_capt_onthefly(obj){ 	 	
+		(function($){ 	 	
+			$(document).ready(function(){ 
 
 			if(!obj){
 				obj = {};
 			}
-
-			//Inicializando variáveis
 			
 			//"http://localhost:3000/actions/create";
 			//"http://96.126.116.159:3000/actions/create"
@@ -56,7 +42,6 @@ MUDOU HASH
 			var SEND_MESSAGES = obj.sendactions ? obj.sendactions : false;
 			var CONNECTED_PLUGIN = obj.plugin ? obj.plugin : false;
 			
-			printAcoes();
 
 			var TIME_SUBMIT_SEG = 300;
 			var TIME_SUBMIT = TIME_SUBMIT_SEG * 1000;
@@ -261,7 +246,7 @@ MUDOU HASH
 					if(
 						!(action == actionCapt.FOCUSOUT && conteudo == "")//focusout em campo vazio, não preencheu nada
 					){
-						var acao = new Action(action, new Date().getTime(), getUrl(), conteudo, target.tagName, $(tagName).index(target), target.id, target.className, target.name, createXPathFromElement(e.target), e.pageX, e.pageY, $(window).width(), $(window).height(), navigator.userAgent);
+						var acao = new Action(action, new Date().getTime(), getUrl(), conteudo, target.tagName, $(tagName).index(target), target.id, target.className, target.name, createXPathFromElement(e.target), e.pageX, e.pageY, $(window).width(), $(window).height(), (get_browser()+" "+get_browser_version()));
 						//verificar se a acao eh semelhante com a acao passada
 						//console.log(acao, acao.sXPath);
 						//TODO: se for concluir, verificar se já há outro concluir
@@ -292,7 +277,7 @@ MUDOU HASH
 				if(action==actionCapt.COMENTARIO){
 					val = $('#UScomentarioTexto').val();
 				}else if(action==actionCapt.CLICK){
-					val = $target.html();
+					val = $target.text();
 				}else if(action==actionCapt.FOCUSOUT){
 					val = $target.val();
 				}else if(action==actionCapt.MOUSEOVER){
@@ -357,11 +342,50 @@ MUDOU HASH
 			}
 			
 			function getContentMouseOver($target){
-				var title = $target.attr("title"), alt = $target.attr("alt");
-				val = title ? title : "";
-				val = alt ? (val ? val + " - " + alt : alt) : val;
-				return val;
+				if($target.attr("title")){
+					return $target.attr("title");
+				}else if($target.attr("alt")){
+					return $target.attr("alt");
+				}else if($target.val()){
+					return $target.val();
+				}else if($target.text()){
+					return $target.text();
+				}
+				return "";
 			}
+			
+			function get_browser(){
+			    var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || []; 
+			    if(/trident/i.test(M[1])){
+			        tem=/\brv[ :]+(\d+)/g.exec(ua) || []; 
+			        return 'IE '+(tem[1]||'');
+			        }   
+			    if(M[1]==='Chrome'){
+			        tem=ua.match(/\bOPR\/(\d+)/)
+			        if(tem!=null)   {return 'Opera '+tem[1];}
+			        }   
+			    M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+			    if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+			    return M[0];
+			    }
+
+			function get_browser_version(){
+			    var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];                                                                                                                         
+			    if(/trident/i.test(M[1])){
+			        tem=/\brv[ :]+(\d+)/g.exec(ua) || [];
+			        return 'IE '+(tem[1]||'');
+			        }
+			    if(M[1]==='Chrome'){
+			        tem=ua.match(/\bOPR\/(\d+)/)
+			        if(tem!=null)   {return 'Opera '+tem[1];}
+			        }   
+			    M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+			    if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+			    return M[1];
+			}
+
+
+			/* LOCALSTORAGE */
 
 			function getAcoesString(){
 				return localStorage.getItem("useskill_actions");
@@ -456,7 +480,6 @@ MUDOU HASH
 			    var result = evaluator.evaluate(path, document.documentElement, null,XPathResult.FIRST_ORDERED_NODE_TYPE, null);
 			    return  result.singleNodeValue;
 			}
-		}
-
-	});
-})(jQuery);
+		});
+	})(jQuery);
+}
