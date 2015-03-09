@@ -14,9 +14,13 @@
 					<fmt:message key="usuario.editardados"/></a>
 				</li>
 				<li>
-					<a href="#">
-					<fmt:message key="usuario.convidar"/></a>
+					<a href="${pageContext.request.contextPath}/usuarios/alterarsenha">
+					<fmt:message key="topo.alterarsenha"/></a>
 				</li>
+<!-- 				<li> -->
+<%-- 					<a href="${pageContext.request.contextPath}/testes/convidados"> --%>
+<%-- 					<fmt:message key="usuario.convidar"/></a> --%>
+<!-- 				</li> -->
 			</ul>
 		</div>
 		

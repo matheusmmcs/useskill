@@ -4,13 +4,23 @@
  */
 package br.ufpi.util;
 
+import java.util.Properties;
+
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
-import java.net.URL;
-import org.apache.commons.mail.DefaultAuthenticator;
-import org.apache.commons.mail.EmailAttachment;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.HtmlEmail;
 
 /**
  * Classe configurada para enviar email-s, podendo adicionar anexos;
@@ -23,24 +33,34 @@ public class EmailUtils {
 	private static final String USERNAME = "useskill.contato@gmail.com";
 	private static final String PASSWORD = "cl123456";
 	private static final String EMAILORIGEM = "useskill.contato@gmail.com";
-	private HtmlEmail email;
+	private static final String DEBUG = "false";
 
 	public EmailUtils() {
-		email = new HtmlEmail();
 	}
-
-	/*
-	 * configura o Smtp e a senha para enviar email;
-	 */
-
-	private void conectaEmail() throws EmailException {
-		email.setHostName(HOSTNAME);
-		email.setSmtpPort(587);
-		email.setAuthenticator(new DefaultAuthenticator(USERNAME, PASSWORD));
-		email.setTLS(true);
-		email.setFrom(EMAILORIGEM);
+	
+	@SuppressWarnings("unused")
+	private Properties configTLS(){
+		Properties props = System.getProperties();
+	    props.put("mail.smtp.starttls.enable", true);
+	    props.put("mail.smtp.host", HOSTNAME);
+	    props.put("mail.smtp.port", "587");
+	    props.put("mail.smtp.auth", true);
+	    props.put("mail.debug", DEBUG);
+	    
+	    return props;
 	}
-
+	
+	private Properties configSSL(){
+		Properties props = System.getProperties();
+		props.put("mail.smtp.socketFactory.port", "465");
+		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		props.put("mail.smtp.host", HOSTNAME);
+		props.put("mail.smtp.port", "465");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.debug", DEBUG);
+	    return props;
+	}
+	
 	/**
 	 * Envia mensagem.
 	 * 
@@ -48,56 +68,63 @@ public class EmailUtils {
 	 *            Passar mensagem todo formatado em estilo HTML
 	 * @throws EmailException
 	 */
-	public void enviaEmail(Mensagem mensagem) throws EmailException {
-		conectaEmail();
-		System.out.println("Comentado a parte de envio de Email\nAlterar configurações de usuário de envio de email.");
-//		email.setSubject(mensagem.getTitulo());
-//		email.setMsg(mensagem.getMensagem());
-//		email.addTo(mensagem.getDestino());
-//		email.send();
+	public void enviaEmail(Mensagem mensagem) {
+		
+		Properties props = this.configSSL();
+		
+	    Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(USERNAME, PASSWORD);
+			}
+		});
 
+	    MimeMessage message = new MimeMessage(session);
+	    System.out.println("Port: "+session.getProperty("mail.smtp.port"));
+	    
+	    try {
+	        InternetAddress from = new InternetAddress(EMAILORIGEM);
+	        message.setSubject(mensagem.getTitulo());
+	        message.setFrom(from);
+	        message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(mensagem.getDestino()));
+
+	        // Create a multi-part to combine the parts
+	        Multipart multipart = new MimeMultipart();//"alternative"
+
+	        // Create your text message part
+	        BodyPart messageBodyPart = new MimeBodyPart();
+	        messageBodyPart.setText(mensagem.getMensagem());
+
+	        // Add the text part to the multipart
+	        multipart.addBodyPart(messageBodyPart);
+
+	        // Create the html part
+	        //messageBodyPart = new MimeBodyPart();
+	        //String htmlMessage = "Our html text";
+	        //messageBodyPart.setContent(htmlMessage, "text/html");
+
+	        // Add html part to multi part
+	        //multipart.addBodyPart(messageBodyPart);
+
+	        
+	        // Associate multi-part with message
+	        message.setContent(multipart);
+
+	        // Send message
+	        Transport transport = session.getTransport("smtp");
+	        transport.connect("smtp.gmail.com", "username", "password");
+	        System.out.println("Transport: "+transport.toString());
+	        transport.sendMessage(message, message.getAllRecipients());
+
+
+	    } catch (AddressException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    } catch (MessagingException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
 	}
 
-	/**
-	 * Adiciona anexos ao email a ser enviado.
-	 * 
-	 * @param path
-	 *            caminho em que o arquivo se encontra
-	 * @param descricao
-	 *            do arquivo
-	 * @param nome
-	 *            Nome do arquivo com sua extensão
-	 * @throws EmailException
-	 */
-	public void addAnexo(String path, String descricao, String nome)
-			throws EmailException {
-		EmailAttachment attachment = new EmailAttachment();
-		attachment.setPath(path); // caminho da imagem
-		attachment.setDisposition(EmailAttachment.ATTACHMENT);
-		attachment.setDescription(descricao);
-		attachment.setName(nome);
-		email.attach(attachment);
-	}
-
-	/**
-	 * Adiciona anexos ao email a ser enviado, anexos que estao na web.
-	 * 
-	 * @param path
-	 *            url de arquivos que esta na WEb
-	 * @param descricao
-	 * @param nome
-	 *            Adicionar nome do arquivo com sua extensão
-	 * @throws EmailException
-	 */
-	public void addAnexo(URL path, String descricao, String nome)
-			throws EmailException {
-		EmailAttachment attachment = new EmailAttachment();
-		attachment.setURL(path); // caminho da imagem
-		attachment.setDisposition(EmailAttachment.ATTACHMENT);
-		attachment.setDescription(descricao);
-		attachment.setName(nome);
-		email.attach(attachment);
-	}
 
 	/**
 	 * Envia email de Confirmação.
@@ -108,15 +135,9 @@ public class EmailUtils {
 		Mensagem mensagem = new Mensagem();
 		mensagem.setDestino(pessoa.getEmail());
 		mensagem.setTitulo("Cadastro Useskill");
-		mensagem.setMensagem("Para Confirmar seu cadastro na Useskill acesse: "
-				+ BaseUrl.BASEURL + "/confirmar/"
-				+ pessoa.getConfirmacaoEmail());
+		mensagem.setMensagem("Para Confirmar seu cadastro na Useskill acesse: " + BaseUrl.BASEURL + "/confirmar/" + pessoa.getConfirmacaoEmail());
 
-		try {
-			this.enviaEmail(mensagem);
-		} catch (EmailException e) {
-			e.printStackTrace();
-		}
+		this.enviaEmail(mensagem);
 	}
 
 	/**
@@ -128,15 +149,10 @@ public class EmailUtils {
 	public void enviarNovaSenha(Usuario pessoa, String senha) {
 		Mensagem mensagem = new Mensagem();
 		mensagem.setDestino(pessoa.getEmail());
-		mensagem.setTitulo("Useskill");
-		mensagem.setMensagem("Sua senha foi redefinida na Useskill. "
-				+ "Sua Nova senha :" + senha);
+		mensagem.setTitulo("Nova Senha - Useskill");
+		mensagem.setMensagem("Sua senha foi redefinida na Useskill. Sua Nova senha: \"" + senha + "\"");
 
-		try {
-			this.enviaEmail(mensagem);
-		} catch (EmailException e) {
-			e.printStackTrace();
-		}
+		this.enviaEmail(mensagem);
 	}
 
 	/*
@@ -145,13 +161,9 @@ public class EmailUtils {
 	public void enviarConviteTeste(Usuario pessoa, Teste teste) {
 		Mensagem mensagem = new Mensagem();
 		mensagem.setDestino(pessoa.getEmail());
-		mensagem.setTitulo("Você foi confidado para participar do Teste da UseSkill");
+		mensagem.setTitulo("Você foi convidado a participar de um teste na UseSkill");
 		mensagem.setMensagem("");
 
-		try {
-			this.enviaEmail(mensagem);
-		} catch (EmailException e) {
-			e.printStackTrace();
-		}
+		this.enviaEmail(mensagem);
 	}
 }
