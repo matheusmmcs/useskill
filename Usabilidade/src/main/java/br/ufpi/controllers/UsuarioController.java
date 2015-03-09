@@ -39,22 +39,33 @@ public class UsuarioController extends BaseController {
 	}
 
 	@Get("/usuarios")
+	@Logado
 	public List<Usuario> index() {
 		return usuarioRepository.findAll();
 	}
 
 	@Post("/usuarios")
 	@AcessoLivre
-	public void create(Usuario usuario) {
+	public void create(Usuario usuario, String confirmaSenha) {
+		nullValidate(usuario);
 		validator.validate(usuario);
 		if (usuarioRepository.isContainsEmail(usuario.getEmail())) {
 			validator.checking(new Validations() {
-
 				{
 					that(false, "email.cadastrado", "email.cadastrado");
 				}
 			});
 		}
+		
+		//validar confirmacao de senha
+		if(!usuario.getSenha().equals(confirmaSenha)){
+			validator.checking(new Validations() {
+				{
+					that(false, "usuario.confirmaSenha.errado", "usuario.confirmaSenha.errado");
+				}
+			});
+		}
+		
 		validator.onErrorUsePageOf(this).newUsuario();
 		usuario.setRepository(usuarioRepository);
 		usuario.criptografarSenhaGerarConfimacaoEmail(true);
@@ -173,6 +184,12 @@ public class UsuarioController extends BaseController {
 	private void validate(Usuario usuario) {
 		if (usuario.getId() != usuarioLogado.getUsuario().getId())
 			validateComponente.redirecionarHome("usuario.nao.pertimidido");
+	}
+	
+	private void nullValidate(Usuario usuario) {
+		validateComponente.validarString(usuario.getNome(), "usuario.nome");
+		validateComponente.validarString(usuario.getEmail(), "usuario.email");
+		validateComponente.validarString(usuario.getSenha(), "usuario.senha");
 	}
 
 }

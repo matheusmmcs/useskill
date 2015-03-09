@@ -87,7 +87,7 @@
                     required : true,
                     minLength : 6
                 },
-                "confirmaSenha" : {
+                "usuario.confirmaSenha" : {
                     required : true,
                     minLength : 6
                 }

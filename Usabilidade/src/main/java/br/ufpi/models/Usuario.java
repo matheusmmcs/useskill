@@ -49,27 +49,37 @@ import br.ufpi.util.Criptografa;
 public class Usuario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	
 	@NotBlank(message = "{campo.obrigatorio}")
 	private String nome;
+	
 	@CollectionOfElements
 	@Column(length = 15)
 	private List<String> telefones;
+	
 	@NotNull
 	@Column(length = 40)
 	private String senha;
+	
 	@NotNull
 	@Column(length = 150, unique = true)
 	private String email;
+	
 	private boolean emailConfirmado;
+	
 	@Column(length = 32, unique = true)
 	private String confirmacaoEmail;
+	
 	@OneToMany(mappedBy = "usuarioCriador", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Teste> testesCriados;
+	
 	@ManyToMany(mappedBy = "usuariosParticipantes", fetch = FetchType.LAZY)
 	private List<Teste> testesParticipados;
+	
 	@Transient
 	private UsuarioRepository usuarioRepository;
 
