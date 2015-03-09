@@ -25,7 +25,7 @@ MUDOU HASH
 
 
 function useskill_capt_onthefly(obj){ 	 	
-		(function($){ 	 	
+		(function($){
 			$(document).ready(function(){ 
 
 			if(!obj){
@@ -40,19 +40,22 @@ function useskill_capt_onthefly(obj){
 			var USERNAME = obj.username ? obj.username : "";
 			var ROLE = obj.role ? obj.role : "";
 			var SEND_MESSAGES = obj.sendactions ? obj.sendactions : false;
+			var CONNECTED_ON_THE_FLY = obj.onthefly ? obj.onthefly : false;
 			var CONNECTED_PLUGIN = obj.plugin ? obj.plugin : false;
 			
 
 			var TIME_SUBMIT_SEG = 300;
 			var TIME_SUBMIT = TIME_SUBMIT_SEG * 1000;
 
-			var interval = setInterval(function(){
-				sendAcoes();
-			}, TIME_SUBMIT);
-
-			window.onbeforeunload = function(e) {
-				sendAcoes();
-			};
+			if(SEND_MESSAGES){
+				var interval = setInterval(function(){
+					sendAcoes();
+				}, TIME_SUBMIT);
+	
+				window.onbeforeunload = function(e) {
+					sendAcoes();
+				};
+			}
 			
 			// window.onpopstate = function(event) {
 			// 	console.log("MUDOU HASH: " + JSON.stringify(event.state));
@@ -127,15 +130,19 @@ function useskill_capt_onthefly(obj){
 				this.sRealTime = new Date().getTime();
 				this.sTimezoneOffset = new Date().getTimezoneOffset();
 
-				this.sUsername = USERNAME;
-				this.sRole = ROLE;
+				if(CONNECTED_ON_THE_FLY){
+					this.sUsername = USERNAME;
+					this.sRole = ROLE;
+					
+					this.sClient = CLIENT;
+					this.sVersion = VERSION;
+				}
+				
+				//jHeath info
 				this.sJhm = getJhmName();
 				this.sActionJhm = getActionJhm();
 				this.sSectionJhm = getSectionJhm();
 				this.sStepJhm = getStepJhm();
-				
-				this.sClient = CLIENT;
-				this.sVersion = VERSION;
 			}
 
 			var lastMouseMove = 0, lastMouseX, lastMouseY, mouseOffSet = 5;

@@ -484,6 +484,7 @@ function insertOnPage(tabId){
 	chrome.tabs.executeScript(tabId, {file: "js/jquery.js"});
 	chrome.tabs.executeScript(tabId, {file: "js/backfix.min.js"});
 	chrome.tabs.executeScript(tabId, {file: "js/capt.js"});
+	chrome.tabs.executeScript(tabId, {file: "js/capt.plugin.init.js"});
 	chrome.tabs.executeScript(tabId, {file: "js/canvas/jquery.color.js"});
 	chrome.tabs.executeScript(tabId, {file: "js/canvas/jquery.JCrop.js"});
 	chrome.tabs.executeScript(tabId, {file: "js/canvas/html2canvas.js"});

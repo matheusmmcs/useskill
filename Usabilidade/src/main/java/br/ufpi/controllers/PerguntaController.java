@@ -24,6 +24,8 @@ import br.ufpi.repositories.PerguntaRepository;
 import br.ufpi.repositories.TesteRepository;
 import br.ufpi.util.GsonElements;
 
+import com.google.gson.Gson;
+
 @Resource
 public class PerguntaController extends BaseController {
 
@@ -201,7 +203,20 @@ public class PerguntaController extends BaseController {
 		validateComponente.validarObjeto(perguntaPertenceTeste);
 		result.use(Results.json()).from(perguntaPertenceTeste).serialize();
 	}
-
+	
+	@Logado
+	@Get("/pergunta/{idPergunta}/json")
+	public void getTarefa(Long idPergunta) {
+		validateComponente.validarId(idPergunta);
+		validateComponente.validarId(sessionPlugin.getIdTeste());
+		PerguntaVO perguntaVo = perguntaRepository.perguntVOPertenceTeste(sessionPlugin.getIdTeste(), idPergunta);
+		System.out.println(perguntaVo);
+		Gson gson = new Gson();
+		System.out.println(perguntaVo.getAlternativas());
+		validateComponente.validarObjeto(perguntaVo);
+		result.use(Results.json()).from(gson.toJson(perguntaVo)).serialize();
+	}
+	
 	@Logado
 	@Get("/teste/responder/pergunta/{idPergunta}")
 	public void exibir(Long idPergunta) {

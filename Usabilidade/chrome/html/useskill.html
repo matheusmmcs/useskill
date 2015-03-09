@@ -39,30 +39,12 @@
 					<a class="USbotao width100" id="USrealizarComentario" href="#"><b class="USicon-comment"></b> Realizar Coment&aacute;rio</a>
 				</div>
 				<div id="UScomentarioEtapa1" class="UShidden">
-					<h2>Qualifique seu comentário:</h2>
-					<div class="USsectionContent UStext-right ">
-						<a class="USbotao UScancelarComentario" href="#">Cancelar</a>
-						<a class="USbotao USbotao-vermelho UScomentarioQualifique" data-type="false" href="#"><b class="USicon-thumbs-down USicon-white"></b></a>
-						<a class="USbotao USbotao-verde UScomentarioQualifique" data-type="true" href="#"><b class="USicon-thumbs-up USicon-white"></b></a>
-					</div>
-				</div>
-				<div id="UScomentarioEtapa2" class="UShidden">
-					<h2>Selecione o motivo do comentário:</h2>
-					<div class="USsectionContent UStext-right ">
-						<!-- <a class="USbotao" id="UScomentarioSelecionar" href="#"><b class="USicon-fullscreen"></b>Selecionar Área</a> -->
-						<a class="USbotao UScancelarComentario" href="#">Cancelar</a>
-						<a class="USbotao USbotao-info" id="UScomentarioMotivoProsseguir" href="#">Prosseguir</a>
-
-						<canvas id="canvasClone"></canvas>
-					</div>
-				</div>
-				<div id="UScomentarioEtapa3" class="UShidden">
 					<h2>Coment&aacute;rio:</h2>
 					<div class="USsectionContent UStext-right">
 						<textarea id="UScomentarioTexto" name="UScomentarioTexto"></textarea>
-
 						<a class="USbotao UScancelarComentario" href="#">Cancelar</a>
-						<a class="USbotao USbotao-info" id="UScomentarioEnviar" href="#">Enviar</a>
+						<a class="USbotao USbotao-vermelho UScomentarioQualifique" data-type="false" href="#"><b class="USicon-thumbs-down USicon-white"></b></a>
+						<a class="USbotao USbotao-verde UScomentarioQualifique" data-type="true" href="#"><b class="USicon-thumbs-up USicon-white"></b></a>
 					</div>
 				</div>
 			</div>
@@ -173,7 +155,7 @@
 				if(response.dados.string){
 					$('#USroteiro').html(response.dados.string);
 				}else{
-					alertUS("Tente novamente!");
+					showMessageError("Não foi possível receber o roteiro, tente novamente!");
 				}
 			});
 		}
@@ -183,7 +165,7 @@
 					nextElement();
 				}else{
 					//console.log(response.errorType)
-					alertUS("Tente novamente!");
+					showMessageError("Não foi possível concluir a tarefa, novamente!");
 					console.log("erro concluir - not success");
 				}
 			});
@@ -195,7 +177,7 @@
 					acoesReset();
 				}else{
 					//console.log(response.errorType)
-					alertUS("Tente novamente!");
+					showMessageError("Não foi possível pular a tarefa, tente novamente!");
 					console.log("erro pular - not success");
 				}
 			});
@@ -207,7 +189,7 @@
 					acoesReset();
 				}else{
 					//console.log(response.errorType)
-					alertUS("Tente novamente!");
+					showMessageError("Não foi possível adiar o teste, tente novamente!");
 					console.log("erro pular - not success");
 				}
 			});
@@ -217,9 +199,10 @@
 				if(response.success){
 					//nextElement();
 					comentarioReset();
+					showMessageSuccess("Comentário enviado com sucesso, obrigado por contribuir!");
 				}else{
 					//console.log(response.errorType)
-					alertUS("Tente novamente!");
+					showMessageError("Não foi possível enviar o comentário, tente novamente!");
 					console.log("erro comentar - not success");
 				}
 			});
@@ -286,7 +269,7 @@
 				e.preventDefault();
 				pularTarefa(elAtual.id, msg);
 			}else{
-				alertUS("Preencha a justificativa!")
+				showMessageError("Preencha a justificativa!")
 			}
 		});
 		//Comentarios
@@ -302,32 +285,18 @@
 		$('.UScomentarioQualifique').on('click', function(e){
 			e.preventDefault();
 			var quali = $(this).attr('data-type');
-			if(quali){
-				fadeOutUS($('#UScomentarioEtapa1'));
-				fadeInUS($('#UScomentarioEtapa2'));
-				$('#UScomentarioEnviar').attr('data-quali', quali);
-			}else{
-				alertUS('Tente novamente!');
-			}
-		});
-		$('#UScomentarioMotivoProsseguir').on('click', function(e){
-			e.preventDefault();
-			fadeOutUS($('#UScomentarioEtapa2'));
-			fadeInUS($('#UScomentarioEtapa3'));
-		});
-		$('#UScomentarioEnviar').on('click', function(e){
-			e.preventDefault();
-			var msg = $('#UScomentarioTexto').val();
-			var qualis = $(this).attr('data-quali');
-			if(msg!=null && msg!=""){
-				e.preventDefault();
-				if(qualis){
-					enviarComentario(elAtual.id, msg, qualis);
+			console.log(quali);
+			if(quali != null){
+				var msg = $('#UScomentarioTexto').val();
+				console.log(msg);
+				if(msg!=null && msg!=""){
+					e.preventDefault();
+					enviarComentario(elAtual.id, msg, quali);
 				}else{
-					alertUS("Tente novamente!")
+					showMessageError("Preencha seu Comentário!");
 				}
 			}else{
-				alertUS("Preencha seu Comentário!")
+				showMessageError('Tente novamente!');
 			}
 		});
 		//Questionario
@@ -428,12 +397,12 @@
 			console.log(jcrop_coords)
 		}
 		function clearCanvas(){
-			var canvas = document.getElementById('myCanvas');
-			var canvasClone = document.getElementById('canvasClone');
-		    var context = canvas.getContext('2d');
-		    var contextClone = canvasClone.getContext('2d');
-		    context.clearRect(0, 0, canvas.width, canvas.height);
-		    contextClone.clearRect(0, 0, canvasClone.width, canvasClone.height);
+// 			var canvas = document.getElementById('myCanvas');
+// 			var canvasClone = document.getElementById('canvasClone');
+// 		    var context = canvas.getContext('2d');
+// 		    var contextClone = canvasClone.getContext('2d');
+// 		    context.clearRect(0, 0, canvas.width, canvas.height);
+// 		    contextClone.clearRect(0, 0, canvasClone.width, canvasClone.height);
 		}
 
 
@@ -484,15 +453,22 @@
 		}
 		function comentarioReset(){
 			fadeOutUS($('#UScomentarioEtapa1'));
-			fadeOutUS($('#UScomentarioEtapa2'));
-			fadeOutUS($('#UScomentarioEtapa3'));
 			fadeInUS($('#UScomentarioSubSection'));
-			$('#UScomentarioEnviar').attr('data-quali', '');
 			$('#UScomentarioTexto').val("");
 			clearCanvas();
 		}
 		function acoesReset(){
 			$('#USjustificativaAcao').val("");
+		}
+		
+		function showMessageSuccess(msg){
+			alertUS(msg);
+		}
+		function showMessageInfo(msg){
+			alertUS(msg);
+		}
+		function showMessageError(msg){
+			alertUS(msg);
 		}
 	});
 

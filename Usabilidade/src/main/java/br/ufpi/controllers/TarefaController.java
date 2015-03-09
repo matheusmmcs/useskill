@@ -1,11 +1,7 @@
 package br.ufpi.controllers;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,7 +9,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -120,10 +115,9 @@ public class TarefaController extends BaseController {
 	public void salvarTarefa(Tarefa tarefa, Long idTeste, Collection<String> variaveis) {
 		validateComponente.validarString(tarefa.getNome(), "tarefa.titulo");
 		validateComponente.validarString(tarefa.getRoteiro(), "tarefa.roteito");
-		validateComponente.validarString(tarefa.getUrlInicial(),
-				"tarefa.urlInicial");
+		validateComponente.validarString(tarefa.getUrlInicial(), "tarefa.urlInicial");
+		validateComponente.validarURL(tarefa.getUrlInicial());
 		validator.onErrorRedirectTo(this).criarTarefa(idTeste, tarefa);
-		
 		
 		this.testeNaoRealizadoPertenceUsuarioLogado(idTeste);
 		Teste teste = testeView.getTeste();
@@ -215,6 +209,7 @@ public class TarefaController extends BaseController {
 		validateComponente.validarString(tarefa.getNome(), "tarefa.titulo");
 		validateComponente.validarString(tarefa.getRoteiro(), "tarefa.roteito");
 		validateComponente.validarString(tarefa.getUrlInicial(), "tarefa.urlInicial");
+		validateComponente.validarURL(tarefa.getUrlInicial());
 		validator.onErrorRedirectTo(this).editarTarefa(idTeste, tarefa, true);
 		this.tarefaPertenceTesteNaoRealizado(tarefa.getId(), idTeste);
 		
@@ -297,8 +292,7 @@ public class TarefaController extends BaseController {
 
 	@Logado
 	@Post("tarefa/save/fluxo")
-	public void saveFluxo(String dados, Long tarefaId, Boolean isFinished,
-			String comentario) {
+	public void saveFluxo(String dados, Long tarefaId, Boolean isFinished, String comentario) {
 		Tarefa tarefa = tarefaRepository.find(tarefaId);
 		
 		//altera os valores para concluido
@@ -317,17 +311,16 @@ public class TarefaController extends BaseController {
 		fluxo.setTarefa(tarefa);
 		
 		Gson gson = new Gson();
-		Type collectionType = new TypeToken<Collection<Action>>() {
-		}.getType();
+		Type collectionType = new TypeToken<Collection<Action>>() {}.getType();
 		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
-		if (ints2 != null) {
+		if (ints2 != null && ints2.size() != 0) {
 			List<Action> acoes = new ArrayList<Action>(ints2);
 			fluxo.setDataRealizacao(new Date(System.currentTimeMillis()));
 			int ultimoFluxo = acoes.size() - 1;
-			if (ultimoFluxo < 0)
+			if (ultimoFluxo < 0){
 				ultimoFluxo = 0;
-			fluxo.setTempoRealizacao(acoes.get(ultimoFluxo).getsTime()
-					- acoes.get(0).getsTime());
+			}
+			fluxo.setTempoRealizacao(acoes.get(ultimoFluxo).getsTime() - acoes.get(0).getsTime());
 			diferencaTempo(acoes);
 			fluxo.setAcoes(acoes);
 		}
@@ -341,8 +334,7 @@ public class TarefaController extends BaseController {
 		fluxoRepository.create(fluxo);
 		System.out.println("Tarefa id" + tarefaId);
 		System.out.println("Identificador do fluxo:" + fluxo.getId());
-		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(fluxo.getId(),
-				EnumObjetoSalvo.FLUXO));
+		testeSessionPlugin.addObjetosSalvos(new ObjetoSalvo(fluxo.getId(), EnumObjetoSalvo.FLUXO));
 		result.use(Results.json()).from("true").serialize();
 	}
 

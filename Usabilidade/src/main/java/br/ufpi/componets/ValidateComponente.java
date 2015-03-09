@@ -1,5 +1,8 @@
 package br.ufpi.componets;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.validator.Validations;
@@ -62,8 +65,24 @@ public class ValidateComponente {
 	public void validarId(final Long idTeste) {
 		validator.checking(new Validations(){{ 
 			that((idTeste!=null ), "campo.form.alterado", "campo.form.alterado"); 
-		}});	
+		}});
 		validator.onErrorRedirectTo(LoginController.class).logado(1);
+	}
+	
+	public void validarURL(final String url){
+		boolean match = false;
+		try {
+            Pattern patt = Pattern.compile("\\b(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+            Matcher matcher = patt.matcher(url);
+            match = matcher.matches();
+        } catch (RuntimeException e) {
+        	match = false;
+	    }
+		final boolean valida = match;
+		validator.checking(new Validations(){{ 
+			that(valida, "tarefa.url.invalida", "tarefa.url.invalida"); 
+		}});
+		
 	}
 	
 	/**
