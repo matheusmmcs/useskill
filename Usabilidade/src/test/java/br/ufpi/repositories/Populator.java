@@ -30,25 +30,25 @@ public class Populator {
 				.newInstanceUsuarioController(entityManager);
 		usuarioController.create(UsuarioTestProcedure.newInstaceUsuario(
 				entityManager, "cleiton", "cleitonmouraSilveste@gmail.com",
-				"senha1"));
+				"senha1"), "senha1");
 
 		usuarioController.create(UsuarioTestProcedure.newInstaceUsuario(
 				entityManager, "cleiton moura", "cleitonmoura18@hotmail.com",
-				"senha2"));
+				"senha2"), "senha2");
 		usuarioController.create(UsuarioTestProcedure.newInstaceUsuario(
-				entityManager, "clebert", "clebertmoura@gmail.com", "senha1"));
+				entityManager, "clebert", "clebertmoura@gmail.com", "senha1"), "senha1");
 		usuarioController
 				.create(UsuarioTestProcedure.newInstaceUsuario(entityManager,
-						"claudia", "claudiamoura18@gmail.com", "senha1"));
+						"claudia", "claudiamoura18@gmail.com", "senha1"), "senha1");
 		usuarioController.create(UsuarioTestProcedure.newInstaceUsuario(
-				entityManager, "Maria", "maria@gmail.com", "senha1"));
+				entityManager, "Maria", "maria@gmail.com", "senha1"), "senha1");
 		List<String> telefones = new ArrayList<String>();
 		telefones.add("(86)3227-0468");
 		telefones.add("(86)9462-0776");
 		telefones.add("(86)3222-2222");
 		usuarioController.create(UsuarioTestProcedure.newInstaceUsuario(
 				entityManager, "Deletar", "deletar@gmail.com", "senha1",
-				telefones));
+				telefones), "senha1");
 	}
 
 	public static void validarIncricao(EntityManager entityManager,

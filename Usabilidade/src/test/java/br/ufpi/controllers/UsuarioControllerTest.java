@@ -53,11 +53,12 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	@Test()
 	public void testCorrectCreate() {
 		System.out.println("create");
+		String senha = "cleiton";
 
 		Usuario usuario = UsuarioTestProcedure.newInstaceUsuario(entityManager,
-				"cleiton", "cleitonmoura19@hotmail.com", "cleiton");
+				"cleiton", "cleitonmoura19@hotmail.com", senha);
 		int qAntes = instance.index().size();
-		instance.create(usuario);
+		instance.create(usuario, senha);
 		assertEquals("Deveria ter um usuario a Mais", qAntes + 1, instance
 				.index().size());
 	}
@@ -65,10 +66,12 @@ public class UsuarioControllerTest extends AbstractDaoTest {
 	@Test
 	public void testEmailEqual() {
 		System.out.println("create email equal");
+		String senha = "cleiton";
+		
 		Usuario usuario = UsuarioTestProcedure.newInstaceUsuario(entityManager,
-				"cleiton", "cleitonmoura18@hotmail.com", "cleiton");
+				"cleiton", "cleitonmoura18@hotmail.com", senha);
 		try {
-			instance.create(usuario);
+			instance.create(usuario, senha);
 		} catch (ValidationException validationExceptione) {
 
 			Assert.assertEquals("Email já esta sendo usado",
