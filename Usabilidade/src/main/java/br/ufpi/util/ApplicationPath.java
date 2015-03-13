@@ -21,11 +21,14 @@ public class ApplicationPath {
 		if (PATH == null) {
 			URL r = ApplicationPath.class.getResource("/");
 			String decoded = URLDecoder.decode(r.getFile(), "UTF-8");
+			PATH = decoded;
+			/*
 			if (decoded.startsWith("/")) {
 			    decoded = decoded.replaceFirst("/", "");
 			}
 			File f = new File(decoded);
 			PATH = "/" + f.getAbsolutePath();
+			*/
 		}
 		return PATH + filePath;
 	}

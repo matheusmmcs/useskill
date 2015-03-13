@@ -10,11 +10,15 @@
 			</ul>
 			<ul class="nav nav-list nav-links" style="display: none;">
 				<li>
+					<a href="${pageContext.request.contextPath}/usuario">
+					<fmt:message key="inicio"/></a>
+				</li>
+				<li>
 					<a href="${pageContext.request.contextPath}/usuarios/${usuarioLogado.usuario.id}/edit">
 					<fmt:message key="usuario.editardados"/></a>
 				</li>
 				<li>
-					<a href="${pageContext.request.contextPath}/usuarios/alterarsenha">
+					<a href="${pageContext.request.contextPath}/usuario/alterarsenha">
 					<fmt:message key="topo.alterarsenha"/></a>
 				</li>
 <!-- 				<li> -->

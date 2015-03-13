@@ -28,12 +28,10 @@
 				href="${pageContext.request.contextPath}/usuario">
 				<fmt:message key="testes.mini.construcao"/>
 			</a>
-			<a class="btn"
-				href="${pageContext.request.contextPath}/testes/liberados">
+			<a class="btn" href="${pageContext.request.contextPath}/testes/liberados">
 				<fmt:message key="testes.mini.liberados"/>
 			</a>
-			<a class="btn"
-				href="${pageContext.request.contextPath}/testes/convidados">
+			<a class="btn active" href="${pageContext.request.contextPath}/testes/convidados">
 				<fmt:message key="testes.mini.convites"/>
 			</a>
 		</div>

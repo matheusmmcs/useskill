@@ -37,13 +37,11 @@
 				class="imagem_selected" />
 			<ul>
 				<!--  em comum -->
-				<li><a id="topmenu0" href="${pageContext.request.contextPath}/" data-topmenu="4">
-				<fmt:message key="inicio" /></a></li>
 				<c:choose>
 					<c:when test="${usuarioLogado.usuario!=null}">
 						<!--  se logado -->
-						<li><a id="topmenu1" href="${pageContext.request.contextPath}/usuario">
-						<fmt:message key="testes.meus" /></a></li>
+						<li><a id="topmenu0" href="${pageContext.request.contextPath}/usuario" data-topmenu="4">
+						<fmt:message key="inicio" /></a></li>
 						<li><a id="topmenu2" href="${pageContext.request.contextPath}/teste/criar">
 						<fmt:message key="testes.criar" /></a></li>
 						<li><a id="topmenu3" href="${pageContext.request.contextPath}/usuarios/${usuarioLogado.usuario.id}/edit">
@@ -52,6 +50,8 @@
 					</c:when>
 					<c:otherwise>
 						<!--  se nao logado -->
+						<li><a id="topmenu0" href="${pageContext.request.contextPath}" data-topmenu="4">
+						<fmt:message key="inicio" /></a></li>
 						<li><a id="topmenu4" href="${pageContext.request.contextPath}/usuarios/new">
 						<fmt:message key="usuario.cadastro" /> </a></li>
 						<li><a id="topmenu5" href="${pageContext.request.contextPath}/login">

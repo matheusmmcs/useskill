@@ -1,13 +1,5 @@
-<%@include file="../leftmenus/default.jsp"%>
 
-<div class="span9 container-right">
-	<c:if test="${not empty errors}">
-		<div class="alert alert-error">
-			<c:forEach items="${errors}" var="error">
-        		${error.message}<br />
-			</c:forEach>
-		</div>
-	</c:if>
+<div class="span12 container-right">
 
 	<ul class="breadcrumb">
 		<li>
@@ -32,24 +24,53 @@
 			<fmt:message key="analise.list.usuarios" />
 		</li>
 	</ul>
-
-	<form class="form-horizontal form-layout"
-		action="${pageContext.request.contextPath}/conta" method="post">
+	
+	<c:if test="${not empty errors}">
+		<div class="alert alert-error">
+			<c:forEach items="${errors}" var="error">
+        		${error.message}<br />
+			</c:forEach>
+		</div>
+	</c:if>
+	
+	<div class="form-layout">
 		<fieldset>
 			<legend>
 				<span>
-					<fmt:message key="analise.list.usuarios" />
+					<fmt:message key="analise.grafo.acoes" />
 				</span>
 				<p>
-					<fmt:message key="tarefa" /> - ${tarefa.nome }
-					<br/>
-					<fmt:message key="teste"/> - ${tarefa.teste.titulo }
+					<fmt:message key="analise.grafo.view" /> <fmt:message key="tarefa" /> - ${tarefa.nome }
 				</p>
-				<hr />
+				<hr/>
 			</legend>
 		</fieldset>
+	</div>
+	
+	
+	<div id="useskill-network" style="width: 99%; height: 350px; margin: 0 auto; background-color: #fafafa; border: 2px solid lightgray; margin-bottom: 20px;">
+	</div>
+	
+	<ul class="horizontal" style="margin-bottom: 20px; margin-left: 0">
+		<li><b><fmt:message key="analise.grafo.legenda" /></b></li>
+		<li><span class="badge badge-inverse"><fmt:message key="analise.grafo.legenda.fixo" /></span></li>
+		<li><span class="badge badge-info"><fmt:message key="analise.grafo.legenda.correto" /></span></li>
+		<li><span class="badge badge-success"><fmt:message key="analise.grafo.legenda.melhor" /></span></li>
+		<li><span class="badge badge-important"><fmt:message key="analise.grafo.legenda.erro" /></span></li>
+	</ul>
+	
+	<!-- SCRIPTS DO VISJS -->
+<!-- 	http://visjs.org/examples/network/25_physics_configuration.html -->
+<!-- 	http://visjs.org/docs/network.html#Nodes -->
+	<script type="text/javascript" src="${pageContext.request.contextPath}/plugin/vis/vis.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/app/graph/models.js"></script>
+	<script></script>
+	
+	<form class="form-horizontal form-layout"
+		action="${pageContext.request.contextPath}/conta" method="post">
 		
-		<fieldset style="margin-top: -15px;">
+		
+		<fieldset>
 			<legend>
 				<span>
 					<fmt:message key="analise.dados.usuarios" />
