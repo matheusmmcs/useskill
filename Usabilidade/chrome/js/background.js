@@ -1,5 +1,5 @@
 //var domainUseSkill = "http://www.killline.com/useskill";
-//var domainUseSkill = "http://sistemaseasy.ufpi.br/useskill";
+//var domainUseSkill = "http://www.useskill.com";
 var domainUseSkill = "http://localhost:8080/Usabilidade";
 var SEND_BROWSER_EVENT = false;
 
@@ -249,10 +249,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 			case "responderPergunta":
 				console.log("resposta: ");
 				console.log(request);
+				var urlResp = domainUseSkill + request.url;
+				console.log(urlResp);
 				if(request.idPergunta){
-					var thisDomainUseSkill = domainUseSkill.replace("/Usabilidade","").replace("/usabilidade","").replace("/useskill","").replace("/Useskill","");
 					$.ajax({
-						url : thisDomainUseSkill+request.url,
+						url : urlResp,
 						cache: false,
 						type : 'POST',
 						dataType : 'json',
@@ -481,18 +482,18 @@ function suspendTest(){
 
 
 function insertOnPage(tabId){
-	chrome.tabs.executeScript(tabId, {file: "js/jquery.js"});
-	chrome.tabs.executeScript(tabId, {file: "js/backfix.min.js"});
-	chrome.tabs.executeScript(tabId, {file: "js/capt.js"});
-	chrome.tabs.executeScript(tabId, {file: "js/capt.plugin.init.js"});
-	chrome.tabs.executeScript(tabId, {file: "js/canvas/jquery.color.js"});
-	chrome.tabs.executeScript(tabId, {file: "js/canvas/jquery.JCrop.js"});
-	chrome.tabs.executeScript(tabId, {file: "js/canvas/html2canvas.js"});
-	//chrome.tabs.executeScript(tabId, {file: "js/playback.js"});
+	
+	//capture script
+	chrome.tabs.executeScript(tabId, {file: "js/capt.js"}, function(){
+		chrome.tabs.executeScript(tabId, {file: "js/capt.plugin.init.js"});
+	});
+	
+	//insert html of useskill in page
+	chrome.tabs.executeScript(tabId, {file: "js/jquery.js"}, function(){
+		chrome.tabs.executeScript(tabId, {file: "js/useskill.js"});
+	});
+	
 	chrome.tabs.insertCSS(tabId, {file: "css/useskill.css"});
-	chrome.tabs.executeScript(tabId, {file: "js/useskill.js"});
-	//chrome.tabs.insertCSS(tabId, {file: "css/jquery.fancybox.css"});
-	//chrome.tabs.executeScript(tabId, {file: "js/jquery.fancybox.pack.js"});
 	chrome.browserAction.setIcon({path: 'images/icon16on.png', tabId: tabId});
 }
 
@@ -549,7 +550,7 @@ function stringfyJSON(data){
 //----------------------------------------------------------------------------------------------------------------------------------------------
 function showNotification(obj){
 	if(obj && obj.title && obj.message){
-		chrome.notifications.create("redmineTimeTracker", {   
+		chrome.notifications.create("useskillPlugin", {   
 				type: 'basic', 
 				iconUrl: '../images/icon48.png',
 				title: obj.title, 

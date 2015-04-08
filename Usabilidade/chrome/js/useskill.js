@@ -2,7 +2,7 @@
 (function($){
 		var url = chrome.extension.getURL("html/useskill.html")
 		var html = $('html');
-		var iframeId = 'USmySidebarEasII';
+		var iframeId = 'USmySidebarEaSII';
 		if (document.getElementById(iframeId)) {
 		  throw 'id:' + iframeId + 'taken please dont use this id!';
 		}

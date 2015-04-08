@@ -1,6 +1,6 @@
 ﻿{
   "name": "UseSkill for Google Chrome™",
-  "version": "0.9.5.3",
+  "version": "0.9.7",
   "description": "Plugin para realização de Testes de Usabilidade Remotos, a partir da ferramenta UseSkill.",
   "omnibox": { "keyword" : "useskill" },
   "options_page": "options.html",
@@ -32,7 +32,6 @@
 	  "default_popup": "popup.html"
   },
   "web_accessible_resources": [
-    "html/topoteste.html",
     "html/useskill.html",
     "images/glyphicons-halflings-white.png",
     "images/glyphicons-halflings.png"

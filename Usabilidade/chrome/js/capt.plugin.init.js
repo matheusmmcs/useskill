@@ -1,25 +1,14 @@
 window.isUseSkillOn = false;
+window.useSkillActions = [];
+
 (function(){
-	var interval = window.setInterval(function(){
-		
-		if(!window.isUseSkillOn){
-			if(isFunction(useskill_capt_onthefly)){
-				useskill_capt_onthefly({
-					sendactions: false,
-					plugin: true,
-					version: 1,
-					client: "Plugin"
-				});
-				window.isUseSkillOn = true;
-			}
-		}else{
-			window.clearInterval(interval);
-		}
-		
-	}, 1000);
-	
-	function isFunction(functionToCheck) {
-		 var getType = {};
-		 return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
+	if(!window.isUseSkillOn){
+		useskill_capt_onthefly({
+			sendactions: false,
+			plugin: true,
+			version: 1,
+			client: "Plugin"
+		});
+		window.isUseSkillOn = true;
 	}
 })();

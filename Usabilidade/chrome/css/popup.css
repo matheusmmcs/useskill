@@ -59,8 +59,14 @@ form{
 #tableConvidados .btn-danger{
   
 }
+.wdth280{
+  width: 280px;
+}
 .wdth400{
   width: 400px;
+}
+.wdth100p{
+	width: 100%;
 }
 .descola{
   margin: 0 2px;
@@ -70,4 +76,12 @@ form{
 }
 .btn-logout{
   padding: 4px 4px;
+}
+
+
+.box-sizing *{
+	box-sizing: border-box;
+}
+.input-box-sizing{
+	height: 28px;
 }

@@ -89,52 +89,37 @@
 			/*	EVENTS JQUERY DEFINITION	*/
 			/*	LOGIN 	*/
 			/*click no submit para efetuar login*/
-			$('#loginForm input:submit').live({
-				"click" : function(e){
-					e.preventDefault();
-					var objLogin = login();
-					if(objLogin.retorno){
-						logged();
-					}else{
-						$('#alerts').html(objLogin.erro).fadeIn(300);
-					}
+			$(document).on('click', '#loginForm input:submit', function(e){
+				e.preventDefault();
+				var objLogin = login();
+				if(objLogin.retorno){
+					logged();
+				}else{
+					$('#alerts').html(objLogin.erro).fadeIn(300);
 				}
 			});
 
 			/*	CONVIDADOS	*/
-			$('.teste-info').live({
-				"click" : function(e){
-					e.preventDefault();
-				}
+			$(document).on('click', '#USlogout', function(e){
+				e.preventDefault();
+				chrome.extension.sendRequest({useskill: "testFinish"});
+				var objJson = ajax(urls.logout, typeEnum.GET);
+				console.log(objJson);
+				getPage("login");
 			});
 
-			$('#USlogout').live({
-				"click" : function(e){
-					e.preventDefault();
-					chrome.extension.sendRequest({useskill: "testFinish"});
-					var objJson = ajax(urls.logout, typeEnum.GET);
-					console.log(objJson);
-					getPage("login");
-				}
-			})
-
-			$('.teste-aceitar').live({
-				"click" : function(e){
-					e.preventDefault();
-					var id = $(this).parentsUntil('tr').parent().attr('data-id');
-
-					var objJson = ajax(domainUseSkill+"/teste/participar/"+id+"/aceitar", "GET");
-					chrome.extension.sendRequest({useskill: "nextElement", lista: objJson, atual: 0});
-					window.close();
-				}
+			$(document).on('click', '.teste-aceitar', function(e){
+				e.preventDefault();
+				var id = $(this).parentsUntil('tr').parent().attr('data-id');
+				var objJson = ajax(domainUseSkill+"/teste/participar/"+id+"/aceitar", "GET");
+				chrome.extension.sendRequest({useskill: "nextElement", lista: objJson, atual: 0});
+				window.close();
 			});
 
-			$('.adiarteste').live({
-				"click" : function(e){
-					e.preventDefault();
-					chrome.extension.sendRequest({useskill: "testFinish"});
-					logged();
-				}
+			$(document).on('click', '.adiarteste', function(e){
+				e.preventDefault();
+				chrome.extension.sendRequest({useskill: "testFinish"});
+				logged();
 			});
 		});
 
