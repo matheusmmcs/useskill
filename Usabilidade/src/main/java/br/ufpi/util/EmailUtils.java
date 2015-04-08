@@ -69,7 +69,7 @@ public class EmailUtils {
 	 * @throws EmailException
 	 */
 	public void enviaEmail(Mensagem mensagem) {
-		
+		/*
 		Properties props = this.configSSL();
 		
 	    Session session = Session.getInstance(props, new javax.mail.Authenticator() {
@@ -123,6 +123,7 @@ public class EmailUtils {
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
 	    }
+	    */
 	}
 
 

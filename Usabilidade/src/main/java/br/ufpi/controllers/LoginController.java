@@ -180,6 +180,7 @@ public class LoginController extends BaseController {
 			emailUtils.enviarNovaSenha(usuario, novaSenha);
 			usuarioRepository.update(usuario);
 			result.include("sucesso", "usuario.senha.redefinida");
+			result.include("novaSenha", novaSenha);
 			result.redirectTo(this).recuperaSenha(email);
 		}
 	}

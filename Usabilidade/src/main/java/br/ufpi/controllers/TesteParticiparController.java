@@ -28,7 +28,6 @@ import br.ufpi.repositories.FluxoRepository;
 import br.ufpi.repositories.RespostaAlternativaRepository;
 import br.ufpi.repositories.RespostaEscritaRepository;
 import br.ufpi.repositories.ValorRoteiroRepository;
-import br.ufpi.repositories.Implement.ValorRoteiroRepositoryImpl;
 
 /**
  * @author Cleiton

@@ -9,7 +9,7 @@
 	
 
 	<c:if test="${pergunta.tipoRespostaAlternativa!=true}">
-		<div class="form-horizontal form-layout form-pergunta" data-action="${pageContext.request.contextPath}/teste/salvar/resposta/escrita">
+		<div class="form-horizontal form-layout form-pergunta" data-perg-type="escrita">
 			<fieldset>
 				<legend>
 					<span>
@@ -52,7 +52,7 @@
 	</c:if>
 
 	<c:if test="${pergunta.tipoRespostaAlternativa==true}">
-	<div class="form-horizontal form-layout form-pergunta" data-action="${pageContext.request.contextPath}/teste/salvar/resposta/alternativa">
+	<div class="form-horizontal form-layout form-pergunta" data-perg-type="alternativa">
 		<fieldset>
 			<legend>
 					<span>
