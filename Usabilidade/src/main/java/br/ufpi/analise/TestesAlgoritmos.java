@@ -318,17 +318,17 @@ public class TestesAlgoritmos {
 			BigDecimal qtdAcoes = new BigDecimal(acoes.size());
 			BigDecimal qtdTempo = new BigDecimal(calculateTimeActions(acoes));
 			
-			BigDecimal timeAction = qtdTempo.divide(qtdAcoes, roundingPlus, roundingMode);
+			BigDecimal timeAction = qtdAcoes.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : qtdTempo.divide(qtdAcoes, roundingPlus, roundingMode);
 			if(minTempoPorAcao > timeAction.doubleValue()){
 				minTempoPorAcao = timeAction.doubleValue();
 			}
 			
-			BigDecimal actionTime = qtdAcoes.divide(qtdTempo, roundingPlus, roundingMode);
+			BigDecimal actionTime = qtdTempo.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : qtdAcoes.divide(qtdTempo, roundingPlus, roundingMode);
 			if(maxAcaoPorTempo < actionTime.doubleValue()){
 				maxAcaoPorTempo = actionTime.doubleValue();
 			}
 
-			BigDecimal eficienciaAcoes = qtdAcoesMelhorCaminho.divide(qtdAcoes, rounding, roundingMode);
+			BigDecimal eficienciaAcoes = qtdAcoes.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : qtdAcoesMelhorCaminho.divide(qtdAcoes, rounding, roundingMode);
 			if(maxAcoesMelhorCaminho < eficienciaAcoes.doubleValue()){
 				maxAcoesMelhorCaminho = eficienciaAcoes.doubleValue();
 			}
@@ -360,17 +360,17 @@ public class TestesAlgoritmos {
 				
 				BigDecimal qtdAcoesObrigatoriasFeitas = new BigDecimal(contAcoesObrigatorias);				
 				BigDecimal qtdAcoes = new BigDecimal(contAcao);
-				BigDecimal tempoNormalizado = new BigDecimal(timeTotal).divide(new BigDecimal(maxTime), rounding, roundingMode);
-				BigDecimal acoesNormalizadas = qtdAcoes.divide(qtdMaxActions, rounding, roundingMode);
+				BigDecimal tempoNormalizado = maxTime == 0 ? BigDecimal.ZERO : new BigDecimal(timeTotal).divide(new BigDecimal(maxTime), rounding, roundingMode);
+				BigDecimal acoesNormalizadas = qtdMaxActions.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : qtdAcoes.divide(qtdMaxActions, rounding, roundingMode);
 				
 				//eficacia (completude das acoes obrigatorias) -> fazer o que deve ser feito
-				BigDecimal eficacia = qtdAcoesObrigatoriasFeitas.divide(qtdAcoesObrigatorias, rounding, roundingMode);
+				BigDecimal eficacia = qtdAcoesObrigatorias.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : qtdAcoesObrigatoriasFeitas.divide(qtdAcoesObrigatorias, rounding, roundingMode);
 				
 				
 				//eficiencia (qtd eventos) -> fazer da melhor forma					
 				if(type.equals(TipoAlgoritmoPrioridade.AcoesPorTempo)){
 					BigDecimal time = new BigDecimal(timeTotal * maxAcaoPorTempo);
-					BigDecimal eficienciaTempo = qtdAcoes.divide(time, rounding, roundingMode);
+					BigDecimal eficienciaTempo = time.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : qtdAcoes.divide(time, rounding, roundingMode);
 					BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficienciaTempo.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
 
 					ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.AcoesPorTempo, fluxo, prioridadeFuzzy.doubleValue());
@@ -385,7 +385,7 @@ public class TestesAlgoritmos {
 					
 				}else if(type.equals(TipoAlgoritmoPrioridade.AcoesMelhorCaminhoPorAcoes)){
 					BigDecimal contAcoes = new BigDecimal(contAcao * maxAcoesMelhorCaminho);
-					BigDecimal eficienciaAcoesNormalizadas = qtdAcoesMelhorCaminho.divide(contAcoes, rounding, roundingMode);
+					BigDecimal eficienciaAcoesNormalizadas = contAcoes.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : qtdAcoesMelhorCaminho.divide(contAcoes, rounding, roundingMode);
 					BigDecimal prioridadeFuzzy = new BigDecimal(fuzzyPriority(eficienciaAcoesNormalizadas.doubleValue(), eficacia.doubleValue())).setScale(rounding, roundingMode);
 					
 					ResultadoPrioridade r = new ResultadoPrioridade(TipoAlgoritmoPrioridade.AcoesMelhorCaminhoPorAcoes, fluxo, prioridadeFuzzy.doubleValue());
@@ -466,7 +466,7 @@ public class TestesAlgoritmos {
 	}
 	
 	private static long calculateTimeActions(List<Action> acoes){
-		return acoes.get(acoes.size()-1).getsTime() - acoes.get(0).getsTime();
+		return acoes.size() > 0 ? acoes.get(acoes.size()-1).getsTime() - acoes.get(0).getsTime() : 0l;
 	}
 		
 

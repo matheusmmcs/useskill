@@ -31,8 +31,8 @@ import br.ufpi.models.Tarefa;
 	@NamedQuery(name = "VariavelRoteiro.findAll", query = "SELECT v FROM VariavelRoteiro as v WHERE v.deleted = false"),
 	@NamedQuery(name = "VariavelRoteiro.findById", query = "SELECT v FROM VariavelRoteiro as v WHERE v.id = :id AND v.deleted = false"),
 	@NamedQuery(name = "VariavelRoteiro.findByVariavel", query = "SELECT v FROM VariavelRoteiro as v WHERE v.variavel = :variavel AND v.deleted = false"),
-	@NamedQuery(name = "VariavelRoteiro.pertence.Tarefa", query = "SELECT v FROM VariavelRoteiro as v LEFT JOIN v.tarefa WHERE v.tarefa.id= :tarefa AND v.id= :variavel AND v.deleted = false"),
-	@NamedQuery(name = "VariavelRoteiro.pertence.Tarefa.com.NomeIgual", query = "SELECT v FROM VariavelRoteiro as v LEFT JOIN v.tarefa WHERE v.tarefa.id= :tarefa AND v.variavel = :nomeVariavel AND v.deleted = false")
+	@NamedQuery(name = "VariavelRoteiro.pertence.Tarefa", query = "SELECT v FROM VariavelRoteiro as v LEFT JOIN v.tarefa as t WHERE v.tarefa.id= :tarefa AND v.id= :variavel AND v.deleted = false"),
+	@NamedQuery(name = "VariavelRoteiro.pertence.Tarefa.com.NomeIgual", query = "SELECT v FROM VariavelRoteiro as v LEFT JOIN v.tarefa as t WHERE v.tarefa.id= :tarefa AND v.variavel = :nomeVariavel AND v.deleted = false")
 })
 public class VariavelRoteiro implements Serializable {
 

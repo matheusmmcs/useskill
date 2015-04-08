@@ -43,7 +43,7 @@ import br.ufpi.util.Criptografa;
 		@NamedQuery(name = "Usuario.EmailSenha", query = "SELECT u FROM Usuario u WHERE u.email= :email AND u.senha= :senha"),
 		@NamedQuery(name = "Usuario.TesteCriado.Liberado.Organizado.Id", query = "SELECT t FROM Teste AS t WHERE t.usuarioCriador= :usuarioCriador AND t.liberado= true ORDER BY t.id DESC"),
 		@NamedQuery(name = "Usuario.TesteCriado.Nao.Liberado.Organizado.Id", query = "SELECT t FROM Teste AS t WHERE t.usuarioCriador.id= :usuarioCriador AND t.liberado= false ORDER BY t.id DESC"),
-		@NamedQuery(name = "Usuario.TesteCriado.Nao.Liberado.Organizado.Id.Count", query = "SELECT count(*) FROM Teste AS t WHERE t.usuarioCriador.id= :usuarioCriador AND t.liberado= false ORDER BY t.id DESC"),
+		@NamedQuery(name = "Usuario.TesteCriado.Nao.Liberado.Organizado.Id.Count", query = "SELECT count(t.id) FROM Teste AS t WHERE t.usuarioCriador.id= :usuarioCriador AND t.liberado= false ORDER BY t.id DESC"),
 })
 @Entity
 public class Usuario implements Serializable {

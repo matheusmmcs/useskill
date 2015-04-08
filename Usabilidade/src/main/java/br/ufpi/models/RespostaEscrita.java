@@ -26,7 +26,7 @@ import javax.persistence.OneToOne;
 				+ "from Pergunta as per "
 				+ "left join per.respostaEscritas as escrita "
 				+ "where per.id= :pergunta"),
-		@NamedQuery(name = "RespostaEscrita.findPergunta.Count", query = "select count(*) "
+		@NamedQuery(name = "RespostaEscrita.findPergunta.Count", query = "select count(per.id) "
 				+ "from Pergunta as per "
 				+ "left join per.respostaEscritas as escrita "
 				+ "where per.id= :pergunta"),

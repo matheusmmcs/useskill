@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 		@NamedQuery(name = "Teste.Criado.Liberado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste AND t.liberado=true"),
 		@NamedQuery(name = "Teste.Criado", query = "SELECT t FROM Teste t WHERE t.usuarioCriador= :usuarioCriador AND t.id= :idteste"),
 		@NamedQuery(name = "Testes.Criados.Liberados", query = "SELECT t FROM Teste t WHERE t.usuarioCriador.id= :usuarioCriador AND t.liberado=true"),
-		@NamedQuery(name = "Testes.Criados.Liberados.Count", query = "SELECT count(*) FROM Teste t WHERE t.usuarioCriador.id= :usuarioCriador AND t.liberado=true"), })
+		@NamedQuery(name = "Testes.Criados.Liberados.Count", query = "SELECT count(t.id) FROM Teste t WHERE t.usuarioCriador.id= :usuarioCriador AND t.liberado=true"), })
 @Entity
 public class Teste implements Serializable {
 	private static final long serialVersionUID = 1L;

@@ -24,9 +24,9 @@ import javax.persistence.OneToMany;
  * @author Cleiton
  */
 @NamedQueries({
-		@NamedQuery(name = "Pergunta.pertence.teste.usuario", query = "select perguntas from Teste as t left join t.satisfacao left join t.satisfacao.perguntas as perguntas "
+		@NamedQuery(name = "Pergunta.pertence.teste.usuario", query = "select perguntas from Teste as t left join t.satisfacao as s left join t.satisfacao.perguntas as perguntas "
 				+ "where t.id= :teste and t.usuarioCriador.id= :usuario and perguntas.id= :pergunta"),
-		@NamedQuery(name = "Pergunta.pertence.teste.e.alternativa", query = "select perguntas from Teste as t left join t.satisfacao left join t.satisfacao.perguntas as perguntas right join perguntas.alternativas as alternativas "
+		@NamedQuery(name = "Pergunta.pertence.teste.e.alternativa", query = "select perguntas from Teste as t left join t.satisfacao as s left join t.satisfacao.perguntas as perguntas right join perguntas.alternativas as alternativas "
 				+ "where t.id= :teste and perguntas.id= :pergunta and alternativas.id= :alternativa"),
 		@NamedQuery(name = "Pergunta.pertence.teste.PerguntaVO", query = "select new br.ufpi.models.vo.PerguntaVO(perguntas) from Teste as t left join t.satisfacao lef join t.satisfacao.perguntas as perguntas "
 				+ "where t.id= :teste and perguntas.id= :pergunta"),
