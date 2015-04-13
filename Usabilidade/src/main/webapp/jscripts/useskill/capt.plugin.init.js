@@ -1,4 +1,4 @@
-window.useSkillActions = [];
+window.useSkillActions = '[]';
 
 (function(){
 	if(!window.isUseSkillOn){

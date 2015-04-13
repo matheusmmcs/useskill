@@ -54,9 +54,10 @@
 	<ul class="horizontal" style="margin-bottom: 20px; margin-left: 0">
 		<li><b><fmt:message key="analise.grafo.legenda" /></b></li>
 		<li><span class="badge badge-inverse"><fmt:message key="analise.grafo.legenda.fixo" /></span></li>
-		<li><span class="badge badge-info"><fmt:message key="analise.grafo.legenda.correto" /></span></li>
+		<li><span class="badge badge-info"><fmt:message key="analise.grafo.legenda.obrigatoria" /></span></li>
 		<li><span class="badge badge-success"><fmt:message key="analise.grafo.legenda.melhor" /></span></li>
-		<li><span class="badge badge-important"><fmt:message key="analise.grafo.legenda.erro" /></span></li>
+		<li><span class="badge badge-warning"><fmt:message key="analise.grafo.legenda.normal" /></span></li>
+		<li><span class="badge badge-important"><fmt:message key="analise.grafo.legenda.desconhecia" /></span></li>
 	</ul>
 	
 	<!-- SCRIPTS DO VISJS -->

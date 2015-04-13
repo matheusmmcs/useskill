@@ -469,7 +469,7 @@ function useskill_capt_onthefly(obj){
 			localStorage.setItem("useskill_actions", str);
 
 			//permitir acesso as acoes via variavel no window do browser
-			window.useSkillActions = arr;
+			window.useSkillActions = str;
 		}
 
 		// logg(acao.sActionType);
@@ -644,5 +644,5 @@ function useskill_capt_onthefly(obj){
 
 function useskill_capt_clearStorage(){
 	localStorage.removeItem("useskill_actions");
-	window.useSkillActions = [];
+	window.useSkillActions = '[]';
 }

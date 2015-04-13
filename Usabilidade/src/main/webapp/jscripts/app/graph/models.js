@@ -87,7 +87,7 @@ var options = {
   hover: true,
   physics: {
     barnesHut:{
-      springLength:150
+      springLength:100
     }
   },
   smoothCurves: {
@@ -172,7 +172,21 @@ var options = {
           background: '#c0392b'
         }
       }
-    }
+    },
+    yellow: {
+        color: {
+          border: '#C0912B',
+          background: '#E7C83C',
+          highlight: {
+            border: '#997A16',
+            background: '#997A16'
+          },
+          hover: {
+            border: '#997A16',
+            background: '#C0912B'
+          }
+        }
+      }
   },
   tooltip: {
     delay: 300,
@@ -189,39 +203,42 @@ var options = {
 function drawGraph(){
 	var graph = new Graph();
 	graph.addNode({label: 'Init', x: 0, y: 0, allowedToMoveY: false, group: 'black'});
-    graph.addNode({label: 'Page1-Elem1', x: 1, group: 'green', value: 20});
-    graph.addNode({label: 'Page1-Elem2', x: 2, group: 'green', value: 7});
+    graph.addNode({label: 'Page1-Elem1', x: 1, group: 'blue', value: 20});
+    graph.addNode({label: 'Page1-Elem2', x: 2, group: 'yellow', value: 5});
     graph.addNode({label: 'Page1-Elem3', x: 2, group: 'red', value: 13});
-    graph.addNode({label: 'Page1-Elem4', x: 3, group: 'blue', value: 13});
-    graph.addNode({label: 'Page1-Elem5', x: 4, group: 'green', value: 17});
-    graph.addNode({label: 'Page1-Elem6', x: 4, group: 'blue', value: 3});
-    graph.addNode({label: 'Page2-Elem1', x: 5, group: 'red', value: 20});
-    graph.addNode({label: 'Page2-Elem2', x: 5, group: 'green', value: 7});
-    graph.addNode({label: 'Page2-Elem3', x: 6, group: 'blue', value: 13});
-    graph.addNode({label: 'Page3-Elem1', x: 7, group: 'red', value: 13});
-    graph.addNode({label: 'Page3-Elem2', x: 7, group: 'green', value: 17});
-    graph.addNode({label: 'Page3-Elem3', x: 8, group: 'blue', value: 3});
-    graph.addNode({label: 'End', x: 9, y: 0, allowedToMoveY: false, group: 'black'});
+    graph.addNode({label: 'Page1-Elem4', x: 3, group: 'green', value: 15});
+    graph.addNode({label: 'Page1-Elem5', x: 4, group: 'red', value: 5});
+    graph.addNode({label: 'Page1-Elem6', x: 4, group: 'yellow', value: 8});
+    graph.addNode({label: 'Page2-Elem1', x: 5, group: 'red', value: 3});
+    graph.addNode({label: 'Page2-Elem2', x: 5, group: 'blue', value: 15});
+    graph.addNode({label: 'Page2-Elem3', x: 6, group: 'yellow', value: 13});
+    graph.addNode({label: 'Page3-Elem1', x: 7, group: 'red', value: 8});
+    graph.addNode({label: 'Page3-Elem2', x: 7, group: 'green', value: 3});
+    graph.addNode({label: 'Page4-Elem1', x: 8, group: 'yellow', value: 7});
+    graph.addNode({label: 'Page5-Elem1', x: 9, group: 'blue', value: 10});
+    graph.addNode({label: 'End', x: 10, y: 0, allowedToMoveY: false, group: 'black'});
 
     graph.addEdge('Init', 'Page1-Elem1');
     graph.addEdge('Page1-Elem1', 'Page1-Elem2');
-    graph.addEdge('Page1-Elem1', 'Page1-Elem2');
     graph.addEdge('Page1-Elem1', 'Page1-Elem3');
+    graph.addEdge('Page1-Elem1', 'Page1-Elem4');
     graph.addEdge('Page1-Elem2', 'Page1-Elem5');
     graph.addEdge('Page1-Elem3', 'Page1-Elem4');
-    graph.addEdge('Page1-Elem4', 'Page1-Elem5');
+    graph.addEdge('Page1-Elem4', 'Page2-Elem2');
     graph.addEdge('Page1-Elem4', 'Page1-Elem6');
     graph.addEdge('Page1-Elem2', 'Page1-Elem6');
     graph.addEdge('Page1-Elem6', 'Page2-Elem1');
     graph.addEdge('Page1-Elem6', 'Page2-Elem2');
     graph.addEdge('Page1-Elem5', 'Page2-Elem2');
+    graph.addEdge('Page2-Elem1', 'Page2-Elem3');
     graph.addEdge('Page2-Elem2', 'Page2-Elem3');
     graph.addEdge('Page2-Elem2', 'Page3-Elem2');
     graph.addEdge('Page2-Elem3', 'Page3-Elem1');
-    graph.addEdge('Page2-Elem3', 'Page3-Elem3');
-    graph.addEdge('Page3-Elem2', 'Page3-Elem3');
-    graph.addEdge('Page3-Elem3', 'End');
-    graph.addEdge('Page3-Elem2', 'End');
+    graph.addEdge('Page2-Elem3', 'Page4-Elem1');
+    graph.addEdge('Page3-Elem2', 'Page4-Elem1');
+    graph.addEdge('Page3-Elem2', 'Page5-Elem1');
+    graph.addEdge('Page4-Elem1', 'Page5-Elem1');
+    graph.addEdge('Page5-Elem1', 'End');
 
     graph.addEdge('Page1-Elem4', 'Page1-Elem1');
     
