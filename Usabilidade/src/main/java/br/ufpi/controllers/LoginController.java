@@ -65,7 +65,7 @@ public class LoginController extends BaseController {
 		if (usuario != null) {
 			if (usuario.isEmailConfirmado()) {
 				usuarioLogado.setUsuario(usuario);
-				result.redirectTo(this).logado(1);
+				result.redirectTo(this).logado();
 			} else {
 				result.forwardTo(this).reenviaEmailConfirmacao(
 						usuario.getEmail());
@@ -80,12 +80,18 @@ public class LoginController extends BaseController {
 			validator.onErrorRedirectTo(this).login(email);
 		}
 	}
-
+	
+	@Get({ "/usuario" })
+	@Logado
+	public void logado() {
+		result.forwardTo(this).logado(1);
+	}
+	
 	/**
 	 * ao logar mostra todos os teste que o usuario foi convidado e os testes
 	 * que ainda não foram liberados
 	 */
-	@Get({ "/usuario/pag/{numeroPagina}", "/usuario" })
+	@Get({ "/usuario/pag/{numeroPagina}" })
 	@Logado
 	public void logado(int numeroPagina) {
 		if (numeroPagina == 0) {

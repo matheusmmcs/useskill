@@ -55,6 +55,12 @@ public class ValidateComponente {
 		}});
 		validator.onErrorRedirectTo(TesteParticiparController.class).termino();
 	}
+	
+	public void validarNotNull(final Object obj, final String msg) {
+		validator.checking(new Validations(){{
+				that((obj != null), msg, msg);
+		}});
+	}
 
 	public void validarString(final String valorCampo, final String nameCampo) {
 		validator.checking(new Validations(){{

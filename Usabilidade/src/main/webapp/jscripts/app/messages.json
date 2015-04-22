@@ -1,0 +1,59 @@
+{ 
+	"inicio" : "Início",
+	"testes.formais" : "Testes Formais",
+	"realtime" : "Tempo Real",
+	"onthefly" : "On The Fly",
+	"datamining" : "DataMining",
+	
+	"datamining.cancel" : "Cancelar",
+	"datamining.new" : "Criar",
+	"datamining.delete" : "Excluir",
+	"datamining.edit" : "Editar",
+	"datamining.details" : "Detalhes",
+	"datamining.accessdenied" : "Ação não permitida para o usuário!",
+	
+	"datamining.teste" : "Teste",
+	"datamining.testes" : "Testes",
+	"datamining.testes.list" : "Meus Testes",
+	"datamining.testes.new" : "Criar Teste",
+	"datamining.testes.delete" : "Excluir Teste",
+	"datamining.testes.edit" : "Editar Teste",
+	"datamining.testes.details" : "Detalhes do Teste",
+	
+	"datamining.testes.title" : "Título",
+	"datamining.testes.abbrev" : "Abreviação do Cliente",
+	"datamining.testes.url" : "Url do Sistema",
+	"datamining.testes.tasks" : "Tarefas do Teste",
+	
+	"datamining.testes.edit.success" : "Teste alterado com sucesso!",
+	"datamining.testes.new.success" : "Teste cadastrado com sucesso!",
+	
+	
+	"datamining.task" : "Tarefa",
+	"datamining.tasks" : "Tarefas",
+	"datamining.tasks.list" : "Minhas Tarefas",
+	"datamining.tasks.new" : "Criar Tarefa",
+	"datamining.tasks.delete" : "Excluir Tarefa",
+	"datamining.tasks.edit" : "Editar Tarefa",
+	"datamining.tasks.details" : "Detalhes da Tarefa",
+	
+	"datamining.tasks.title" : "Título",
+	"datamining.tasks.actions" : "Ações",
+	"datamining.tasks.actions.start" : "Ações Iniciais",
+	"datamining.tasks.actions.end" : "Ações Finais",
+	"datamining.tasks.actions.threshold" : "Limiar",
+	
+	"datamining.tasks.actions.add" : "Adicionar Ação",
+	"datamining.tasks.actions.type" : "Tipo de Ação",
+	"datamining.tasks.actions.moment" : "Momento",
+	"datamining.tasks.actions.element" : "Elemento",
+	"datamining.tasks.actions.url" : "Local",
+	
+	"datamining.tasks.actions.field.add" : "Adicionar Restrição",
+	"datamining.tasks.actions.field" : "Campo",
+	"datamining.tasks.actions.value" : "Valor",
+	"datamining.tasks.actions.fieldtype" : "Tipo do Campo",
+	
+	"datamining.tasks.edit.success" : "Tarefa alterada com sucesso!",
+	"datamining.tasks.new.success" : "Tarefa cadastrada com sucesso!"
+}

@@ -17,5 +17,11 @@
     <class>br.ufpi.models.UsuarioTestePK</class>
     <class>br.ufpi.models.roteiro.ValorRoteiro</class>
     <class>br.ufpi.models.roteiro.VariavelRoteiro</class>
+    
+    <class>br.ufpi.datamining.models.ActionDataMining</class>
+    <class>br.ufpi.datamining.models.ActionSingleDataMining</class>
+    <class>br.ufpi.datamining.models.TestDataMining</class>
+    <class>br.ufpi.datamining.models.TaskDataMining</class>
+    <class>br.ufpi.datamining.models.FieldSearchTupleDataMining</class>
   </persistence-unit>
 </persistence>

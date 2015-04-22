@@ -8,6 +8,12 @@
 	<decorator name="testeUser" page="testeUser.jsp">
 		<pattern>/tarefa/loadactionuser</pattern>
 	</decorator>
+	<decorator name="datamining" page="datamining.jsp">
+		<pattern>/datamining/*</pattern>
+	</decorator>
+	<decorator name="templates" page="templates.jsp">
+		<pattern>/templates/*</pattern>
+	</decorator>
 	<decorator name="main" page="main.jsp">
 		<pattern>/*</pattern>
 	</decorator>

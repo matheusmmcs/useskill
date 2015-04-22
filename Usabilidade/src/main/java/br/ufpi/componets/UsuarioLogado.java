@@ -1,5 +1,7 @@
 package br.ufpi.componets;
 
+import java.io.Serializable;
+
 import javax.annotation.PreDestroy;
 
 import br.com.caelum.vraptor.ioc.Component;
@@ -13,7 +15,10 @@ import br.ufpi.repositories.UsuarioRepository;
  */
 @Component
 @SessionScoped
-public class UsuarioLogado {
+public class UsuarioLogado implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	//TODO depois apagar UsuarioRepository aqui é apenas para não precisar fazer login
 	UsuarioRepository usuarioRepository;
 	private Usuario usuario;

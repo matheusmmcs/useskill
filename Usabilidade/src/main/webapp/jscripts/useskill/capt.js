@@ -1,14 +1,4 @@
 
-//BACKFIX
-var bajb_backdetect={Version:'1.0.0',Description:'Back Button Detection',Browser:{IE:!!(window.attachEvent&&!window.opera),Safari:navigator.userAgent.indexOf('Apple')>-1,Opera:!!window.opera},FrameLoaded:0,FrameTry:0,FrameTimeout:null,OnBack:function(){console.log('Back Button Clicked')},BAJBFrame:function(){var BAJBOnBack=document.getElementById('BAJBOnBack');if(bajb_backdetect.FrameLoaded>1){if(bajb_backdetect.FrameLoaded==2){bajb_backdetect.OnBack();history.back()}}bajb_backdetect.FrameLoaded++;if(bajb_backdetect.FrameLoaded==1){if(bajb_backdetect.Browser.IE){bajb_backdetect.SetupFrames()}else{bajb_backdetect.FrameTimeout=setTimeout("bajb_backdetect.SetupFrames();",700)}}},SetupFrames:function(){clearTimeout(bajb_backdetect.FrameTimeout);var BBiFrame=document.getElementById('BAJBOnBack');var checkVar=BBiFrame.src.substr(-11,11);if(bajb_backdetect.FrameLoaded==1&&checkVar!="HistoryLoad"){BBiFrame.src="blank.html?HistoryLoad"}else{if(bajb_backdetect.FrameTry<2&&checkVar!="HistoryLoad"){bajb_backdetect.FrameTry++;bajb_backdetect.FrameTimeout=setTimeout("bajb_backdetect.SetupFrames();",700)}}},SafariHash:'false',Safari:function(){if(bajb_backdetect.SafariHash=='false'){if(window.location.hash=='#b'){bajb_backdetect.SafariHash='true'}else{window.location.hash='#b'}setTimeout("bajb_backdetect.Safari();",100)}else if(bajb_backdetect.SafariHash=='true'){if(window.location.hash==''){bajb_backdetect.SafariHash='back';bajb_backdetect.OnBack();history.back()}else{setTimeout("bajb_backdetect.Safari();",100)}}},Initialise:function(){if(bajb_backdetect.Browser.Safari){setTimeout("bajb_backdetect.Safari();",600)}else{document.write('<iframe src="blank.html" style="display:none;" id="BAJBOnBack" onunload="alert(\'de\')" onload="bajb_backdetect.BAJBFrame();"></iframe>')}}};bajb_backdetect.Initialise();
-
-/*! tocca v0.1.4 || Gianluca Guarini */
-//Mobile events
-if(!window.initTocca){
-	!function(a,b){"use strict";if("function"!=typeof a.createEvent)return!1;var c,d,e,f,g,h,i,j="undefined"!=typeof jQuery,k=!!navigator.pointerEnabled||navigator.msPointerEnabled,l=!!("ontouchstart"in b)&&navigator.userAgent.indexOf("PhantomJS")<0||k,m=function(a){var b=a.toLowerCase(),c="MS"+a;return navigator.msPointerEnabled?c:b},n={touchstart:m("PointerDown")+" touchstart",touchend:m("PointerUp")+" touchend",touchmove:m("PointerMove")+" touchmove"},o=function(a,b,c){for(var d=b.split(" "),e=d.length;e--;)a.addEventListener(d[e],c,!1)},p=function(a){return a.targetTouches?a.targetTouches[0]:a},q=function(){return(new Date).getTime()},r=function(b,e,f,g){var h=a.createEvent("Event");if(g=g||{},g.x=c,g.y=d,g.distance=g.distance,j)jQuery(b).trigger(e,g);else{h.originalEvent=f;for(var i in g)h[i]=g[i];h.initEvent(e,!0,!0),b.dispatchEvent(h)}},s=function(a){var b=p(a);e=c=b.pageX,f=d=b.pageY,h=q(),A++},t=function(a){var b=[],j=f-d,k=e-c;if(clearTimeout(g),-v>=k&&b.push("swiperight"),k>=v&&b.push("swipeleft"),-v>=j&&b.push("swipedown"),j>=v&&b.push("swipeup"),b.length)for(var l=0;l<b.length;l++){var m=b[l];r(a.target,m,a,{distance:{x:Math.abs(k),y:Math.abs(j)}})}else h+w-q()>=0&&e>=c-y&&c+y>=e&&f>=d-y&&d+y>=f&&(r(a.target,2===A&&i===a.target?"dbltap":"tap",a),i=a.target),g=setTimeout(function(){A=0},x)},u=function(a){var b=p(a);c=b.pageX,d=b.pageY},v=b.SWIPE_THRESHOLD||100,w=b.TAP_THRESHOLD||150,x=b.DBL_TAP_THRESHOLD||200,y=b.TAP_PRECISION/2||30,z=b.JUST_ON_TOUCH_DEVICES||l,A=0;o(a,n.touchstart+(z?"":" mousedown"),s),o(a,n.touchend+(z?"":" mouseup"),t),o(a,n.touchmove+(z?"":" mousemove"),u)}(document,window);
-	window.initTocca = true;
-}
-
 /*
 Melhorias:
 - Capturar eventos de rolagem de barra -> content = posiçao no eixo y;
@@ -108,7 +98,9 @@ function useskill_capt_onthefly(obj){
 			MOUSEOVER: "mouseover",
 
 			TAP: "tap",
-			DBLTAP: "dbltap",
+			TAPTWO: "taptwo",
+			TAPTHREE: "tapthree",
+			PINCH: "pinch",
 			SWIPEUP: "swipeup",
 			SWIPEDOWN: "swipedown",
 			SWIPELEFT: "swipeleft",
@@ -167,36 +159,58 @@ function useskill_capt_onthefly(obj){
 	}
 
 	//LISTENERS DE EVENTOS
+	function addListener(evt, action){
+		if(jQuery != null){
+			jQuery(document).on(evt, function(e){
+				console.log('ON:', evt);
+				insertNewAcao(e, action);
+			});
+		}else{
+			document.addEventListener(evt, function(e){
+				console.log('ON:', evt);
+				insertNewAcao(e, action);
+			});
+		}
+	}
+	
+	function addListenerFunc(evt, func){
+		if(jQuery != null){
+			jQuery(document).on(evt, function(e){
+				console.log('ON:'+evt);
+				if(typeof func === 'function') {
+					func.call(this, e);
+		        }
+			});
+		}else{
+			document.addEventListener(evt, function(e){
+				console.log('ON:'+evt);
+				if(typeof func === 'function') {
+					func.call(this, e);
+		        }
+			});
+		}
+	}
+	
+	addListener('focusout', actionCapt.FOCUSOUT);
+	addListener('submit', actionCapt.BROWSER_FORM_SUBMIT);
+	
 	if(isMobile()){
-		document.addEventListener('tap', function(e){
-			insertNewAcao(e, actionCapt.TAP);
-		});
-		// document.addEventListener('dbltap', function(e){
-		// 	insertNewAcao(e, actionCapt.DBLTAP);
-		// });
-		document.addEventListener('swipeup', function(e){
-			insertNewAcao(e, actionCapt.SWIPEUP);
-		});
-		document.addEventListener('swipedown', function(e){
-			insertNewAcao(e, actionCapt.SWIPEDOWN);
-		});
-		document.addEventListener('swipeleft', function(e){
-			insertNewAcao(e, actionCapt.SWIPELEFT);
-		});
-		document.addEventListener('swiperight', function(e){
-			insertNewAcao(e, actionCapt.SWIPERIGHT);
-		});
+		addListener('tapone', actionCapt.TAP);
+		addListener('taptwo', actionCapt.TAPTWO);
+		addListener('tapthree', actionCapt.TAPTHREE);
+		addListener('pinch', actionCapt.PINCH);
+		addListener('swipeup', actionCapt.SWIPEUP);
+		addListener('swipedown', actionCapt.SWIPEDOWN);
+		addListener('swipeleft', actionCapt.SWIPELEFT);
+		addListener('swiperight', actionCapt.SWIPERIGHT);
+		addListener('swiperight', actionCapt.SWIPERIGHT);
 		window.addEventListener("orientationchange", function() {
 			insertNewAcao(null, actionCapt.ORIENTARION);
 		}, false);
 	}else{
-		document.addEventListener('click', function(e){
-			insertNewAcao(e, actionCapt.CLICK);
-		});
-		document.addEventListener('dblclick', function(e){
-			insertNewAcao(e, actionCapt.DBLCLICK);
-		});
-		document.addEventListener("mousemove", function(e) {
+		addListener('click', actionCapt.CLICK);
+		addListener('dblclick', actionCapt.DBLCLICK);
+		addListenerFunc('mousemove', function(e) {
 			if(e.timeStamp - lastMouseMove >= 750){
 				if(e.pageX <= lastMouseX+mouseOffSet &&
 				   e.pageX >= lastMouseX-mouseOffSet &&
@@ -210,13 +224,6 @@ function useskill_capt_onthefly(obj){
 			lastMouseY = e.pageY;
 		});
 	}
-
-	document.addEventListener('focusout', function(e){
-		insertNewAcao(e, actionCapt.FOCUSOUT);
-	});
-	document.addEventListener("submit", function(e) {
-		insertNewAcao(e, actionCapt.BROWSER_FORM_SUBMIT);
-	});
 
 	
 	//JHEAT DATA
@@ -254,21 +261,24 @@ function useskill_capt_onthefly(obj){
 	}
 
 	//eventos extras, referentes ao carregamento da página e ao botao voltar
-	window.onload = function(e){
-		insertNewAcao(e, actionCapt.BROWSER_ONLOAD);
-	}
+	//window.onload = function(e){
+	insertNewAcao(null, actionCapt.BROWSER_ONLOAD);
+	//}
 
 	// window.onpopstate = function(event) {
 	// 	logg("MUDOU HASH: " + JSON.stringify(event.state));
 	// };
-
-	bajb_backdetect.OnBack = function(e){
-		insertNewAcao({
-			target: document.getElementsByTagName("html"),
-			pageX: 0,
-			pageY: 0
-		}, actionCapt.BROWSER_BACK);
-	}
+	//var bajb_backdetect = null;
+//	if(bajb_backdetect != null){
+//		bajb_backdetect.OnBack = function(e){
+//			insertNewAcao({
+//				target: document.getElementsByTagName("html"),
+//				pageX: 0,
+//				pageY: 0
+//			}, actionCapt.BROWSER_BACK);
+//		}
+//	}
+	
 	document.onkeydown = function(event) {
 	    if(typeof event != 'undefined'){
 	    	//Ctrl+R ou F5
@@ -339,7 +349,9 @@ function useskill_capt_onthefly(obj){
 		if(action==actionCapt.CLICK || 
 			action==actionCapt.DBLCLICK ||
 			action==actionCapt.TAP ||
-			action==actionCapt.DBLTAP ||
+			action==actionCapt.TAPTWO ||
+			action==actionCapt.TAPTHREE ||
+			action==actionCapt.PINCH ||
 			action==actionCapt.SWIPEUP ||
 			action==actionCapt.SWIPEDOWN ||
 			action==actionCapt.SWIPELEFT ||

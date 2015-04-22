@@ -40,22 +40,44 @@
 				<c:choose>
 					<c:when test="${usuarioLogado.usuario!=null}">
 						<!--  se logado -->
-						<li><a id="topmenu0" href="${pageContext.request.contextPath}/usuario" data-topmenu="4">
-						<fmt:message key="inicio" /></a></li>
-						<li><a id="topmenu2" href="${pageContext.request.contextPath}/teste/criar">
-						<fmt:message key="testes.criar" /></a></li>
-						<li><a id="topmenu3" href="${pageContext.request.contextPath}/usuarios/${usuarioLogado.usuario.id}/edit">
-						<fmt:message key="usuario.meusdados" /></a>
+						<li>
+							<a id="topmenu0" href="${pageContext.request.contextPath}/" data-topmenu="4">
+								<fmt:message key="inicio" />
+							</a>
+						</li>
+						<li>
+							<a id="topmenu3" href="${pageContext.request.contextPath}/usuarios/${usuarioLogado.usuario.id}/edit">
+								<fmt:message key="usuario.meusdados" />
+							</a>
+						</li>
+						<li>
+							<a id="topmenu4" href="${pageContext.request.contextPath}/usuario">
+								<fmt:message key="testes.formais" />
+							</a>
+						</li>
+						<li>
+							<a id="topmenu5" href="${pageContext.request.contextPath}/datamining/">
+								<fmt:message key="datamining" />
+							</a>
 						</li>
 					</c:when>
 					<c:otherwise>
 						<!--  se nao logado -->
-						<li><a id="topmenu0" href="${pageContext.request.contextPath}" data-topmenu="4">
-						<fmt:message key="inicio" /></a></li>
-						<li><a id="topmenu4" href="${pageContext.request.contextPath}/usuarios/new">
-						<fmt:message key="usuario.cadastro" /> </a></li>
-						<li><a id="topmenu5" href="${pageContext.request.contextPath}/login">
-						<fmt:message key="acessar.conta" /> </a></li>
+						<li>
+							<a id="topmenu0" href="${pageContext.request.contextPath}" data-topmenu="4">
+								<fmt:message key="inicio" />
+							</a>
+						</li>
+						<li>
+							<a id="topmenu1" href="${pageContext.request.contextPath}/usuarios/new">
+								<fmt:message key="usuario.cadastro" /> 
+							</a>
+						</li>
+						<li>
+							<a id="topmenu2" href="${pageContext.request.contextPath}/login">
+								<fmt:message key="acessar.conta" /> 
+							</a>
+						</li>
 					</c:otherwise>
 				</c:choose>
 			</ul>

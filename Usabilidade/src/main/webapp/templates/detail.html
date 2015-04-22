@@ -1,0 +1,72 @@
+<div class="container-padding-left">
+	
+		<div ng-show="errors" class="alert alert-success">
+            {{sucesso}}<br />
+		</div>
+	
+		<ul class="breadcrumb">
+			<li>
+				<a ng-href="/"> 
+					{{ 'inicio' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li>
+				<a ng-href="#/testes/"> 
+					{{ 'datamining' | translate}} - {{ 'datamining.testes.list' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li class="active">{{ 'datamining.testes.details' | translate}}</li>
+		</ul>
+	    
+		<div class="row show-grid">
+		    <div class="span6 border-right">
+		    	<h2>
+		    		{{ 'datamining.testes.details' | translate}}
+	            </h2>
+	            
+	            <div>
+		            <dl>
+		            	<dt>{{ 'datamining.testes.title' | translate}}:</dt>
+		            	<dd>{{testCtrl.test.title}}</dd>
+		            </dl>
+		            <dl>
+		            	<dt>{{ 'datamining.testes.abbrev' | translate}}:</dt>
+		            	<dd>{{testCtrl.test.clientAbbreviation}}</dd>
+		            </dl>
+		            <dl>
+		            	<dt>{{ 'datamining.testes.url' | translate}}:</dt>
+		            	<dd>{{testCtrl.test.urlSystem}}</dd>
+		            </dl>
+		            <div class="actions-bottom">
+ 		            	<a class="btn btn-danger pull-right" ng-href="#/testes/excluir/{{testCtrl.test.id}}" title="{{ 'datamining.delete' | translate}}"><span class="icon-white icon-trash"></span> {{ 'datamining.delete' | translate}}</a>
+	        			<a class="btn pull-right" ng-href="#/testes/editar/{{testCtrl.test.id}}" title="{{ 'datamining.edit' | translate}}"><span class="icon-edit"></span> {{ 'datamining.edit' | translate}}</a>
+	        			<div class="clear-both"></div>
+		            </div>
+		            
+	            </div>
+		    </div>
+	        <div class="span6">
+	            <h2>
+	            	{{ 'datamining.testes.tasks' | translate}}
+		            <a class="btn btn-primary pull-right" ng-href="#/testes/{{testCtrl.test.id}}/tarefas/criar">{{ 'datamining.tasks.new' | translate}}</a> 
+	            </h2>
+	            <table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white">
+	                <thead>
+	                    <tr>
+	                        <th width="80%">{{ 'datamining.tasks.title' | translate}}</th>
+	                        <th width="20%">{{ 'datamining.details' | translate}}</th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                        <tr ng-repeat="task in testCtrl.test.tasks | orderBy:'id'">
+	                            <td class="td-link"><a ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}">{{testCtrl.test.title}}</a></td>
+	                            <td class="text-center"><a class="btn btn-primary" ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}"><span class="icon-white icon-folder-open"></span> {{ 'datamining.details' | translate}}</a></td>
+	                        </tr>
+	                </tbody>
+	            </table>
+	        </div>
+	    </div>	    
+
+    </div>
