@@ -5,7 +5,7 @@
 	<groupId>Usabilidade</groupId>
 	<artifactId>Usabilidade</artifactId>
 	<packaging>war</packaging>
-	<version>1.1.1</version>
+	<version>1.2.0</version>
 	<name>Usabilidade</name>
 
 	<properties>
@@ -100,7 +100,7 @@
 		<dependency>
 			<groupId>br.com.caelum</groupId>
 			<artifactId>vraptor</artifactId>
-			<version>3.4.1</version>
+			<version>3.4.1</version><!-- 3.5.4 -->
 			<exclusions>
 				<exclusion>
 		          <groupId>br.com.caelum</groupId>
@@ -254,6 +254,19 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
 		</dependency>
+		
+		<!-- 
+		git clone git@github.com:acdesouza/vraptor-gson-plugin.git
+		cd vraptor-gson-serializer
+		mvn install
+
+		<dependency>
+		    <groupId>br.com.caelum.vraptor-contrib</groupId>
+		    <artifactId>vraptor-gson-plugin</artifactId>
+		    <version>0.1.1</version>
+		</dependency>
+		-->
+		
 	</dependencies>
 
 	<reporting>

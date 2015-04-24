@@ -1,7 +1,6 @@
 package br.ufpi.datamining.controllers;
 
-import java.util.ArrayList;
-
+import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
@@ -9,40 +8,96 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.core.Localization;
+import br.com.caelum.vraptor.view.Results;
 import br.ufpi.annotation.Logado;
 import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
+import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
+import br.ufpi.datamining.models.enums.ReturnStatusEnum;
+import br.ufpi.datamining.models.vo.ReturnVO;
+import br.ufpi.datamining.models.vo.TaskDataMiningVO;
+import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.repositories.TestDataMiningRepository;
+import br.ufpi.datamining.utils.GsonExclusionStrategy;
 import br.ufpi.models.Usuario;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @Path(value = "datamining")
 @Resource
 public class DataMiningTaskController extends BaseController {
 	
 	private final TestDataMiningRepository testeDataMiningRepository;
+	private final TaskDataMiningRepository taskDataMiningRepository;
 	private final Localization localization;
 	
 	public DataMiningTaskController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
 			Localization localization,
-			TestDataMiningRepository testeDataMiningRepository) {
+			TestDataMiningRepository testeDataMiningRepository,
+			TaskDataMiningRepository taskDataMiningRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.testeDataMiningRepository = testeDataMiningRepository;
-		this.localization = localization; 
+		this.taskDataMiningRepository = taskDataMiningRepository;
+		this.localization = localization;
 	}
 	
-//	@Get("/testes/{idTeste}/tarefas/{idTarefa}")
-//	@Logado
-//	public void view(Long idTeste, Long idTarefa) {
-//		TestDataMining testPertencente = testeDataMiningRepository.getTestPertencente(usuarioLogado.getUsuario().getId(), idTeste);
-//		validateComponente.validarNotNull(testPertencente, "datamining.accessdenied");
-//		validator.onErrorRedirectTo(this).list();
-//		result.include("test", testPertencente);
-//	}
+	@Get("/testes/{idTeste}/tarefas/{idTarefa}")
+	@Logado
+	public void view(Long idTeste, Long idTarefa) {
+		Gson gson = new GsonBuilder()
+	        .setExclusionStrategies(new GsonExclusionStrategy(TaskDataMining.class, Usuario.class))
+	        .serializeNulls()
+	        .create();
+		TaskDataMining task = taskDataMiningRepository.find(idTarefa);
+		
+		validateComponente.validarNotNull(task, localization.getMessage("datamining.notfound", "datamining.task"));
+		validateComponente.validarEquals(idTeste, task.getTestDataMining().getId(), "datamining.tasks.error.dontbelongs");
+		
+		result.use(Results.json()).from(gson.toJson(new TaskDataMiningVO(task))).serialize();
+	}
+	
+	@Post("/testes/tarefas/salvar")
+	@Consumes("application/json")
+	@Logado
+	public void salvar(TaskDataMining task) {
+		Gson gson = new Gson();
+		validateComponente.validarString(task.getTitle(), "datamining.tasks.title");
+		
+		ReturnVO returnvo; 
+		
+		if(!validator.hasErrors()){
+			if(task.getId() != null){
+				TaskDataMining taskUpdate = taskDataMiningRepository.find(task.getId());
+				taskUpdate.setTitle(task.getTitle());
+				taskUpdate.setThreshold(task.getThreshold());
+				
+				taskDataMiningRepository.update(taskUpdate);
+				returnvo = new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.tasks.edit.success");
+			}else{
+				
+				TestDataMining testDataMining = testeDataMiningRepository.find(task.getTestDataMining().getId());
+				task.setTestDataMining(testDataMining);
+				testDataMining.getTasks().add(task);
+				
+				taskDataMiningRepository.create(task);
+				testeDataMiningRepository.update(testDataMining);
+				returnvo = new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.tasks.new.success");
+			}
+			result.use(Results.json()).from(gson.toJson(returnvo)).serialize();
+		}else{
+			returnvo = new ReturnVO(ReturnStatusEnum.ERRO, "erro");
+			returnvo.setErrorsMessage(validator.getErrors());
+			
+			validator.onErrorUse(Results.json()).from(gson.toJson(returnvo)).serialize();
+		}
+		
+	}
 	
 	/*
 	@Get("/testes/{idTeste}/tarefas/criar")

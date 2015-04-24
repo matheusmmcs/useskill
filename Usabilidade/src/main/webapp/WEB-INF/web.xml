@@ -11,6 +11,13 @@
 		<param-name>br.com.caelum.vraptor.packages</param-name>
 		<param-value> br.com.caelum.vraptor.util.jpa</param-value>
 	</context-param>
+	
+	<!-- To enable it with Restfulie 
+	<context-param>
+	    <param-name>br.com.caelum.vraptor.packages</param-name>
+	    <param-value>br.com.caelum.vraptor.util.jpa,br.com.caelum.vraptor.restfulie,br.com.beyondclick.vraptor</param-value>
+	</context-param>
+	-->
 
 	<context-param>
 		<param-name>br.com.caelum.vraptor.encoding</param-name>

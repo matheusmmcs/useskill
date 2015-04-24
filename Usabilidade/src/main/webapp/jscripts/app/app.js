@@ -1,18 +1,33 @@
 angular.module('useskill', 
 		['ngRoute', 'pascalprecht.translate'])
+
+.constant('env', 'dev')
+//.constant('env', 'prod')
 		
-.config(['$translateProvider', '$routeProvider', 
-         function($translateProvider, $routeProvider) {
+.constant('config', {
+    appVersion: 0.1,
+    dev: {
+    	apiUrl: '/Usabilidade'
+    },
+    prod: {
+    	apiUrl: ''
+    }
+})
+		
+.config(['$translateProvider', '$routeProvider', '$httpProvider', 'env', 'config',
+         function($translateProvider, $routeProvider, $httpProvider, env, config) {
 	
-	$translateProvider.useUrlLoader('/Usabilidade/jscripts/app/messages.json');
+	$httpProvider.interceptors.push('HttpInterceptor');
+	
+	$translateProvider.useUrlLoader(config[env].apiUrl+'/jscripts/app/messages.json');
 	$translateProvider.preferredLanguage('pt');
 	
 	var routeInit = {
 		controller:'TestController as testCtrl',
-		templateUrl:'/Usabilidade/templates/list.html',
+		templateUrl:config[env].apiUrl+'/templates/tests/list.html',
 		resolve: {
-			tests: function (TestServer) {
-	        	return TestServer.getTests();
+			tests: function (ServerAPI) {
+	        	return ServerAPI.getTests();
 	        }
 	    }
 	};
@@ -22,14 +37,53 @@ angular.module('useskill',
 		.when('/testes/', routeInit)
 		.when('/testes/criar', {
 	    	controller:'TestNewController as testCtrl',
-	    	templateUrl:'/Usabilidade/templates/create.html'
+	    	templateUrl:config[env].apiUrl+'/templates/tests/create.html'
+	    })
+	    .when('/testes/editar/:testId', {
+	    	controller:'TestEditController as testCtrl',
+	    	templateUrl:config[env].apiUrl+'/templates/tests/create.html',
+	    	resolve: {
+				test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
 	    })
 		.when('/testes/:testId', {
 			controller:'TestViewController as testCtrl',
-			templateUrl:'/Usabilidade/templates/detail.html',
+			templateUrl:config[env].apiUrl+'/templates/tests/detail.html',
 			resolve: {
-				test: function (TestServer, $route) {
-		        	return TestServer.getTest($route.current.params.testId);
+				test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
+	    })
+	    
+	    //Tasks
+	    
+	    .when('/testes/:testId/tarefas/criar', {
+	    	controller:'TaskNewController as taskCtrl',
+	    	templateUrl:config[env].apiUrl+'/templates/tasks/create.html',
+	    	resolve: {
+				test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
+	    })
+	    .when('/testes/:testId/tarefas/editar/:taskId', {
+	    	controller:'TaskEditController as taskCtrl',
+	    	templateUrl:config[env].apiUrl+'/templates/tasks/create.html',
+	    	resolve: {
+		        task: function (ServerAPI, $route) {
+		        	return ServerAPI.getTask($route.current.params.testId, $route.current.params.taskId);
+		        }
+		    }
+	    })
+	    .when('/testes/:testId/tarefas/:taskId', {
+	    	controller:'TaskViewController as taskCtrl',
+	    	templateUrl:config[env].apiUrl+'/templates/tasks/detail.html',
+	    	resolve: {
+		        task: function (ServerAPI, $route) {
+		        	return ServerAPI.getTask($route.current.params.testId, $route.current.params.taskId);
 		        }
 		    }
 	    })
@@ -38,23 +92,63 @@ angular.module('useskill',
 	    });
 	
 }])
-.factory("TestServer", function($q, $http){
+.factory('HttpInterceptor', ['$q', '$rootScope', '$filter', '$location',
+                     function($q, $rootScope, $filter, $location) {
+	var responseInterceptor = {
+		response: function(response) {
+			$rootScope.errors = null;
+			$rootScope.success = null;
+			console.log(response);
+			if(response.status === 200 && angular.isDefined(response.data.string)){
+				resp = JSON.parse(response.data.string);
+				if(resp.status == 'ERRO'){
+					$rootScope.errors = resp.errors;
+				}else if(resp.status == 'SUCESSO'){
+					$rootScope.success = $filter('translate')(resp.message);
+				}
+			}
+            return ( response );
+        },
+        responseError: function(error) {
+        	console.log('FALHOU!', error);
+        	$location.path(config[env].apiUrl+"/");
+        	$rootScope.errors = [error.status+' - '+error.statusText];
+        }
+    };
+    return responseInterceptor;
+}])
+.factory("ServerAPI", ['$q', '$http', 'env', 'config', 
+                function($q, $http, env, config){
     return {
         getTests: function(){
-            var promise = $http({ method: 'GET', url: '/Usabilidade/datamining/testes/'});
+            var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes'});
             return promise;
         },
         getTest: function(testId){
-            var promise = $http({ method: 'GET', url: '/Usabilidade/datamining/testes/'+testId});
+            var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId});
             return promise;
         },
         saveTest: function(test){
-        	
-        	var promise = $http.post('/Usabilidade/datamining/testes/salvar/', test);
+        	var promise = $http.post(config[env].apiUrl+'/datamining/testes/salvar', test);
         	return promise;
-        }
+        },
+        
+        getTask: function(testId, taskId){
+            var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId+'/tarefas/'+taskId});
+            return promise;
+        },
+        saveTask: function(task){
+        	var promise = $http.post(config[env].apiUrl+'/datamining/testes/tarefas/salvar', task);
+        	return promise;
+        },
+        
+        
+        
     };
-})
+}])
+
+//Tests Controllers
+
 .controller('TestController', function(tests) {
 	var testCtrl = this;
 	testCtrl.tests = JSON.parse(tests.data.string);
@@ -63,120 +157,50 @@ angular.module('useskill',
 	var testCtrl = this;
 	testCtrl.test = JSON.parse(test.data.string);
 })
-.controller('TestNewController', function($filter, TestServer) {
+.controller('TestNewController', function($filter, ServerAPI) {
 	var testCtrl = this;
+	testCtrl.test = {};
 	testCtrl.actionTitle = $filter('translate')('datamining.testes.new');
 	testCtrl.save = function() {
-		console.log('save', testCtrl);
-		TestServer.saveTest(testCtrl.test);
-		//${pageContext.request.contextPath}/datamining/testes/salvar POST
-//      Projects.$add(editProject.project).then(function(data) {
-//          $location.path('/');
-//      });
+		var test = angular.toJson(testCtrl.test);
+		ServerAPI.saveTest(test);
+	};
+})
+.controller('TestEditController', function(test, $filter, ServerAPI) {
+	var testCtrl = this;
+	console.log(test);
+	testCtrl.test = JSON.parse(test.data.string);
+	testCtrl.actionTitle = $filter('translate')('datamining.testes.edit');
+	testCtrl.save = function() {
+		var test = angular.toJson(testCtrl.test);
+		ServerAPI.saveTest(test);
+	};
+})
+
+//Tasks Controllers
+.controller('TaskViewController', function(task) {
+	var taskCtrl = this;
+	taskCtrl.task = JSON.parse(task.data.string);
+})
+.controller('TaskNewController', function(test, $filter, ServerAPI) {
+	var taskCtrl = this;
+	taskCtrl.task = {};
+	taskCtrl.test = JSON.parse(test.data.string);
+	taskCtrl.actionTitle = $filter('translate')('datamining.tasks.new');
+	taskCtrl.save = function() {
+		taskCtrl.task.testDataMining = taskCtrl.test;
+		var task = angular.toJson(taskCtrl.task);
+		ServerAPI.saveTask(task);
+	};
+})
+.controller('TaskEditController', function(task, $filter, ServerAPI) {
+	var taskCtrl = this;
+	console.log(task);
+	taskCtrl.task = JSON.parse(task.data.string);
+	taskCtrl.actionTitle = $filter('translate')('datamining.tasks.edit');
+	taskCtrl.save = function() {
+		var task = angular.toJson(taskCtrl.task);
+		ServerAPI.saveTask(task);
 	};
 })
 ;
-
-
-/*
-.service('fbRef', function(fbURL) {
-  return new Firebase(fbURL)
-})
-.service('fbAuth', function($q, $firebase, $firebaseAuth, fbRef) {
-  var auth;
-  return function () {
-      if (auth) return $q.when(auth);
-      var authObj = $firebaseAuth(fbRef);
-      if (authObj.$getAuth()) {
-        return $q.when(auth = authObj.$getAuth());
-      }
-      var deferred = $q.defer();
-      authObj.$authAnonymously().then(function(authData) {
-          auth = authData;
-          deferred.resolve(authData);
-      });
-      return deferred.promise;
-  }
-})
- 
-.service('Projects', function($q, $firebase, fbRef, fbAuth) {
-  var self = this;
-  this.fetch = function () {
-    if (this.projects) return $q.when(this.projects);
-    return fbAuth().then(function(auth) {
-      var deferred = $q.defer();
-      var ref = fbRef.child('projects/' + auth.auth.uid);
-      var $projects = $firebase(ref);
-      ref.on('value', function(snapshot) {
-        if (snapshot.val() === null) {
-          $projects.$set(window.projectsArray);
-        }
-        self.projects = $projects.$asArray();
-        deferred.resolve(self.projects);
-      });
-      return deferred.promise;
-    });
-  };
-})
- 
-.config(function($routeProvider) {
-  $routeProvider
-    .when('/', {
-      controller:'ProjectListController as projectList',
-      templateUrl:'../../templates/list.html',
-      resolve: {
-        projects: function (Projects) {
-          return Projects.fetch();
-        }
-      }
-    })
-    .when('/edit/:projectId', {
-      controller:'EditProjectController as editProject',
-      templateUrl:'../../templates/detail.html'
-    })
-    .when('/new', {
-      controller:'NewProjectController as editProject',
-      templateUrl:'../../templates/detail.html'
-    })
-    .otherwise({
-      redirectTo:'/'
-    });
-})
- 
-.controller('ProjectListController', function(projects) {
-  var projectList = this;
-  projectList.projects = projects;
-})
- 
-.controller('NewProjectController', function($location, Projects) {
-  var editProject = this;
-  editProject.save = function() {
-      Projects.$add(editProject.project).then(function(data) {
-          $location.path('/');
-      });
-  };
-})
- 
-.controller('EditProjectController',
-  function($location, $routeParams, Projects) {
-    var editProject = this;
-    var projectId = $routeParams.projectId,
-        projectIndex;
- 
-    editProject.projects = Projects.projects;
-    projectIndex = editProject.projects.$indexFor(projectId);
-    editProject.project = editProject.projects[projectIndex];
- 
-    editProject.destroy = function() {
-        editProject.projects.$remove(editProject.project).then(function(data) {
-            $location.path('/');
-        });
-    };
- 
-    editProject.save = function() {
-        editProject.projects.$save(editProject.project).then(function(data) {
-           $location.path('/');
-        });
-    };
-});
-*/

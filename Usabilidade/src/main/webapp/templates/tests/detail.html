@@ -1,9 +1,5 @@
 <div class="container-padding-left">
 	
-		<div ng-show="errors" class="alert alert-success">
-            {{sucesso}}<br />
-		</div>
-	
 		<ul class="breadcrumb">
 			<li>
 				<a ng-href="/"> 
@@ -19,6 +15,15 @@
 			</li>
 			<li class="active">{{ 'datamining.testes.details' | translate}}</li>
 		</ul>
+		
+		<div ng-show="success" class="alert alert-success">
+			{{ success }}<br />
+		</div>
+		<div ng-show="errors" class="alert alert-error">
+			<span ng-repeat="error in errors">
+				{{ error }}<br />
+			</span>
+		</div>
 	    
 		<div class="row show-grid">
 		    <div class="span6 border-right">
@@ -60,10 +65,10 @@
 	                    </tr>
 	                </thead>
 	                <tbody>
-	                        <tr ng-repeat="task in testCtrl.test.tasks | orderBy:'id'">
-	                            <td class="td-link"><a ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}">{{testCtrl.test.title}}</a></td>
-	                            <td class="text-center"><a class="btn btn-primary" ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}"><span class="icon-white icon-folder-open"></span> {{ 'datamining.details' | translate}}</a></td>
-	                        </tr>
+                        <tr ng-repeat="task in testCtrl.test.tasks | orderBy:'id'">
+                            <td class="td-link"><a ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}">{{task.title}}</a></td>
+                            <td class="text-center"><a class="btn btn-primary" ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}"><span class="icon-white icon-folder-open"></span></a></td>
+                        </tr>
 	                </tbody>
 	            </table>
 	        </div>

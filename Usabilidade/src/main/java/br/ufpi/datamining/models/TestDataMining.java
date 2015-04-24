@@ -72,7 +72,7 @@ public class TestDataMining implements Serializable {
 		this.urlSystem = urlSystem;
 	}
 
-	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	public List<TaskDataMining> getTasks() {
 		return tasks;
 	}

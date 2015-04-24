@@ -59,7 +59,7 @@ public class ActionSingleDataMining implements Serializable {
 		this.momentType = momentType;
 	}
 
-	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	public List<FieldSearchTupleDataMining> getElementFiedlSearch() {
 		return elementFiedlSearch;
 	}
@@ -69,7 +69,7 @@ public class ActionSingleDataMining implements Serializable {
 		this.elementFiedlSearch = elementFiedlSearch;
 	}
 
-	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	public List<FieldSearchTupleDataMining> getUrlFieldSearch() {
 		return urlFieldSearch;
 	}

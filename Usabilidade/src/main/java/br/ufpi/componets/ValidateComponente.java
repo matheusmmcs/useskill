@@ -128,4 +128,11 @@ public class ValidateComponente {
 		}});	
 	}
 	
+	public void validarEquals(final Object object, final Object object2, final String mensagem) {
+		validator.checking(new Validations(){{
+			that((object.equals(object2)), mensagem, mensagem);
+		}});	
+		validator.onErrorUse(Results.json()).from(validator.getErrors(),"errors").serialize();
+	}
+	
 }

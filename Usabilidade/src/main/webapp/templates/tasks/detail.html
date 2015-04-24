@@ -1,0 +1,101 @@
+<div class="container-padding-left">
+	
+		<ul class="breadcrumb">
+			<li>
+				<a ng-href="/"> 
+					{{ 'inicio' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li>
+				<a ng-href="#/testes/"> 
+					{{ 'datamining' | translate}} - {{ 'datamining.testes.list' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li>
+				<a ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}"> 
+					{{ 'datamining.testes.details' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li class="active">{{ 'datamining.tasks.details' | translate}}</li>
+		</ul>
+		
+		<div ng-show="success" class="alert alert-success">
+			{{ success }}<br />
+		</div>
+		<div ng-show="errors" class="alert alert-error">
+			<span ng-repeat="error in errors">
+				{{ error }}<br />
+			</span>
+		</div>
+	    
+		<div class="row show-grid">
+		    <div class="span6 border-right">
+		    	<h2>
+		    		{{ 'datamining.tasks.details' | translate}}
+	            </h2>
+	            
+	            <div>
+		            <dl>
+		            	<dt>{{ 'datamining.tasks.title' | translate}}:</dt>
+		            	<dd>{{taskCtrl.task.title}}</dd>
+		            </dl>
+		            <dl>
+		            	<dt>{{ 'datamining.tasks.threshold' | translate}}:</dt>
+		            	<dd>{{taskCtrl.task.threshold}}</dd>
+		            </dl>
+		            <div class="actions-bottom">
+ 		            	<a class="btn btn-danger pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/excluir/{{taskCtrl.task.id}}" title="{{ 'datamining.delete' | translate}}"><span class="icon-white icon-trash"></span> {{ 'datamining.delete' | translate}}</a>
+	        			<a class="btn pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/editar/{{taskCtrl.task.id}}" title="{{ 'datamining.edit' | translate}}"><span class="icon-edit"></span> {{ 'datamining.edit' | translate}}</a>
+	        			<div class="clear-both"></div>
+		            </div>
+		            
+	            </div>
+		    </div>
+	        <div class="span6">
+	        	<h2 class="text-center">
+		    		{{ 'datamining.tasks.actions.start' | translate}}
+	            </h2>
+	            
+	            <table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white">
+	                <thead>
+	                    <tr>
+	                        <th width="100%">{{ 'datamining.tasks.title' | translate}}</th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+                        <tr ng-repeat="task in testCtrl.test.tasks | orderBy:'id'">
+                            <td class="td-link"><a ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}">{{task.title}}</a></td>
+                            <td class="text-center"><a class="btn btn-primary" ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}"><span class="icon-white icon-folder-open"></span></a></td>
+                        </tr>
+	                </tbody>
+	            </table>
+
+				<div class="border-bottom" style="display:block; width: 100%;"></div>
+	            
+	            <h2 class="text-center">
+		    		{{ 'datamining.tasks.actions.end' | translate}}
+	            </h2>
+	            
+	            <table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white">
+	                <thead>
+	                    <tr>
+	                        <th width="100%">{{ 'datamining.tasks.title' | translate}}</th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+                        <tr ng-repeat="task in testCtrl.test.tasks | orderBy:'id'">
+                            <td class="td-link"><a ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}">{{task.title}}</a></td>
+                            <td class="text-center"><a class="btn btn-primary" ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}"><span class="icon-white icon-folder-open"></span></a></td>
+                        </tr>
+	                </tbody>
+	            </table>
+		            
+		            
+	        </div>
+	        
+	    </div>	    
+
+    </div>

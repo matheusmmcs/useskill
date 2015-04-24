@@ -1,9 +1,5 @@
 <div class="container-padding-left">
 	
-		<div ng-show="errors" class="alert alert-success">
-            {{sucesso}}<br />
-		</div>
-	
 		<ul class="breadcrumb">
 			<li>
 				<a ng-href="/"> 
@@ -13,6 +9,15 @@
 			</li>
 			<li class="active">{{ 'datamining' | translate}} - {{ 'datamining.testes.list' | translate}}</li>
 		</ul>
+	    
+	    <div ng-show="success" class="alert alert-success">
+			{{ success }}<br />
+		</div>
+		<div ng-show="errors" class="alert alert-error">
+			<span ng-repeat="error in errors">
+				{{ error }}<br />
+			</span>
+		</div>
 	    
 	    <div class="row show-grid">
 	        <div class="span12">

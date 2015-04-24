@@ -1,25 +1,13 @@
-package br.ufpi.datamining.models;
+package br.ufpi.datamining.models.vo;
 
-import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import br.ufpi.datamining.models.ActionSingleDataMining;
+import br.ufpi.datamining.models.TaskDataMining;
+import br.ufpi.datamining.models.TestDataMining;
 
-@Entity  
-@Table(name="datamining_task")
-public class TaskDataMining implements Serializable {
+public class TaskDataMiningVO {
 
-	private static final long serialVersionUID = 1L;
-	
 	private Long id;
 	private String title;
 	private Integer threshold;
@@ -27,59 +15,52 @@ public class TaskDataMining implements Serializable {
 	private List<ActionSingleDataMining> actionsEnd;	
 	private TestDataMining testDataMining;
 	
+	public TaskDataMiningVO(TaskDataMining taskDataMining) {
+		super();
+		this.id = taskDataMining.getId();
+		this.title = taskDataMining.getTitle();
+		this.threshold = taskDataMining.getThreshold();
+		this.actionsInitial = taskDataMining.getActionsInitial();
+		this.actionsEnd = taskDataMining.getActionsEnd();
+		this.testDataMining = taskDataMining.getTestDataMining();
+	}
 	
-	@Id  
-	@GeneratedValue
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
-	@Column(nullable = false)
 	public String getTitle() {
 		return title;
 	}
-	
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
 	public Integer getThreshold() {
 		return threshold;
 	}
-	
 	public void setThreshold(Integer threshold) {
 		this.threshold = threshold;
 	}
-	
-	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	public List<ActionSingleDataMining> getActionsInitial() {
 		return actionsInitial;
 	}
-	
 	public void setActionsInitial(List<ActionSingleDataMining> actionsInitial) {
 		this.actionsInitial = actionsInitial;
 	}
-	
-	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	public List<ActionSingleDataMining> getActionsEnd() {
 		return actionsEnd;
 	}
-	
 	public void setActionsEnd(List<ActionSingleDataMining> actionsEnd) {
 		this.actionsEnd = actionsEnd;
 	}
-	
-	@ManyToOne
-    @JoinColumn(name="test_id")
 	public TestDataMining getTestDataMining() {
 		return testDataMining;
 	}
-	
 	public void setTestDataMining(TestDataMining testDataMining) {
 		this.testDataMining = testDataMining;
 	}
-		
+	
+	
 }

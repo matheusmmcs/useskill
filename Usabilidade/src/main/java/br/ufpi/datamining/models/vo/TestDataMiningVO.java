@@ -13,8 +13,6 @@ public class TestDataMiningVO {
 	private String urlSystem;
 	private List<TaskDataMining> tasks;
 	
-	
-	
 	public TestDataMiningVO(TestDataMining test) {
 		super();
 		this.id = test.getId();

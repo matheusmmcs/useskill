@@ -38,10 +38,10 @@
 	"datamining.tasks.details" : "Detalhes da Tarefa",
 	
 	"datamining.tasks.title" : "Título",
+	"datamining.tasks.threshold" : "Tempo Max. Sessão",
 	"datamining.tasks.actions" : "Ações",
 	"datamining.tasks.actions.start" : "Ações Iniciais",
 	"datamining.tasks.actions.end" : "Ações Finais",
-	"datamining.tasks.actions.threshold" : "Limiar",
 	
 	"datamining.tasks.actions.add" : "Adicionar Ação",
 	"datamining.tasks.actions.type" : "Tipo de Ação",

@@ -1,0 +1,75 @@
+<body> 
+	<div class="container-padding-left">
+		
+		<ul class="breadcrumb">
+			<li>
+				<a ng-href="/"> 
+					{{ 'inicio' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li>
+				<a ng-href="#/testes/"> 
+					{{ 'datamining' | translate}} - {{ 'datamining.testes.list' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li ng-show="taskCtrl.test.id">
+				<a ng-href="#/testes/{{taskCtrl.test.id}}"> 
+					{{ 'datamining.testes.details' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li class="active">{{ taskCtrl.actionTitle }}</li>
+		</ul>
+		
+		
+		<div ng-show="success" class="alert alert-success">
+			{{ success }}<br />
+		</div>
+		<div ng-show="errors" class="alert alert-error">
+			<span ng-repeat="error in errors">
+				{{ error }}<br />
+			</span>
+		</div>
+		
+	    
+	    <div class="span10 center">
+		
+			<form name="myForm" class="datamining-form form-layout">
+				<fieldset>
+					<legend>
+						<span>{{ taskCtrl.actionTitle }}</span>
+						<hr/>
+					</legend>
+					
+					<input type="hidden" name="task.id" ng-model="taskCtrl.task.id" />
+					
+					<div class="control-group">
+		            	<label class="control-label" for="taskTitle">{{ 'datamining.tasks.title' | translate}}:*</label>
+		            	<div class="controls">
+		                	<input type="text" ng-model="taskCtrl.task.title" name="task.title"  id="taskTitle" class="input" /> 
+		            	</div>
+		        	</div>
+		        	
+		        	<div class="control-group">
+		            	<label class="control-label" for="taskThreshold">{{ 'datamining.tasks.threshold' | translate}}:*</label>
+		            	<div class="controls">
+		                	<input type="text" ng-model="taskCtrl.task.threshold" name="task.threshold"  id="taskThreshold" class="input" /> 
+		            	</div>
+		        	</div>
+		
+					<hr/>
+					
+		        	<div class="form-actions">
+		            	<button ng-click="taskCtrl.save()"  class="btn btn-primary pull-right submit">{{ taskCtrl.actionTitle }}</button>
+		            	<a href="#/" onclick="window.history.go(-1); return false;" class="btn pull-right">{{ 'datamining.cancel' | translate}}</a>
+		        	</div>
+		        	
+				</fieldset>
+			</form>
+		</div>
+	     
+	
+    </div>
+</body>
