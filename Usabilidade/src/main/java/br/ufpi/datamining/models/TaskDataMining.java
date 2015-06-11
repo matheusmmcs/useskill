@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -55,6 +56,7 @@ public class TaskDataMining implements Serializable {
 	}
 	
 	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	@JoinTable(name="datamining_task_actionsInitial")
 	public List<ActionSingleDataMining> getActionsInitial() {
 		return actionsInitial;
 	}
@@ -64,6 +66,7 @@ public class TaskDataMining implements Serializable {
 	}
 	
 	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	@JoinTable(name="datamining_task_actionsEnd")
 	public List<ActionSingleDataMining> getActionsEnd() {
 		return actionsEnd;
 	}

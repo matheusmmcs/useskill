@@ -7,6 +7,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import br.ufpi.datamining.models.enums.FieldTypeDataMiningEnum;
@@ -18,6 +20,7 @@ public class FieldSearchTupleDataMining implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
+	private ActionSingleDataMining action;
 	private String field;
 	private String value;
 	private FieldTypeDataMiningEnum type;
@@ -51,5 +54,15 @@ public class FieldSearchTupleDataMining implements Serializable {
 	}
 	public void setType(FieldTypeDataMiningEnum type) {
 		this.type = type;
+	}
+	
+	@ManyToOne
+    @JoinColumn(name="action_id")
+	public ActionSingleDataMining getAction() {
+		return action;
+	}
+	
+	public void setAction(ActionSingleDataMining action){
+		this.action = action;
 	}
 }

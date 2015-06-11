@@ -1,7 +1,6 @@
 package br.ufpi.datamining.models.vo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import br.com.caelum.vraptor.validator.Message;

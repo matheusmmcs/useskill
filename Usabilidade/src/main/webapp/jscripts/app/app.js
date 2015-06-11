@@ -87,18 +87,31 @@ angular.module('useskill',
 		        }
 		    }
 	    })
+	    
+	    //Actions
+	    .when('/testes/:testId/tarefas/:taskId/acoes/add', {
+	    	controller:'ActionNewController as actionCtrl',
+	    	templateUrl:config[env].apiUrl+'/templates/actions/create.html',
+	    	resolve: {
+	    		task: function (ServerAPI, $route) {
+		        	return ServerAPI.getTask($route.current.params.testId, $route.current.params.taskId);
+		        }
+		    }
+	    })
+	    
+	    
 	    .otherwise({
 	    	redirectTo:'/'
 	    });
 	
 }])
-.factory('HttpInterceptor', ['$q', '$rootScope', '$filter', '$location',
-                     function($q, $rootScope, $filter, $location) {
+.factory('HttpInterceptor', ['$q', '$rootScope', '$filter', '$location', 'env', 'config',
+                     function($q, $rootScope, $filter, $location, env, config) {
 	var responseInterceptor = {
 		response: function(response) {
 			$rootScope.errors = null;
 			$rootScope.success = null;
-			console.log(response);
+			//console.log(response);
 			if(response.status === 200 && angular.isDefined(response.data.string)){
 				resp = JSON.parse(response.data.string);
 				if(resp.status == 'ERRO'){
@@ -142,10 +155,39 @@ angular.module('useskill',
         	return promise;
         },
         
+        saveAction: function(actionJHeatVO){
+        	var promise = $http.post(config[env].apiUrl+'/datamining/testes/tarefas/acoes/salvar', actionJHeatVO);
+        	return promise;
+        }
         
         
     };
 }])
+
+//Enums
+
+.factory("ActionTypeEnum", function(){
+	return {
+		types : [
+	 	    {name:'Carregamento', value:'onload'},
+	 	    {name:'Clique', value:'click'},
+	 	    {name:'Envio de Formulário', value:'form_submit'},
+	 	    {name:'Preenchimento de Campo', value:'focusout'},
+	 	  	{name:'Mouse Sobre', value:'mouseover'},
+	 	 	{name:'Voltar', value:'back'},
+	 		{name:'Recarregar', value:'reload'}
+	 	]
+	};
+})
+.factory("MomentTypeEnum", function(){
+	return {
+		moments : [
+	 	    {name:'Início', value:'START'},
+	 	    //{name:'Meio', value:'MIDDLE'},
+	 	    {name:'Fim', value:'END'}
+	 	]
+	};
+})
 
 //Tests Controllers
 
@@ -181,6 +223,7 @@ angular.module('useskill',
 .controller('TaskViewController', function(task) {
 	var taskCtrl = this;
 	taskCtrl.task = JSON.parse(task.data.string);
+	console.log(taskCtrl.task);
 })
 .controller('TaskNewController', function(test, $filter, ServerAPI) {
 	var taskCtrl = this;
@@ -202,5 +245,36 @@ angular.module('useskill',
 		var task = angular.toJson(taskCtrl.task);
 		ServerAPI.saveTask(task);
 	};
+})
+
+//Actions Controllers
+//ActionsNewController
+.controller('ActionViewController', function(action) {
+	//todo
+})
+.controller('ActionNewController', function(task, $filter, ServerAPI, ActionTypeEnum, MomentTypeEnum) {
+	var actionCtrl = this;
+	actionCtrl.action = {};
+	actionCtrl.types = ActionTypeEnum.types;
+	actionCtrl.moments = MomentTypeEnum.moments;
+	actionCtrl.task = JSON.parse(task.data.string);
+	actionCtrl.actionTitle = $filter('translate')('datamining.tasks.actions.add');
+	console.log(task.data.string);
+	
+	actionCtrl.save = function() {
+		actionCtrl.action.task = actionCtrl.task;
+		if(actionCtrl.action.actionType){
+			actionCtrl.action.actionType = actionCtrl.action.actionType.value;
+		}
+		if(actionCtrl.action.momentType){
+			actionCtrl.action.momentType = actionCtrl.action.momentType.value;
+		}
+		console.log(actionCtrl.action);
+		var action = angular.toJson(actionCtrl.action);
+		ServerAPI.saveAction(action);
+	};
+})
+.controller('ActionEditController', function(action, $filter, ServerAPI) {
+	//todo
 })
 ;

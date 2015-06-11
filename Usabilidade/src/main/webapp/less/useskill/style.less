@@ -357,26 +357,41 @@ ul.horizontal{
 	}
 }
 
-dl{
-	dt{
-		font-size: 14px;
-		margin-bottom: 5px;
-		border-bottom: 1px solid #becde2;
-	}
-	dd{
-		margin-left: 0;
-	}
-	
-	margin: 0 15px 0 5px;
-	padding: 10px 0;
-	
-}
-
-.actions-bottom{
-	margin: 15px;
-	
-	a{
-		margin-left: 10px;
+.usdm-{
+	&box{
+		background-color: white;
+		padding: 10px;
+		border-radius: 5px;
+		border: 1px solid #becde2;
+		
+		&-header{
+			margin-bottom: 5px;
+			border-bottom: 1px solid #becde2;	
+		}
+		&-body{
+			dl{
+				dt{
+					font-size: 14px;
+					margin-bottom: 5px;
+				}
+				dd{
+					margin-left: 0;
+				}
+				
+				padding: 5px 0;
+				margin: 10px 5px 0;
+				border-bottom: 1px solid lighten(#becde2, 12%);
+			}
+			
+			.actions-bottom{
+				margin: 15px;
+				
+				a{
+					margin-left: 10px;
+				}
+			}
+			
+		}
 	}
 }
 

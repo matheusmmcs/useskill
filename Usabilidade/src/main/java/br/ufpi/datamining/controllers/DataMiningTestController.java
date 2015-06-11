@@ -16,6 +16,8 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
+import br.ufpi.datamining.models.ActionSingleDataMining;
+import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.vo.ReturnVO;
@@ -49,7 +51,7 @@ public class DataMiningTestController extends BaseController {
 	@Logado
 	public void list() {
 		Gson gson = new GsonBuilder()
-	        .setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class))
+	        .setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class, TaskDataMining.class))
 	        .serializeNulls()
 	        .create();
 		
@@ -67,7 +69,7 @@ public class DataMiningTestController extends BaseController {
 	@Logado
 	public void view(Long idTeste) {
 		Gson gson = new GsonBuilder()
-	        .setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class))
+	        .setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class, ActionSingleDataMining.class))
 	        .serializeNulls()
 	        .create();
 		

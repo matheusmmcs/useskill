@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import br.com.caelum.vraptor.deserialization.Deserializer;
 import br.com.caelum.vraptor.deserialization.Deserializes;
 import br.com.caelum.vraptor.resource.ResourceMethod;
+import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 
 @Deserializes("application/json")
@@ -44,6 +45,11 @@ public class GsonDeserializer implements Deserializer {
 		String streamString = "{\"title\":\"qwe\",\"clientAbbreviation\":\"asd\",\"urlSystem\":\"zxc\"}";
 		TestDataMining fromJson = gson.fromJson(streamString, TestDataMining.class);
 		System.out.println(fromJson.getTitle());
+		
+		streamString = "{\"actionType\":\"form_submit\"}";
+		ActionSingleDataMining action = gson.fromJson(streamString, ActionSingleDataMining.class);
+		System.out.println(action.getActionType());
+		
 	}
 	
 	

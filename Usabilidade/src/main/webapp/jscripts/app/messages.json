@@ -43,11 +43,18 @@
 	"datamining.tasks.actions.start" : "Ações Iniciais",
 	"datamining.tasks.actions.end" : "Ações Finais",
 	
+	"datamining.tasks.action" : "Ação",
 	"datamining.tasks.actions.add" : "Adicionar Ação",
 	"datamining.tasks.actions.type" : "Tipo de Ação",
+	"datamining.tasks.actions.type.select" : "- Selecione o Tipo da Ação -",
 	"datamining.tasks.actions.moment" : "Momento",
+	"datamining.tasks.actions.moment.select" : "- Selecione o Momento da Ação -",
 	"datamining.tasks.actions.element" : "Elemento",
+	"datamining.tasks.actions.element.xpath" : "Elemento (XPath)",
 	"datamining.tasks.actions.url" : "Local",
+	"datamining.tasks.actions.url.url" : "URL",
+	"datamining.tasks.actions.url.section" : "Section JHM",
+	"datamining.tasks.actions.description" : "Descrição",
 	
 	"datamining.tasks.actions.field.add" : "Adicionar Restrição",
 	"datamining.tasks.actions.field" : "Campo",
@@ -55,5 +62,8 @@
 	"datamining.tasks.actions.fieldtype" : "Tipo do Campo",
 	
 	"datamining.tasks.edit.success" : "Tarefa alterada com sucesso!",
-	"datamining.tasks.new.success" : "Tarefa cadastrada com sucesso!"
+	"datamining.tasks.new.success" : "Tarefa cadastrada com sucesso!",
+	
+	"datamining.tasks.actions.edit.success" : "Ação alterada com sucesso!",
+	"datamining.tasks.actions.new.success" : "Ação cadastrada com sucesso!"
 }
