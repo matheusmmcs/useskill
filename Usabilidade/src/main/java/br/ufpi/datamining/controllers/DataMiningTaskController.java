@@ -14,7 +14,6 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
-import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.FieldSearchTupleDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
@@ -26,6 +25,8 @@ import br.ufpi.datamining.repositories.TestDataMiningRepository;
 import br.ufpi.datamining.utils.GsonExclusionStrategy;
 import br.ufpi.models.Usuario;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -53,7 +54,16 @@ public class DataMiningTaskController extends BaseController {
 	@Logado
 	public void view(Long idTeste, Long idTarefa) {
 		Gson gson = new GsonBuilder()
-	        .setExclusionStrategies(new GsonExclusionStrategy(TaskDataMining.class, Usuario.class, FieldSearchTupleDataMining.class))
+	        .setExclusionStrategies(new ExclusionStrategy() {
+	            public boolean shouldSkipClass(Class<?> clazz) {
+	                return (clazz == TaskDataMining.class || clazz == Usuario.class);
+	            }
+
+	            public boolean shouldSkipField(FieldAttributes f) {
+	                return (f.getDeclaringClass() == FieldSearchTupleDataMining.class && f.getName().equals("action"));
+	            }
+
+	         })
 	        .serializeNulls()
 	        .create();
 		TaskDataMining task = taskDataMiningRepository.find(idTarefa);
@@ -100,6 +110,15 @@ public class DataMiningTaskController extends BaseController {
 			validator.onErrorUse(Results.json()).from(gson.toJson(returnvo)).serialize();
 		}
 	}
+	
+	@Get("/testes/{idTeste}/tarefas/{idTarefa}/evaluate")
+	@Logado
+	public void evaluate(Long idTeste, Long idTarefa) {
+		System.out.println(idTeste + " - " +idTarefa);
+		TaskDataMining task = taskDataMiningRepository.find(idTarefa);
+		
+	}
+	
 	
 	/*
 	@Get("/testes/{idTeste}/tarefas/criar")

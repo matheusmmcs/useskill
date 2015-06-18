@@ -18,7 +18,8 @@ public class ActionSingleJHeatDataMiningVO {
 	private MomentTypeActionDataMiningEnum momentType;
 	private String element;
 	private String url;
-	private String section;
+	private String jhm;
+	private String step;
 	
 	public Long getId() {
 		return id;
@@ -56,13 +57,19 @@ public class ActionSingleJHeatDataMiningVO {
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	public String getSection() {
-		return section;
+	public String getStep() {
+		return step;
 	}
-	public void setSection(String section) {
-		this.section = section;
+	public void setStep(String section) {
+		this.step = section;
 	}
 	
+	public String getJhm() {
+		return jhm;
+	}
+	public void setJhm(String jhm) {
+		this.jhm = jhm;
+	}
 	public ActionSingleDataMining toActionSingleDataMining(){
 		ActionSingleDataMining action = new ActionSingleDataMining();
 		action.setId(this.getId());
@@ -82,6 +89,7 @@ public class ActionSingleJHeatDataMiningVO {
 		
 		action.setElementFiedlSearch(elements);
 		//
+
 		
 		//add URL
 		List<FieldSearchTupleDataMining> urlsFields = new ArrayList<FieldSearchTupleDataMining>();
@@ -90,14 +98,21 @@ public class ActionSingleJHeatDataMiningVO {
 		fieldURL.setAction(action);
 		fieldURL.setField("sUrl");
 		fieldURL.setType(FieldTypeDataMiningEnum.STRING);
-		fieldURL.setValue(this.getUrl());
+		fieldURL.setValue(this.getUrl().replaceAll(";jsessionid\\=[A-Z|0-9]*", "").replaceAll(":8080", "").replaceAll("www.", ""));
 		urlsFields.add(fieldURL);
+		
+		FieldSearchTupleDataMining fieldJhm = new FieldSearchTupleDataMining();
+		fieldJhm.setAction(action);
+		fieldJhm.setField("sJhm");
+		fieldJhm.setType(FieldTypeDataMiningEnum.STRING);
+		fieldJhm.setValue(this.getJhm());
+		urlsFields.add(fieldJhm);
 		
 		FieldSearchTupleDataMining fieldSection = new FieldSearchTupleDataMining();
 		fieldSection.setAction(action);
-		fieldSection.setField("sSectionJhm");
+		fieldSection.setField("sStepJhm");
 		fieldSection.setType(FieldTypeDataMiningEnum.STRING);
-		fieldSection.setValue(this.getSection());
+		fieldSection.setValue(this.getStep());
 		urlsFields.add(fieldSection);
 		
 		action.setUrlFieldSearch(urlsFields);

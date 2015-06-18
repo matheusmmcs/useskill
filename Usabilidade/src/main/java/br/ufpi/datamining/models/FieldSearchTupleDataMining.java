@@ -65,4 +65,16 @@ public class FieldSearchTupleDataMining implements Serializable {
 	public void setAction(ActionSingleDataMining action){
 		this.action = action;
 	}
+	
+	public Object valueToObject(){
+		if(type.equals(FieldTypeDataMiningEnum.BOOLEAN)){
+			return Boolean.parseBoolean(value);
+		}else if(type.equals(FieldTypeDataMiningEnum.NUMBER)){
+			return Double.parseDouble(value);
+		}else if(type.equals(FieldTypeDataMiningEnum.CHAR)){
+			return value.charAt(0);
+		}else{
+			return value;
+		}
+	}
 }

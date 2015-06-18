@@ -1,6 +1,7 @@
 package br.ufpi.datamining.models;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -94,4 +95,20 @@ public class ActionSingleDataMining implements Serializable {
 		this.task = task;
 	}
 	
+	public ActionDataMining toActionDataMining() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException{
+		ActionDataMining action = new ActionDataMining();
+		Class<?> c = action.getClass();
+		action.setsActionType(this.getActionType().getAction());
+		for(FieldSearchTupleDataMining f : this.getElementFiedlSearch()){
+			Field declaredField = c.getDeclaredField(f.getField());
+			declaredField.setAccessible(true);
+			declaredField.set(action, f.valueToObject());
+		}
+		for(FieldSearchTupleDataMining f : this.getUrlFieldSearch()){
+			Field declaredField = c.getDeclaredField(f.getField());
+			declaredField.setAccessible(true);
+			declaredField.set(action, f.valueToObject());
+		}
+		return action;
+	}
 }
