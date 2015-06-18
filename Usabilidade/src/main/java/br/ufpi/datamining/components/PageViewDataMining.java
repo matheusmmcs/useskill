@@ -13,7 +13,7 @@ public class PageViewDataMining {
 	
 	public PageViewDataMining(String url, String jhm, String jhmSection, String jhmStep) {
 		super();
-		this.url = url.replaceAll(";jsessionid\\=[A-Z|0-9]*", "").replaceAll(":8080", "").replaceAll("www.", "");
+		this.url = getUrlFormatted(url);
 		this.jhm = jhm;
 		this.jhmSection = jhmSection;
 		this.jhmStep = jhmStep;
@@ -82,5 +82,9 @@ public class PageViewDataMining {
 	@Override
 	public String toString(){
 		return "Url: " + this.getUrl() + " ;Jhm: " + this.getJhm() + " ;Section: " + this.getJhmSection() + " ;Action: " + this.getJhmStep();
+	}
+	
+	public static String getUrlFormatted(String url){
+		return url.replaceAll(";jsessionid\\=[A-Z|0-9]*", "").replaceAll(":8080", "").replaceAll("www.", "");
 	}
 }

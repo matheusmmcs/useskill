@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import br.ufpi.datamining.models.ActionDataMining;
 import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.FieldSearchTupleDataMining;
+import br.ufpi.datamining.models.PageViewActionDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.aux.FieldSearch;
 import br.ufpi.datamining.models.aux.ResultDataMining;
@@ -22,12 +23,11 @@ import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.utils.EntityManagerUtil;
 
 
-
 /*
- * Gambis:
+ * TODO:
  * 1 - retirar todos os \ dos xpath
- * 
- * 
+ * 2 - PageViewActionDataMining amarrado com jhms, xpath, etc.
+ * 3 - PageViewDataMining retirar o replace da url
  */
 public class WebUsageMining {
 	
@@ -64,38 +64,48 @@ public class WebUsageMining {
 	- Path Completition: Como saber se houve falha na captura dos dados?;
 	- Data Integration: Receber mais informações para integrar aos dados capturados;
 	
-	*** Dados importantes:
-	 * Diferentemente de capturas de logs no servidor, a identificacao das pageviews, do usuario e das sessoes sao feitas antes no cleaning;
-	 * Identificar pageView -> padronizo as url e crio o um set;
-	 * Identificar pageAction -> XPath;
-	 
-	 */
+	** Dados importantes:
+	* Diferentemente de capturas de logs no servidor, a identificacao das pageviews, do usuario e das sessoes sao feitas antes no cleaning;
+	* Identificar pageView -> padronizo as url e crio o um set;
+	* Identificar pageAction -> XPath;
+	*/
 	
 	//----- NOVA ABORDAGEM -----
 	//-----
 	//ok- usuário: 	conjunto de sessões;
 	//ok- sessão: 	classificação, quantidade de ações, tempo e todas as ações que foram realizadas;
 	//-----
-	//- média de ações por classificação;
-	//- média de tempo por classificação;
-	//- ações mais realizadas por classificação;
 	//ok- média de ações por usuário;
 	//ok- média de tempo por usuário;
 	//ok- taxa de ok, repet e erro por usuário;
-	//-----
 	//- evolução do usuário;
-	//- classificar o usuário como experiente/novato; (especialista)
+	//- média de ações por classificação;
+	//- média de tempo por classificação;
+	//- ações mais realizadas por classificação;
 	//-----
-	//grafo e clusterização, fuzzy para priorizar análises
+	//- classificar o usuário como experiente/novato; (especialista ou (med.acoes, med.tempo, taxa de ok))
+	//-----
+	//- grafo contendo as sessões corretas (serve para validar as ações iniciais/finais e formar o modelo de interação correto);
+	//- permitir sobrepor o "grafo correto" com qualquer sessão (priorizar as com mais tempo, ação e piores usuários (fuzzy));
+	//- clusterizar os usuários de acordo com tempo e ação;
 	//-----
 	
+	//----- TODO -----
+	//-----
+	//- criar listagem dos usuários (com seus índices), grafo com as ações de quem realizou corretamente;
+	//- criar plugin para facilitar na identificação do XPath, Jhm, Step e Url (depois tornar dinâmico);
+	//- criar gráficos de pizza, apresentando os resultados dos usuários e das sessões.
 	
-	public static ResultDataMining analyze(Long taskId) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-		
+	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
 		EntityManager entityManager = EntityManagerUtil.getEntityManager();
 		TaskDataMiningRepository taskDataMiningRepository = new TaskDataMiningRepository(entityManager);
 		ActionDataMiningRepository actionDataMiningRepository = new ActionDataMiningRepository(entityManager);
-		
+		ResultDataMining resultDataMining = analyze(3l, taskDataMiningRepository, actionDataMiningRepository);
+		System.out.println(resultDataMining.getSessions().size());
+	}
+	
+	
+	public static ResultDataMining analyze(Long taskId, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		
 		TaskDataMining taskDataMining = taskDataMiningRepository.find(taskId);
 		
@@ -166,7 +176,7 @@ public class WebUsageMining {
 				
 				//analise das acoes
 				SessionClassificationDataMiningEnum classification = SessionClassificationDataMiningEnum.ERROR;
-				List<ActionDataMining> userSectionRealActions = new ArrayList<ActionDataMining>();
+				List<PageViewActionDataMining> userSectionPageViewActions = new ArrayList<PageViewActionDataMining>();
 				int countActions = 0, sectionSize = userSectionActions.size();
 				long initialTime = 0l, endTime = 0l;
 				boolean okThreshold = true;
@@ -177,7 +187,7 @@ public class WebUsageMining {
 					
 					if(okThreshold){
 						action = userSectionActions.get(j);
-						userSectionRealActions.add(action);
+						userSectionPageViewActions.add(new PageViewActionDataMining(action));
 						countActions++;
 						
 						if(j == 0){
@@ -208,7 +218,7 @@ public class WebUsageMining {
 				//resultados da sessao
 				String sessionKey = username+"-"+i;
 				Long sessionTime = endTime - initialTime;
-				sessionsResult.add(new SessionResultDataMining(sessionKey, classification, sessionTime, userSectionRealActions, !okThreshold));
+				sessionsResult.add(new SessionResultDataMining(sessionKey, username, classification, sessionTime, userSectionPageViewActions, !okThreshold));
 				
 				
 				//resultados do usuario por sessao

@@ -1,5 +1,7 @@
 package br.ufpi.datamining.models;
 
+import br.ufpi.datamining.components.PageViewDataMining;
+
 public class PageViewActionDataMining {
 
 	private Long id;
@@ -7,6 +9,16 @@ public class PageViewActionDataMining {
 	private String element;
 	private String action;
 	private Long time;
+	
+	
+	public PageViewActionDataMining(ActionDataMining action) {
+		super();
+		this.id = action.getId();
+		this.local = PageViewDataMining.getUrlFormatted(action.getsUrl()) + "-" + action.getsJhm() + "-" + action.getsStepJhm();
+		this.element = action.getsXPath();
+		this.action = action.getsActionType();
+		this.time = action.getsTime();
+	}
 	
 	public PageViewActionDataMining(Long id, String local, String element,
 			String action, Long time) {

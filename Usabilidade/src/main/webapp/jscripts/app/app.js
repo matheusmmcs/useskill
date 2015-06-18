@@ -167,7 +167,7 @@ angular.module('useskill',
         	return promise;
         },
         evaluateTask: function(testId, taskId){
-        	var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId+'/tarefas/'+taskId+'/evaluate'});
+        	var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId+'/tarefas/'+taskId+'/avaliar'});
         	return promise;
         },
         
@@ -264,9 +264,9 @@ angular.module('useskill',
 })
 .controller('TaskEvaluateController', function(task, evaluate, $filter, ServerAPI) {
 	var taskCtrl = this;
-	console.log(task);
 	taskCtrl.task = JSON.parse(task.data.string);
-	console.log(evaluate);
+	taskCtrl.evaluate = JSON.parse(evaluate.data.string);
+	console.log(taskCtrl);
 })
 
 //Actions Controllers

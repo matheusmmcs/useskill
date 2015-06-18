@@ -14,15 +14,17 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
+import br.ufpi.datamining.analisys.WebUsageMining;
 import br.ufpi.datamining.models.FieldSearchTupleDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
+import br.ufpi.datamining.models.aux.ResultDataMining;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.vo.ReturnVO;
 import br.ufpi.datamining.models.vo.TaskDataMiningVO;
+import br.ufpi.datamining.repositories.ActionDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.repositories.TestDataMiningRepository;
-import br.ufpi.datamining.utils.GsonExclusionStrategy;
 import br.ufpi.models.Usuario;
 
 import com.google.gson.ExclusionStrategy;
@@ -36,6 +38,8 @@ public class DataMiningTaskController extends BaseController {
 	
 	private final TestDataMiningRepository testeDataMiningRepository;
 	private final TaskDataMiningRepository taskDataMiningRepository;
+	private final ActionDataMiningRepository actionDataMiningRepository;
+	
 	private final Localization localization;
 	
 	public DataMiningTaskController(Result result, Validator validator,
@@ -43,10 +47,12 @@ public class DataMiningTaskController extends BaseController {
 			ValidateComponente validateComponente,
 			Localization localization,
 			TestDataMiningRepository testeDataMiningRepository,
-			TaskDataMiningRepository taskDataMiningRepository) {
+			TaskDataMiningRepository taskDataMiningRepository,
+			ActionDataMiningRepository actionDataMiningRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.testeDataMiningRepository = testeDataMiningRepository;
 		this.taskDataMiningRepository = taskDataMiningRepository;
+		this.actionDataMiningRepository = actionDataMiningRepository;
 		this.localization = localization;
 	}
 	
@@ -111,12 +117,18 @@ public class DataMiningTaskController extends BaseController {
 		}
 	}
 	
-	@Get("/testes/{idTeste}/tarefas/{idTarefa}/evaluate")
+	@Get("/testes/{idTeste}/tarefas/{idTarefa}/avaliar")
 	@Logado
-	public void evaluate(Long idTeste, Long idTarefa) {
-		System.out.println(idTeste + " - " +idTarefa);
-		TaskDataMining task = taskDataMiningRepository.find(idTarefa);
-		
+	public void avaliar(Long idTeste, Long idTarefa) {
+		Gson gson = new Gson();
+		try {
+			ResultDataMining resultDataMining = WebUsageMining.analyze(idTarefa, taskDataMiningRepository, actionDataMiningRepository);
+			result.use(Results.json()).from(gson.toJson(resultDataMining)).serialize();
+		} catch (Exception e) {
+			e.printStackTrace();
+			ReturnVO returnVO = new ReturnVO(ReturnStatusEnum.ERRO, "erro");
+			validator.onErrorUse(Results.json()).from(gson.toJson(returnVO)).serialize();
+		}
 	}
 	
 	

@@ -40,6 +40,8 @@ public class ActionDataMiningRepository extends Repository<ActionDataMining, Lon
 					squery += " AND ";
 				}
 			}
+			//ordenar aqui pode causar problemas, pois ao buscar eventos mais recentes, traz null pointer
+			//squery += " ORDER BY a.sTime ASC";
 			
 			Query query = entityManager.createQuery(squery);
 			for(FieldSearch f : fields){

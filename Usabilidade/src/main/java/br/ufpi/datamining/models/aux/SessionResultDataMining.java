@@ -2,22 +2,25 @@ package br.ufpi.datamining.models.aux;
 
 import java.util.List;
 
-import br.ufpi.datamining.models.ActionDataMining;
+import br.ufpi.datamining.models.PageViewActionDataMining;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
 
 public class SessionResultDataMining {
 
 	private String id; //"username-count"
+	private String username;
 	private SessionClassificationDataMiningEnum classification;
 	private Long time;
-	private List<ActionDataMining> actions;
+	private List<PageViewActionDataMining> actions;
 	private Boolean hasThreshold;
 	
 	public SessionResultDataMining(String id,
+			String username,
 			SessionClassificationDataMiningEnum classification, Long time,
-			List<ActionDataMining> actions,
+			List<PageViewActionDataMining> actions,
 			Boolean hasThreshold) {
 		super();
+		this.username = username;
 		this.id = id;
 		this.classification = classification;
 		this.time = time;
@@ -43,10 +46,10 @@ public class SessionResultDataMining {
 	public void setTime(Long time) {
 		this.time = time;
 	}
-	public List<ActionDataMining> getActions() {
+	public List<PageViewActionDataMining> getActions() {
 		return actions;
 	}
-	public void setActions(List<ActionDataMining> actions) {
+	public void setActions(List<PageViewActionDataMining> actions) {
 		this.actions = actions;
 	}
 
@@ -56,6 +59,14 @@ public class SessionResultDataMining {
 
 	public void setHasThreshold(Boolean hasThreshold) {
 		this.hasThreshold = hasThreshold;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 		
 }
