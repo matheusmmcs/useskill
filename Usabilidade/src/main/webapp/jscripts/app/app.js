@@ -87,6 +87,18 @@ angular.module('useskill',
 		        }
 		    }
 	    })
+	    .when('/testes/:testId/tarefas/:taskId/avaliar', {
+	    	controller:'TaskEvaluateController as taskCtrl',
+	    	templateUrl:config[env].apiUrl+'/templates/tasks/evaluate.html',
+	    	resolve: {
+		        task: function (ServerAPI, $route) {
+		        	return ServerAPI.getTask($route.current.params.testId, $route.current.params.taskId);
+		        },
+		        evaluate: function (ServerAPI, $route) {
+		        	return ServerAPI.evaluateTask($route.current.params.testId, $route.current.params.taskId);
+		        }
+		    }
+	    })
 	    
 	    //Actions
 	    .when('/testes/:testId/tarefas/:taskId/acoes/add', {
@@ -124,7 +136,7 @@ angular.module('useskill',
         },
         responseError: function(error) {
         	console.log('FALHOU!', error);
-        	$location.path(config[env].apiUrl+"/");
+        	//$location.path(config[env].apiUrl+"/");
         	$rootScope.errors = [error.status+' - '+error.statusText];
         }
     };
@@ -152,6 +164,10 @@ angular.module('useskill',
         },
         saveTask: function(task){
         	var promise = $http.post(config[env].apiUrl+'/datamining/testes/tarefas/salvar', task);
+        	return promise;
+        },
+        evaluateTask: function(testId, taskId){
+        	var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId+'/tarefas/'+taskId+'/evaluate'});
         	return promise;
         },
         
@@ -236,7 +252,7 @@ angular.module('useskill',
 		ServerAPI.saveTask(task);
 	};
 })
-.controller('TaskEditController', function(task, $filter, ServerAPI) {
+.controller('TaskEditController', function(task) {
 	var taskCtrl = this;
 	console.log(task);
 	taskCtrl.task = JSON.parse(task.data.string);
@@ -245,6 +261,12 @@ angular.module('useskill',
 		var task = angular.toJson(taskCtrl.task);
 		ServerAPI.saveTask(task);
 	};
+})
+.controller('TaskEvaluateController', function(task, evaluate, $filter, ServerAPI) {
+	var taskCtrl = this;
+	console.log(task);
+	taskCtrl.task = JSON.parse(task.data.string);
+	console.log(evaluate);
 })
 
 //Actions Controllers

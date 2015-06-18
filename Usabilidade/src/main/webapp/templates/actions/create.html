@@ -84,9 +84,16 @@
 		        	</div>
 		        	
 		        	<div class="control-group">
-		            	<label class="control-label" for="section">{{ 'datamining.tasks.actions.url.section' | translate}}:*</label>
+		            	<label class="control-label" for="step">{{ 'datamining.tasks.actions.url.step' | translate}}:*</label>
 		            	<div class="controls">
-		                	<input type="text" ng-model="actionCtrl.action.section" name="action.section" id="section" class="input" />
+		                	<input type="text" ng-model="actionCtrl.action.step" name="action.step" id="step" class="input" />
+		            	</div>
+		        	</div>
+		        	
+		        	<div class="control-group">
+		            	<label class="control-label" for="jhm">{{ 'datamining.tasks.actions.url.jhm' | translate}}:*</label>
+		            	<div class="controls">
+		                	<input type="text" ng-model="actionCtrl.action.jhm" name="action.jhm" id="jhm" class="input" />
 		            	</div>
 		        	</div>
 		
@@ -94,7 +101,7 @@
 					
 		        	<div class="form-actions">
 		            	<button ng-click="actionCtrl.save()"  class="btn btn-primary pull-right submit">{{ actionCtrl.actionTitle }}</button>
-		            	<a href="#/" onclick="window.history.go(-1); return false;" class="btn pull-right">{{ 'datamining.cancel' | translate}}</a>
+		            	<a href="#/" onclick="window.history.go(-1); return false;" class="btn pull-right">{{ 'datamining.back' | translate}}</a>
 		        	</div>
 		        	
 				</fieldset>

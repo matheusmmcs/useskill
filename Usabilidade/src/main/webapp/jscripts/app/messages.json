@@ -5,6 +5,7 @@
 	"onthefly" : "On The Fly",
 	"datamining" : "DataMining",
 	
+	"datamining.back" : "Voltar",
 	"datamining.cancel" : "Cancelar",
 	"datamining.new" : "Criar",
 	"datamining.delete" : "Excluir",
@@ -36,6 +37,7 @@
 	"datamining.tasks.delete" : "Excluir Tarefa",
 	"datamining.tasks.edit" : "Editar Tarefa",
 	"datamining.tasks.details" : "Detalhes da Tarefa",
+	"datamining.tasks.evaluate" : "Avaliar Tarefa",
 	
 	"datamining.tasks.title" : "Título",
 	"datamining.tasks.threshold" : "Tempo Max. Sessão",
@@ -53,7 +55,8 @@
 	"datamining.tasks.actions.element.xpath" : "Elemento (XPath)",
 	"datamining.tasks.actions.url" : "Local",
 	"datamining.tasks.actions.url.url" : "URL",
-	"datamining.tasks.actions.url.section" : "Section JHM",
+	"datamining.tasks.actions.url.jhm" : "Metadado (JHM)",
+	"datamining.tasks.actions.url.step" : "Metadado (StepMethod JHM)",
 	"datamining.tasks.actions.description" : "Descrição",
 	
 	"datamining.tasks.actions.field.add" : "Adicionar Restrição",
