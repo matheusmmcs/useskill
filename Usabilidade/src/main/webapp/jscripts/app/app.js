@@ -1,5 +1,5 @@
 angular.module('useskill', 
-		['ngRoute', 'pascalprecht.translate'])
+		['ngRoute', 'pascalprecht.translate', 'tableSort', 'chart.js'])
 
 .constant('env', 'dev')
 //.constant('env', 'prod')
@@ -262,11 +262,65 @@ angular.module('useskill',
 		ServerAPI.saveTask(task);
 	};
 })
-.controller('TaskEvaluateController', function(task, evaluate, $filter, ServerAPI) {
+.controller('TaskEvaluateController', function($scope, task, evaluate, $filter, ServerAPI) {
 	var taskCtrl = this;
+	
+	taskCtrl.showUsers = true;
+	taskCtrl.showSessions = false;
+	
 	taskCtrl.task = JSON.parse(task.data.string);
 	taskCtrl.evaluate = JSON.parse(evaluate.data.string);
 	console.log(taskCtrl);
+	
+	$scope.showUserSessions = function(user){
+		taskCtrl.showUsers = true;
+		taskCtrl.showSessions = false;
+		var sessions = [];
+		for(var i in user.sessionsId){
+			var userSession = user.sessionsId[i];
+			for(var s in taskCtrl.evaluate.sessions){
+				var session = taskCtrl.evaluate.sessions[s];
+				if(session.id == userSession){
+					sessions.push(session);
+					break;
+				}
+			}
+		}
+		console.log(sessions);
+		taskCtrl.userSessions = sessions;
+		taskCtrl.showUsers = false;
+		taskCtrl.showSessions = true;
+	}
+	
+	$scope.showUsers = function(){
+		console.log("show users");
+		taskCtrl.showUsers = true;
+		taskCtrl.showSessions = false;
+	}
+	
+	//history graph
+	$scope.historyLabels = ["January", "February", "March", "April", "May", "June", "July"];
+	$scope.historySeries = ['Series A', 'Series B'];
+	$scope.historyData = [
+	    [65, 59, 80, 81, 56, 55, 40],
+	    [28, 48, 40, 19, 86, 27, 90]
+	 ];
+	
+	//success graph
+	$scope.graphSuccessLabels = [
+	                             $filter('translate')('datamining.tasks.evaluate.success'), 
+	                             $filter('translate')('datamining.tasks.evaluate.repeat'),
+	                             $filter('translate')('datamining.tasks.evaluate.threshold')];
+    $scope.graphSuccessData = [
+                               	taskCtrl.evaluate.countSessionsSuccess, 
+                               	taskCtrl.evaluate.countSessionsRepeat,
+                               	taskCtrl.evaluate.countSessionsThreshold];
+    $scope.graphSuccessColours = ["#46BFBD", "#FDB45C", "#F7464A"];
+    $scope.graphSuccessType = 'Pie';
+    $scope.graphSuccessToggle = function () {
+    	$scope.graphSuccessType = $scope.graphSuccessType === 'Pie' ? 'PolarArea' : 'Pie';
+    };
+    
 })
 
 //Actions Controllers
@@ -298,5 +352,14 @@ angular.module('useskill',
 })
 .controller('ActionEditController', function(action, $filter, ServerAPI) {
 	//todo
+})
+
+.filter('msConverter', function() {
+  return function(n) {
+	  n = Math.round(n);
+	  var minutes = Math.floor(n / 60000);
+	  var seconds = ((n % 60000) / 1000).toFixed(0);
+	  return minutes + "m, " + (seconds < 10 ? '0' : '') + seconds + "s"; 
+  }
 })
 ;

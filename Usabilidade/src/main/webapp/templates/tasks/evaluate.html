@@ -32,7 +32,7 @@
 		</div>
 	    
 		<div class="row show-grid">
-		    <div class="span6 border-right">
+		    <div class="span4 border-right">
 		    	<div class="usdm-box">
 		    		<h2 class="usdm-box-header">
 			    		{{ 'datamining.tasks.details' | translate}}
@@ -45,19 +45,95 @@
 			            </dl>
 			            <dl>
 			            	<dt>{{ 'datamining.tasks.threshold' | translate}}:</dt>
-			            	<dd>{{taskCtrl.task.threshold}}</dd>
+			            	<dd>{{taskCtrl.task.threshold}} {{ 'minutes' | translate}}</dd>
 			            </dl>
-			            <div class="actions-bottom">
-<!-- 	 		            	<a class="btn btn-danger pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/excluir/{{taskCtrl.task.id}}" title="{{ 'datamining.delete' | translate}}"><span class="icon-white icon-trash"></span> {{ 'datamining.delete' | translate}}</a> -->
-							<a class="btn btn-primary pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/{{taskCtrl.task.id}}/avaliar" title="{{ 'datamining.evaluate' | translate}}"><span class="icon-white icon-tasks"></span> {{ 'datamining.tasks.evaluate' | translate}}</a>
-		        			<a class="btn pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/editar/{{taskCtrl.task.id}}" title="{{ 'datamining.edit' | translate}}"><span class="icon-edit"></span> {{ 'datamining.edit' | translate}}</a>
-		        			<div class="clear-both"></div>
-			            </div>
 		            </div>
+		            
+		            <br/>
+		            
+		            <h3 class="usdm-box-header">
+			    		{{ 'datamining.tasks.evaluate.graphs.classifications' | translate}}
+		            </h3>  
+					  
+					<canvas id="base" class="chart-base" chart-type="graphSuccessType" data="graphSuccessData" 
+						labels="graphSuccessLabels" legend="true" click="graphSuccessToggle" colours="graphSuccessColours"></canvas>
+		              	
+					<br/>
+					
+					<!--
+					<h3 class="usdm-box-header">
+			    		{{ 'datamining.tasks.evaluate.graphs.history' | translate}}
+		            </h3>
+		            
+		            <canvas id="line" class="chart chart-line" data="historyData"
+					  	labels="historyLabels" legend="true" series="historySeries"></canvas>
+					--> 
+		            
 		    	</div>
 		    </div>
-	        <div class="span6">
+	        <div class="span8">
+	            <div class="usdm-box">
+		    		
+		            <div ng-show="taskCtrl.showUsers">
+		            	<h2 class="usdm-box-header">
+				    		{{ 'datamining.tasks.evaluate.users.sessions.title' | translate}}
+			            </h2>
+			            <div class="usdm-box-body">
+				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+							  <thead>
+							    <tr>
+							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
+							      <th ts-criteria="actionsAverage|parseFloat">{{ 'datamining.tasks.evaluate.actions' | translate }}</th>
+							      <th ts-criteria="timesAverage|parseFloat">{{ 'datamining.tasks.evaluate.time' | translate }}</th>
+							      <th ts-criteria="rateSuccess|parseFloat" ts-default="descending">{{ 'datamining.tasks.evaluate.rateSuccess' | translate }}</th>
+							      <th ts-criteria="countSessionsSuccess|parseInt">{{ 'datamining.tasks.evaluate.success' | translate }}</th>
+							      <th ts-criteria="countSessionsRepeat|parseInt">{{ 'datamining.tasks.evaluate.repeat' | translate }}</th>
+							      <th ts-criteria="countSessionsThreshold|parseInt">{{ 'datamining.tasks.evaluate.threshold' | translate }}</th>
+							    </tr>
+							  </thead>
+							  <tbody>
+							    <tr ng-repeat="user in taskCtrl.evaluate.users" ts-repeat>
+							      <td><a ng-click="showUserSessions(user)">{{user.username}}</a></td>
+							      <td>{{user.actionsAverage | number:2}}</td>
+							      <td>{{user.timesAverage | msConverter}}</td>
+							      <td>{{user.rateSuccess | number:2}}</td>
+							      <td>{{user.countSessionsSuccess}}</td>
+							      <td>{{user.countSessionsRepeat}}</td>
+							      <td>{{user.countSessionsThreshold}}</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<hr/>
+					</div>
+
+		            <div ng-show="taskCtrl.showSessions">
+			    		<h2 class="usdm-box-header">
+				    		<a class="btn" ng-click="showUsers()" style="margin-bottom: 4px;"><i class="icon-chevron-left"></i></a> {{ 'datamining.tasks.evaluate.user.sessions.title' | translate}}
+			            </h2>
+			            <div class="usdm-box-body">
+				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+							  <thead>
+							    <tr>
+							      <th ts-criteria="id|lowercase" ts-default>{{ 'datamining.tasks.evaluate.session.id' | translate }}</th>
+							      <th ts-criteria="actions.length|parseInt">{{ 'datamining.tasks.evaluate.session.actions' | translate }}</th>
+							      <th ts-criteria="time|parseInt">{{ 'datamining.tasks.evaluate.session.time' | translate }}</th>
+							      <th ts-criteria="classification|lowercase">{{ 'datamining.tasks.evaluate.session.classification' | translate }}</th>
+							    </tr>
+							  </thead>
+							  <tbody>
+							    <tr ng-repeat="session in taskCtrl.userSessions" ts-repeat>
+							      <td>{{session.id }}</td>
+							      <td>{{session.actions.length | number:2}}</td>
+							      <td>{{session.time | msConverter}}</td>
+							      <td>{{session.classification }}</td>
+							    </tr>
+							  </tbody>
+							</table>
+			            </div>
+			    	</div>
 		            
+		    	</div>
 	        </div>
 	    </div>	    
     </div>

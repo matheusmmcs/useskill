@@ -4,6 +4,7 @@
 	"realtime" : "Tempo Real",
 	"onthefly" : "On The Fly",
 	"datamining" : "DataMining",
+	"minutes" : "minuto(s)",
 	
 	"datamining.back" : "Voltar",
 	"datamining.cancel" : "Cancelar",
@@ -38,6 +39,27 @@
 	"datamining.tasks.edit" : "Editar Tarefa",
 	"datamining.tasks.details" : "Detalhes da Tarefa",
 	"datamining.tasks.evaluate" : "Avaliar Tarefa",
+	
+	"datamining.tasks.evaluate.users.sessions.title" : "Utilizações dos usuários",
+	"datamining.tasks.evaluate.user" : "Usuário",
+	"datamining.tasks.evaluate.actions" : "Méd. Ações",
+	"datamining.tasks.evaluate.time" : "Méd. Tempo",
+	"datamining.tasks.evaluate.success" : "Completo",
+	"datamining.tasks.evaluate.repeat" : "Reinício",
+	"datamining.tasks.evaluate.error" : "Erro",
+	"datamining.tasks.evaluate.threshold" : "Limiar",
+	"datamining.tasks.evaluate.rateSuccess" : "Sucesso (%)",
+	
+	"datamining.tasks.evaluate.user.sessions.title" : "Sessões do usuário",
+	"datamining.tasks.evaluate.session.id" : "ID",
+	"datamining.tasks.evaluate.session.threshold" : "Ultrapassou Limiar",
+	"datamining.tasks.evaluate.session.classification" : "Classificação",
+	"datamining.tasks.evaluate.session.actions" : "Ações",
+	"datamining.tasks.evaluate.session.time" : "Tempo",
+	
+	"datamining.tasks.evaluate.graphs.history" : "Histórico da Taxa de Sucesso",
+	"datamining.tasks.evaluate.graphs.classifications" : "Classificações",
+	
 	
 	"datamining.tasks.title" : "Título",
 	"datamining.tasks.threshold" : "Tempo Max. Sessão",

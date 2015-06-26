@@ -152,12 +152,14 @@ public class WebUsageMining {
 		//#3 - montar o resultdatamining
 		List<UserResultDataMining> usersResult = new ArrayList<UserResultDataMining>();
 		List<SessionResultDataMining> sessionsResult = new ArrayList<SessionResultDataMining>();
+		int countoktotal = 0, counterrototal = 0, countinittotal = 0, countthresholdtotal = 0, countTaskSessions = 0;
+		double countTaskActionsSessions = 0, countTaskTimesSessions = 0;
 		
 		Set<String> usersWithInitialActions = initialActionOfsectionsFromUser.keySet();
 		for(String username : usersWithInitialActions){
 			List<ActionDataMining> userInitialActions = initialActionOfsectionsFromUser.get(username);
 			//variaveis para contabilizar resultado dos usuarios
-			int countok = 0, counterro = 0, countinit = 0, countUserSessions = userInitialActions.size();
+			int countok = 0, counterro = 0, countinit = 0, countthreshold = 0, countUserSessions = userInitialActions.size();
 			double countUserActionsSessions = 0, countUserTimesSessions = 0;
 			List<String> sessionsResultIds = new ArrayList<String>();
 			
@@ -198,6 +200,7 @@ public class WebUsageMining {
 							BigDecimal diff = new BigDecimal(action.getsTime() - previousAction.getsTime());
 							if(diff.compareTo(threshold) == 1){
 								okThreshold = false;
+								classification = SessionClassificationDataMiningEnum.THRESHOLD;
 								break;
 							}
 							
@@ -223,27 +226,46 @@ public class WebUsageMining {
 				
 				//resultados do usuario por sessao
 				sessionsResultIds.add(sessionKey);
-				countUserActionsSessions += countActions;
-				countUserTimesSessions += sessionTime;
+				if(okThreshold){
+					countUserActionsSessions += countActions;
+					countUserTimesSessions += sessionTime;
+				}
+				
 				if(classification.equals(SessionClassificationDataMiningEnum.ERROR)){
 					counterro++;
 				}else if(classification.equals(SessionClassificationDataMiningEnum.SUCCESS)){
 					countok++;
 				}else if(classification.equals(SessionClassificationDataMiningEnum.REPEAT)){
 					countinit++;
+				}else if(classification.equals(SessionClassificationDataMiningEnum.THRESHOLD)){
+					countthreshold++;
 				}
 				
 			}
+			
+			//resultados total
+			countoktotal += countok;
+			counterrototal += counterro;
+			countinittotal += countinit;
+			countthresholdtotal += countthreshold;
+			countTaskSessions += countUserSessions;
+			countTaskTimesSessions += countUserTimesSessions;
+			countTaskActionsSessions += countUserActionsSessions;
 			
 			//resultados por usuario
 			Double actionsAverage = (countUserActionsSessions / countUserSessions);
 			Double timesAverage = (countUserTimesSessions / countUserSessions);
 			
-			usersResult.add(new UserResultDataMining(username, actionsAverage, timesAverage, countok, counterro, countinit, sessionsResultIds));
+			usersResult.add(new UserResultDataMining(username, actionsAverage, timesAverage, countok, counterro, countinit, countthreshold, sessionsResultIds));
 			System.out.println(username + " [ok=" + countok + ", init=" + countinit + ", erro=" + counterro + "]");
 		}
 		
-		ResultDataMining result = new ResultDataMining(usersResult, sessionsResult);
+		Double actionsTaskAverage = (countTaskActionsSessions / countTaskSessions);
+		Double timesTaskAverage = (countTaskTimesSessions / countTaskSessions);
+		
+		//#4 - Fuzzy para 
+		
+		ResultDataMining result = new ResultDataMining(usersResult, sessionsResult, actionsTaskAverage, timesTaskAverage, countoktotal, counterrototal, countinittotal, countthresholdtotal);
 		
 		return result;
 	}

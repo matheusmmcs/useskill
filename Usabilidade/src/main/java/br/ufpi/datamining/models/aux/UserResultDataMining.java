@@ -10,12 +10,15 @@ public class UserResultDataMining {
 	private Integer countSessionsSuccess;
 	private Integer countSessionsError;
 	private Integer countSessionsRepeat;
+	private Integer countSessionsThreshold;
+	private Double rateSuccess;
+	private Integer countSessions;
 	private List<String> sessionsId;
 	
 	public UserResultDataMining(String username, Double actionsAverage,
 			Double timesAverage, Integer countSessionsSuccess,
 			Integer countSessionsError, Integer countSessionsRepeat,
-			List<String> sessionsId) {
+			Integer countSessionsThreshold, List<String> sessionsId) {
 		super();
 		this.username = username;
 		this.actionsAverage = actionsAverage;
@@ -23,7 +26,10 @@ public class UserResultDataMining {
 		this.countSessionsSuccess = countSessionsSuccess;
 		this.countSessionsError = countSessionsError;
 		this.countSessionsRepeat = countSessionsRepeat;
+		this.countSessionsThreshold = countSessionsThreshold;
 		this.sessionsId = sessionsId;
+		this.setCountSessions(countSessionsSuccess + countSessionsError + countSessionsRepeat + countSessionsThreshold);
+		this.setRateSuccess(((double)countSessionsSuccess/this.getCountSessions())*100);
 	}
 	
 	public String getUsername() {
@@ -67,6 +73,30 @@ public class UserResultDataMining {
 	}
 	public void setSessionsId(List<String> sessionsId) {
 		this.sessionsId = sessionsId;
+	}
+
+	public Integer getCountSessionsThreshold() {
+		return countSessionsThreshold;
+	}
+
+	public void setCountSessionsThreshold(Integer countSessionsThreshold) {
+		this.countSessionsThreshold = countSessionsThreshold;
+	}
+
+	public Double getRateSuccess() {
+		return rateSuccess;
+	}
+
+	public void setRateSuccess(Double rateSuccess) {
+		this.rateSuccess = rateSuccess;
+	}
+
+	public Integer getCountSessions() {
+		return countSessions;
+	}
+
+	public void setCountSessions(Integer countSessions) {
+		this.countSessions = countSessions;
 	}
 	
 }

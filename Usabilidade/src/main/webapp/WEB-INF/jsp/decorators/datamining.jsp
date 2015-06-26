@@ -9,10 +9,10 @@
 	<title><decorator:title default="UseSkill" /></title>
 	<link href="${pageContext.request.contextPath}/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
-
-
 	<link rel="stylesheet/less" href="${pageContext.request.contextPath}/less/style.less" />
 	<link href="${pageContext.request.contextPath}/plugin/vis/vis.css" rel="stylesheet" type="text/css" />
+	<link href="${pageContext.request.contextPath}/css/tablesort.css" rel="stylesheet" type="text/css" />
+	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/angular-chart/angular-chart.css" rel="stylesheet" type="text/css" />
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.js"></script>
 	<script src="${pageContext.request.contextPath}/jscripts/libs/less-1.3.0.min.js"></script>
@@ -46,11 +46,14 @@
 
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-1.3.15.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/json2.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/plugin/chart/Chart.min.js"></script>
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-resource.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-route.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-translate.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-translate-loader-url.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-tablesort.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-chart/angular-chart.js"></script>
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/app/app.js"></script>
 	
