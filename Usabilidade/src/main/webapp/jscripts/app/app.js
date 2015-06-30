@@ -308,8 +308,8 @@ angular.module('useskill',
 	
 	//success graph
 	$scope.graphSuccessLabels = [
-	                             $filter('translate')('datamining.tasks.evaluate.success'), 
-	                             $filter('translate')('datamining.tasks.evaluate.repeat'),
+	                             $filter('translate')('datamining.tasks.evaluate.complete'), 
+	                             $filter('translate')('datamining.tasks.evaluate.restart'),
 	                             $filter('translate')('datamining.tasks.evaluate.threshold')];
     $scope.graphSuccessData = [
                                	taskCtrl.evaluate.countSessionsSuccess, 

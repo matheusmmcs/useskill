@@ -7,27 +7,38 @@ public class UserResultDataMining {
 	private String username;
 	private Double actionsAverage;
 	private Double timesAverage;
+	private Double actionsAverageOk;
+	private Double timesAverageOk;
+	
 	private Integer countSessionsSuccess;
 	private Integer countSessionsError;
 	private Integer countSessionsRepeat;
 	private Integer countSessionsThreshold;
+	
 	private Double rateSuccess;
 	private Integer countSessions;
+	private Double fuzzyPriority;
+	
 	private List<String> sessionsId;
 	
-	public UserResultDataMining(String username, Double actionsAverage,
-			Double timesAverage, Integer countSessionsSuccess,
-			Integer countSessionsError, Integer countSessionsRepeat,
-			Integer countSessionsThreshold, List<String> sessionsId) {
+	public UserResultDataMining(String username, 
+			Double actionsAverage, Double timesAverage, Double actionsAverageOk, Double timesAverageOk, 
+			Integer countSessionsSuccess, Integer countSessionsError, Integer countSessionsRepeat,
+			Integer countSessionsThreshold, Double fuzzyPriority, List<String> sessionsId) {
 		super();
 		this.username = username;
 		this.actionsAverage = actionsAverage;
 		this.timesAverage = timesAverage;
+		this.actionsAverageOk = actionsAverageOk;
+		this.timesAverageOk = timesAverageOk;
+		
 		this.countSessionsSuccess = countSessionsSuccess;
 		this.countSessionsError = countSessionsError;
 		this.countSessionsRepeat = countSessionsRepeat;
 		this.countSessionsThreshold = countSessionsThreshold;
+		
 		this.sessionsId = sessionsId;
+		this.fuzzyPriority = fuzzyPriority;
 		this.setCountSessions(countSessionsSuccess + countSessionsError + countSessionsRepeat + countSessionsThreshold);
 		this.setRateSuccess(((double)countSessionsSuccess/this.getCountSessions())*100);
 	}
@@ -97,6 +108,34 @@ public class UserResultDataMining {
 
 	public void setCountSessions(Integer countSessions) {
 		this.countSessions = countSessions;
+	}
+
+	public Double getFuzzyPriority() {
+		return fuzzyPriority;
+	}
+
+	public void setFuzzyPriority(Double fuzzyPriority) {
+		this.fuzzyPriority = fuzzyPriority;
+	}
+
+	public Double getActionsAverageOk() {
+		return actionsAverageOk;
+	}
+
+	public void setActionsAverageOk(Double actionsAverageOk) {
+		this.actionsAverageOk = actionsAverageOk;
+	}
+
+	public Double getTimesAverageOk() {
+		return timesAverageOk;
+	}
+
+	public void setTimesAverageOk(Double timesAverageOk) {
+		this.timesAverageOk = timesAverageOk;
+	}
+	
+	public Double getUncompleteNormalized(){
+		return 1 - (getRateSuccess() / 100);
 	}
 	
 }

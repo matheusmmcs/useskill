@@ -174,7 +174,7 @@ public class TestesAlgoritmos {
         return fuzzyParams(ApplicationPath.getFilePath("files/fuzzy/funcpriority-time-actions-effectiveness.fcl"), params, "priority", false);
 	}	
 	
-	private static double fuzzyParams(String filePath, HashMap<String, Double> params, String sResult, boolean debug) throws IOException {
+	public static double fuzzyParams(String filePath, HashMap<String, Double> params, String sResult, boolean debug) throws IOException {
         FIS fis = FIS.load(filePath,true);
 
         if( fis == null ) { 
@@ -194,6 +194,7 @@ public class TestesAlgoritmos {
         // Evaluate
         fis.evaluate();
         double value = fis.getVariable(sResult).getValue();
+        System.out.println(fis.getVariable(sResult).getDefuzzifier().getName());
         
         if(debug){
         	// Show 

@@ -44,11 +44,11 @@
 	"datamining.tasks.evaluate.user" : "Usuário",
 	"datamining.tasks.evaluate.actions" : "Méd. Ações",
 	"datamining.tasks.evaluate.time" : "Méd. Tempo",
-	"datamining.tasks.evaluate.success" : "Completo",
-	"datamining.tasks.evaluate.repeat" : "Reinício",
+	"datamining.tasks.evaluate.complete" : "Completo",
+	"datamining.tasks.evaluate.restart" : "Reinício",
 	"datamining.tasks.evaluate.error" : "Erro",
 	"datamining.tasks.evaluate.threshold" : "Limiar",
-	"datamining.tasks.evaluate.rateSuccess" : "Sucesso (%)",
+	"datamining.tasks.evaluate.rateComplete" : "Completos (%)",
 	
 	"datamining.tasks.evaluate.user.sessions.title" : "Sessões do usuário",
 	"datamining.tasks.evaluate.session.id" : "ID",
@@ -58,7 +58,7 @@
 	"datamining.tasks.evaluate.session.time" : "Tempo",
 	
 	"datamining.tasks.evaluate.graphs.history" : "Histórico da Taxa de Sucesso",
-	"datamining.tasks.evaluate.graphs.classifications" : "Classificações",
+	"datamining.tasks.evaluate.graphs.completude" : "Completude das Sessões",
 	
 	
 	"datamining.tasks.title" : "Título",

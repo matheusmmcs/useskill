@@ -7,10 +7,14 @@ public class ResultDataMining {
 
 	private Double actionsAverage;
 	private Double timesAverage;
+	private Double actionsAverageOk;
+	private Double timesAverageOk;
+	
 	private Integer countSessionsSuccess;
 	private Integer countSessionsError;
 	private Integer countSessionsRepeat;
 	private Integer countSessionsThreshold;
+	
 	private Double rateSuccess;
 	private Integer countSessions;
 	
@@ -22,8 +26,8 @@ public class ResultDataMining {
 		this.sessions = new ArrayList<SessionResultDataMining>();
 	}
 	
-	public ResultDataMining(List<UserResultDataMining> users,
-			List<SessionResultDataMining> sessions, Double actionsAverage, Double timesAverage,
+	public ResultDataMining(List<UserResultDataMining> users, List<SessionResultDataMining> sessions, 
+			Double actionsAverage, Double timesAverage, Double actionsAverageOk, Double timesAverageOk,
 			Integer countSessionsSuccess, Integer countSessionsError, Integer countSessionsRepeat,
 			Integer countSessionsThreshold) {
 		this();
@@ -31,10 +35,14 @@ public class ResultDataMining {
 		this.sessions = sessions;
 		this.actionsAverage = actionsAverage;
 		this.timesAverage = timesAverage;
+		this.actionsAverageOk = actionsAverageOk;
+		this.timesAverageOk = timesAverageOk;
+		
 		this.countSessionsSuccess = countSessionsSuccess;
 		this.countSessionsError = countSessionsError;
 		this.countSessionsRepeat = countSessionsRepeat;
 		this.countSessionsThreshold = countSessionsThreshold;
+		
 		this.setCountSessions(countSessionsSuccess + countSessionsError + countSessionsRepeat + countSessionsThreshold);
 		this.setRateSuccess(((double)countSessionsSuccess/this.getCountSessions())*100);
 	}
@@ -114,6 +122,22 @@ public class ResultDataMining {
 
 	public void setCountSessions(Integer countSessions) {
 		this.countSessions = countSessions;
+	}
+
+	public Double getActionsAverageOk() {
+		return actionsAverageOk;
+	}
+
+	public void setActionsAverageOk(Double actionsAverageOk) {
+		this.actionsAverageOk = actionsAverageOk;
+	}
+
+	public Double getTimesAverageOk() {
+		return timesAverageOk;
+	}
+
+	public void setTimesAverageOk(Double timesAverageOk) {
+		this.timesAverageOk = timesAverageOk;
 	}
 		
 }

@@ -1,0 +1,80 @@
+
+
+FUNCTION_BLOCK fuzzy		// Block definition (there may be more than one block per file)
+
+VAR_INPUT					// Define input variables
+	t 			: REAL;
+	a 			: REAL;
+	c 			: REAL;
+END_VAR
+
+VAR_OUTPUT					// Define output variable
+	priority 	: REAL;
+END_VAR
+
+FUZZIFY t				// Fuzzify input variable 'time': {'poor', 'moderate' , 'good'}
+	TERM p := 			(0, 1) (0.4, 0); 
+	TERM m := 			(0.2, 0) (0.5, 1) (0.8, 0);
+	TERM g := 			(0.6, 0) (1, 1);
+END_FUZZIFY
+
+FUZZIFY a				// Fuzzify input variable 'actions': {'poor', 'moderate' , 'good'}
+	TERM p := 			(0, 1) (0.4, 0); 
+	TERM m := 			(0.2, 0) (0.5, 1) (0.8, 0);
+	TERM g := 			(0.6, 0) (1, 1);
+END_FUZZIFY
+
+FUZZIFY c				// Fuzzify input variable 'completeness': {'poor', 'moderate' , 'good'}
+	TERM p := 			(0, 1) (0.4, 0); 
+	TERM m := 			(0.2, 0) (0.5, 1) (0.8, 0);
+	TERM g := 			(0.6, 0) (1, 1);
+END_FUZZIFY
+
+DEFUZZIFY priority			// Defuzzify output variable 'priority' : {'low', 'average' , 'high'}
+	TERM l := 			(0, 1) (0.3, 0);
+	TERM ml := 			(0.1, 0) (0.3, 1) (0.5, 0); 
+	TERM m := 			(0.3, 0) (0.5, 1) (0.7, 0);
+	TERM mh := 			(0.5, 0) (0.7, 1) (0.9, 0);
+	TERM h := 			(0.7, 0) (1, 1);
+	METHOD : COG;			// Use 'Center Of Gravity' defuzzification method
+	DEFAULT := 0;			// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+RULEBLOCK No1
+	AND : MIN;				// Use 'min' for 'and' (also implicit use 'max' for 'or' to fulfill DeMorgan's Law)
+	ACT : MIN;				// Use 'min' activation method
+	ACCU : MAX;				// Use 'max' accumulation method
+
+	RULE 1 : 	IF c IS p	AND t IS p	AND a IS p	THEN priority IS l;
+	RULE 2 : 	IF c IS p	AND t IS p	AND a IS m	THEN priority IS l;
+	RULE 3 : 	IF c IS p	AND t IS p	AND a IS g	THEN priority IS ml;
+	RULE 4 : 	IF c IS p	AND t IS m	AND a IS p	THEN priority IS l;
+	RULE 5 : 	IF c IS p	AND t IS m	AND a IS m	THEN priority IS l;
+	RULE 6 : 	IF c IS p	AND t IS m	AND a IS g	THEN priority IS m;
+	RULE 7 : 	IF c IS p	AND t IS g	AND a IS p	THEN priority IS ml;
+	RULE 8 : 	IF c IS p	AND t IS g	AND a IS m	THEN priority IS m;
+	RULE 9 : 	IF c IS p	AND t IS g	AND a IS g	THEN priority IS mh;
+	
+	RULE 10 : 	IF c IS m	AND t IS p	AND a IS p	THEN priority IS l;
+	RULE 11 : 	IF c IS m	AND t IS p	AND a IS m	THEN priority IS l;
+	RULE 12 : 	IF c IS m	AND t IS p	AND a IS g	THEN priority IS m;
+	RULE 13 : 	IF c IS m	AND t IS m	AND a IS p	THEN priority IS l;
+	RULE 14 : 	IF c IS m	AND t IS m	AND a IS m	THEN priority IS m;
+	RULE 15 : 	IF c IS m	AND t IS m	AND a IS g	THEN priority IS h;
+	RULE 16 : 	IF c IS m	AND t IS g	AND a IS p	THEN priority IS m;
+	RULE 17 : 	IF c IS m	AND t IS g	AND a IS m	THEN priority IS h;
+	RULE 18 : 	IF c IS m	AND t IS g	AND a IS g	THEN priority IS h;
+	
+	RULE 19 : 	IF c IS g	AND t IS p	AND a IS p	THEN priority IS ml;
+	RULE 20 : 	IF c IS g	AND t IS p	AND a IS m	THEN priority IS m;
+	RULE 21 : 	IF c IS g	AND t IS p	AND a IS g	THEN priority IS mh;
+	RULE 22 : 	IF c IS g	AND t IS m	AND a IS p	THEN priority IS m;
+	RULE 23 : 	IF c IS g	AND t IS m	AND a IS m	THEN priority IS h;
+	RULE 24 : 	IF c IS g	AND t IS m	AND a IS g	THEN priority IS h;
+	RULE 25 : 	IF c IS g	AND t IS g	AND a IS p	THEN priority IS mh;
+	RULE 26 : 	IF c IS g	AND t IS g	AND a IS m	THEN priority IS h;
+	RULE 27 : 	IF c IS g	AND t IS g	AND a IS g	THEN priority IS h;
+	
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

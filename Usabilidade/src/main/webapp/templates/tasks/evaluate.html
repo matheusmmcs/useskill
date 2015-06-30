@@ -52,7 +52,7 @@
 		            <br/>
 		            
 		            <h3 class="usdm-box-header">
-			    		{{ 'datamining.tasks.evaluate.graphs.classifications' | translate}}
+			    		{{ 'datamining.tasks.evaluate.graphs.completude' | translate}}
 		            </h3>  
 					  
 					<canvas id="base" class="chart-base" chart-type="graphSuccessType" data="graphSuccessData" 
@@ -60,14 +60,14 @@
 		              	
 					<br/>
 					
-					<!--
+					
 					<h3 class="usdm-box-header">
 			    		{{ 'datamining.tasks.evaluate.graphs.history' | translate}}
 		            </h3>
 		            
 		            <canvas id="line" class="chart chart-line" data="historyData"
 					  	labels="historyLabels" legend="true" series="historySeries"></canvas>
-					--> 
+					 
 		            
 		    	</div>
 		    </div>
@@ -85,10 +85,11 @@
 							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
 							      <th ts-criteria="actionsAverage|parseFloat">{{ 'datamining.tasks.evaluate.actions' | translate }}</th>
 							      <th ts-criteria="timesAverage|parseFloat">{{ 'datamining.tasks.evaluate.time' | translate }}</th>
-							      <th ts-criteria="rateSuccess|parseFloat" ts-default="descending">{{ 'datamining.tasks.evaluate.rateSuccess' | translate }}</th>
-							      <th ts-criteria="countSessionsSuccess|parseInt">{{ 'datamining.tasks.evaluate.success' | translate }}</th>
-							      <th ts-criteria="countSessionsRepeat|parseInt">{{ 'datamining.tasks.evaluate.repeat' | translate }}</th>
+							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateComplete' | translate }}</th>
+							      <th ts-criteria="countSessionsSuccess|parseInt">{{ 'datamining.tasks.evaluate.complete' | translate }}</th>
+							      <th ts-criteria="countSessionsRepeat|parseInt">{{ 'datamining.tasks.evaluate.restart' | translate }}</th>
 							      <th ts-criteria="countSessionsThreshold|parseInt">{{ 'datamining.tasks.evaluate.threshold' | translate }}</th>
+							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">Fuzzy</th>
 							    </tr>
 							  </thead>
 							  <tbody>
@@ -100,6 +101,7 @@
 							      <td>{{user.countSessionsSuccess}}</td>
 							      <td>{{user.countSessionsRepeat}}</td>
 							      <td>{{user.countSessionsThreshold}}</td>
+							      <td>{{user.fuzzyPriority | number:3}}</td>
 							    </tr>
 							  </tbody>
 							</table>

@@ -1,5 +1,6 @@
 package br.ufpi.datamining.analisys;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
+import br.ufpi.analise.TestesAlgoritmos;
 import br.ufpi.datamining.models.ActionDataMining;
 import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.FieldSearchTupleDataMining;
@@ -21,6 +23,7 @@ import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.utils.EntityManagerUtil;
+import br.ufpi.util.ApplicationPath;
 
 
 /*
@@ -96,7 +99,7 @@ public class WebUsageMining {
 	//- criar plugin para facilitar na identificação do XPath, Jhm, Step e Url (depois tornar dinâmico);
 	//- criar gráficos de pizza, apresentando os resultados dos usuários e das sessões.
 	
-	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
+	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException, IOException {
 		EntityManager entityManager = EntityManagerUtil.getEntityManager();
 		TaskDataMiningRepository taskDataMiningRepository = new TaskDataMiningRepository(entityManager);
 		ActionDataMiningRepository actionDataMiningRepository = new ActionDataMiningRepository(entityManager);
@@ -105,7 +108,7 @@ public class WebUsageMining {
 	}
 	
 	
-	public static ResultDataMining analyze(Long taskId, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+	public static ResultDataMining analyze(Long taskId, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
 		
 		TaskDataMining taskDataMining = taskDataMiningRepository.find(taskId);
 		
@@ -153,14 +156,17 @@ public class WebUsageMining {
 		List<UserResultDataMining> usersResult = new ArrayList<UserResultDataMining>();
 		List<SessionResultDataMining> sessionsResult = new ArrayList<SessionResultDataMining>();
 		int countoktotal = 0, counterrototal = 0, countinittotal = 0, countthresholdtotal = 0, countTaskSessions = 0;
-		double countTaskActionsSessions = 0, countTaskTimesSessions = 0;
+		double countTaskActionsSessions = 0, countTaskTimesSessions = 0,
+				countTaskActionsSessionsOk = 0, countTaskTimesSessionsOk = 0,
+				maxTimeAverage = 0, maxActionsAverage = 0, maxTimeAverageOk = 0, maxActionsAverageOk = 0;
 		
 		Set<String> usersWithInitialActions = initialActionOfsectionsFromUser.keySet();
 		for(String username : usersWithInitialActions){
 			List<ActionDataMining> userInitialActions = initialActionOfsectionsFromUser.get(username);
 			//variaveis para contabilizar resultado dos usuarios
 			int countok = 0, counterro = 0, countinit = 0, countthreshold = 0, countUserSessions = userInitialActions.size();
-			double countUserActionsSessions = 0, countUserTimesSessions = 0;
+			double countUserActionsSessions = 0, countUserTimesSessions = 0,
+					countUserActionsSessionsOk = 0, countUserTimesSessionsOk = 0;
 			List<String> sessionsResultIds = new ArrayList<String>();
 			
 			//verificar cada sessao
@@ -235,6 +241,8 @@ public class WebUsageMining {
 					counterro++;
 				}else if(classification.equals(SessionClassificationDataMiningEnum.SUCCESS)){
 					countok++;
+					countUserActionsSessionsOk += countActions;
+					countUserTimesSessionsOk += sessionTime;
 				}else if(classification.equals(SessionClassificationDataMiningEnum.REPEAT)){
 					countinit++;
 				}else if(classification.equals(SessionClassificationDataMiningEnum.THRESHOLD)){
@@ -243,35 +251,78 @@ public class WebUsageMining {
 				
 			}
 			
-			//resultados total
+			//resultados somado para o total
 			countoktotal += countok;
 			counterrototal += counterro;
 			countinittotal += countinit;
 			countthresholdtotal += countthreshold;
 			countTaskSessions += countUserSessions;
+			
 			countTaskTimesSessions += countUserTimesSessions;
 			countTaskActionsSessions += countUserActionsSessions;
+			countTaskTimesSessionsOk += countUserTimesSessionsOk;
+			countTaskActionsSessionsOk += countUserActionsSessionsOk;
 			
 			//resultados por usuario
 			Double actionsAverage = (countUserActionsSessions / countUserSessions);
 			Double timesAverage = (countUserTimesSessions / countUserSessions);
+			Double actionsAverageOk = countok > 0 ? (countUserActionsSessionsOk / countok) : 0;
+			Double timesAverageOk = countok > 0 ? (countUserTimesSessionsOk / countok) : 0;
 			
-			usersResult.add(new UserResultDataMining(username, actionsAverage, timesAverage, countok, counterro, countinit, countthreshold, sessionsResultIds));
+			//dados para normalizar o fuzzy
+			maxTimeAverage = maxTimeAverage < timesAverage ? timesAverage : maxTimeAverage;
+			maxActionsAverage = maxActionsAverage < actionsAverage ? actionsAverage : maxActionsAverage;
+
+			maxTimeAverageOk = maxTimeAverageOk < timesAverageOk ? timesAverageOk : maxTimeAverageOk;
+			maxActionsAverageOk = maxActionsAverageOk < actionsAverageOk ? actionsAverageOk : maxActionsAverageOk;
+			
+			usersResult.add(new UserResultDataMining(username, actionsAverage, timesAverage, actionsAverageOk, timesAverageOk, countok, counterro, countinit, countthreshold, 0d, sessionsResultIds));
 			System.out.println(username + " [ok=" + countok + ", init=" + countinit + ", erro=" + counterro + "]");
 		}
 		
 		Double actionsTaskAverage = (countTaskActionsSessions / countTaskSessions);
 		Double timesTaskAverage = (countTaskTimesSessions / countTaskSessions);
+		Double actionsTaskAverageOk = (countTaskActionsSessionsOk / countoktotal);
+		Double timesTaskAverageOk = (countTaskTimesSessionsOk / countoktotal);
 		
-		//#4 - Fuzzy para 
+		//#4 - Fuzzy tempo e ações nas ->  
+		for(UserResultDataMining u : usersResult){
+//			double time = u.getTimesAverage() / maxTimeAverage;
+//			double actions = u.getActionsAverage() / maxActionsAverage;
+//			double priority = fuzzyPriority(time, actions);
+//			
+//			System.out.println(u.getUsername() + " -> " + time + " , " + actions + " -> " + priority);
+//			priority = fuzzyPriority3(u.getUncompleteNormalized(), time, actions);
+//			System.out.println(u.getUsername() + " (3)-> " + time + " , " + actions + " -> " + priority);
+//			
+//			time = u.getTimesAverageOk() / maxTimeAverageOk;
+//			actions = u.getActionsAverageOk() / maxActionsAverageOk;
+//			priority = fuzzyPriority(time, actions);
+//			
+//			u.setFuzzyPriority(priority);
+//			
+//			System.out.println(u.getUsername() + "(ok) -> " + time + " , " + actions + " -> " + priority);
+//			priority = fuzzyPriority3(u.getUncompleteNormalized(), time, actions);
+//			System.out.println(u.getUsername() + " (3ok)-> " + time + " , " + actions + " -> " + priority);
+//			
+			if(u.getTimesAverageOk() > 0){
+				double time = u.getTimesAverageOk() / maxTimeAverageOk;
+				double actions = u.getActionsAverageOk() / maxActionsAverageOk;
+				double priority = fuzzyPriority3(u.getUncompleteNormalized(), time, actions);
+				u.setFuzzyPriority(priority);
+				usersResult.set(usersResult.indexOf(u), u);
+			}else{
+				u.setFuzzyPriority(0d);
+				usersResult.set(usersResult.indexOf(u), u);
+			}
+		}
 		
-		ResultDataMining result = new ResultDataMining(usersResult, sessionsResult, actionsTaskAverage, timesTaskAverage, countoktotal, counterrototal, countinittotal, countthresholdtotal);
+		ResultDataMining result = new ResultDataMining(usersResult, sessionsResult, actionsTaskAverage, timesTaskAverage, actionsTaskAverageOk, timesTaskAverageOk, countoktotal, counterrototal, countinittotal, countthresholdtotal);
 		
 		return result;
 	}
 	
 	private static boolean listContainsAction(List<ActionDataMining> list, ActionDataMining action){
-		
 		for(ActionDataMining a : list){
 			if(a.getsActionType().equals(action.getsActionType())
 				&& a.getsJhm().equals(action.getsJhm())
@@ -282,6 +333,21 @@ public class WebUsageMining {
 			}
 		}
 		return false;
+	}
+	
+	private static double fuzzyPriority(double time, double actions) throws IOException {
+		HashMap<String, Double> params = new HashMap<String, Double>();
+		params.put("time", time);
+		params.put("actions", actions);
+        return TestesAlgoritmos.fuzzyParams(ApplicationPath.getFilePath("files/fuzzy/datamining/priority.fcl"), params, "priority", false);
+	}
+	
+	private static double fuzzyPriority3(double c, double t, double a) throws IOException {
+		HashMap<String, Double> params = new HashMap<String, Double>();
+		params.put("c", c);
+		params.put("t", t);
+		params.put("a", a);
+        return TestesAlgoritmos.fuzzyParams(ApplicationPath.getFilePath("files/fuzzy/datamining/priority3.fcl"), params, "priority", false);
 	}
 	
 }
