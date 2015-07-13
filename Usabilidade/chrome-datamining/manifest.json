@@ -1,0 +1,30 @@
+﻿{
+  "name": "UseSkill On The Fly - Capt Elements",
+  "version": "1.0.0",
+  "description": "Plugin para auxiliar na identificação do XPath e de metadados, dados importantes para a ferramenta UseSkill On The Fly.",
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["js/jquery-1.11.3.min.js"]
+    }
+  ],
+  "permissions": [
+    "tabs",
+    "webNavigation",
+    "http://*/*", 
+    "https://*/*"
+  ],
+  "background": {
+    "scripts": ["js/jquery-1.11.3.min.js", "js/background.js"]
+  },
+  "icons": { 
+    "16": "images/icon16.png",
+    "64": "images/icon64.png",
+    "128": "images/icon128.png"
+  },
+  "browser_action": {
+    "default_icon": "images/icon64.png",
+	  "default_title": "UseSkill On The Fly"
+  },
+  "manifest_version": 2
+}

@@ -1,0 +1,122 @@
+.useskill-element-hover{
+	border: 2px solid rgba(0,0,0,0.5) !important; 
+	-webkit-animation: useskillpulse 1s infinite alternate;
+}
+
+@-webkit-keyframes useskillpulse { 
+	0% {opacity: 1;} 
+	50% {opacity: 0.4;} 
+	100% {opacity: 1;} 
+}
+
+.useskill-captelement{
+	position: fixed;
+	z-index: 9999999;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background: #fff;
+	border-bottom: 1px solid #aaa;
+	box-shadow: 0px 5px 5px rgb(200, 200, 200);
+	opacity: 0.3;
+	transition: opacity 0.5s;
+}
+
+.useskill-captelement:hover{
+	opacity: 1;
+}
+
+.useskill-hide{
+	display: none;
+}
+
+.useskill-elements-list{
+	float: left;
+	width: 50%;
+	box-sizing: border-box;
+	color: rgb(51, 51, 51);
+	display: block;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	line-height: 20px;
+	margin-bottom: 0px;
+	padding-left: 0px;
+	border: 1px solid rgb(200, 200, 200);
+}
+
+.useskill-elements-list-item.useskill-elements-title{
+	background-color: rgb(222, 222, 222);
+	font-weight: bold;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.useskill-elements-list-item{
+	background-color: rgb(255, 255, 255);
+	border-top: 1px solid rgb(221, 221, 221);
+	border-bottom: 1px solid rgb(221, 221, 221);
+	word-wrap: break-word;
+	border-image-outset: 0px;
+	border-image-repeat: stretch;
+	border-image-slice: 100%;
+	border-image-source: none;
+	border-image-width: 1;
+	box-sizing: border-box;
+	color: rgb(85, 85, 85);
+	display: block;
+	margin-bottom: -1px;
+	padding-bottom: 10px;
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 10px;
+	position: relative;
+	text-decoration: none;
+}
+
+/* XPATH ELEMENT */
+#useskill-xpathelement > .useskill-elements-list-item{
+	cursor: pointer;
+}
+#useskill-xpathelement > .useskill-elements-list-item:hover{
+	background-color: rgb(235, 235, 235);
+
+}
+
+/* BNTS */
+.useskill-elements-btns{
+	position: absolute;
+  	right: 0;
+  	top: 0;
+}
+.useskill-elements-clear, .useskill-elements-close{
+	text-transform: capitalize;
+	display: inline-block;
+	width: 50px;
+	line-height: 38px;
+	margin: 0 3px;
+	text-decoration: none !important;
+}
+.useskill-elements-clear:hover, .useskill-elements-close:hover{
+
+}
+
+.useskill-elements-clear{
+	background-color: rgb(245, 245, 245);
+	color: #555 !important;
+}
+.useskill-elements-clear:hover{
+	background-color: rgb(245, 245, 245);
+	color: #222 !important;
+}
+.useskill-elements-close{
+	background-color: rgb(100, 100, 100);
+	color: #DDD !important;
+}
+.useskill-elements-close:hover{
+	color: #FFF !important;
+}
+
+
+
+
+
