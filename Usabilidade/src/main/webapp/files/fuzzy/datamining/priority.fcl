@@ -12,21 +12,21 @@ VAR_OUTPUT					// Define output variable
 END_VAR
 
 FUZZIFY time				// Fuzzify input variable 'time': {'poor', 'moderate' , 'good'}
-	TERM poor := 			(0, 0) (0.25, 1) (0.5, 0); 
-	TERM moderate := 		(0.25, 0) (0.5, 1) (0.75, 0);
-	TERM good := 			(0.5, 0) (0.75, 1) (1, 0);
+	TERM poor := 			(0, 1) (0.4, 0);
+	TERM moderate := 		(0.2, 0) (0.5, 1) (0.8, 0);
+	TERM good := 			(0.6, 0) (1, 1);
 END_FUZZIFY
 
 FUZZIFY actions				// Fuzzify input variable 'actions': {'poor', 'moderate' , 'good'}
-	TERM poor := 			(0, 0) (0.25, 1) (0.5, 0); 
-	TERM moderate := 		(0.25, 0) (0.5, 1) (0.75, 0);
-	TERM good := 			(0.5, 0) (0.75, 1) (1, 0);
+	TERM poor := 			(0, 1) (0.4, 0);
+	TERM moderate := 		(0.2, 0) (0.5, 1) (0.8, 0);
+	TERM good := 			(0.6, 0) (1, 1);
 END_FUZZIFY
 
 DEFUZZIFY priority			// Defuzzify output variable 'priority' : {'low', 'average' , 'high'}
-	TERM low := 			(0, 0) (0.25, 1) (0.5, 0); 
-	TERM average := 		(0.25, 0) (0.5, 1) (0.75, 0);
-	TERM high := 			(0.5, 0) (0.75, 1) (1, 0);
+	TERM low := 			(0, 1) (0.4, 0);
+	TERM average := 		(0.2, 0) (0.5, 1) (0.8, 0);
+	TERM high := 			(0.6, 0) (1, 1);
 	METHOD : COG;			// Use 'Center Of Gravity' defuzzification method
 	DEFAULT := 0;			// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY

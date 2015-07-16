@@ -18,6 +18,23 @@ public class ResultDataMining {
 	private Double rateSuccess;
 	private Integer countSessions;
 	
+	private Double meanActions;
+	private Double meanActionsOk;
+	private Double meanTimes;
+	private Double meanTimesOk;
+	private Double stdDevActions;
+	private Double stdDevActionsOk;
+	private Double stdDevTimes;
+	private Double stdDevTimesOk;
+	private Double maxActions;
+	private Double maxActionsOk;
+	private Double maxTimes;
+	private Double maxTimesOk;
+	private Double minActions;
+	private Double minActionsOk;
+	private Double minTimes;
+	private Double minTimesOk;
+	
 	private List<UserResultDataMining> users;
 	private List<SessionResultDataMining> sessions;
 	
@@ -138,6 +155,134 @@ public class ResultDataMining {
 
 	public void setTimesAverageOk(Double timesAverageOk) {
 		this.timesAverageOk = timesAverageOk;
+	}
+
+	public Double getMeanActions() {
+		return meanActions;
+	}
+
+	public void setMeanActions(Double meanActions) {
+		this.meanActions = meanActions;
+	}
+
+	public Double getMeanActionsOk() {
+		return meanActionsOk;
+	}
+
+	public void setMeanActionsOk(Double meanActionsOk) {
+		this.meanActionsOk = meanActionsOk;
+	}
+
+	public Double getMeanTimes() {
+		return meanTimes;
+	}
+
+	public void setMeanTimes(Double meanTimes) {
+		this.meanTimes = meanTimes;
+	}
+
+	public Double getMeanTimesOk() {
+		return meanTimesOk;
+	}
+
+	public void setMeanTimesOk(Double meanTimesOk) {
+		this.meanTimesOk = meanTimesOk;
+	}
+
+	public Double getStdDevActions() {
+		return stdDevActions;
+	}
+
+	public void setStdDevActions(Double stdDevActions) {
+		this.stdDevActions = stdDevActions;
+	}
+
+	public Double getStdDevActionsOk() {
+		return stdDevActionsOk;
+	}
+
+	public void setStdDevActionsOk(Double stdDevActionsOk) {
+		this.stdDevActionsOk = stdDevActionsOk;
+	}
+
+	public Double getStdDevTimes() {
+		return stdDevTimes;
+	}
+
+	public void setStdDevTimes(Double stdDevTimes) {
+		this.stdDevTimes = stdDevTimes;
+	}
+
+	public Double getStdDevTimesOk() {
+		return stdDevTimesOk;
+	}
+
+	public void setStdDevTimesOk(Double stdDevTimesOk) {
+		this.stdDevTimesOk = stdDevTimesOk;
+	}
+
+	public Double getMaxActions() {
+		return maxActions;
+	}
+
+	public void setMaxActions(Double maxActions) {
+		this.maxActions = maxActions;
+	}
+
+	public Double getMaxActionsOk() {
+		return maxActionsOk;
+	}
+
+	public void setMaxActionsOk(Double maxActionsOk) {
+		this.maxActionsOk = maxActionsOk;
+	}
+
+	public Double getMaxTimes() {
+		return maxTimes;
+	}
+
+	public void setMaxTimes(Double maxTimes) {
+		this.maxTimes = maxTimes;
+	}
+
+	public Double getMaxTimesOk() {
+		return maxTimesOk;
+	}
+
+	public void setMaxTimesOk(Double maxTimesOk) {
+		this.maxTimesOk = maxTimesOk;
+	}
+
+	public Double getMinActions() {
+		return minActions;
+	}
+
+	public void setMinActions(Double minActions) {
+		this.minActions = minActions;
+	}
+
+	public Double getMinActionsOk() {
+		return minActionsOk;
+	}
+
+	public void setMinActionsOk(Double minActionsOk) {
+		this.minActionsOk = minActionsOk;
+	}
+
+	public Double getMinTimes() {
+		return minTimes;
+	}
+
+	public void setMinTimes(Double minTimes) {
+		this.minTimes = minTimes;
+	}
+
+	public Double getMinTimesOk() {
+		return minTimesOk;
+	}
+
+	public void setMinTimesOk(Double minTimesOk) {
+		this.minTimesOk = minTimesOk;
 	}
 		
 }

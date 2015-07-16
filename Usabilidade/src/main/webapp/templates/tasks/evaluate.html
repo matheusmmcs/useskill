@@ -68,6 +68,37 @@
 		            <canvas id="line" class="chart chart-line" data="historyData"
 					  	labels="historyLabels" legend="true" series="historySeries"></canvas>
 					 
+					 
+					<div class="usdm-box-body">
+			            <dl>
+			            	<dt>{{ 'datamining.tasks.evaluate.actions' | translate}}:</dt>
+			            	<dd>
+			            		Max.: {{taskCtrl.evaluate.maxActions | number:2}} -> Min.: {{taskCtrl.evaluate.minActions | number:2}} <br/>
+			            		Méd.: {{taskCtrl.evaluate.meanActions | number:2}} / Desv.: {{taskCtrl.evaluate.stdDevActions | number:2}}
+			            	</dd>
+			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.tasks.evaluate.actions' | translate}} (Ok):</dt>
+			            	<dd>
+			            		Max.: {{taskCtrl.evaluate.maxActionsOk | number:2}} -> Min.: {{taskCtrl.evaluate.minActionsOk | number:2}} <br/>
+			            		Méd.: {{taskCtrl.evaluate.meanActionsOk | number:2}} / Desv.: {{taskCtrl.evaluate.stdDevActionsOk | number:2}}
+			            	</dd>
+			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.tasks.evaluate.time' | translate}}:</dt>
+			            	<dd>
+			            		Max.: {{taskCtrl.evaluate.maxTimes | number:2}} -> Min.: {{taskCtrl.evaluate.minTimes | number:2}} <br/>
+			            		Méd.: {{taskCtrl.evaluate.meanTimes | number:2}} / Desv.: {{taskCtrl.evaluate.stdDevTimes | number:2}}
+			            	</dd>
+			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.tasks.evaluate.time' | translate}} (Ok):</dt>
+			            	<dd>
+			            		Max.: {{taskCtrl.evaluate.maxTimesOk | number:2}} ->  {{taskCtrl.evaluate.minTimesOk | number:2}} <br/>
+			            		Méd.: {{taskCtrl.evaluate.meanTimesOk | number:2}} / Desv.: {{taskCtrl.evaluate.stdDevTimesOk | number:2}}
+			            	</dd>
+			            </dl>
+		            </div>
 		            
 		    	</div>
 		    </div>

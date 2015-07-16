@@ -19,6 +19,11 @@ public class UserResultDataMining {
 	private Integer countSessions;
 	private Double fuzzyPriority;
 	
+	private Double maxActionsAverage;
+	private Double maxTimeAverage;
+	private Double maxActionsAverageOk;
+	private Double maxTimeAverageOk;
+	
 	private List<String> sessionsId;
 	
 	public UserResultDataMining(String username, 
@@ -133,9 +138,57 @@ public class UserResultDataMining {
 	public void setTimesAverageOk(Double timesAverageOk) {
 		this.timesAverageOk = timesAverageOk;
 	}
+
+	public Double getMaxActionsAverage() {
+		return maxActionsAverage;
+	}
+
+	public void setMaxActionsAverage(Double maxActionsAverage) {
+		this.maxActionsAverage = maxActionsAverage;
+	}
+
+	public Double getMaxTimeAverage() {
+		return maxTimeAverage;
+	}
+
+	public void setMaxTimeAverage(Double maxTimeAverage) {
+		this.maxTimeAverage = maxTimeAverage;
+	}
+
+	public Double getMaxActionsAverageOk() {
+		return maxActionsAverageOk;
+	}
+
+	public void setMaxActionsAverageOk(Double maxActionsAverageOk) {
+		this.maxActionsAverageOk = maxActionsAverageOk;
+	}
+
+	public Double getMaxTimeAverageOk() {
+		return maxTimeAverageOk;
+	}
+
+	public void setMaxTimeAverageOk(Double maxTimeAverageOk) {
+		this.maxTimeAverageOk = maxTimeAverageOk;
+	}
 	
 	public Double getUncompleteNormalized(){
 		return 1 - (getRateSuccess() / 100);
+	}
+	
+	public Double getActionsAvarageOkNormalized(){
+		return (this.getActionsAverageOk() / this.getMaxActionsAverageOk());
+	}
+	
+	public Double getTimesAvarageOkNormalized(){
+		return (this.getTimesAverageOk() / this.getMaxTimeAverageOk());
+	}
+	
+	public Double getActionsAvarageNormalized(){
+		return (this.getActionsAverage() / this.getMaxActionsAverage());
+	}
+	
+	public Double getTimesAvarageNormalized(){
+		return (this.getTimesAverage() / this.getMaxTimeAverage());
 	}
 	
 }

@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 
-import br.ufpi.analise.TestesAlgoritmos;
+import net.sourceforge.jFuzzyLogic.FIS;
+import net.sourceforge.jFuzzyLogic.membership.MembershipFunctionPieceWiseLinear;
+
 import br.ufpi.datamining.models.ActionDataMining;
 import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.FieldSearchTupleDataMining;
@@ -23,6 +26,7 @@ import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.utils.EntityManagerUtil;
+import br.ufpi.datamining.utils.StatisticsUtils;
 import br.ufpi.util.ApplicationPath;
 
 
@@ -159,10 +163,16 @@ public class WebUsageMining {
 		double countTaskActionsSessions = 0, countTaskTimesSessions = 0,
 				countTaskActionsSessionsOk = 0, countTaskTimesSessionsOk = 0,
 				maxTimeAverage = 0, maxActionsAverage = 0, maxTimeAverageOk = 0, maxActionsAverageOk = 0;
+		//Statistics Analysis
+		List<Double> actionsSize = new ArrayList<Double>(),
+				actionsOkSize = new ArrayList<Double>(),
+				timesSize = new ArrayList<Double>(),
+				timesOkSize = new ArrayList<Double>();
 		
 		Set<String> usersWithInitialActions = initialActionOfsectionsFromUser.keySet();
 		for(String username : usersWithInitialActions){
 			List<ActionDataMining> userInitialActions = initialActionOfsectionsFromUser.get(username);
+			
 			//variaveis para contabilizar resultado dos usuarios
 			int countok = 0, counterro = 0, countinit = 0, countthreshold = 0, countUserSessions = userInitialActions.size();
 			double countUserActionsSessions = 0, countUserTimesSessions = 0,
@@ -235,7 +245,13 @@ public class WebUsageMining {
 				if(okThreshold){
 					countUserActionsSessions += countActions;
 					countUserTimesSessions += sessionTime;
+					
+					actionsSize.add((double) countActions);
+					timesSize.add((double) sessionTime);
 				}
+				
+				//statistics
+				
 				
 				if(classification.equals(SessionClassificationDataMiningEnum.ERROR)){
 					counterro++;
@@ -243,6 +259,10 @@ public class WebUsageMining {
 					countok++;
 					countUserActionsSessionsOk += countActions;
 					countUserTimesSessionsOk += sessionTime;
+					
+					//statistics
+					actionsOkSize.add((double) countActions);
+					timesOkSize.add((double) sessionTime);
 				}else if(classification.equals(SessionClassificationDataMiningEnum.REPEAT)){
 					countinit++;
 				}else if(classification.equals(SessionClassificationDataMiningEnum.THRESHOLD)){
@@ -285,39 +305,59 @@ public class WebUsageMining {
 		Double actionsTaskAverageOk = (countTaskActionsSessionsOk / countoktotal);
 		Double timesTaskAverageOk = (countTaskTimesSessionsOk / countoktotal);
 		
-		//#4 - Fuzzy tempo e ações nas ->  
+		//permitir que seja possível normalizar os dados das sessões
 		for(UserResultDataMining u : usersResult){
-//			double time = u.getTimesAverage() / maxTimeAverage;
-//			double actions = u.getActionsAverage() / maxActionsAverage;
-//			double priority = fuzzyPriority(time, actions);
-//			
-//			System.out.println(u.getUsername() + " -> " + time + " , " + actions + " -> " + priority);
-//			priority = fuzzyPriority3(u.getUncompleteNormalized(), time, actions);
-//			System.out.println(u.getUsername() + " (3)-> " + time + " , " + actions + " -> " + priority);
-//			
-//			time = u.getTimesAverageOk() / maxTimeAverageOk;
-//			actions = u.getActionsAverageOk() / maxActionsAverageOk;
-//			priority = fuzzyPriority(time, actions);
-//			
-//			u.setFuzzyPriority(priority);
-//			
-//			System.out.println(u.getUsername() + "(ok) -> " + time + " , " + actions + " -> " + priority);
-//			priority = fuzzyPriority3(u.getUncompleteNormalized(), time, actions);
-//			System.out.println(u.getUsername() + " (3ok)-> " + time + " , " + actions + " -> " + priority);
-//			
-			if(u.getTimesAverageOk() > 0){
-				double time = u.getTimesAverageOk() / maxTimeAverageOk;
-				double actions = u.getActionsAverageOk() / maxActionsAverageOk;
-				double priority = fuzzyPriority3(u.getUncompleteNormalized(), time, actions);
-				u.setFuzzyPriority(priority);
-				usersResult.set(usersResult.indexOf(u), u);
+			u.setMaxActionsAverage(maxActionsAverage);
+			u.setMaxActionsAverageOk(maxActionsAverageOk);
+			u.setMaxTimeAverage(maxTimeAverage);
+			u.setMaxTimeAverageOk(maxTimeAverageOk);
+		}
+		
+		//#4 - Fuzzy tempo e ações nas -> 
+		boolean IGNORE_ZERO = true, DEBUG = true;
+		
+		for(UserResultDataMining u : usersResult){
+			if(!IGNORE_ZERO || (IGNORE_ZERO && u.getTimesAverageOk() > 0 && u.getTimesAverageOk() > 0)){
+//				/* Teste A-T-C OK */
+//				u.setFuzzyPriority(Fuzzy.fuzzyPriority3(u.getUncompleteNormalized(), u.getTimesAvarageOkNormalized(), u.getActionsAvarageOkNormalized(), DEBUG));
+				
+//				/* Teste A-T-C */
+//				u.setFuzzyPriority(Fuzzy.fuzzyPriority3(u.getUncompleteNormalized(), u.getTimesAvarageNormalized(), u.getActionsAvarageNormalized(), DEBUG));
+				
+//				/* Teste A-T Ok */
+//				u.setFuzzyPriority(Fuzzy.fuzzyPriority(u.getTimesAvarageOkNormalized(), u.getActionsAvarageOkNormalized(), DEBUG));
+				
+//				/* Teste A-T */
+//				u.setFuzzyPriority(Fuzzy.fuzzyPriority(u.getTimesAvarageNormalized(), u.getActionsAvarageNormalized(), DEBUG));
 			}else{
 				u.setFuzzyPriority(0d);
-				usersResult.set(usersResult.indexOf(u), u);
 			}
 		}
 		
+		/* Fuzzy CMeans */
+		Fuzzy.executeFuzzySystemWithFCM(usersResult, IGNORE_ZERO, DEBUG);
+		
+		// Results
 		ResultDataMining result = new ResultDataMining(usersResult, sessionsResult, actionsTaskAverage, timesTaskAverage, actionsTaskAverageOk, timesTaskAverageOk, countoktotal, counterrototal, countinittotal, countthresholdtotal);
+		result.setMeanActions(StatisticsUtils.getMean(convertDouble(actionsSize)));
+		result.setMeanActionsOk(StatisticsUtils.getMean(convertDouble(actionsOkSize)));
+		result.setMeanTimes(StatisticsUtils.getMean(convertDouble(timesSize)));
+		result.setMeanTimesOk(StatisticsUtils.getMean(convertDouble(timesOkSize)));
+		//
+		result.setStdDevActions(StatisticsUtils.getStdDevPopulation(convertDouble(actionsSize)));
+		result.setStdDevActionsOk(StatisticsUtils.getStdDevPopulation(convertDouble(actionsOkSize)));
+		result.setStdDevTimes(StatisticsUtils.getStdDevPopulation(convertDouble(timesSize)));
+		result.setStdDevTimesOk(StatisticsUtils.getStdDevPopulation(convertDouble(timesOkSize)));
+		//
+		result.setMinActions(minDouble(actionsSize));
+		result.setMinActionsOk(minDouble(actionsOkSize));
+		result.setMinTimes(minDouble(timesSize));
+		result.setMinTimesOk(minDouble(timesOkSize));
+		//
+		result.setMaxActions(maxDouble(actionsSize));
+		result.setMaxActionsOk(maxDouble(actionsOkSize));
+		result.setMaxTimes(maxDouble(timesSize));
+		result.setMaxTimesOk(maxDouble(timesOkSize));
 		
 		return result;
 	}
@@ -335,19 +375,33 @@ public class WebUsageMining {
 		return false;
 	}
 	
-	private static double fuzzyPriority(double time, double actions) throws IOException {
-		HashMap<String, Double> params = new HashMap<String, Double>();
-		params.put("time", time);
-		params.put("actions", actions);
-        return TestesAlgoritmos.fuzzyParams(ApplicationPath.getFilePath("files/fuzzy/datamining/priority.fcl"), params, "priority", false);
+	private static double minDouble(List<Double> numbers){
+		double min = Double.MAX_VALUE;
+	    Iterator<Double> iterator = numbers.iterator();
+	    while (iterator.hasNext()){
+	    	double n = iterator.next().doubleValue();
+	    	min = min > n ? n : min;
+	    }
+	    return min;
 	}
 	
-	private static double fuzzyPriority3(double c, double t, double a) throws IOException {
-		HashMap<String, Double> params = new HashMap<String, Double>();
-		params.put("c", c);
-		params.put("t", t);
-		params.put("a", a);
-        return TestesAlgoritmos.fuzzyParams(ApplicationPath.getFilePath("files/fuzzy/datamining/priority3.fcl"), params, "priority", false);
+	private static double maxDouble(List<Double> numbers){
+		double max = Double.MIN_VALUE;
+	    Iterator<Double> iterator = numbers.iterator();
+	    while (iterator.hasNext()){
+	    	double n = iterator.next().doubleValue();
+	    	max = max < n ? n : max;
+	    }
+	    return max;
+	}
+	
+	private static double[] convertDouble(List<Double> numbers){
+		double[] ret = new double[numbers.size()];
+	    Iterator<Double> iterator = numbers.iterator();
+	    for (int i = 0; i < ret.length; i++){
+	        ret[i] = iterator.next().doubleValue();
+	    }
+	    return ret;
 	}
 	
 }

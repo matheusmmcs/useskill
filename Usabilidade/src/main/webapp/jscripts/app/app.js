@@ -252,7 +252,7 @@ angular.module('useskill',
 		ServerAPI.saveTask(task);
 	};
 })
-.controller('TaskEditController', function(task) {
+.controller('TaskEditController', function(task, $filter) {
 	var taskCtrl = this;
 	console.log(task);
 	taskCtrl.task = JSON.parse(task.data.string);
