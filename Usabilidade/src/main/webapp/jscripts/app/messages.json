@@ -12,6 +12,10 @@
 	"datamining.delete" : "Excluir",
 	"datamining.edit" : "Editar",
 	"datamining.details" : "Detalhes",
+	"datamining.options" : "Opções",
+	"datamining.areyousure" : "Você deseja prosseguir?",
+	"datamining.areyousure.confirm" : "Confirmar",
+	"datamining.areyousure.cancel" : "Cancelar",
 	"datamining.accessdenied" : "Ação não permitida para o usuário!",
 	
 	"datamining.teste" : "Teste",
@@ -50,7 +54,14 @@
 	"datamining.tasks.evaluate.threshold" : "Limiar",
 	"datamining.tasks.evaluate.rateComplete" : "Completos (%)",
 	
+	"datamining.tasks.evaluate.group.users" : "Agrupar por Usuários",
+	"datamining.tasks.evaluate.group.sessions" : "Agrupar por Sessões",
+	
+	"datamining.tasks.evaluate.sessions.title" : "Todas as Sessões",
 	"datamining.tasks.evaluate.user.sessions.title" : "Sessões do usuário",
+	"datamining.tasks.evaluate.actions.required.count.title" : "Ações Obrigatórias Realizadas",
+	"datamining.tasks.evaluate.actions.count.title" : "Ações Mais Realizadas",
+	"datamining.tasks.evaluate.user.session.actions.title" : "Ações da sessão do usuário",
 	"datamining.tasks.evaluate.session.id" : "ID",
 	"datamining.tasks.evaluate.session.threshold" : "Ultrapassou Limiar",
 	"datamining.tasks.evaluate.session.classification" : "Classificação",
@@ -63,11 +74,17 @@
 	
 	"datamining.tasks.title" : "Título",
 	"datamining.tasks.threshold" : "Tempo Max. Sessão",
+	"datamining.tasks.disregard" : "Ações desconsideradas",
+	
 	"datamining.tasks.actions" : "Ações",
 	"datamining.tasks.actions.start" : "Ações Iniciais",
 	"datamining.tasks.actions.end" : "Ações Finais",
+	"datamining.tasks.actions.required" : "Ações Obrigatórias",
+	"datamining.tasks.actions.delete.ok" : "Ação removida com sucesso.",
 	
 	"datamining.tasks.action" : "Ação",
+	"datamining.tasks.actions.id" : "ID",
+	"datamining.tasks.actions.description" : "Descrição",
 	"datamining.tasks.actions.add" : "Adicionar Ação",
 	"datamining.tasks.actions.type" : "Tipo de Ação",
 	"datamining.tasks.actions.type.select" : "- Selecione o Tipo da Ação -",

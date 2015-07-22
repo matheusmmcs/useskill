@@ -93,6 +93,8 @@ public class DataMiningActionController extends BaseController {
 			taskDataMining.getActionsInitial().add(action);
 		}else if(action.getMomentType().equals(MomentTypeActionDataMiningEnum.END)){
 			taskDataMining.getActionsEnd().add(action);
+		}else if(action.getMomentType().equals(MomentTypeActionDataMiningEnum.REQUIRED)){
+			taskDataMining.getActionsRequired().add(action);
 		}
 		
 		//persistir fieldsearch
@@ -109,6 +111,31 @@ public class DataMiningActionController extends BaseController {
 			
 		result.use(Results.json()).from(gson.toJson(returnvo)).serialize();
 		
+	}
+	
+	@Post("/testes/tarefas/acoes/deletar")
+	@Consumes("application/json")
+	@Logado
+	public void delete(ActionSingleJHeatDataMiningVO actionJHeatVO) {
+		Gson gson = new Gson();
+		ActionSingleDataMining action = actionSingleDataMiningRepository.find(actionJHeatVO.getId());
+		ReturnVO returnvo;
+		
+		TaskDataMining taskDataMining = taskDataMiningRepository.find(action.getTask().getId());
+		if(action.getMomentType().equals(MomentTypeActionDataMiningEnum.START)){
+			taskDataMining.getActionsInitial().remove(action);
+		}else if(action.getMomentType().equals(MomentTypeActionDataMiningEnum.END)){
+			taskDataMining.getActionsEnd().remove(action);
+		}else if(action.getMomentType().equals(MomentTypeActionDataMiningEnum.REQUIRED)){
+			taskDataMining.getActionsRequired().remove(action);
+		}
+		
+		taskDataMiningRepository.update(taskDataMining);
+		actionSingleDataMiningRepository.destroy(action);
+		
+		returnvo = new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.tasks.actions.delete.ok");
+			
+		result.use(Results.json()).from(gson.toJson(returnvo)).serialize();
 	}
 	
 	/*

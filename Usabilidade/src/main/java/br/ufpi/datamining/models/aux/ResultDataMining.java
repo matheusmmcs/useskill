@@ -1,6 +1,7 @@
 package br.ufpi.datamining.models.aux;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ResultDataMining {
@@ -17,6 +18,9 @@ public class ResultDataMining {
 	
 	private Double rateSuccess;
 	private Integer countSessions;
+	
+	private HashMap<String, Integer> actionsRequiredTask;
+	private Double rateRequired;
 	
 	private Double meanActions;
 	private Double meanActionsOk;
@@ -35,6 +39,9 @@ public class ResultDataMining {
 	private Double minTimes;
 	private Double minTimesOk;
 	
+	private HashMap<String, String> pageViewActionIds;
+	private HashMap<String, Integer> pageViewActionCount;
+	
 	private List<UserResultDataMining> users;
 	private List<SessionResultDataMining> sessions;
 	
@@ -46,7 +53,7 @@ public class ResultDataMining {
 	public ResultDataMining(List<UserResultDataMining> users, List<SessionResultDataMining> sessions, 
 			Double actionsAverage, Double timesAverage, Double actionsAverageOk, Double timesAverageOk,
 			Integer countSessionsSuccess, Integer countSessionsError, Integer countSessionsRepeat,
-			Integer countSessionsThreshold) {
+			Integer countSessionsThreshold, HashMap<String, String> pageViewActionIds, HashMap<String, Integer> pageViewActionCount) {
 		this();
 		this.users = users;
 		this.sessions = sessions;
@@ -59,6 +66,9 @@ public class ResultDataMining {
 		this.countSessionsError = countSessionsError;
 		this.countSessionsRepeat = countSessionsRepeat;
 		this.countSessionsThreshold = countSessionsThreshold;
+		
+		this.setPageViewActionIds(pageViewActionIds);
+		this.setPageViewActionCount(pageViewActionCount);
 		
 		this.setCountSessions(countSessionsSuccess + countSessionsError + countSessionsRepeat + countSessionsThreshold);
 		this.setRateSuccess(((double)countSessionsSuccess/this.getCountSessions())*100);
@@ -283,6 +293,38 @@ public class ResultDataMining {
 
 	public void setMinTimesOk(Double minTimesOk) {
 		this.minTimesOk = minTimesOk;
+	}
+
+	public HashMap<String, String> getPageViewActionIds() {
+		return pageViewActionIds;
+	}
+
+	public void setPageViewActionIds(HashMap<String, String> pageViewActionIds) {
+		this.pageViewActionIds = pageViewActionIds;
+	}
+
+	public HashMap<String, Integer> getPageViewActionCount() {
+		return pageViewActionCount;
+	}
+
+	public void setPageViewActionCount(HashMap<String, Integer> pageViewActionCount) {
+		this.pageViewActionCount = pageViewActionCount;
+	}
+
+	public Double getRateRequired() {
+		return rateRequired;
+	}
+
+	public void setRateRequired(Double rateRequired) {
+		this.rateRequired = rateRequired;
+	}
+
+	public HashMap<String, Integer> getActionsRequiredTask() {
+		return actionsRequiredTask;
+	}
+
+	public void setActionsRequiredTask(HashMap<String, Integer> actionsRequiredTask) {
+		this.actionsRequiredTask = actionsRequiredTask;
 	}
 		
 }

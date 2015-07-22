@@ -14,9 +14,11 @@ import java.util.Map.Entry;
 
 import br.ufpi.datamining.analisys.fuzzy.FuzzyCMeansAlgorithm;
 import br.ufpi.datamining.analisys.fuzzy.Point;
+import br.ufpi.datamining.models.aux.SessionResultDataMining;
 import br.ufpi.datamining.models.aux.UserResultDataMining;
 import br.ufpi.util.ApplicationPath;
 import net.sourceforge.jFuzzyLogic.FIS;
+import net.sourceforge.jFuzzyLogic.membership.MembershipFunctionDiscrete;
 import net.sourceforge.jFuzzyLogic.membership.MembershipFunctionPieceWiseLinear;
 import net.sourceforge.jFuzzyLogic.membership.Value;
 import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
@@ -96,6 +98,85 @@ public class Fuzzy {
 	
 	/***** FUZZY WITH CMEANS *****/
 	
+	public static void executeFuzzySystemWithFCMSession(List<SessionResultDataMining> sessions, boolean ignoreZero, boolean debug) {
+		FIS fis = createMembershipFunctionsWithFCMSession(sessions, ignoreZero, FCL_ATC_CMEANS);
+		
+		for(SessionResultDataMining s : sessions){
+			if(ignoreZero){
+				if(!s.isClassificationSuccess()){
+					s.setFuzzyPriority(0d);
+					continue;
+				}
+			}
+			
+			/* Set inputs [Importance x Coupling x Complexity] of the class */
+			fis.setVariable("actions", s.getActionsNormalized());
+			fis.setVariable("times", s.getTimeNormalized());
+			
+			fis.setVariable("completeness", s.getUserRateSuccess());
+			
+			/* Evaluate */
+	        fis.evaluate();
+	        double defuzzifiedValue = fis.getVariable("priority").getLatestDefuzzifiedValue();
+	        s.setFuzzyPriority(defuzzifiedValue);
+	        
+	        System.out.println(s.getUsername() + " -> (" + s.getActionsNormalized() + ", " + s.getTimeNormalized() + ", " + s.getUserRateSuccess() + ") = " + s.getFuzzyPriority());
+		}
+		
+		/* Just for debug: Show chart*/ 
+		if(debug){
+			 JFuzzyChart.get().chart(fis);
+		}
+	}
+	
+	public static FIS createMembershipFunctionsWithFCMSession(List<SessionResultDataMining> sessions, boolean ignoreZero, String fclPath){
+		//Fuzzy CMeans
+		ArrayList<Point> actionsPoints = new ArrayList<Point>(), 
+				timePoints = new ArrayList<Point>(), 
+				completedPoints = new ArrayList<Point>();
+		
+		long globalCount = 1l;
+		for(SessionResultDataMining s : sessions){
+			if(ignoreZero){
+				if(!s.isClassificationSuccess()){
+					continue;
+				}
+			}
+			actionsPoints.add(new Point(globalCount++, s.getActionsNormalized(), 1.0));
+			timePoints.add(new Point(globalCount++, s.getTimeNormalized(), 1.0));
+			completedPoints.add(new Point(globalCount++, s.getUserRateSuccess(), 1.0));
+		}
+		
+		/* Execute FCM Algorithm: actions variable */
+		FuzzyCMeansAlgorithm cMeans = new FuzzyCMeansAlgorithm(3, 2.0, actionsPoints, 0.01, null);
+		MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		//MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		//time
+		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, timePoints, 0.001, null);
+		MembershipFunctionPieceWiseLinear[] timeMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		//completed
+		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, completedPoints, 0.001, null);
+		MembershipFunctionPieceWiseLinear[] completedMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		
+		/* Load from 'FCL' file */
+		FIS fis = FIS.load(fclPath, true);
+		
+		/* Update membership functions */
+		fis.getFunctionBlock("fuzzyCMeans").getVariable("actions").add("Low", actionsMembershipFunctions[0]);
+		fis.getFunctionBlock("fuzzyCMeans").getVariable("actions").add("Moderate", actionsMembershipFunctions[1]);
+		fis.getFunctionBlock("fuzzyCMeans").getVariable("actions").add("High", actionsMembershipFunctions[2]);
+		
+		fis.getFunctionBlock("fuzzyCMeans").getVariable("times").add("Low", timeMembershipFunctions[0]);
+		fis.getFunctionBlock("fuzzyCMeans").getVariable("times").add("Moderate", timeMembershipFunctions[1]);
+		fis.getFunctionBlock("fuzzyCMeans").getVariable("times").add("High", timeMembershipFunctions[2]);
+		
+		fis.getFunctionBlock("fuzzyCMeans").getVariable("completeness").add("Low", completedMembershipFunctions[0]);
+		fis.getFunctionBlock("fuzzyCMeans").getVariable("completeness").add("Moderate", completedMembershipFunctions[1]);
+		fis.getFunctionBlock("fuzzyCMeans").getVariable("completeness").add("High", completedMembershipFunctions[2]);
+		
+		return fis;
+	}
+	
 	public static void executeFuzzySystemWithFCM(List<UserResultDataMining> usersResult, boolean ignoreZero, boolean debug) {
 		FIS fis = createMembershipFunctionsWithFCM(usersResult, ignoreZero, FCL_ATC_CMEANS);
 		
@@ -110,8 +191,6 @@ public class Fuzzy {
 			/* Set inputs [Importance x Coupling x Complexity] of the class */
 			fis.setVariable("actions", u.getActionsAvarageOkNormalized());
 			fis.setVariable("times", u.getActionsAvarageOkNormalized());
-//			fis.setVariable("actions", u.getActionsAvarageNormalized());
-//			fis.setVariable("times", u.getActionsAvarageNormalized());
 			
 			fis.setVariable("completeness", u.getUncompleteNormalized());
 			
@@ -146,14 +225,13 @@ public class Fuzzy {
 			System.out.println(u.getUsername()+"OK");
 			actionsPoints.add(new Point(globalCount++, u.getActionsAvarageOkNormalized(), 1.0));
 			timePoints.add(new Point(globalCount++, u.getTimesAvarageOkNormalized(), 1.0));
-//			actionsPoints.add(new Point(globalCount++, u.getActionsAvarageNormalized(), 1.0));
-//			timePoints.add(new Point(globalCount++, u.getTimesAvarageNormalized(), 1.0));
 			completedPoints.add(new Point(globalCount++, u.getUncompleteNormalized(), 1.0));
 		}
 		
 		/* Execute FCM Algorithm: actions variable */
 		FuzzyCMeansAlgorithm cMeans = new FuzzyCMeansAlgorithm(3, 2.0, actionsPoints, 0.01, null);
 		MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		//MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
 		//time
 		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, timePoints, 0.001, null);
 		MembershipFunctionPieceWiseLinear[] timeMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
@@ -229,16 +307,22 @@ public class Fuzzy {
 			}
 		});
 		
+		/* For each point, calculate the relevance to each cluster */
 		DecimalFormat decimalFormat = new DecimalFormat("#.##");
-		for(int i = 0; i < points.size(); i++){
-			double lowRelevance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[0]]).replace(",", "."));
-			double moderateRelevance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[1]]).replace(",", "."));
-			double highRelavance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[2]]).replace(",", "."));
-			
-			x1y1.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(lowRelevance)));
-			x2y2.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(moderateRelevance)));
-			x3y3.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(highRelavance)));
+		try{
+			for(int i = 0; i < points.size(); i++){
+				double lowRelevance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[0]]).replace(",", "."));
+				double moderateRelevance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[1]]).replace(",", "."));
+				double highRelavance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[2]]).replace(",", "."));
+				
+				x1y1.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(lowRelevance)));
+				x2y2.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(moderateRelevance)));
+				x3y3.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(highRelavance)));
+			}
+		}catch(Exception e){
+			e.printStackTrace();
 		}
+		
 		
 		for(int i = 0; i < points.size(); i++){
 			x1[i] = x1y1.get(i).getX(); y1[i] = x1y1.get(i).getY();

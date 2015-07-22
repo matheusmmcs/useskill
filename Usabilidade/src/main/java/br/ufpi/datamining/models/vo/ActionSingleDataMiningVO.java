@@ -12,8 +12,11 @@ public class ActionSingleDataMiningVO {
 
 	private Long id;
 	private TaskDataMining task;
+	private String description;
+	
 	private ActionTypeDataMiningEnum actionType;
 	private MomentTypeActionDataMiningEnum momentType;
+	
 	private List<FieldSearchTupleDataMining> elementFiedlSearch;
 	private List<FieldSearchTupleDataMining> urlFieldSearch;
 	
@@ -25,6 +28,7 @@ public class ActionSingleDataMiningVO {
 		this.momentType = action.getMomentType();
 		this.elementFiedlSearch = action.getElementFiedlSearch();
 		this.urlFieldSearch = action.getUrlFieldSearch();
+		this.description = action.getDescription();
 	}
 	
 	public Long getId() {
@@ -63,6 +67,14 @@ public class ActionSingleDataMiningVO {
 	}
 	public void setUrlFieldSearch(List<FieldSearchTupleDataMining> urlFieldSearch) {
 		this.urlFieldSearch = urlFieldSearch;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }

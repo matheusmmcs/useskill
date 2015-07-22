@@ -70,6 +70,13 @@
 		        	</div>
 		        	
 		        	<div class="control-group">
+		            	<label class="control-label" for="actionType">{{ 'datamining.tasks.actions.description' | translate}}:*</label>
+		            	<div class="controls">
+		                	<input type="text" ng-model="actionCtrl.action.description" name="action.description" id="description" class="input" />
+		            	</div>
+		        	</div>
+		        	
+		        	<div class="control-group">
 		            	<label class="control-label" for="element">{{ 'datamining.tasks.actions.element.xpath' | translate}}:*</label>
 		            	<div class="controls">
 		                	<input type="text" ng-model="actionCtrl.action.element" name="action.element" id="element" class="input" />

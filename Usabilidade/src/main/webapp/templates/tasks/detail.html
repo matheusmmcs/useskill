@@ -47,8 +47,11 @@
 			            	<dt>{{ 'datamining.tasks.threshold' | translate}}:</dt>
 			            	<dd>{{taskCtrl.task.threshold}}</dd>
 			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.tasks.disregard' | translate}}:</dt>
+			            	<dd><label ng-repeat="type in taskCtrl.task.disregardActions">{{taskCtrl.getActionTypeName(type)}}</label></dd>
+			            </dl>
 			            <div class="actions-bottom">
-<!-- 	 		            	<a class="btn btn-danger pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/excluir/{{taskCtrl.task.id}}" title="{{ 'datamining.delete' | translate}}"><span class="icon-white icon-trash"></span> {{ 'datamining.delete' | translate}}</a> -->
 							<a class="btn btn-primary pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/{{taskCtrl.task.id}}/avaliar" title="{{ 'datamining.evaluate' | translate}}"><span class="icon-white icon-tasks"></span> {{ 'datamining.tasks.evaluate' | translate}}</a>
 		        			<a class="btn pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/editar/{{taskCtrl.task.id}}" title="{{ 'datamining.edit' | translate}}"><span class="icon-edit"></span> {{ 'datamining.edit' | translate}}</a>
 		        			<div class="clear-both"></div>
@@ -65,21 +68,27 @@
 	            <table class="table table-striped table-bordered table-condensed datamining-table datamining-table-ellipsis" style="background-color: white">
 	                <thead>
 	                    <tr>
+	                        <th>{{ 'datamining.tasks.actions.id' | translate}}</th>
 	                        <th>{{ 'datamining.tasks.action' | translate}}</th>
-	                        <th>{{ 'datamining.tasks.actions.element' | translate}}</th>
-	                        <th>{{ 'datamining.tasks.actions.url' | translate}}</th>
+	                        <th>{{ 'datamining.tasks.actions.description' | translate}}</th>
+	                        <th>{{ 'datamining.options' | translate}}</th>
 	                    </tr>
 	                </thead>
 	                <tbody>
-                        <tr ng-repeat="action in taskCtrl.task.actionsInitial | orderBy:'id'">
+                        <tr ng-repeat="action in taskCtrl.task.actionsInitial | orderBy:'id'" ng-model="action.popovercontent" popup-title="action.description" popup="taskCtrl.popup.options">
+                        	<td class="td-link centertd w15">
+                            	{{action.id}}
+                            </td>
                             <td class="td-link centertd w20">
                             	{{action.actionType}}
                             </td>
-                            <td class="td-link centertd w40">
-                            	<div ng-repeat="elem in action.elementFiedlSearch" title="[{{elem.field}}]='{{elem.value}}';">[{{elem.field}}]="{{elem.value}}";</div>
+                            <td class="td-link centertd w50">
+                            	{{action.description}}
                             </td>
-                            <td class="td-link centertd w40">
-                            	<div ng-repeat="url in action.urlFieldSearch" title="[{{url.field}}]='{{url.value}}';">[{{url.field}}]="{{url.value}}";</div>
+                            <td class="td-link centertd w15">
+                            	<a class="btn btn-primary pull-right" ng-click="confirmClick() && deleteAction(action, taskCtrl.task.actionsInitial)" confirm-click title="{{ 'datamining.delete' | translate}}">
+                            		<span class="icon-white icon-trash"></span>
+                            	</a>
                             </td>
                         </tr>
 	                </tbody>
@@ -94,21 +103,62 @@
 	            <table class="table table-striped table-bordered table-condensed datamining-table datamining-table-ellipsis" style="background-color: white">
 	                <thead>
 	                    <tr>
+	                        <th>{{ 'datamining.tasks.actions.id' | translate}}</th>
 	                        <th>{{ 'datamining.tasks.action' | translate}}</th>
-	                        <th>{{ 'datamining.tasks.actions.element' | translate}}</th>
-	                        <th>{{ 'datamining.tasks.actions.url' | translate}}</th>
+	                        <th>{{ 'datamining.tasks.actions.description' | translate}}</th>
+	                        <th>{{ 'datamining.options' | translate}}</th>
 	                    </tr>
 	                </thead>
 	                <tbody>
-                        <tr ng-repeat="action in taskCtrl.task.actionsEnd | orderBy:'id'">
+                        <tr ng-repeat="action in taskCtrl.task.actionsEnd | orderBy:'id'" ng-model="action.popovercontent" popup-title="action.description" popup="taskCtrl.popup.options">
+                            <td class="td-link centertd w15">
+                            	{{action.id}}
+                            </td>
                             <td class="td-link centertd w20">
                             	{{action.actionType}}
                             </td>
-                            <td class="td-link centertd w40">
-                            	<div ng-repeat="elem in action.elementFiedlSearch" title="[{{elem.field}}]='{{elem.value}}';">[{{elem.field}}]="{{elem.value}}";</div>
+                            <td class="td-link centertd w50">
+                            	{{action.description}}
                             </td>
-                            <td class="td-link centertd w40">
-                            	<div ng-repeat="url in action.urlFieldSearch" title="[{{url.field}}]='{{url.value}}';">[{{url.field}}]="{{url.value}}";</div>
+                            <td class="td-link centertd w15">
+                            	<a class="btn btn-primary pull-right" ng-click="confirmClick() && deleteAction(action, taskCtrl.task.actionsEnd)" confirm-click title="{{ 'datamining.delete' | translate}}">
+                            		<span class="icon-white icon-trash"></span>
+                            	</a>
+                            </td>
+                        </tr>
+	                </tbody>
+	            </table>
+	            
+	            <div class="border-bottom" style="display:block; width: 100%;"></div>
+	            
+	            <h2>
+		    		{{ 'datamining.tasks.actions.required' | translate}}
+	            </h2>
+	            
+	            <table class="table table-striped table-bordered table-condensed datamining-table datamining-table-ellipsis" style="background-color: white">
+	                <thead>
+	                    <tr>
+	                        <th>{{ 'datamining.tasks.actions.id' | translate}}</th>
+	                        <th>{{ 'datamining.tasks.action' | translate}}</th>
+	                        <th>{{ 'datamining.tasks.actions.description' | translate}}</th>
+	                        <th>{{ 'datamining.options' | translate}}</th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+                        <tr ng-repeat="action in taskCtrl.task.actionsRequired | orderBy:'id'" ng-model="action.popovercontent" popup-title="action.description" popup="taskCtrl.popup.options">
+                            <td class="td-link centertd w15">
+                            	{{action.id}}
+                            </td>
+                            <td class="td-link centertd w20">
+                            	{{action.actionType}}
+                            </td>
+                            <td class="td-link centertd w50">
+                            	{{action.description}}
+                            </td>
+                            <td class="td-link centertd w15">
+                            	<a class="btn btn-primary pull-right" ng-click="confirmClick() && deleteAction(action, taskCtrl.task.actionsRequired)" confirm-click title="{{ 'datamining.delete' | translate}}">
+                            		<span class="icon-white icon-trash"></span>
+                            	</a>
                             </td>
                         </tr>
 	                </tbody>

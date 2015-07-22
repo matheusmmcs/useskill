@@ -33,8 +33,13 @@
 				var $e = $(e.target);
 
 				if($e.closest('.useskill-captelement').length == 0){
+					var rName = $('input#reportName'),
+						fName = $('input#flowName'),
+						cName = $('input#className'),
+						flowName = (rName.length > 0) ? rName.val() : (fName.length > 0 ? fName.val() : (cName.length > 0 ? cName.val() : ''));
+					
 					var count = 0, info = {
-						action: $('input#action').val(),
+						flowName: flowName,
 						section: $('input#sectionName').val(),
 						step: $('input#step').val(),
 						elements: []
@@ -44,7 +49,7 @@
 						removeClassUseSkillHover($e);
 						info.elements.push({
 							order: count,
-							xpath: getElementXPath($e.get(0))//getElementXPath - createXPathFromElement
+							xpath: createXPathFromElement($e.get(0))//getElementXPath - createXPathFromElement
 						});
 						$e = $e.parent();
 						count++;
@@ -110,7 +115,7 @@
 
 			div += '<div class="useskill-elements-list">';
 			div += 	'<div class="useskill-elements-list-item useskill-elements-title">MetaData:'+btns+'</div>';
-			div += 	'<div class="useskill-elements-list-item">[action] - '+info.action+'</div>';
+			div += 	'<div class="useskill-elements-list-item">[flowName] - '+info.flowName+'</div>';
 			div += 	'<div class="useskill-elements-list-item">[section] - '+info.section+'</div>';
 			div += 	'<div class="useskill-elements-list-item">[step] - '+info.step+'</div>';
 			div += '</div>';
@@ -119,7 +124,7 @@
 		}
 
 		function createXPathFromElement(elm) {
-		    var allNodes = document.getElementsByTagName('*');
+			var allNodes = document.getElementsByTagName('*');
 		    for (segs = []; elm && elm.nodeType == 1; elm = elm.parentNode){
 		        if (elm.hasAttribute('id')) {
 		                var uniqueIdCount = 0;

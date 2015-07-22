@@ -5,11 +5,12 @@ import br.ufpi.datamining.components.PageViewDataMining;
 public class PageViewActionDataMining {
 
 	private Long id;
+	private String identifier;
 	private String local;
 	private String element;
 	private String action;
 	private Long time;
-	
+
 	
 	public PageViewActionDataMining(ActionDataMining action) {
 		super();
@@ -60,5 +61,13 @@ public class PageViewActionDataMining {
 	public void setTime(Long time) {
 		this.time = time;
 	}
-	
+	public String getIdentifier() {
+		return identifier;
+	}
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
+	public String getPageViewActionUnique() {
+		return this.getLocal() + " | " + this.getElement() + " | " + this.getAction();
+	}
 }

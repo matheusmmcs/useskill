@@ -18,18 +18,20 @@ public class UserResultDataMining {
 	private Double rateSuccess;
 	private Integer countSessions;
 	private Double fuzzyPriority;
+	private Double userRateRequired;
 	
 	private Double maxActionsAverage;
 	private Double maxTimeAverage;
 	private Double maxActionsAverageOk;
 	private Double maxTimeAverageOk;
 	
+	
 	private List<String> sessionsId;
 	
 	public UserResultDataMining(String username, 
 			Double actionsAverage, Double timesAverage, Double actionsAverageOk, Double timesAverageOk, 
 			Integer countSessionsSuccess, Integer countSessionsError, Integer countSessionsRepeat,
-			Integer countSessionsThreshold, Double fuzzyPriority, List<String> sessionsId) {
+			Integer countSessionsThreshold, Double fuzzyPriority, Double userRateRequired, List<String> sessionsId) {
 		super();
 		this.username = username;
 		this.actionsAverage = actionsAverage;
@@ -44,6 +46,8 @@ public class UserResultDataMining {
 		
 		this.sessionsId = sessionsId;
 		this.fuzzyPriority = fuzzyPriority;
+		this.userRateRequired = userRateRequired;
+		
 		this.setCountSessions(countSessionsSuccess + countSessionsError + countSessionsRepeat + countSessionsThreshold);
 		this.setRateSuccess(((double)countSessionsSuccess/this.getCountSessions())*100);
 	}
@@ -189,6 +193,14 @@ public class UserResultDataMining {
 	
 	public Double getTimesAvarageNormalized(){
 		return (this.getTimesAverage() / this.getMaxTimeAverage());
+	}
+
+	public Double getUserRateRequired() {
+		return userRateRequired;
+	}
+
+	public void setUserRateRequired(Double userRateRequired) {
+		this.userRateRequired = userRateRequired;
 	}
 	
 }

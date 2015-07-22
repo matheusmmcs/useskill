@@ -95,6 +95,7 @@ public class DataMiningTaskController extends BaseController {
 				TaskDataMining taskUpdate = taskDataMiningRepository.find(task.getId());
 				taskUpdate.setTitle(task.getTitle());
 				taskUpdate.setThreshold(task.getThreshold());
+				taskUpdate.setDisregardActions(task.getDisregardActions());
 				
 				taskDataMiningRepository.update(taskUpdate);
 				returnvo = new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.tasks.edit.success");

@@ -2,10 +2,14 @@ package br.ufpi.datamining.models;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -14,6 +18,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CollectionOfElements;
+
+import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
 
 @Entity  
 @Table(name="datamining_task")
@@ -24,8 +32,13 @@ public class TaskDataMining implements Serializable {
 	private Long id;
 	private String title;
 	private Integer threshold;
+	private Set<ActionTypeDataMiningEnum> disregardActions;
+	
+	private String actionsRequiredOrder;
 	private List<ActionSingleDataMining> actionsInitial;
 	private List<ActionSingleDataMining> actionsEnd;	
+	private List<ActionSingleDataMining> actionsRequired;
+	
 	private TestDataMining testDataMining;
 	
 	
@@ -83,6 +96,34 @@ public class TaskDataMining implements Serializable {
 	
 	public void setTestDataMining(TestDataMining testDataMining) {
 		this.testDataMining = testDataMining;
+	}
+	
+	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	@JoinTable(name="datamining_task_actionsRequired")
+	public List<ActionSingleDataMining> getActionsRequired() {
+		return actionsRequired;
+	}
+	
+	public void setActionsRequired(List<ActionSingleDataMining> actionsRequired) {
+		this.actionsRequired = actionsRequired;
+	}
+	public String getActionsRequiredOrder() {
+		return actionsRequiredOrder;
+	}
+	public void setActionsRequiredOrder(String actionsRequiredOrder) {
+		this.actionsRequiredOrder = actionsRequiredOrder;
+	}
+	
+	@CollectionOfElements(fetch = FetchType.LAZY, targetElement = ActionTypeDataMiningEnum.class)
+	@JoinTable(name = "datamining_task_disregardActions", joinColumns = @JoinColumn(name = "disregardactionsid"))
+	@Column(name = "disregardActions")
+	@Enumerated(EnumType.STRING)
+	public Set<ActionTypeDataMiningEnum> getDisregardActions() {
+		return disregardActions;
+	}
+	
+	public void setDisregardActions(Set<ActionTypeDataMiningEnum> disregardActions) {
+		this.disregardActions = disregardActions;
 	}
 		
 }

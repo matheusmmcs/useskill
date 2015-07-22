@@ -28,6 +28,7 @@ public class ActionSingleDataMining implements Serializable {
 	
 	private Long id;
 	private TaskDataMining task;
+	private String description;
 
 	private ActionTypeDataMiningEnum actionType;
 	private MomentTypeActionDataMiningEnum momentType;
@@ -64,7 +65,7 @@ public class ActionSingleDataMining implements Serializable {
 		this.momentType = momentType;
 	}
 
-	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name="datamining_action_elementFieldSearchs")
 	public List<FieldSearchTupleDataMining> getElementFiedlSearch() {
 		return elementFiedlSearch;
@@ -75,7 +76,7 @@ public class ActionSingleDataMining implements Serializable {
 		this.elementFiedlSearch = elementFiedlSearch;
 	}
 
-	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name="datamining_action_urlFieldSearchs")
 	public List<FieldSearchTupleDataMining> getUrlFieldSearch() {
 		return urlFieldSearch;
@@ -95,6 +96,14 @@ public class ActionSingleDataMining implements Serializable {
 		this.task = task;
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public ActionDataMining toActionDataMining() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException{
 		ActionDataMining action = new ActionDataMining();
 		Class<?> c = action.getClass();

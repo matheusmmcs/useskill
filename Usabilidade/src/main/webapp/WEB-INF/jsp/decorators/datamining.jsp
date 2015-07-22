@@ -26,7 +26,7 @@
 	<div class="container">
 		<div class="row container-row">
 		
-			<div ng-app="useskill">
+			<div ng-app="useskill" class="useskill-datamining">
 				<div ng-view></div>
 				<%-- <decorator:body /> --%>
 			</div>
@@ -47,6 +47,7 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-1.3.15.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/json2.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/plugin/chart/Chart.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap/bootstrap.min.js"></script>
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-resource.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-route.min.js"></script>
@@ -54,12 +55,19 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-translate-loader-url.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-tablesort.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-chart/angular-chart.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/ui-bootstrap/ui-bootstrap-tpls-0.13.0.min.js"></script>
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/app/app.js"></script>
 	
-	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap/bootstrap.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap/bootstrap-popover.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/useskill.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.easing1.3.js"></script>
+	
+	<script>
+		(function($){
+			$(document).ready(function(){
+			});
+		})(jQuery);
+	</script>
 </body>
 </html>

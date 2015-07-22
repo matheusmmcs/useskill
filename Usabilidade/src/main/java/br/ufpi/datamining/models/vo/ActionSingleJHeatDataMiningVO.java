@@ -16,6 +16,7 @@ public class ActionSingleJHeatDataMiningVO {
 	private TaskDataMining task;
 	private ActionTypeDataMiningEnum actionType;
 	private MomentTypeActionDataMiningEnum momentType;
+	private String description;
 	private String element;
 	private String url;
 	private String jhm;
@@ -70,12 +71,19 @@ public class ActionSingleJHeatDataMiningVO {
 	public void setJhm(String jhm) {
 		this.jhm = jhm;
 	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
 	public ActionSingleDataMining toActionSingleDataMining(){
 		ActionSingleDataMining action = new ActionSingleDataMining();
 		action.setId(this.getId());
 		action.setActionType(this.getActionType());
 		action.setMomentType(this.getMomentType());
 		action.setTask(this.getTask());
+		action.setDescription(this.getDescription());
 		
 		//add XPath
 		List<FieldSearchTupleDataMining> elements = new ArrayList<FieldSearchTupleDataMining>();

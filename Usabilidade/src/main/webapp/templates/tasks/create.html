@@ -58,6 +58,23 @@
 		                	<input type="text" ng-model="taskCtrl.task.threshold" name="task.threshold"  id="taskThreshold" class="input" /> 
 		            	</div>
 		        	</div>
+		        	
+		        	<div class="control-group">
+		        	<!-- <select ng-model="actionCtrl.action.actionType" id="actionType" ng-options="type as type.name for type in actionCtrl.types" class="input"> -->
+		        		<label class="control-label" for="taskDisregard">{{ 'datamining.tasks.disregard' | translate}}:*</label>
+		        		
+		        		<div class="controls">
+			        		<label class="checkbox" ng-repeat="type in taskCtrl.actionTypes">
+							  <input
+								    type="checkbox"
+								    name="disregardActions[]"
+								    value="{{type.value}}"
+								    ng-checked="taskCtrl.task.disregardActions.indexOf(type.value) > -1"
+    								ng-click="taskCtrl.toggleTypeSelection(type)"
+								  > {{type.name}}
+							</label>
+		            	</div>
+		        	</div>
 		
 					<hr/>
 					
