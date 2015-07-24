@@ -6,6 +6,12 @@
 	"datamining" : "DataMining",
 	"minutes" : "minuto(s)",
 	
+	"qtd": "Quantidade",
+	"to": "até",
+	"mean": "Média",
+	"stdv": "Desvio Padrão",
+	"actions": "ações",
+	
 	"datamining.back" : "Voltar",
 	"datamining.cancel" : "Cancelar",
 	"datamining.new" : "Criar",
@@ -46,13 +52,22 @@
 	
 	"datamining.tasks.evaluate.users.sessions.title" : "Utilizações dos usuários",
 	"datamining.tasks.evaluate.user" : "Usuário",
+	"datamining.tasks.evaluate.actions.ok.title" : "Métricas de Ações (Sessões Completas)",
 	"datamining.tasks.evaluate.actions" : "Méd. Ações",
+	"datamining.tasks.evaluate.time.ok.title" : "Métricas de Tempo (Sessões Completas)",
 	"datamining.tasks.evaluate.time" : "Méd. Tempo",
+	
 	"datamining.tasks.evaluate.complete" : "Completo",
 	"datamining.tasks.evaluate.restart" : "Reinício",
 	"datamining.tasks.evaluate.error" : "Erro",
 	"datamining.tasks.evaluate.threshold" : "Limiar",
-	"datamining.tasks.evaluate.rateComplete" : "Completos (%)",
+	
+	"datamining.tasks.evaluate.sessions.total" : "Sessões",
+	
+	"datamining.tasks.evaluate.rateSuccess" : "Completude",
+	"datamining.tasks.evaluate.rateRequired" : "Corretude",
+	"datamining.tasks.evaluate.priority" : "Prioridade",
+	
 	
 	"datamining.tasks.evaluate.group.users" : "Agrupar por Usuários",
 	"datamining.tasks.evaluate.group.sessions" : "Agrupar por Sessões",

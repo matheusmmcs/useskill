@@ -15,7 +15,8 @@ public class PageViewActionDataMining {
 	public PageViewActionDataMining(ActionDataMining action) {
 		super();
 		this.id = action.getId();
-		this.local = PageViewDataMining.getUrlFormatted(action.getsUrl()) + "-" + action.getsJhm() + "-" + action.getsStepJhm();
+		//this.local = PageViewDataMining.getUrlFormatted(action.getsUrl()) + "-" + action.getsJhm() + "-" + action.getsStepJhm();
+		this.local = action.getsJhm() + "-" + action.getsStepJhm();
 		this.element = action.getsXPath();
 		this.action = action.getsActionType();
 		this.time = action.getsTime();

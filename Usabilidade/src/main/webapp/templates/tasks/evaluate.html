@@ -19,7 +19,13 @@
 				</a>
 				<span class="divider">/</span>
 			</li>
-			<li class="active">{{ 'datamining.tasks.details' | translate}}</li>
+			<li>
+				<a ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/{{taskCtrl.task.id}}"> 
+					{{ 'datamining.tasks.details' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li class="active">{{ 'datamining.tasks.evaluate' | translate}}</li>
 		</ul>
 		
 		<div ng-show="success" class="alert alert-success">
@@ -60,45 +66,29 @@
 		              	
 					<br/>
 					
-					
-					<h3 class="usdm-box-header">
-			    		{{ 'datamining.tasks.evaluate.graphs.history' | translate}}
-		            </h3>
-		            
-		            <canvas id="line" class="chart chart-line" data="historyData"
-					  	labels="historyLabels" legend="true" series="historySeries"></canvas>
-					 
-					 
 					<div class="usdm-box-body">
 			            <dl>
-			            	<dt>{{ 'datamining.tasks.evaluate.actions' | translate}}:</dt>
+			            	<dt>{{ 'datamining.tasks.evaluate.actions.ok.title' | translate}}:</dt>
 			            	<dd>
-			            		Max.: {{taskCtrl.evaluate.maxActions | number:2}} -> Min.: {{taskCtrl.evaluate.minActions | number:2}} <br/>
-			            		Méd.: {{taskCtrl.evaluate.meanActions | number:2}} / Desv.: {{taskCtrl.evaluate.stdDevActions | number:2}}
+			            		{{ 'qtd' | translate }}: <span class="text-green">{{taskCtrl.evaluate.minActionsOk | number:0}}</span> {{ 'to' | translate }} <span class="text-red">{{taskCtrl.evaluate.maxActionsOk | number:0}}</span> {{ 'actions' | translate }}. <br/>
+			            		{{ 'mean' | translate }}: <b>{{taskCtrl.evaluate.meanActionsOk | number:2}}</b> | {{ 'stdv' | translate }}: <b>{{taskCtrl.evaluate.stdDevActionsOk | number:2}} </b> {{ 'actions' | translate }}.
 			            	</dd>
 			            </dl>
 			            <dl>
-			            	<dt>{{ 'datamining.tasks.evaluate.actions' | translate}} (Ok):</dt>
+			            	<dt>{{ 'datamining.tasks.evaluate.time.ok.title' | translate}}:</dt>
 			            	<dd>
-			            		Max.: {{taskCtrl.evaluate.maxActionsOk | number:2}} -> Min.: {{taskCtrl.evaluate.minActionsOk | number:2}} <br/>
-			            		Méd.: {{taskCtrl.evaluate.meanActionsOk | number:2}} / Desv.: {{taskCtrl.evaluate.stdDevActionsOk | number:2}}
-			            	</dd>
-			            </dl>
-			            <dl>
-			            	<dt>{{ 'datamining.tasks.evaluate.time' | translate}}:</dt>
-			            	<dd>
-			            		Max.: {{taskCtrl.evaluate.maxTimes | number:2}} -> Min.: {{taskCtrl.evaluate.minTimes | number:2}} <br/>
-			            		Méd.: {{taskCtrl.evaluate.meanTimes | number:2}} / Desv.: {{taskCtrl.evaluate.stdDevTimes | number:2}}
-			            	</dd>
-			            </dl>
-			            <dl>
-			            	<dt>{{ 'datamining.tasks.evaluate.time' | translate}} (Ok):</dt>
-			            	<dd>
-			            		Max.: {{taskCtrl.evaluate.maxTimesOk | number:2}} ->  {{taskCtrl.evaluate.minTimesOk | number:2}} <br/>
-			            		Méd.: {{taskCtrl.evaluate.meanTimesOk | number:2}} / Desv.: {{taskCtrl.evaluate.stdDevTimesOk | number:2}}
+			            		{{ 'qtd' | translate }}: <span class="text-green">{{taskCtrl.evaluate.minTimesOk | msConverter}}</span> {{ 'to' | translate }} <span class="text-red">{{taskCtrl.evaluate.maxTimesOk | msConverter}}</span>. <br/>
+			            		{{ 'mean' | translate }}: <b>{{taskCtrl.evaluate.meanTimesOk | msConverter}}</b> | {{ 'stdv' | translate }}: <b>{{taskCtrl.evaluate.stdDevTimesOk | msConverter}}.</b>
 			            	</dd>
 			            </dl>
 		            </div>
+					
+<!-- 					<h3 class="usdm-box-header"> -->
+<!-- 			    		{{ 'datamining.tasks.evaluate.graphs.history' | translate}} -->
+<!-- 		            </h3> -->
+		            
+<!-- 		            <canvas id="line" class="chart chart-line" data="historyData" -->
+<!-- 					  	labels="historyLabels" legend="true" series="historySeries"></canvas> -->
 		            
 		    	</div>
 		    </div>
@@ -116,24 +106,24 @@
 							  <thead>
 							    <tr>
 							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
-							      <th ts-criteria="actionsAverage|parseFloat">{{ 'datamining.tasks.evaluate.actions' | translate }}</th>
-							      <th ts-criteria="timesAverage|parseFloat">{{ 'datamining.tasks.evaluate.time' | translate }}</th>
-							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateComplete' | translate }}</th>
-							      <th ts-criteria="countSessionsSuccess|parseInt">{{ 'datamining.tasks.evaluate.complete' | translate }}</th>
-							      <th ts-criteria="countSessionsRepeat|parseInt">{{ 'datamining.tasks.evaluate.restart' | translate }}</th>
-							      <th ts-criteria="countSessionsThreshold|parseInt">{{ 'datamining.tasks.evaluate.threshold' | translate }}</th>
-							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">Fuzzy</th>
+							      <th ts-criteria="actionsAverageOk|parseFloat">{{ 'datamining.tasks.evaluate.actions' | translate }}</th>
+							      <th ts-criteria="timesAverageOk|parseFloat">{{ 'datamining.tasks.evaluate.time' | translate }}</th>
+							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateSuccess' | translate }}</th>
+							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateRequired' | translate }}</th>
+							      <th ts-criteria="countSessionsSuccess+countSessionsRepeat+countSessionsThreshold|parseInt">{{ 'datamining.tasks.evaluate.sessions.total' | translate }}</th>
+							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">{{ 'datamining.tasks.evaluate.priority' | translate }}</th>
 							    </tr>
 							  </thead>
 							  <tbody>
 							    <tr ng-repeat="user in taskCtrl.evaluate.users" ts-repeat>
 							      <td><a ng-click="showUserSessions(user)">{{user.username}}</a></td>
-							      <td>{{user.actionsAverage | number:2}}</td>
-							      <td>{{user.timesAverage | msConverter}}</td>
-							      <td>{{user.rateSuccess | number:2}}</td>
-							      <td>{{user.countSessionsSuccess}}</td>
-							      <td>{{user.countSessionsRepeat}}</td>
-							      <td>{{user.countSessionsThreshold}}</td>
+							      <td>{{user.actionsAverageOk | number:2}}</td>
+							      <td>{{user.timesAverageOk | msConverter}}</td>
+							      <td>{{user.rateSuccess | number:2}} %</td>
+							      <td>{{user.userRateRequired | number:2}} %</td>
+							      <td title="{{ 'datamining.tasks.evaluate.complete' | translate }} = {{user.countSessionsSuccess}} | {{ 'datamining.tasks.evaluate.restart' | translate }} = {{user.countSessionsRepeat}} | {{ 'datamining.tasks.evaluate.threshold' | translate }} = {{user.countSessionsThreshold}}">
+							      	{{user.countSessionsSuccess + user.countSessionsRepeat + user.countSessionsThreshold}}
+							      </td>
 							      <td>{{user.fuzzyPriority | number:3}}</td>
 							    </tr>
 							  </tbody>
@@ -143,10 +133,12 @@
 				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 							  <thead>
 							    <tr>
-							      <th ts-criteria="id|lowercase">{{ 'datamining.tasks.evaluate.session.id' | translate }}</th>
-							      <th ts-criteria="actions.length|parseInt">{{ 'datamining.tasks.evaluate.session.actions' | translate }}</th>
-							      <th ts-criteria="time|parseInt">{{ 'datamining.tasks.evaluate.session.time' | translate }}</th>
-							      <th ts-criteria="classification|lowercase">{{ 'datamining.tasks.evaluate.session.classification' | translate }}</th>
+							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
+							      <th ts-criteria="actions|parseInt">Acoes</th>
+							      <th ts-criteria="time|parseInt">Tempo</th>
+							      <th ts-criteria="(1-userRateSuccess)*100|parseFloat">Completude</th>
+							      <th ts-criteria="userRateRequired*100|parseFloat">Corretude</th>
+							      <th ts-criteria="classification|lowercase">Class</th>
 							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">Fuzzy</th>
 							    </tr>
 							  </thead>
@@ -155,7 +147,9 @@
 							      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
 							      <td>{{session.actions.length | number:2}}</td>
 							      <td>{{session.time | msConverter}}</td>
-							      <td>{{session.classification }}</td>
+							      <td>{{(1-session.userRateSuccess)*100 | number:2}} %</td>
+							      <td>{{session.userRateRequired*100 | number:2}} %</td>
+							      <td>{{session.classification}}</td>
 							      <td>{{session.fuzzyPriority | number:3}}</td>
 							    </tr>
 							  </tbody>
@@ -167,26 +161,22 @@
 							    <tr>
 							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
 							      <th ts-criteria="actions|parseInt">Acoes</th>
-							      <th ts-criteria="actionsNormalized|parseFloat">Acoes [0,1]</th>
 							      <th ts-criteria="time|parseInt">Tempo</th>
-							      <th ts-criteria="timeNormalized|parseFloat">Tempo [0,1]</th>
-							      <th ts-criteria="userRateSuccess|parseFloat">Incompletude [0,1]</th>
+							      <th ts-criteria="(1-userRateSuccess)*100|parseFloat">Completude</th>
+							      <th ts-criteria="userRateRequired*100|parseFloat">Corretude</th>
 							      <th ts-criteria="classification|lowercase">Class</th>
 							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">Fuzzy</th>
-<!-- 							      <th ts-criteria="userRateRequired|parseFloat">Corretude</th> -->
 							    </tr>
 							  </thead>
 							  <tbody>
 							    <tr class="useskill-action-popover" ng-repeat="session in taskCtrl.evaluate.sessions" ts-repeat>
 							      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
 							      <td>{{session.actions.length | number:2}}</td>
-							      <td>{{session.actionsNormalized | number:2}}</td>
 							      <td>{{session.time | msConverter}}</td>
-							      <td>{{session.timeNormalized | number:2}}</td>
-							      <td>{{session.userRateSuccess | number:2}}</td>
+							      <td>{{(1-session.userRateSuccess)*100 | number:2}} %</td>
+							      <td>{{session.userRateRequired*100 | number:2}} %</td>
 							      <td>{{session.classification}}</td>
 							      <td>{{session.fuzzyPriority | number:3}}</td>
-<!-- 							      <td>{{session.userRateRequired | number:3}}</td> -->
 							      
 							    </tr>
 							  </tbody>
@@ -205,7 +195,7 @@
 							  </thead>
 							  <tbody>
 							    <tr ng-repeat="action in taskCtrl.userSession.actions" ts-repeat>
-							      <td>{{action.identifier}}[{{taskCtrl.evaluate.pageViewActionCount[action.identifier]}}]</td>
+							      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.evaluate.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
 							      <td>{{action.time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</td>
 							      <td>{{action.action}}</td>
 							      <td title="{{action.element}}">{{action.element | cut:true:15:'&hellip;'}}</td>
@@ -218,16 +208,16 @@
 				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 							  <thead>
 							    <tr>
-							      <th ts-criteria="id|lowercase">Id</th>
-							      <th ts-criteria="taskCtrl.evaluate.pageViewActionCount|lowercase">{{ 'datamining.tasks.actions.description' | translate }}</th>
-							      <th ts-criteria="value|parseInt" ts-default="descending">Count</th>
+							      <th ts-criteria="$key|lowercase">Id</th>
+							      <th ts-criteria="count|parseInt" ts-default="descending">Count</th>
+							      <th ts-criteria="value|lowercase">{{ 'datamining.tasks.actions.description' | translate }}</th>
 							    </tr>
 							  </thead>
 							  <tbody>
-							    <tr ng-repeat="(key, value) in taskCtrl.evaluate.pageViewActionIds" ts-repeat>
-							      <td>{{ key }}</td>
-							      <td>{{ taskCtrl.evaluate.pageViewActionCount[key] }}</td>
-							      <td>{{ value }}</td>
+							    <tr ng-repeat="action in taskCtrl.actionsArr" ts-repeat>
+								      <td color-action color-action-elem="action" color-ctrl="taskCtrl">{{ action.$key }}</td>
+								      <td>{{ action.count }}</td>
+								      <td>{{ action.value }}</td>
 							    </tr>
 							  </tbody>
 							</table>
@@ -236,14 +226,14 @@
 				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 							  <thead>
 							    <tr>
-							      <th ts-criteria="tkey|lowercase">{{ 'datamining.tasks.actions.description' | translate }}</th>
+							      <th ts-criteria="$key|lowercase">{{ 'datamining.tasks.actions.description' | translate }}</th>
 							      <th ts-criteria="value|parseInt" ts-default="descending">Count</th>
 							    </tr>
 							  </thead>
 							  <tbody>
-							    <tr ng-repeat="key in objectKeys(taskCtrl.evaluate.actionsRequiredTask)" ng-init="value = taskCtrl.evaluate.actionsRequiredTask[key]" ts-repeat>
-							      <td>{{ key }}</td>
-							      <td>{{ value }}</td>
+							    <tr ng-repeat="action in taskCtrl.actionsRequiredArr" ts-repeat>
+							      <td>{{ action.$key }}</td>
+							      <td>{{ action.value }}</td>
 							    </tr>
 							  </tbody>
 							</table>

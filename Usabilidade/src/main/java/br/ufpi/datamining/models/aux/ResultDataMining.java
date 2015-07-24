@@ -6,8 +6,6 @@ import java.util.List;
 
 public class ResultDataMining {
 
-	private Double actionsAverage;
-	private Double timesAverage;
 	private Double actionsAverageOk;
 	private Double timesAverageOk;
 	
@@ -16,27 +14,19 @@ public class ResultDataMining {
 	private Integer countSessionsRepeat;
 	private Integer countSessionsThreshold;
 	
-	private Double rateSuccess;
 	private Integer countSessions;
-	
-	private HashMap<String, Integer> actionsRequiredTask;
+	private Double rateSuccess;
 	private Double rateRequired;
+	private HashMap<String, Integer> actionsRequiredTask;
 	
-	private Double meanActions;
+	
 	private Double meanActionsOk;
-	private Double meanTimes;
 	private Double meanTimesOk;
-	private Double stdDevActions;
 	private Double stdDevActionsOk;
-	private Double stdDevTimes;
 	private Double stdDevTimesOk;
-	private Double maxActions;
 	private Double maxActionsOk;
-	private Double maxTimes;
 	private Double maxTimesOk;
-	private Double minActions;
 	private Double minActionsOk;
-	private Double minTimes;
 	private Double minTimesOk;
 	
 	private HashMap<String, String> pageViewActionIds;
@@ -51,14 +41,12 @@ public class ResultDataMining {
 	}
 	
 	public ResultDataMining(List<UserResultDataMining> users, List<SessionResultDataMining> sessions, 
-			Double actionsAverage, Double timesAverage, Double actionsAverageOk, Double timesAverageOk,
+			Double actionsAverageOk, Double timesAverageOk,
 			Integer countSessionsSuccess, Integer countSessionsError, Integer countSessionsRepeat,
 			Integer countSessionsThreshold, HashMap<String, String> pageViewActionIds, HashMap<String, Integer> pageViewActionCount) {
 		this();
 		this.users = users;
 		this.sessions = sessions;
-		this.actionsAverage = actionsAverage;
-		this.timesAverage = timesAverage;
 		this.actionsAverageOk = actionsAverageOk;
 		this.timesAverageOk = timesAverageOk;
 		
@@ -85,22 +73,6 @@ public class ResultDataMining {
 	}
 	public void setSessions(List<SessionResultDataMining> sessions) {
 		this.sessions = sessions;
-	}
-
-	public Double getActionsAverage() {
-		return actionsAverage;
-	}
-
-	public void setActionsAverage(Double actionsAverage) {
-		this.actionsAverage = actionsAverage;
-	}
-
-	public Double getTimesAverage() {
-		return timesAverage;
-	}
-
-	public void setTimesAverage(Double timesAverage) {
-		this.timesAverage = timesAverage;
 	}
 
 	public Integer getCountSessionsSuccess() {
@@ -167,28 +139,12 @@ public class ResultDataMining {
 		this.timesAverageOk = timesAverageOk;
 	}
 
-	public Double getMeanActions() {
-		return meanActions;
-	}
-
-	public void setMeanActions(Double meanActions) {
-		this.meanActions = meanActions;
-	}
-
 	public Double getMeanActionsOk() {
 		return meanActionsOk;
 	}
 
 	public void setMeanActionsOk(Double meanActionsOk) {
 		this.meanActionsOk = meanActionsOk;
-	}
-
-	public Double getMeanTimes() {
-		return meanTimes;
-	}
-
-	public void setMeanTimes(Double meanTimes) {
-		this.meanTimes = meanTimes;
 	}
 
 	public Double getMeanTimesOk() {
@@ -199,28 +155,12 @@ public class ResultDataMining {
 		this.meanTimesOk = meanTimesOk;
 	}
 
-	public Double getStdDevActions() {
-		return stdDevActions;
-	}
-
-	public void setStdDevActions(Double stdDevActions) {
-		this.stdDevActions = stdDevActions;
-	}
-
 	public Double getStdDevActionsOk() {
 		return stdDevActionsOk;
 	}
 
 	public void setStdDevActionsOk(Double stdDevActionsOk) {
 		this.stdDevActionsOk = stdDevActionsOk;
-	}
-
-	public Double getStdDevTimes() {
-		return stdDevTimes;
-	}
-
-	public void setStdDevTimes(Double stdDevTimes) {
-		this.stdDevTimes = stdDevTimes;
 	}
 
 	public Double getStdDevTimesOk() {
@@ -231,28 +171,12 @@ public class ResultDataMining {
 		this.stdDevTimesOk = stdDevTimesOk;
 	}
 
-	public Double getMaxActions() {
-		return maxActions;
-	}
-
-	public void setMaxActions(Double maxActions) {
-		this.maxActions = maxActions;
-	}
-
 	public Double getMaxActionsOk() {
 		return maxActionsOk;
 	}
 
 	public void setMaxActionsOk(Double maxActionsOk) {
 		this.maxActionsOk = maxActionsOk;
-	}
-
-	public Double getMaxTimes() {
-		return maxTimes;
-	}
-
-	public void setMaxTimes(Double maxTimes) {
-		this.maxTimes = maxTimes;
 	}
 
 	public Double getMaxTimesOk() {
@@ -263,28 +187,12 @@ public class ResultDataMining {
 		this.maxTimesOk = maxTimesOk;
 	}
 
-	public Double getMinActions() {
-		return minActions;
-	}
-
-	public void setMinActions(Double minActions) {
-		this.minActions = minActions;
-	}
-
 	public Double getMinActionsOk() {
 		return minActionsOk;
 	}
 
 	public void setMinActionsOk(Double minActionsOk) {
 		this.minActionsOk = minActionsOk;
-	}
-
-	public Double getMinTimes() {
-		return minTimes;
-	}
-
-	public void setMinTimes(Double minTimes) {
-		this.minTimes = minTimes;
 	}
 
 	public Double getMinTimesOk() {

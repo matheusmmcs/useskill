@@ -1,5 +1,7 @@
 package br.ufpi.datamining.controllers;
 
+import java.util.Date;
+
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
@@ -124,6 +126,17 @@ public class DataMiningTaskController extends BaseController {
 		Gson gson = new Gson();
 		try {
 			ResultDataMining resultDataMining = WebUsageMining.analyze(idTarefa, taskDataMiningRepository, actionDataMiningRepository);
+			
+			//persist results
+			TaskDataMining taskDataMining = taskDataMiningRepository.find(idTarefa);
+			taskDataMining.setEvalLastDate(new Date());
+			taskDataMining.setEvalCountSessions(resultDataMining.getCountSessions());
+			taskDataMining.setEvalMeanActions(resultDataMining.getActionsAverageOk());
+			taskDataMining.setEvalMeanTimes(resultDataMining.getTimesAverageOk());
+			taskDataMining.setEvalMeanCompletion(resultDataMining.getRateSuccess());
+			taskDataMining.setEvalMeanCorrectness(resultDataMining.getRateRequired());
+			taskDataMiningRepository.update(taskDataMining);
+			
 			result.use(Results.json()).from(gson.toJson(resultDataMining)).serialize();
 		} catch (Exception e) {
 			e.printStackTrace();

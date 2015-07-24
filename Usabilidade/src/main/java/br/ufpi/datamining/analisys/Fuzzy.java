@@ -309,19 +309,20 @@ public class Fuzzy {
 		
 		/* For each point, calculate the relevance to each cluster */
 		DecimalFormat decimalFormat = new DecimalFormat("#.##");
-		try{
+		
 			for(int i = 0; i < points.size(); i++){
-				double lowRelevance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[0]]).replace(",", "."));
-				double moderateRelevance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[1]]).replace(",", "."));
-				double highRelavance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[2]]).replace(",", "."));
-				
-				x1y1.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(lowRelevance)));
-				x2y2.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(moderateRelevance)));
-				x3y3.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(highRelavance)));
+				try{
+					double lowRelevance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[0]]).replace(",", "."));
+					double moderateRelevance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[1]]).replace(",", "."));
+					double highRelavance = Double.valueOf(decimalFormat.format(points.get(i).getRelevance()[positions[2]]).replace(",", "."));
+					
+					x1y1.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(lowRelevance)));
+					x2y2.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(moderateRelevance)));
+					x3y3.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(highRelavance)));
+				}catch(Exception e){
+					e.printStackTrace();
+				}
 			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
 		
 		
 		for(int i = 0; i < points.size(); i++){

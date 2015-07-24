@@ -1,12 +1,12 @@
 package br.ufpi.datamining.models;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -18,6 +18,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CollectionOfElements;
 
@@ -40,6 +42,14 @@ public class TaskDataMining implements Serializable {
 	private List<ActionSingleDataMining> actionsRequired;
 	
 	private TestDataMining testDataMining;
+	
+	//Evaluations Data
+	private Date evalLastDate;
+	private Double evalMeanActions;
+	private Double evalMeanTimes;
+	private Double evalMeanCompletion;
+	private Double evalMeanCorrectness;
+	private Integer evalCountSessions;
 	
 	
 	@Id  
@@ -124,6 +134,49 @@ public class TaskDataMining implements Serializable {
 	
 	public void setDisregardActions(Set<ActionTypeDataMiningEnum> disregardActions) {
 		this.disregardActions = disregardActions;
+	}
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getEvalLastDate() {
+		return evalLastDate;
+	}
+	public void setEvalLastDate(Date evalLastDate) {
+		this.evalLastDate = evalLastDate;
+	}
+	
+	public Double getEvalMeanActions() {
+		return evalMeanActions;
+	}
+	public void setEvalMeanActions(Double evalMeanActions) {
+		this.evalMeanActions = evalMeanActions;
+	}
+	
+	public Double getEvalMeanTimes() {
+		return evalMeanTimes;
+	}
+	public void setEvalMeanTimes(Double evalMeanTimes) {
+		this.evalMeanTimes = evalMeanTimes;
+	}
+	
+	public Double getEvalMeanCompletion() {
+		return evalMeanCompletion;
+	}
+	public void setEvalMeanCompletion(Double evalMeanCompletion) {
+		this.evalMeanCompletion = evalMeanCompletion;
+	}
+	
+	public Double getEvalMeanCorrectness() {
+		return evalMeanCorrectness;
+	}
+	public void setEvalMeanCorrectness(Double evalMeanCorrectness) {
+		this.evalMeanCorrectness = evalMeanCorrectness;
+	}
+	
+	public Integer getEvalCountSessions() {
+		return evalCountSessions;
+	}
+	public void setEvalCountSessions(Integer evalCountSessions) {
+		this.evalCountSessions = evalCountSessions;
 	}
 		
 }

@@ -5,8 +5,6 @@ import java.util.List;
 public class UserResultDataMining {
 	
 	private String username;
-	private Double actionsAverage;
-	private Double timesAverage;
 	private Double actionsAverageOk;
 	private Double timesAverageOk;
 	
@@ -20,8 +18,6 @@ public class UserResultDataMining {
 	private Double fuzzyPriority;
 	private Double userRateRequired;
 	
-	private Double maxActionsAverage;
-	private Double maxTimeAverage;
 	private Double maxActionsAverageOk;
 	private Double maxTimeAverageOk;
 	
@@ -29,13 +25,11 @@ public class UserResultDataMining {
 	private List<String> sessionsId;
 	
 	public UserResultDataMining(String username, 
-			Double actionsAverage, Double timesAverage, Double actionsAverageOk, Double timesAverageOk, 
+			Double actionsAverageOk, Double timesAverageOk, 
 			Integer countSessionsSuccess, Integer countSessionsError, Integer countSessionsRepeat,
 			Integer countSessionsThreshold, Double fuzzyPriority, Double userRateRequired, List<String> sessionsId) {
 		super();
 		this.username = username;
-		this.actionsAverage = actionsAverage;
-		this.timesAverage = timesAverage;
 		this.actionsAverageOk = actionsAverageOk;
 		this.timesAverageOk = timesAverageOk;
 		
@@ -57,18 +51,6 @@ public class UserResultDataMining {
 	}
 	public void setUsername(String username) {
 		this.username = username;
-	}
-	public Double getActionsAverage() {
-		return actionsAverage;
-	}
-	public void setActionsAverage(Double actionsAverage) {
-		this.actionsAverage = actionsAverage;
-	}
-	public Double getTimesAverage() {
-		return timesAverage;
-	}
-	public void setTimesAverage(Double timesAverage) {
-		this.timesAverage = timesAverage;
 	}
 	public Integer getCountSessionsSuccess() {
 		return countSessionsSuccess;
@@ -143,22 +125,6 @@ public class UserResultDataMining {
 		this.timesAverageOk = timesAverageOk;
 	}
 
-	public Double getMaxActionsAverage() {
-		return maxActionsAverage;
-	}
-
-	public void setMaxActionsAverage(Double maxActionsAverage) {
-		this.maxActionsAverage = maxActionsAverage;
-	}
-
-	public Double getMaxTimeAverage() {
-		return maxTimeAverage;
-	}
-
-	public void setMaxTimeAverage(Double maxTimeAverage) {
-		this.maxTimeAverage = maxTimeAverage;
-	}
-
 	public Double getMaxActionsAverageOk() {
 		return maxActionsAverageOk;
 	}
@@ -185,14 +151,6 @@ public class UserResultDataMining {
 	
 	public Double getTimesAvarageOkNormalized(){
 		return (this.getTimesAverageOk() / this.getMaxTimeAverageOk());
-	}
-	
-	public Double getActionsAvarageNormalized(){
-		return (this.getActionsAverage() / this.getMaxActionsAverage());
-	}
-	
-	public Double getTimesAvarageNormalized(){
-		return (this.getTimesAverage() / this.getMaxTimeAverage());
 	}
 
 	public Double getUserRateRequired() {

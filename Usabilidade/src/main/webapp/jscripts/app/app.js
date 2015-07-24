@@ -228,6 +228,7 @@ angular.module('useskill',
 .controller('TestViewController', function(test) {
 	var testCtrl = this;
 	testCtrl.test = JSON.parse(test.data.string);
+	console.log(testCtrl);
 })
 .controller('TestNewController', function($filter, ServerAPI) {
 	var testCtrl = this;
@@ -383,6 +384,19 @@ angular.module('useskill',
 	taskCtrl.task = JSON.parse(task.data.string);
 	taskCtrl.evaluate = JSON.parse(evaluate.data.string);
 	console.log(taskCtrl);
+
+	var actionsArr = $filter('toArray')(taskCtrl.evaluate.pageViewActionIds),
+		maxCount = 0;
+	angular.forEach(actionsArr, function(action){
+		action.count = taskCtrl.evaluate.pageViewActionCount[action.$key];
+		if(maxCount < action.count){
+			maxCount = action.count;
+		}
+	});
+	
+	taskCtrl.actionsMaxCount = maxCount;
+	taskCtrl.actionsArr = actionsArr;
+	taskCtrl.actionsRequiredArr = $filter('toArray')(taskCtrl.evaluate.actionsRequiredTask);
 	
 	$scope.showUserSessions = function(user){
 		var sessions = [];
@@ -581,6 +595,37 @@ angular.module('useskill',
 		    }
 	  };
 })
+.directive('colorAction', function() {
+	  return {
+		    restrict: 'A',
+		    scope: {
+		    	colorActionElem: '=',
+		    	colorCtrl: '='
+		    },
+		    link: function(scope, element) {
+		    	
+		    		//scope.taskCtrl.evaluate.pageViewActionCount
+		    	var id = (scope.colorActionElem.$key || scope.colorActionElem.identifier);
+		    	var count = scope.colorCtrl.evaluate.pageViewActionCount[id];
+		    	var a = count > 0 ? (count / scope.colorCtrl.actionsMaxCount) : 0;
+		    	
+		    	element.css('background', 'rgba(66,99,146, '+a+')');
+		    	if(a > .5){
+		    		element.css('color', 'white');
+		    	}
+		    	//console.log(id);
+		    	//taskCtrl.evaluate.pageViewActionCount
+		    	
+		    	/*
+		    	var a = (scope.colorActionElem.count/taskCtrl.actionsMaxCount || 0);
+		    	element.css('background', 'rgba(66,99,146, '+a+')');
+		    	if(a >= .6){
+		    		element.css('color', 'white');
+		    	}
+		    	*/
+		    }
+	  };
+})
 
 /* FILTER */
 
@@ -589,8 +634,35 @@ angular.module('useskill',
 	  n = Math.round(n);
 	  var minutes = Math.floor(n / 60000);
 	  var seconds = ((n % 60000) / 1000).toFixed(0);
-	  return minutes + "m, " + (seconds < 10 ? '0' : '') + seconds + "s"; 
+	  return minutes + "m:" + (seconds < 10 ? '0' : '') + seconds + "s"; 
   }
+})
+.filter('numberSize', function() {
+  return function(n, size) {
+	  while((new String(n)).length < size){
+		  n = "0"+n;
+	  }
+	  return n; 
+  }
+})
+.filter('toArray', function () {
+  return function (obj, addKey) {
+    if (!(obj instanceof Object)) {
+      return obj;
+    }
+
+    if ( addKey === false ) {
+      return Object.values(obj);
+    } else {
+      return Object.keys(obj).map(function (key) {
+    	  if((obj[key] instanceof Object)){
+    		  return Object.defineProperty(obj[key], '$key', { enumerable: false, value: key});
+    	  }else{
+    		  return {'value': obj[key], '$key': key};
+    	  }
+      });
+    }
+  };
 })
 .filter('cut', function () {
     return function (value, wordwise, max, tail) {
