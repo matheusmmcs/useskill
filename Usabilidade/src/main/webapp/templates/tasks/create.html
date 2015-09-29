@@ -60,6 +60,13 @@
 		        	</div>
 		        	
 		        	<div class="control-group">
+		            	<label class="control-label" for="actionsRequiredOrder">{{ 'datamining.tasks.required.group' | translate}}: {{ 'datamining.tasks.required.group.sample' | translate}}</label>
+		            	<div class="controls">
+		                	<input type="text" ng-model="taskCtrl.task.actionsRequiredOrder" name="task.actionsRequiredOrder"  id="actionsRequiredOrder" class="input" /> 
+		            	</div>
+		        	</div>
+		        	
+		        	<div class="control-group">
 		        	<!-- <select ng-model="actionCtrl.action.actionType" id="actionType" ng-options="type as type.name for type in actionCtrl.types" class="input"> -->
 		        		<label class="control-label" for="taskDisregard">{{ 'datamining.tasks.disregard' | translate}}:*</label>
 		        		

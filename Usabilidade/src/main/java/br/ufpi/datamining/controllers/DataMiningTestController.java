@@ -16,14 +16,17 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
+import br.ufpi.datamining.analisys.Fuzzy;
 import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.vo.ReturnVO;
 import br.ufpi.datamining.models.vo.TestDataMiningVO;
+import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.repositories.TestDataMiningRepository;
 import br.ufpi.datamining.utils.GsonExclusionStrategy;
+import br.ufpi.datamining.utils.UsabilityUtils;
 import br.ufpi.models.Usuario;
 
 import com.google.gson.Gson;
@@ -34,13 +37,16 @@ import com.google.gson.GsonBuilder;
 public class DataMiningTestController extends BaseController {
 
 	private final TestDataMiningRepository testeDataMiningRepository;
+	private final TaskDataMiningRepository taskDataMiningRepository;
 	
 	public DataMiningTestController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
-			TestDataMiningRepository testeDataMiningRepository) {
+			TestDataMiningRepository testeDataMiningRepository,
+			TaskDataMiningRepository taskDataMiningRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.testeDataMiningRepository = testeDataMiningRepository;
+		this.taskDataMiningRepository = taskDataMiningRepository;
 	}
 	
 	@Get("/")
@@ -63,6 +69,51 @@ public class DataMiningTestController extends BaseController {
 		String json = gson.toJson(testsVO);
 		
 		result.use(Results.json()).from(json).serialize();
+	}
+	
+	@Get("/testes/{idTeste}/priorizar/")
+	@Logado
+	public void priorizar(Long idTeste) {
+		Gson gson = new GsonBuilder()
+	        .setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class, ActionSingleDataMining.class))
+	        .serializeNulls()
+	        .create();
+		
+		TestDataMining testPertencente = testeDataMiningRepository.getTestPertencente(usuarioLogado.getUsuario().getId(), idTeste);
+		validateComponente.validarNotNull(testPertencente, "datamining.accessdenied");
+		validator.onErrorRedirectTo(this).list();
+		
+		//calcula eficácia e eficiência das tarefas
+		List<TaskDataMining> tasks = testPertencente.getTasks();
+		Double maxEffectiveness = 0d, maxEfficiency = 0d, maxSessions = 0d;
+		for(TaskDataMining t : tasks){
+			if(t.getEvalMeanCompletion() != null && t.getEvalMeanCorrectness() != null && t.getEvalMeanTimes() != null && t.getEvalMeanActions() != null ){
+				t.setEvalEffectiveness(UsabilityUtils.calcEffectiveness(t.getEvalMeanCompletion(), t.getEvalMeanCorrectness()));
+				t.setEvalEfficiency(UsabilityUtils.calcEfficiency(t.getEvalEffectiveness(), t.getEvalZScoreActions(), t.getEvalZScoreTime()));
+				
+				maxEffectiveness = maxEffectiveness < t.getEvalEffectiveness() ? t.getEvalEffectiveness() : maxEffectiveness;
+				maxEfficiency = maxEfficiency < t.getEvalEfficiency() ? t.getEvalEfficiency() : maxEfficiency;
+				maxSessions = maxSessions < t.getEvalCountSessions() ? t.getEvalCountSessions() : maxSessions;
+			}
+		}
+		//normaliza
+		for(TaskDataMining t : tasks){
+			if(t.getEvalMeanCompletion() != null && t.getEvalMeanCorrectness() != null && t.getEvalMeanTimes() != null && t.getEvalMeanActions() != null ){
+				t.setEvalEffectivenessNormalized(t.getEvalEffectiveness()/maxEffectiveness);
+				t.setEvalEfficiencyNormalized(t.getEvalEfficiency()/maxEfficiency);
+				t.setEvalCountSessionsNormalized(t.getEvalCountSessions()/maxSessions);
+			}
+		}
+		//Fuzzy para calcular priorização
+		Fuzzy.executeFuzzySystemWithFCMTasks(tasks, true);
+		//salvar novos indices
+		for(TaskDataMining t : tasks){
+			if(t.getEvalMeanCompletion() != null && t.getEvalMeanCorrectness() != null && t.getEvalMeanTimes() != null && t.getEvalMeanActions() != null ){
+				taskDataMiningRepository.update(t);
+			}
+		}
+		
+		result.use(Results.json()).from(gson.toJson(new TestDataMiningVO(testPertencente))).serialize();
 	}
 	
 	@Get("/testes/{idTeste}")

@@ -98,6 +98,7 @@ public class DataMiningTaskController extends BaseController {
 				taskUpdate.setTitle(task.getTitle());
 				taskUpdate.setThreshold(task.getThreshold());
 				taskUpdate.setDisregardActions(task.getDisregardActions());
+				taskUpdate.setActionsRequiredOrder(task.getActionsRequiredOrder());
 				
 				taskDataMiningRepository.update(taskUpdate);
 				returnvo = new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.tasks.edit.success");
@@ -135,6 +136,17 @@ public class DataMiningTaskController extends BaseController {
 			taskDataMining.setEvalMeanTimes(resultDataMining.getTimesAverageOk());
 			taskDataMining.setEvalMeanCompletion(resultDataMining.getRateSuccess());
 			taskDataMining.setEvalMeanCorrectness(resultDataMining.getRateRequired());
+			
+			taskDataMining.setEvalZScoreActions((resultDataMining.getMaxActionsOk() - resultDataMining.getMeanActionsOk()) / resultDataMining.getStdDevActionsOk());
+			taskDataMining.setEvalZScoreTime((resultDataMining.getMaxTimesOk() - resultDataMining.getMeanTimesOk()) / resultDataMining.getStdDevTimesOk());
+			
+			taskDataMining.setEvalEffectiveness((taskDataMining.getEvalMeanCompletion() * taskDataMining.getEvalMeanCorrectness()) / 100);
+			taskDataMining.setEvalEfficiency(taskDataMining.getEvalEffectiveness() / (taskDataMining.getEvalZScoreActions() * taskDataMining.getEvalZScoreTime()));
+			
+			System.out.println(taskDataMining.getEvalEffectiveness() / (taskDataMining.getEvalZScoreTime()));
+			System.out.println(taskDataMining.getEvalEffectiveness() / (taskDataMining.getEvalZScoreActions() * taskDataMining.getEvalZScoreTime()));
+			System.out.println(taskDataMining.getEvalEffectiveness() / ((taskDataMining.getEvalZScoreActions() + taskDataMining.getEvalZScoreTime()) / 2));
+			
 			taskDataMiningRepository.update(taskDataMining);
 			
 			result.use(Results.json()).from(gson.toJson(resultDataMining)).serialize();

@@ -49,7 +49,15 @@ public class TaskDataMining implements Serializable {
 	private Double evalMeanTimes;
 	private Double evalMeanCompletion;
 	private Double evalMeanCorrectness;
+	private Double evalZScoreActions;
+	private Double evalZScoreTime;
+	private Double evalEfficiency;
+	private Double evalEffectiveness;
+	private Double evalEfficiencyNormalized;
+	private Double evalEffectivenessNormalized;
+	private Double evalFuzzyPriority;
 	private Integer evalCountSessions;
+	private Double evalCountSessionsNormalized;
 	
 	
 	@Id  
@@ -177,6 +185,56 @@ public class TaskDataMining implements Serializable {
 	}
 	public void setEvalCountSessions(Integer evalCountSessions) {
 		this.evalCountSessions = evalCountSessions;
+	}
+	public Double getEvalZScoreActions() {
+		return evalZScoreActions;
+	}
+	public void setEvalZScoreActions(Double evalZScoreActions) {
+		this.evalZScoreActions = evalZScoreActions;
+	}
+	public Double getEvalZScoreTime() {
+		return evalZScoreTime;
+	}
+	public void setEvalZScoreTime(Double evalZScoreTime) {
+		this.evalZScoreTime = evalZScoreTime;
+	}
+	public Double getEvalEfficiency() {
+		return evalEfficiency;
+	}
+	public void setEvalEfficiency(Double evalEfficiency) {
+		this.evalEfficiency = evalEfficiency;
+	}
+	public Double getEvalEffectiveness() {
+		return evalEffectiveness;
+	}
+	public void setEvalEffectiveness(Double evalEffectiveness) {
+		this.evalEffectiveness = evalEffectiveness;
+	}
+	public Double getEvalFuzzyPriority() {
+		return evalFuzzyPriority;
+	}
+	public void setEvalFuzzyPriority(Double evalFuzzyPriority) {
+		this.evalFuzzyPriority = evalFuzzyPriority;
+	}
+	public Double getEvalEfficiencyNormalized() {
+		return evalEfficiencyNormalized;
+	}
+	public void setEvalEfficiencyNormalized(Double evalEfficiencyNormalized) {
+		this.evalEfficiencyNormalized = evalEfficiencyNormalized;
+	}
+	public Double getEvalEffectivenessNormalized() {
+		return evalEffectivenessNormalized;
+	}
+	public void setEvalEffectivenessNormalized(
+			Double evalEffectivenessNormalized) {
+		this.evalEffectivenessNormalized = evalEffectivenessNormalized;
+	}
+	public Double getEvalCountSessionsNormalized() {
+		return evalCountSessionsNormalized;
+	}
+	public void setEvalCountSessionsNormalized(
+			Double evalCountSessionsNormalized) {
+		this.evalCountSessionsNormalized = evalCountSessionsNormalized;
 	}
 		
 }

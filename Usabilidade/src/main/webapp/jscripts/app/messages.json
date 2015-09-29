@@ -17,6 +17,7 @@
 	"datamining.new" : "Criar",
 	"datamining.delete" : "Excluir",
 	"datamining.edit" : "Editar",
+	"datamining.priority" : "Priorizar",
 	"datamining.details" : "Detalhes",
 	"datamining.options" : "Opções",
 	"datamining.areyousure" : "Você deseja prosseguir?",
@@ -49,6 +50,7 @@
 	"datamining.tasks.edit" : "Editar Tarefa",
 	"datamining.tasks.details" : "Detalhes da Tarefa",
 	"datamining.tasks.evaluate" : "Avaliar Tarefa",
+	"datamining.tasks.priority.done" : "Priorização Concluída!",
 	
 	"datamining.tasks.evaluate.users.sessions.title" : "Utilizações dos usuários",
 	"datamining.tasks.evaluate.user" : "Usuário",
@@ -90,6 +92,8 @@
 	"datamining.tasks.title" : "Título",
 	"datamining.tasks.threshold" : "Tempo Max. Sessão",
 	"datamining.tasks.disregard" : "Ações desconsideradas",
+	"datamining.tasks.required.group" : "Agrupamento de Ações Obrigatórias",
+	"datamining.tasks.required.group.sample" : "Ex.: 1,2,[3;4],5 ",
 	
 	"datamining.tasks.actions" : "Ações",
 	"datamining.tasks.actions.start" : "Ações Iniciais",

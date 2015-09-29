@@ -15,6 +15,7 @@ public class TaskDataMiningVO {
 	private Integer threshold;
 	private Set<ActionTypeDataMiningEnum> disregardActions;
 	
+	private String actionsRequiredOrder;
 	private List<ActionSingleDataMining> actionsInitial;
 	private List<ActionSingleDataMining> actionsEnd;
 	private List<ActionSingleDataMining> actionsRequired;
@@ -31,6 +32,7 @@ public class TaskDataMiningVO {
 		this.actionsEnd = taskDataMining.getActionsEnd();
 		this.testDataMining = taskDataMining.getTestDataMining();
 		this.disregardActions = taskDataMining.getDisregardActions();
+		this.actionsRequiredOrder = taskDataMining.getActionsRequiredOrder();
 	}
 	
 	public Long getId() {
@@ -84,6 +86,14 @@ public class TaskDataMiningVO {
 
 	public void setDisregardActions(Set<ActionTypeDataMiningEnum> disregardActions) {
 		this.disregardActions = disregardActions;
+	}
+
+	public String getActionsRequiredOrder() {
+		return actionsRequiredOrder;
+	}
+
+	public void setActionsRequiredOrder(String actionsRequiredOrder) {
+		this.actionsRequiredOrder = actionsRequiredOrder;
 	}
 	
 	

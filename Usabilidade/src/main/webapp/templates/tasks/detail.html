@@ -48,6 +48,10 @@
 			            	<dd>{{taskCtrl.task.threshold}}</dd>
 			            </dl>
 			            <dl>
+			            	<dt>{{ 'datamining.tasks.required.group' | translate}}:</dt>
+			            	<dd>{{taskCtrl.task.actionsRequiredOrder}}</dd>
+			            </dl>
+			            <dl>
 			            	<dt>{{ 'datamining.tasks.disregard' | translate}}:</dt>
 			            	<dd><label ng-repeat="type in taskCtrl.task.disregardActions">{{taskCtrl.getActionTypeName(type)}}</label></dd>
 			            </dl>

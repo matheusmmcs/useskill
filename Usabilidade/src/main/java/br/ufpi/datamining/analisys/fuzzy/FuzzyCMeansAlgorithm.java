@@ -81,6 +81,11 @@ public class FuzzyCMeansAlgorithm {
 		return this.centroids;
 	}
 	
+	private double minError = Double.MAX_VALUE;
+	private int maxIterations = 10000;
+	private Matrix lastFineMatrixU;
+	private ArrayList<double[]> lastFineCentroids;
+	
 	/**
 	 * Execute Fuzzy C-Means clustering algorithm: iterative optimization 
 	 */
@@ -88,11 +93,39 @@ public class FuzzyCMeansAlgorithm {
 		if(!initialized){
 			initialize();
 		}
+		boolean toleranceLevel2, lessThanMaxIterations;
 		do{
 			calculateClusterCenters();
 			updateAllDataSamples();
 			iteration++;
-		} while(verifyToleranceLevel());
+			toleranceLevel2 = verifyToleranceLevel();
+			
+			//get min error and your matrixU;
+			if(this.actualError < minError){
+				minError =  this.actualError;
+				lastFineMatrixU = this.matrixU;
+				lastFineCentroids = this.centroids;
+			}
+			
+			//exit infinite loop
+			lessThanMaxIterations = iteration < maxIterations;
+		} while(toleranceLevel2 && lessThanMaxIterations);
+		
+		//verify if is NaN
+		if(this.actualError == Double.NaN){
+			System.out.println("{ERRO} - Error is NaN...");
+			this.matrixU = lastFineMatrixU;
+			this.centroids = lastFineCentroids;
+		}
+		
+		//verify if is more than threshold iterations
+		if(!lessThanMaxIterations){
+			System.out.println("{ERRO} - More than max...");
+			this.matrixU = lastFineMatrixU;
+			this.centroids = lastFineCentroids;
+		}
+		
+		System.out.println("{INFO} - Fuzzy CMeans: " + this.minError);
 		
 		updatePoints();
 		return this.features;
@@ -145,10 +178,11 @@ public class FuzzyCMeansAlgorithm {
 			double sumX = 0.0, sumY = 0.0, amount = 0.0;
 			
 			for(int point = 0; point < this.features.size(); point++){
-				sumX += Math.pow(this.matrixU.valueAt(clusterCenter, point), this.m) * this.features.get(point).getX();
-				sumY += Math.pow(this.matrixU.valueAt(clusterCenter, point), this.m) * this.features.get(point).getY();
+				double expMatrixUandM = Math.pow(this.matrixU.valueAt(clusterCenter, point), this.m);
+				sumX += expMatrixUandM * this.features.get(point).getX();
+				sumY += expMatrixUandM * this.features.get(point).getY();
 				
-				amount += Math.pow(this.matrixU.valueAt(clusterCenter, point), this.m);
+				amount += expMatrixUandM;
 			}
 			
 			/* Create the new centroid */

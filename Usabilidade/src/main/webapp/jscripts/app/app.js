@@ -117,8 +117,8 @@ angular.module('useskill',
 	    });
 	
 }])
-.factory('HttpInterceptor', ['$q', '$rootScope', '$filter', '$location', 'env', 'config',
-                     function($q, $rootScope, $filter, $location, env, config) {
+.factory('HttpInterceptor', ['$q', '$rootScope', '$filter', '$location', 'env', 'config', '$timeout',
+                     function($q, $rootScope, $filter, $location, env, config, $timeout) {
 	var responseInterceptor = {
 		response: function(response) {
 			$rootScope.errors = null;
@@ -132,6 +132,14 @@ angular.module('useskill',
 					$rootScope.success = $filter('translate')(resp.message);
 				}
 			}
+			
+			if($rootScope.mgsRealod){
+				$rootScope.success = $rootScope.success != null ? $rootScope.success + ". " + $rootScope.mgsRealod.success : $rootScope.mgsRealod.success;
+				$rootScope.error = $rootScope.error != null ? $rootScope.error + ". " + $rootScope.mgsRealod.error : $rootScope.mgsRealod.error;
+				//gambis para evitar apagar msgReload antes de carregar
+				setTimeout(function(){$rootScope.mgsRealod = null;},100);
+			}
+			
             return ( response );
         },
         responseError: function(error) {
@@ -151,6 +159,10 @@ angular.module('useskill',
         },
         getTest: function(testId){
             var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId});
+            return promise;
+        },
+        priorityTest: function(testId){
+            var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId+'/priorizar'});
             return promise;
         },
         saveTest: function(test){
@@ -225,9 +237,48 @@ angular.module('useskill',
 	var testCtrl = this;
 	testCtrl.tests = JSON.parse(tests.data.string);
 })
-.controller('TestViewController', function(test) {
+.controller('TestViewController', function(test, ServerAPI, $route, $rootScope, $filter) {
 	var testCtrl = this;
 	testCtrl.test = JSON.parse(test.data.string);
+	testCtrl.priority = function(){
+		ServerAPI.priorityTest(testCtrl.test.id).success(function(data){
+			$rootScope.mgsRealod = {
+					success:$filter('translate')('datamining.tasks.priority.done')
+			};
+			$route.reload();
+		});
+	}
+	
+	testCtrl.popup = {
+		  options: {
+			  html: true,
+			  trigger: 'hover',
+			  placement: 'bottom'
+		  }
+	};
+	
+	angular.forEach(testCtrl.test.tasks, function(task){
+		task.popovercontent = contentPopover(task);
+	});
+	
+	function reduceNumber(n){
+		return $filter('number')(n, 2);
+	}
+	
+	function contentPopover(task){
+		var content = 'Data da Avaliação = '+task.evalLastDate+'<br/>';
+		content += 'Média de Ações = '+reduceNumber(task.evalMeanActions)+' [z='+reduceNumber(task.evalZScoreActions)+']<br/>';
+		content += 'Média de Tempos = '+reduceNumber(task.evalMeanTimes)+', [z='+reduceNumber(task.evalZScoreTime)+']<br/>';
+		content += 'Completude = '+reduceNumber(task.evalMeanCompletion)+', Corretude = '+reduceNumber(task.evalMeanCorrectness)+'<br/>';
+		
+		content += 'Sessões = '+reduceNumber(task.evalCountSessions)+', ['+reduceNumber(task.evalCountSessionsNormalized)+']<br/>';
+		//content += 'Eficácia = (Completude * Corretude)/100<br/>';
+		content += 'Eficácia = '+reduceNumber(task.evalEffectiveness)+', ['+reduceNumber(task.evalEffectivenessNormalized)+']<br/>';
+		//content += 'Eficiência = Eficácia / ((AçõesZscore + TemposZscore)/2)<br/>';
+		content += 'Eficiência = '+reduceNumber(task.evalEfficiency)+', ['+reduceNumber(task.evalEfficiencyNormalized)+']<br/>';
+		content += 'Prioridade (Fuzzy) = '+reduceNumber(task.evalFuzzyPriority)+'<br/>';
+		return content;
+	}
 	console.log(testCtrl);
 })
 .controller('TestNewController', function($filter, ServerAPI) {
@@ -260,11 +311,14 @@ angular.module('useskill',
 		ServerAPI.deleteAction(action, list);
 	}
 	
+	//gambys para a apresentação
+	jQuery('.popover').remove();
+	
 	taskCtrl.popup = {
 	  options: {
 		  html: true,
 		  trigger: 'hover',
-		  placement: 'bottom'
+		  placement: 'top'
 	  }
 	};
 	

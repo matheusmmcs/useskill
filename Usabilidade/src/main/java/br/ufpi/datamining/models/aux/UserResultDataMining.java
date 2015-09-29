@@ -22,6 +22,17 @@ public class UserResultDataMining {
 	private Double maxTimeAverageOk;
 	
 	
+	
+	private Double zScoreActions;
+	private Double zScoreTimes;
+	
+	private Double effectiveness;
+	private Double efficiency;
+	private Double effectivenessNormalized;
+	private Double efficiencyNormalized;
+	private Double fuzzyPriorityEfcEft;
+	
+	
 	private List<String> sessionsId;
 	
 	public UserResultDataMining(String username, 
@@ -159,6 +170,62 @@ public class UserResultDataMining {
 
 	public void setUserRateRequired(Double userRateRequired) {
 		this.userRateRequired = userRateRequired;
+	}
+
+	public Double getzScoreActions() {
+		return zScoreActions;
+	}
+
+	public void setzScoreActions(Double zScoreActions) {
+		this.zScoreActions = zScoreActions;
+	}
+	
+	public Double getzScoreTimes() {
+		return zScoreTimes;
+	}
+
+	public void setzScoreTimes(Double zScoreTimes) {
+		this.zScoreTimes = zScoreTimes;
+	}
+
+	public Double getEffectiveness() {
+		return effectiveness;
+	}
+
+	public void setEffectiveness(Double effectiveness) {
+		this.effectiveness = effectiveness;
+	}
+
+	public Double getEfficiency() {
+		return efficiency;
+	}
+
+	public void setEfficiency(Double efficiency) {
+		this.efficiency = efficiency;
+	}
+
+	public Double getEffectivenessNormalized() {
+		return effectivenessNormalized;
+	}
+
+	public void setEffectivenessNormalized(Double effectivenessNormalized) {
+		this.effectivenessNormalized = effectivenessNormalized;
+	}
+
+	public Double getEfficiencyNormalized() {
+		return efficiencyNormalized;
+	}
+
+	public void setEfficiencyNormalized(Double efficiencyNormalized) {
+		this.efficiencyNormalized = efficiencyNormalized;
+	}
+
+	public Double getFuzzyPriorityEfcEft() {
+		return fuzzyPriorityEfcEft;
+	}
+
+	public void setFuzzyPriorityEfcEft(Double fuzzyPriorityEfcEft) {
+		this.fuzzyPriorityEfcEft = fuzzyPriorityEfcEft;
 	}
 	
 }

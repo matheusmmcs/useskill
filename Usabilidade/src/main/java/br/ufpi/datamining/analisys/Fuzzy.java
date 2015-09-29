@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 
 import br.ufpi.datamining.analisys.fuzzy.FuzzyCMeansAlgorithm;
 import br.ufpi.datamining.analisys.fuzzy.Point;
+import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.aux.SessionResultDataMining;
 import br.ufpi.datamining.models.aux.UserResultDataMining;
 import br.ufpi.util.ApplicationPath;
@@ -32,6 +33,8 @@ public class Fuzzy {
 	private static final String FCL_AT = "files/fuzzy/datamining/priority.fcl";
 	private static final String FCL_ATC = "files/fuzzy/datamining/priority3.fcl";
 	private static final String FCL_ATC_CMEANS = FCL_PATH+"files/fuzzy/datamining/priority-fcm.fcl";
+	private static final String FCL_EftEfcSes_CMEANS = FCL_PATH+"files/fuzzy/datamining/priority-eft-efc-ses-fcm.fcl";
+	private static final String FCL_EftEfc_CMEANS = FCL_PATH+"files/fuzzy/datamining/priority-eft-efc-fcm.fcl";
 	
 	/***** FUZZY *****/
 	
@@ -98,6 +101,8 @@ public class Fuzzy {
 	
 	/***** FUZZY WITH CMEANS *****/
 	
+	/* FUZZY CMEANS - RESULTADOS DAS SESSÕES */
+	
 	public static void executeFuzzySystemWithFCMSession(List<SessionResultDataMining> sessions, boolean ignoreZero, boolean debug) {
 		FIS fis = createMembershipFunctionsWithFCMSession(sessions, ignoreZero, FCL_ATC_CMEANS);
 		
@@ -112,7 +117,6 @@ public class Fuzzy {
 			/* Set inputs [Importance x Coupling x Complexity] of the class */
 			fis.setVariable("actions", s.getActionsNormalized());
 			fis.setVariable("times", s.getTimeNormalized());
-			
 			fis.setVariable("completeness", s.getUserRateSuccess());
 			
 			/* Evaluate */
@@ -152,10 +156,10 @@ public class Fuzzy {
 		MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
 		//MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
 		//time
-		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, timePoints, 0.001, null);
+		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, timePoints, 0.01, null);
 		MembershipFunctionPieceWiseLinear[] timeMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
 		//completed
-		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, completedPoints, 0.001, null);
+		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, completedPoints, 0.01, null);
 		MembershipFunctionPieceWiseLinear[] completedMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
 		
 		/* Load from 'FCL' file */
@@ -177,6 +181,8 @@ public class Fuzzy {
 		return fis;
 	}
 	
+	/* FUZZY CMEANS - RESULTADOS DOS USUÁRIOS */
+	
 	public static void executeFuzzySystemWithFCM(List<UserResultDataMining> usersResult, boolean ignoreZero, boolean debug) {
 		FIS fis = createMembershipFunctionsWithFCM(usersResult, ignoreZero, FCL_ATC_CMEANS);
 		
@@ -191,7 +197,6 @@ public class Fuzzy {
 			/* Set inputs [Importance x Coupling x Complexity] of the class */
 			fis.setVariable("actions", u.getActionsAvarageOkNormalized());
 			fis.setVariable("times", u.getActionsAvarageOkNormalized());
-			
 			fis.setVariable("completeness", u.getUncompleteNormalized());
 			
 			/* Evaluate */
@@ -233,10 +238,10 @@ public class Fuzzy {
 		MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
 		//MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
 		//time
-		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, timePoints, 0.001, null);
+		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, timePoints, 0.01, null);
 		MembershipFunctionPieceWiseLinear[] timeMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
 		//completed
-		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, completedPoints, 0.001, null);
+		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, completedPoints, 0.01, null);
 		MembershipFunctionPieceWiseLinear[] completedMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
 		
 		/* Load from 'FCL' file */
@@ -254,6 +259,224 @@ public class Fuzzy {
 		fis.getFunctionBlock("fuzzyCMeans").getVariable("completeness").add("Low", completedMembershipFunctions[0]);
 		fis.getFunctionBlock("fuzzyCMeans").getVariable("completeness").add("Moderate", completedMembershipFunctions[1]);
 		fis.getFunctionBlock("fuzzyCMeans").getVariable("completeness").add("High", completedMembershipFunctions[2]);
+		
+		return fis;
+	}
+	
+	/* FUZZY CMEANS 2 INPUTS - RESULTADOS DAS SESSÕES */
+	
+	public static void executeFuzzySystemWithFCMSessionEfcEft(List<SessionResultDataMining> sessions, boolean ignoreZero, boolean debug) {
+		FIS fis = createMembershipFunctionsWithFCMSessionEfcEft(sessions, ignoreZero, FCL_EftEfc_CMEANS);
+		
+		for(SessionResultDataMining s : sessions){
+			if(ignoreZero){
+				if(!s.isClassificationSuccess()){
+					s.setFuzzyPriorityEfcEft(0d);
+					continue;
+				}
+			}
+			
+			/* Set inputs [Importance x Coupling x Complexity] of the class */
+			fis.setVariable("efficiency", (1-s.getEfficiencyNormalized()));
+			fis.setVariable("effectiveness", (1-s.getEffectivenessNormalized()));
+			
+			/* Evaluate */
+	        fis.evaluate();
+	        double defuzzifiedValue = fis.getVariable("priority").getLatestDefuzzifiedValue();
+	        s.setFuzzyPriorityEfcEft(defuzzifiedValue);
+	        
+	        System.out.println(s.getUsername() + " -> (" + s.getEfficiencyNormalized() + ", " + s.getEffectivenessNormalized() + ") = " + s.getFuzzyPriorityEfcEft());
+		}
+		
+		/* Just for debug: Show chart*/ 
+		if(debug){
+			 JFuzzyChart.get().chart(fis);
+		}
+	}
+	
+	public static FIS createMembershipFunctionsWithFCMSessionEfcEft(List<SessionResultDataMining> sessions, boolean ignoreZero, String fclPath){
+		//Fuzzy CMeans
+		ArrayList<Point> efficiencyPoints = new ArrayList<Point>(), 
+				effectivenessPoints = new ArrayList<Point>();
+		
+		long globalCount = 1l;
+		for(SessionResultDataMining s : sessions){
+			if(ignoreZero){
+				if(!s.isClassificationSuccess()){
+					continue;
+				}
+			}
+			efficiencyPoints.add(new Point(globalCount++, (1-s.getEfficiencyNormalized()), 1.0));
+			effectivenessPoints.add(new Point(globalCount++, (1-s.getEffectivenessNormalized()), 1.0));
+		}
+		
+		/* Execute FCM Algorithm: actions variable */
+		FuzzyCMeansAlgorithm cMeans = new FuzzyCMeansAlgorithm(3, 2.0, efficiencyPoints, 0.01, null);
+		MembershipFunctionPieceWiseLinear[] efficiencyMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		//MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		//time
+		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, effectivenessPoints, 0.01, null);
+		MembershipFunctionPieceWiseLinear[] effectivenessMembershipFunctionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		
+		/* Load from 'FCL' file */
+		FIS fis = FIS.load(fclPath, true);
+		
+		/* Update membership functions */
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("efficiency").add("Low", efficiencyMembershipFunctions[0]);
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("efficiency").add("Moderate", efficiencyMembershipFunctions[1]);
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("efficiency").add("High", efficiencyMembershipFunctions[2]);
+		
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("effectiveness").add("Low", effectivenessMembershipFunctionsMembershipFunctions[0]);
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("effectiveness").add("Moderate", effectivenessMembershipFunctionsMembershipFunctions[1]);
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("effectiveness").add("High", effectivenessMembershipFunctionsMembershipFunctions[2]);
+		
+		return fis;
+	}
+	
+/* FUZZY CMEANS 2 INPUTS - RESULTADOS DOS USUARIOS */
+	
+	public static void executeFuzzySystemWithFCMUsersEfcEft(List<UserResultDataMining> users, boolean ignoreZero, boolean debug) {
+		FIS fis = createMembershipFunctionsWithFCMUsersEfcEft(users, ignoreZero, FCL_EftEfc_CMEANS);
+		
+		for(UserResultDataMining u : users){
+			if(ignoreZero){
+				if(u.getEfficiencyNormalized() == 0 && u.getEffectivenessNormalized() == 0){
+					u.setFuzzyPriorityEfcEft(0d);
+					continue;
+				}
+			}
+			
+			/* Set inputs [Importance x Coupling x Complexity] of the class */
+			fis.setVariable("efficiency", (1-u.getEfficiencyNormalized()));
+			fis.setVariable("effectiveness", (1-u.getEffectivenessNormalized()));
+			
+			/* Evaluate */
+	        fis.evaluate();
+	        double defuzzifiedValue = fis.getVariable("priority").getLatestDefuzzifiedValue();
+	        u.setFuzzyPriorityEfcEft(defuzzifiedValue);
+	        
+	        System.out.println(u.getUsername() + " -> (" + u.getEfficiencyNormalized() + ", " + u.getEffectivenessNormalized() + ") = " + u.getFuzzyPriorityEfcEft());
+		}
+		
+		/* Just for debug: Show chart*/ 
+		if(debug){
+			 JFuzzyChart.get().chart(fis);
+		}
+	}
+	
+	public static FIS createMembershipFunctionsWithFCMUsersEfcEft(List<UserResultDataMining> users, boolean ignoreZero, String fclPath){
+		//Fuzzy CMeans
+		ArrayList<Point> efficiencyPoints = new ArrayList<Point>(), 
+				effectivenessPoints = new ArrayList<Point>();
+		
+		long globalCount = 1l;
+		for(UserResultDataMining u : users){
+			if(ignoreZero){
+				if(u.getEfficiencyNormalized() == null && u.getEffectivenessNormalized() == null){
+					System.out.println(u.getUsername()+"IGNORE");
+					continue;
+				}
+			}
+
+			efficiencyPoints.add(new Point(globalCount++, (1-u.getEfficiencyNormalized()), 1.0));
+			effectivenessPoints.add(new Point(globalCount++, (1-u.getEffectivenessNormalized()), 1.0));
+		}
+		
+		/* Execute FCM Algorithm: actions variable */
+		FuzzyCMeansAlgorithm cMeans = new FuzzyCMeansAlgorithm(3, 2.0, efficiencyPoints, 0.01, null);
+		MembershipFunctionPieceWiseLinear[] efficiencyMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		//MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		//time
+		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, effectivenessPoints, 0.01, null);
+		MembershipFunctionPieceWiseLinear[] effectivenessMembershipFunctionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		
+		/* Load from 'FCL' file */
+		FIS fis = FIS.load(fclPath, true);
+		
+		/* Update membership functions */
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("efficiency").add("Low", efficiencyMembershipFunctions[0]);
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("efficiency").add("Moderate", efficiencyMembershipFunctions[1]);
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("efficiency").add("High", efficiencyMembershipFunctions[2]);
+		
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("effectiveness").add("Low", effectivenessMembershipFunctionsMembershipFunctions[0]);
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("effectiveness").add("Moderate", effectivenessMembershipFunctionsMembershipFunctions[1]);
+		fis.getFunctionBlock("fuzzyCMeansEftEfc").getVariable("effectiveness").add("High", effectivenessMembershipFunctionsMembershipFunctions[2]);
+		
+		return fis;
+	}
+	
+	/* FUZZY CMEANS - RESULTADOS DAS TAREFAS */
+	
+	public static void executeFuzzySystemWithFCMTasks(List<TaskDataMining> tasks, boolean debug) {
+		FIS fis = createMembershipFunctionsWithFCMTasks(tasks, FCL_EftEfcSes_CMEANS);
+		
+		for(TaskDataMining t : tasks){
+			if(t.getEvalEffectivenessNormalized() == null || t.getEvalEfficiencyNormalized() == null || t.getEvalCountSessionsNormalized() == null){
+				t.setEvalFuzzyPriority(0d);
+				continue;
+			}
+			
+			/* Set inputs [Importance x Coupling x Complexity] of the class */
+			fis.setVariable("efficiency", (1-t.getEvalEfficiencyNormalized()));
+			fis.setVariable("effectiveness", (1-t.getEvalEffectivenessNormalized()));
+			fis.setVariable("sessions", t.getEvalCountSessionsNormalized());
+			
+			/* Evaluate */
+	        fis.evaluate();
+	        double defuzzifiedValue = fis.getVariable("priority").getLatestDefuzzifiedValue();
+	        t.setEvalFuzzyPriority(defuzzifiedValue);
+	        
+	        System.out.println(t.getTitle() + " -> (" + t.getEvalEfficiency() + ", " + t.getEvalEffectiveness() + ", " + t.getEvalCountSessions() + ") = " + t.getEvalFuzzyPriority());
+		}
+		
+		/* Just for debug: Show chart*/ 
+		if(debug){
+			 JFuzzyChart.get().chart(fis);
+		}
+	}
+	
+	public static FIS createMembershipFunctionsWithFCMTasks(List<TaskDataMining> tasks, String fclPath){
+		//Fuzzy CMeans
+		ArrayList<Point> efficiencyPoints = new ArrayList<Point>(), 
+				effectivenessPoints = new ArrayList<Point>(), 
+				sessionsPoints = new ArrayList<Point>();
+		
+		long globalCount = 1l;
+		for(TaskDataMining t : tasks){
+			if(t.getEvalEffectivenessNormalized() == null || t.getEvalEfficiencyNormalized() == null || t.getEvalCountSessionsNormalized() == null){
+				continue;
+			}
+			
+			efficiencyPoints.add(new Point(globalCount++, (1-t.getEvalEfficiencyNormalized()), 1.0));
+			effectivenessPoints.add(new Point(globalCount++, (1-t.getEvalEffectivenessNormalized()), 1.0));
+			sessionsPoints.add(new Point(globalCount++, t.getEvalCountSessionsNormalized(), 1.0));
+		}
+		
+		/* Execute FCM Algorithm: actions variable */
+		FuzzyCMeansAlgorithm cMeans = new FuzzyCMeansAlgorithm(3, 2.0, efficiencyPoints, 0.01, null);
+		MembershipFunctionPieceWiseLinear[] efficiencyMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		//time
+		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, effectivenessPoints, 0.01, null);
+		MembershipFunctionPieceWiseLinear[] effectivenessMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		//completed
+		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, sessionsPoints, 0.01, null);
+		MembershipFunctionPieceWiseLinear[] sessionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
+		
+		/* Load from 'FCL' file */
+		FIS fis = FIS.load(fclPath, true);
+		
+		/* Update membership functions */
+		fis.getFunctionBlock("fuzzyCMeansTasks").getVariable("efficiency").add("Low", efficiencyMembershipFunctions[0]);
+		fis.getFunctionBlock("fuzzyCMeansTasks").getVariable("efficiency").add("Moderate", efficiencyMembershipFunctions[1]);
+		fis.getFunctionBlock("fuzzyCMeansTasks").getVariable("efficiency").add("High", efficiencyMembershipFunctions[2]);
+		
+		fis.getFunctionBlock("fuzzyCMeansTasks").getVariable("effectiveness").add("Low", effectivenessMembershipFunctions[0]);
+		fis.getFunctionBlock("fuzzyCMeansTasks").getVariable("effectiveness").add("Moderate", effectivenessMembershipFunctions[1]);
+		fis.getFunctionBlock("fuzzyCMeansTasks").getVariable("effectiveness").add("High", effectivenessMembershipFunctions[2]);
+		
+		fis.getFunctionBlock("fuzzyCMeansTasks").getVariable("sessions").add("Low", sessionsMembershipFunctions[0]);
+		fis.getFunctionBlock("fuzzyCMeansTasks").getVariable("sessions").add("Moderate", sessionsMembershipFunctions[1]);
+		fis.getFunctionBlock("fuzzyCMeansTasks").getVariable("sessions").add("High", sessionsMembershipFunctions[2]);
 		
 		return fis;
 	}
@@ -320,6 +543,7 @@ public class Fuzzy {
 					x2y2.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(moderateRelevance)));
 					x3y3.add(new Fuzzy().new MembershipFunctionPoint(new Value(points.get(i).getX()), new Value(highRelavance)));
 				}catch(Exception e){
+					System.out.println(points.get(i).getRelevance().toString());
 					e.printStackTrace();
 				}
 			}

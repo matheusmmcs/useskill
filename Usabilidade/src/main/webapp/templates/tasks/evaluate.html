@@ -106,17 +106,24 @@
 							  <thead>
 							    <tr>
 							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
+							      
 							      <th ts-criteria="actionsAverageOk|parseFloat">{{ 'datamining.tasks.evaluate.actions' | translate }}</th>
 							      <th ts-criteria="timesAverageOk|parseFloat">{{ 'datamining.tasks.evaluate.time' | translate }}</th>
 							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateSuccess' | translate }}</th>
 							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateRequired' | translate }}</th>
 							      <th ts-criteria="countSessionsSuccess+countSessionsRepeat+countSessionsThreshold|parseInt">{{ 'datamining.tasks.evaluate.sessions.total' | translate }}</th>
+
+<!-- 							      <th ts-criteria="efficiency|parseFloat">Eficiência</th> -->
+<!-- 							      <th ts-criteria="effectiveness|parseFloat">Eficácia</th> -->
+							      
 							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">{{ 'datamining.tasks.evaluate.priority' | translate }}</th>
+							      <th ts-criteria="fuzzyPriorityEfcEft|parseFloat">F2</th>
 							    </tr>
 							  </thead>
 							  <tbody>
 							    <tr ng-repeat="user in taskCtrl.evaluate.users" ts-repeat>
 							      <td><a ng-click="showUserSessions(user)">{{user.username}}</a></td>
+							      
 							      <td>{{user.actionsAverageOk | number:2}}</td>
 							      <td>{{user.timesAverageOk | msConverter}}</td>
 							      <td>{{user.rateSuccess | number:2}} %</td>
@@ -124,7 +131,13 @@
 							      <td title="{{ 'datamining.tasks.evaluate.complete' | translate }} = {{user.countSessionsSuccess}} | {{ 'datamining.tasks.evaluate.restart' | translate }} = {{user.countSessionsRepeat}} | {{ 'datamining.tasks.evaluate.threshold' | translate }} = {{user.countSessionsThreshold}}">
 							      	{{user.countSessionsSuccess + user.countSessionsRepeat + user.countSessionsThreshold}}
 							      </td>
+							      
+<!-- 							      <td>{{user.efficiency | number:3}}</td> -->
+<!-- 							      <td>{{user.effectiveness | number:3}}</td> -->
+							      
 							      <td>{{user.fuzzyPriority | number:3}}</td>
+							      <td title="Efici.={{user.efficiency | number:2}}[{{user.efficiencyNormalized | number:2}}], Efica.={{user.effectiveness | number:2}}[{{user.effectivenessNormalized | number:2}}]">{{user.fuzzyPriorityEfcEft | number:3}}</td>
+							      
 							    </tr>
 							  </tbody>
 							</table>
@@ -136,10 +149,11 @@
 							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
 							      <th ts-criteria="actions|parseInt">Acoes</th>
 							      <th ts-criteria="time|parseInt">Tempo</th>
-							      <th ts-criteria="(1-userRateSuccess)*100|parseFloat">Completude</th>
+							      <th ts-criteria="userRateSuccess|parseFloat">Completude</th>
 							      <th ts-criteria="userRateRequired*100|parseFloat">Corretude</th>
 							      <th ts-criteria="classification|lowercase">Class</th>
 							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">Fuzzy</th>
+							      <th ts-criteria="fuzzyPriorityEfcEft|parseFloat">F2</th>
 							    </tr>
 							  </thead>
 							  <tbody>
@@ -147,10 +161,11 @@
 							      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
 							      <td>{{session.actions.length | number:2}}</td>
 							      <td>{{session.time | msConverter}}</td>
-							      <td>{{(1-session.userRateSuccess)*100 | number:2}} %</td>
-							      <td>{{session.userRateRequired*100 | number:2}} %</td>
+							      <td>{{session.userRateSuccess | number:2}} %</td>
+							      <td>{{session.userRateRequired | number:2}} %</td>
 							      <td>{{session.classification}}</td>
 							      <td>{{session.fuzzyPriority | number:3}}</td>
+							      <td title="Efici.={{session.efficiency | number:2}}[{{session.efficiencyNormalized | number:2}}], Efica.={{session.effectiveness | number:2}}[{{session.effectivenessNormalized | number:2}}]">{{session.fuzzyPriorityEfcEft | number:3}}</td>
 							    </tr>
 							  </tbody>
 							</table>
@@ -162,10 +177,11 @@
 							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
 							      <th ts-criteria="actions|parseInt">Acoes</th>
 							      <th ts-criteria="time|parseInt">Tempo</th>
-							      <th ts-criteria="(1-userRateSuccess)*100|parseFloat">Completude</th>
+							      <th ts-criteria="userRateSuccess|parseFloat">Completude</th>
 							      <th ts-criteria="userRateRequired*100|parseFloat">Corretude</th>
 							      <th ts-criteria="classification|lowercase">Class</th>
 							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">Fuzzy</th>
+							      <th ts-criteria="fuzzyPriorityEfcEft|parseFloat">F2</th>
 							    </tr>
 							  </thead>
 							  <tbody>
@@ -173,11 +189,11 @@
 							      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
 							      <td>{{session.actions.length | number:2}}</td>
 							      <td>{{session.time | msConverter}}</td>
-							      <td>{{(1-session.userRateSuccess)*100 | number:2}} %</td>
-							      <td>{{session.userRateRequired*100 | number:2}} %</td>
+							      <td>{{session.userRateSuccess | number:2}} %</td>
+							      <td>{{session.userRateRequired | number:2}} %</td>
 							      <td>{{session.classification}}</td>
 							      <td>{{session.fuzzyPriority | number:3}}</td>
-							      
+							      <td title="Efici.={{session.efficiency | number:2}}[{{session.efficiencyNormalized | number:2}}], Efica.={{session.effectiveness | number:2}}[{{session.effectivenessNormalized | number:2}}]">{{session.fuzzyPriorityEfcEft | number:3}}</td>
 							    </tr>
 							  </tbody>
 							</table>
@@ -226,14 +242,14 @@
 				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 							  <thead>
 							    <tr>
+							    	<th ts-criteria="value|parseInt" ts-default="descending">Count</th>
 							      <th ts-criteria="$key|lowercase">{{ 'datamining.tasks.actions.description' | translate }}</th>
-							      <th ts-criteria="value|parseInt" ts-default="descending">Count</th>
 							    </tr>
 							  </thead>
 							  <tbody>
 							    <tr ng-repeat="action in taskCtrl.actionsRequiredArr" ts-repeat>
-							      <td>{{ action.$key }}</td>
 							      <td>{{ action.value }}</td>
+							      <td>{{ action.$key }}</td>
 							    </tr>
 							  </tbody>
 							</table>
