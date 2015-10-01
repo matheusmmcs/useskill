@@ -18,6 +18,8 @@ function getValueTypeFromView(view) {
 			return 'sTag';
 		case 'type':
 			return 'sActionType';
+		case 'client':
+			return 'sClient';
 		default:
 			return null;
 	}
@@ -54,18 +56,30 @@ exports.index = function(req, res){
 	doSearch(req, res, function(actions) {
 		res.render('index', {
 			title: 'Actions',
-			actions: actions
+			actions: actions,
+			client: ''
 		});
 	});
 }
 
-function doSearch (req, res, callback) {
+exports.athena = function(req, res){
+	var client = 'Athena';
+	doSearch(req, res, function(actions) {
+		res.render('index', {
+			title: 'Actions',
+			actions: actions,
+			client: client
+		});
+	}, client);
+}
+
+function doSearch (req, res, callback, client) {
 	var findData = {
 		limit: 10,
 		order: [['id', 'DESC']]
 	};
-
-	if(!isEmptyObject(req.query)){
+	
+	if(!isEmptyObject(req.query) || client){
 		var 
 		orderParam = getValueTypeFromView(req.query['orderParam']),
 		orderValue = req.query['orderValue'],
@@ -96,10 +110,16 @@ function doSearch (req, res, callback) {
 					}
 				}
 			}
+			if(client){
+				where['sClient'] = {'sClient' : client };
+			}
+			
 			findData['where'] = where;
-		}	
+		}else if(client){
+			findData['where'] = {'sClient' : client };
+		}
 	}
-
+	
 	db.Action.findAll(findData).success(function(actions) {
 		if (callback && typeof callback === 'function'){
 			callback.call(this, actions);

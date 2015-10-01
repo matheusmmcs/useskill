@@ -1,0 +1,6 @@
+{
+    "uid": "app",
+    "append": true,
+    "script": "app.js",
+    "sourceDir": "/home/myuser/app"
+}

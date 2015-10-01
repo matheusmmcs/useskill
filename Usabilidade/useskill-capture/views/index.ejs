@@ -33,6 +33,11 @@
         <div id="filtros"></div>
       </div>
       <br>
+      <%if (client != '') { %>
+    	<input type="hidden" name="paramSearch[]" value="client"/>
+    	<input type="hidden" name="operationSearch[]" value="equal"/>
+    	<input type="hidden" name="valueSearch[]" value="<%= client %>"/>
+    <% } %>
     </form>
   </div>
 </div>

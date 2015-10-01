@@ -26,13 +26,15 @@ if ('development' === app.get('env')) {
 }
 
 app.all('*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type");
   next();
 });
 
 app.get('/', routes.index);
-app.get('/actions', routes.actions)
+app.get('/athena', routes.athena);
+app.get('/actions', routes.actions);
 app.post('/actions/create', action.create);
 app.get('/actions/clear/:hour', action.clear);
 //app.post('/actions/:user_id/tasks/create', task.create);
