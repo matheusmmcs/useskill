@@ -59,6 +59,7 @@
 					</tr>
 				</thead>
 				<tbody>
+					<!-- -->
 					<c:forEach items="${testesLiberados}" var="teste">
 						<tr>
 							<td>
@@ -76,6 +77,7 @@
 							</td>
 						</tr>
 					</c:forEach>
+					<!-- -->
 				</tbody>
 			</table>
 		</fieldset>
