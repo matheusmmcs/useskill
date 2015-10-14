@@ -1,6 +1,6 @@
-//var domainUseSkill = "http://www.killline.com/useskill";
-//var domainUseSkill = "http://www.useskill.com";
-var domainUseSkill = "http://localhost:8080/Usabilidade";
+
+//var domainUseSkill = "http://localhost:8080/Usabilidade";
+var domainUseSkill = "http://www.useskill.com";
 var SEND_BROWSER_EVENT = false;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -283,10 +283,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 				break;
 			case "setURL":
 				var newValue = request.newValue;
-				if(newValue.slice(-1)=="/"){
+				if (newValue.slice(-1)=="/"){
 					newValue = newValue.slice(0,-1);
 				}
-				if(newValue){
+				if (newValue.indexOf('http://') != 0 && newValue.indexOf('https://') != 0){
+					newValue = 'http://' + newValue; 
+				}
+				if (newValue){
 					localStorage["useskill_url"] = newValue;
 					domainUseSkill = newValue;
 					sendResponse({success: true});
@@ -484,16 +487,19 @@ function suspendTest(){
 function insertOnPage(tabId){
 	
 	//capture script
-	chrome.tabs.executeScript(tabId, {file: "js/capt.js"}, function(){
+	chrome.tabs.executeScript(tabId, {file: "js/capt.mining.useskill.nojquery.js"}, function(){
 		chrome.tabs.executeScript(tabId, {file: "js/capt.plugin.init.js"});
 	});
 	
 	//insert html of useskill in page
+	//http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js
 	chrome.tabs.executeScript(tabId, {file: "js/jquery.js"}, function(){
 		chrome.tabs.executeScript(tabId, {file: "js/useskill.js"});
 	});
 	
 	chrome.tabs.insertCSS(tabId, {file: "css/useskill.css"});
+	
+	
 	chrome.browserAction.setIcon({path: 'images/icon16on.png', tabId: tabId});
 }
 
