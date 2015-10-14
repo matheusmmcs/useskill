@@ -288,7 +288,9 @@ public class TestesAlgoritmos {
 
 		List<ActionVO> acoesMelhorCaminho = TestesAlgoritmos.getListAcoesMelhorCaminho(tarefa, tarefaRepositoryImpl);
 		//if(debug){
-			System.out.println("ACOES MELHOR CAMINHO: "+acoesMelhorCaminho.get(0).getUsuario().getNome());
+			if(acoesMelhorCaminho.size() > 0){
+				System.out.println("ACOES MELHOR CAMINHO: "+acoesMelhorCaminho.get(0).getUsuario().getNome());
+			}
 			for(ActionVO a : acoesMelhorCaminho){
 				System.out.println(a);
 			}

@@ -56,8 +56,10 @@ import br.ufpi.repositories.Implement.TarefaRepositoryImpl;
 import br.ufpi.util.EnumObjetoSalvo;
 import br.ufpi.util.GsonElements;
 import br.ufpi.util.Paginacao;
+import br.ufpi.util.StringDeserializer;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 @Resource
@@ -310,7 +312,9 @@ public class TarefaController extends BaseController {
 		fluxo.setUsuario(usuarioLogado.getUsuario());
 		fluxo.setTarefa(tarefa);
 		
-		Gson gson = new Gson();
+		GsonBuilder gsonBuilder = new GsonBuilder();
+	    gsonBuilder.registerTypeAdapter(String.class, new StringDeserializer());
+		Gson gson = gsonBuilder.create();
 		Type collectionType = new TypeToken<Collection<Action>>() {}.getType();
 		Collection<Action> ints2 = gson.fromJson(dados, collectionType);
 		if (ints2 != null && ints2.size() != 0) {
