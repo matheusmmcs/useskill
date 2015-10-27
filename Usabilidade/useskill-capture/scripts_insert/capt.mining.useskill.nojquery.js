@@ -206,6 +206,7 @@ function useskill_capt_onthefly(obj){
 			};
 		}
 		function sendAcoes(){
+			debug("SendActions", SEND_MESSAGES);
 			if(SEND_MESSAGES){
 				var acoesString = getAcoesString();
 				if(acoesString && !sending){
@@ -388,6 +389,9 @@ function useskill_capt_onthefly(obj){
 					pageX: 0,
 					pageY: 0
 				}, actionCapt.BROWSER_HASH_CHANGE);
+				if(SEND_MESSAGES){
+					sendAcoes();
+				}
 			});
 		}
 		
