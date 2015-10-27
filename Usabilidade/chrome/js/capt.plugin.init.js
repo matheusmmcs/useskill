@@ -4,16 +4,18 @@
 window.useSkillActions = [];
 
 (function(){
-	console.log('capt init!', window.isUseSkillOn);
+	console.log('capt init plugin!', window.isUseSkillPluginOn);
 	
 	var readyStateCheckInterval = setInterval(function() {
 	    if (document.readyState === "interactive" || document.readyState === "complete") {
 	        clearInterval(readyStateCheckInterval);
-	        if(!window.isUseSkillOn){
+	        if(!window.isUseSkillPluginOn){
 	    		useskill_capt_onthefly({
-	    			plugin: true
+	    			debug: false,
+					waitdomready: false,
+					plugin: true
 	    		});
-	    		window.isUseSkillOn = true;
+	    		window.isUseSkillPluginOn = true;
 	    	}
 	    }
 	}, 10);

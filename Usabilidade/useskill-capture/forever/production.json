@@ -1,6 +1,7 @@
 {
-    "uid": "app",
+    "uid": "useskill-nodejs",
     "append": true,
     "script": "app.js",
-    "sourceDir": "/home/myuser/app"
+    "sourceDir": "/home/useskill/useskill_capture/",
+    "command": "nodejs"
 }

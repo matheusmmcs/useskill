@@ -3,7 +3,8 @@ var fs        = require('fs')
   , Sequelize = require('sequelize')
   , lodash    = require('lodash')
   //, sequelize = new Sequelize('usabilidade_testdatamining', 'root', '', {
-  , sequelize = new Sequelize('usabilidade_datamining', 'root', 'gogokillers2013', {
+  //, sequelize = new Sequelize('usabilidade_datamining', 'root', 'gogokillers2013', {
+  , sequelize = new Sequelize('useskill_datamining', 'root', 'server123456', {
       logging: false
   })
   , db        = {};

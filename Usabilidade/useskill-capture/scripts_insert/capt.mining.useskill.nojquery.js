@@ -12,6 +12,64 @@
 
 var bajb_backdetect = {Version:'1.0.0',Description:'Back Button Detection',Browser:{IE:!!(window.attachEvent&&!window.opera),Safari:navigator.userAgent.indexOf('Apple')>-1,Opera:!!window.opera},FrameLoaded:0,FrameTry:0,FrameTimeout:null,OnBack:function(){console.log('Back Button Clicked')},BAJBFrame:function(){var BAJBOnBack=document.getElementById('BAJBOnBack');if(bajb_backdetect.FrameLoaded>1){if(bajb_backdetect.FrameLoaded==2){bajb_backdetect.OnBack();history.back()}}bajb_backdetect.FrameLoaded++;if(bajb_backdetect.FrameLoaded==1){if(bajb_backdetect.Browser.IE){bajb_backdetect.SetupFrames()}else{bajb_backdetect.FrameTimeout=setTimeout("bajb_backdetect.SetupFrames();",700)}}},SetupFrames:function(){clearTimeout(bajb_backdetect.FrameTimeout);var BBiFrame=document.getElementById('BAJBOnBack');var checkVar=BBiFrame.src.substr(-11,11);if(bajb_backdetect.FrameLoaded==1&&checkVar!="HistoryLoad"){BBiFrame.src="blank.html?HistoryLoad"}else{if(bajb_backdetect.FrameTry<2&&checkVar!="HistoryLoad"){bajb_backdetect.FrameTry++;bajb_backdetect.FrameTimeout=setTimeout("bajb_backdetect.SetupFrames();",700)}}},SafariHash:'false',Safari:function(){if(bajb_backdetect.SafariHash=='false'){if(window.location.hash=='#b'){bajb_backdetect.SafariHash='true'}else{window.location.hash='#b'}setTimeout("bajb_backdetect.Safari();",100)}else if(bajb_backdetect.SafariHash=='true'){if(window.location.hash==''){bajb_backdetect.SafariHash='back';bajb_backdetect.OnBack();history.back()}else{setTimeout("bajb_backdetect.Safari();",100)}}},Initialise:function(){if(bajb_backdetect.Browser.Safari){setTimeout("bajb_backdetect.Safari();",600)}else{document.write('<iframe src="blank.html" style="display:none;" id="BAJBOnBack" onunload="alert(\'de\')" onload="bajb_backdetect.BAJBFrame();"></iframe>')}}};
 
+
+/*!ß
+ * Verificar alterações no hash da URL.
+ */
+(function() {
+    if ('onhashchange' in window) {
+        if (window.addEventListener) {
+            window.addHashChange = function(func, before) {
+                window.addEventListener('hashchange', func, before);
+            };
+            window.removeHashChange = function(func) {
+                window.removeEventListener('hashchange', func);
+            };
+            return;
+        } else if (window.attachEvent) {
+            window.addHashChange = function(func) {
+                window.attachEvent('onhashchange', func);
+            };
+            window.removeHashChange = function(func) {
+                window.detachEvent('onhashchange', func);
+            };
+            return;
+        }
+    }
+    var hashChangeFuncs = [];
+    var oldHref = location.href;
+    window.addHashChange = function(func, before) {
+        if (typeof func === 'function') {
+        	hashChangeFuncs[before?'unshift':'push'](func);
+        }
+    };
+    window.removeHashChange = function(func) {
+        for (var i=hashChangeFuncs.length-1; i>=0; i--) {
+            if (hashChangeFuncs[i] === func) {
+            	hashChangeFuncs.splice(i, 1);
+            }
+        }
+    };
+    
+    if (window.hashChangeInterval) {
+    	clearInterval(window.hashChangeInterval);
+    }
+    window.hashChangeInterval = setInterval(function() {
+        var newHref = location.href;
+        if (oldHref !== newHref) {
+            var _oldHref = oldHref;
+            oldHref = newHref;
+            for (var i=0; i<hashChangeFuncs.length; i++) {
+                hashChangeFuncs[i].call(window, {
+                    'type': 'hashchange',
+                    'newURL': newHref,
+                    'oldURL': _oldHref
+                });
+            }
+        }
+    }, 100);
+})();
+
 /*
  * UseSkill capture component V 1.0.1
  * http://www.useskill.com/
@@ -20,7 +78,7 @@ var bajb_backdetect = {Version:'1.0.0',Description:'Back Button Detection',Brows
 
 function useskill_capt_onthefly(obj){
 	
-	console.log('capt!', obj);
+	console.log('capt!');
 	
 	function doAjax(method, url, params, cbSuccess, cbError) {
 	    var xmlhttp = new XMLHttpRequest(),
@@ -58,17 +116,17 @@ function useskill_capt_onthefly(obj){
 	var DOM_READY = obj.waitdomready ? obj.waitdomready : false;
 	
 	function runCapt(){
-		console.info("UseSkill Capt Running...");
-
+		
 		if(!obj){
 			obj = {};
 		}
 
+		//"http://200.137.162.128/useskill-capture/actions/create"
 		//"http://localhost:3000/actions/create";
 		//"http://96.126.116.159:3000/actions/create"
 		
 		//REQUIRED
-		var URL = obj.url ? obj.url : "";
+		var URL = obj.url ? obj.url : "http://200.137.162.128/useskill-capture/actions/create";
 		//ON THE FLY
 		var CLIENT = obj.client ? obj.client : "";
 		var VERSION = obj.version ? obj.version : 0;
@@ -82,13 +140,23 @@ function useskill_capt_onthefly(obj){
 		var CONNECTED_ON_THE_FLY = obj.onthefly ? obj.onthefly : false;
 		var CONNECTED_ON_JHEAT = obj.jheat ? obj.jheat : false;
 		var CAPTURE_BACK = obj.captureback ? obj.captureback : false;
-
+		var CAPTURE_HASH_CHANGE = obj.capturehashchange ? obj.capturehashchange : false;
 		
 		//VARIABLES
 		var TIME_SUBMIT_SEG = 300,
 			TIME_SUBMIT = TIME_SUBMIT_SEG * TIME_TO_SUBMIT,
 			ultimaAcao = null,
-			sending = false;
+			sending = false,
+			LOCALSTORAGE_VAR = "";
+		
+		if (CONNECTED_PLUGIN) {
+			console.info("#Plugin - UseSkill Capt Running...");
+			LOCALSTORAGE_VAR = "useskill_actions_plugin";
+		} else {
+			console.info("UseSkill Capt Running...");
+			LOCALSTORAGE_VAR = "useskill_actions";
+		}
+		debug(obj);
 		
 		
 		//MOBILE VERIFICATION
@@ -117,7 +185,11 @@ function useskill_capt_onthefly(obj){
 		//DEBUG
 		function debug(){
 			if(DEBUG){
-				console.log(arguments);
+				if (CONNECTED_PLUGIN) {
+					console.log('#Plugin', arguments);
+				} else {
+					console.log(arguments);
+				}
 			}
 		}
 		debug("All Actions in Buffer: ", getAcoes());
@@ -170,6 +242,7 @@ function useskill_capt_onthefly(obj){
 			ORIENTARION: "orientationchage",
 
 			BROWSER_BACK : "back",
+			BROWSER_HASH_CHANGE : "hashchange",
 			BROWSER_FORM_SUBMIT : "form_submit",
 			BROWSER_ONLOAD : "onload",
 			BROWSER_RELOAD : "reload",
@@ -203,8 +276,8 @@ function useskill_capt_onthefly(obj){
 			this.sTimezoneOffset = new Date().getTimezoneOffset();
 
 			if(CONNECTED_ON_THE_FLY){
-				this.sUsername = USERNAME;
-				this.sRole = ROLE;
+				this.sUsername = typeof(USERNAME) === "function" ? USERNAME() : USERNAME;
+				this.sRole = typeof(ROLE) === "function" ? ROLE() : ROLE;
 				
 				this.sClient = CLIENT;
 				this.sVersion = VERSION;
@@ -297,7 +370,7 @@ function useskill_capt_onthefly(obj){
 			insertNewAcao(e, actionCapt.BROWSER_ONLOAD);
 		}
 		
-		if(CAPTURE_BACK){
+		if (CAPTURE_BACK) {
 			bajb_backdetect.Initialise();
 			bajb_backdetect.OnBack = function(e){
 				insertNewAcao({
@@ -306,6 +379,16 @@ function useskill_capt_onthefly(obj){
 					pageY: 0
 				}, actionCapt.BROWSER_BACK);
 			}
+		}
+		
+		if (CAPTURE_HASH_CHANGE) {
+			addHashChange(function(e){
+				insertNewAcao({
+					target: document.getElementsByTagName("html"),
+					pageX: 0,
+					pageY: 0
+				}, actionCapt.BROWSER_HASH_CHANGE);
+			});
 		}
 		
 		document.onkeydown = function(event) {
@@ -346,7 +429,7 @@ function useskill_capt_onthefly(obj){
 				//focusout em campo vazio, não preencheu nada
 				//if(!(action == actionCapt.FOCUSOUT && conteudo == "")){
 				var acao = new Action(action, new Date().getTime(), getUrl(), conteudo, target.tagName, getIndexElement(tagName, target), target.id, target.className, target.name, createXPathFromElement(e.target), e.pageX, e.pageY, window.innerWidth, window.innerHeight, (get_browser()+" "+get_browser_version()));
-				debug("New Action: ", acao);
+				debug("New Action: ", action, acao);
 				//verificar se a acao eh semelhante com a acao passada
 				//console.log(acao, acao.sXPath);
 				//TODO: se for concluir, verificar se já há outro concluir
@@ -548,28 +631,29 @@ function useskill_capt_onthefly(obj){
 		}
 
 		function getAcoesString(){
-			return localStorage.getItem("useskill_actions");
+			return localStorage.getItem(LOCALSTORAGE_VAR);
 		}
 
 		function getAcoes(){
-			var str = localStorage.getItem("useskill_actions");
+			var str = localStorage.getItem(LOCALSTORAGE_VAR);
 			return str != 'null' && str != null ? parseJSON(str) : [];
 		}
 		
 		function printAcoes(){		
 			if(CONNECTED_PLUGIN){		
 				chrome.extension.sendRequest({useskill: "getAcoes"}, function(dados){		
-					debug("Actions: ", dados);		
+					debug("Actions Plugin: ", dados);		
 				});		
 			}else{		
-				debug(getAcoes());		
+				debug("Actions: ", getAcoes());		
 			}		
 		}
 		
 		function addAcao(acao){
-			console.log('addAcao', acao);
+			debug('addAcao', acao);
 			if(CONNECTED_PLUGIN){
 				var stringAcao = stringfyJSON(acao);
+				debug("Add Action Plugin: ", acao);
 				chrome.extension.sendRequest({useskill: "addAcao", acao: stringAcao});		
 			}else{		
 				var arr = getAcoes();		
@@ -580,12 +664,8 @@ function useskill_capt_onthefly(obj){
 				}		
 				var str = stringfyJSON(arr);		
 				debug("Add Action: ", acao);		
-				localStorage.setItem("useskill_actions", str);		
+				localStorage.setItem(LOCALSTORAGE_VAR, str);		
 			}
-		}
-		
-		function logg(text){
-			console.log(text);
 		}
 
 		function setItem(name, acoes){
@@ -594,7 +674,7 @@ function useskill_capt_onthefly(obj){
 		}
 
 		function clearStorage(){
-			localStorage.removeItem("useskill_actions");
+			localStorage.removeItem(LOCALSTORAGE_VAR);
 		}
 
 		function getItem(name){
@@ -659,5 +739,6 @@ function useskill_capt_onthefly(obj){
 
 function useskill_capt_clearStorage(){
 	localStorage.removeItem("useskill_actions");
+	localStorage.removeItem("useskill_actions_plugin");
 	window.useSkillActions = '[]';
 }

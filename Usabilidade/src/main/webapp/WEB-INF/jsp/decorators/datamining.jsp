@@ -63,11 +63,30 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/useskill.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.easing1.3.js"></script>
 	
+	<!--
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/useskill/capt.mining.useskill.nojquery.js"></script>
 	<script>
 		(function($){
 			$(document).ready(function(){
+				useskill_capt_onthefly({
+					url: "http://127.0.0.1:3000/actions/create",
+					waitdomready: false,
+					sendactions: true,
+					debug: true,
+				
+					onthefly: true,
+					capturehashchange: true,
+					jheat: false,
+					plugin: false,
+				
+					client: "Test",
+					version: 1,
+					username: "Usuario",
+					role: "Role"
+				});
 			});
 		})(jQuery);
 	</script>
+	-->
 </body>
 </html>

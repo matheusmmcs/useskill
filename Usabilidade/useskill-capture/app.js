@@ -1,9 +1,14 @@
+
 var express = require('express')
   , routes  = require('./routes')
   , action    = require('./routes/action')
   , http    = require('http')
   , path    = require('path')
   , db      = require('./models');
+
+subdomain = '/useskill-capture'
+
+console.log('node app is now running with subdomain: '+subdomain);
 
 var app = express();
 app.locals.moment = require('moment');

@@ -2,7 +2,7 @@
 
 <div class="row">
   <div class="col-xs-10 margin-auto">
-    <form id="searchForm" role="form" type="GET" action="/actions">
+    <form id="searchForm" role="form" type="GET" action="<%= subdomain %>/actions">
       <div class="row">
         <h3>Order Filter</h3>
         <div class="form-group col-xs-4">
@@ -52,16 +52,16 @@
 </div>
 
 
-<script src="/js/jquery-1.11.1.min.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/ejs_production.js"></script>
+<script src="<%= subdomain %>/js/jquery-1.11.1.min.js"></script>
+<script src="<%= subdomain %>/js/bootstrap.min.js"></script>
+<script src="<%= subdomain %>/js/ejs_production.js"></script>
 <script type="text/javascript">
       (function($){
         $(document).ready(function(){
           
           $(document).on('click', '#mais', function(e){
             e.preventDefault();
-            var html = new EJS({url: '/template/param-search.ejs'}).render({fullOptions: true});
+            var html = new EJS({url: '<%= subdomain %>/template/param-search.ejs'}).render({fullOptions: true});
             $('#filtros').append(html);
           });
           
@@ -80,7 +80,7 @@
               data: data,
               type: $(this).attr('type'),
               complete: function(data) {
-                var html = new EJS({url: '/template/action-table.ejs'}).render(data.responseJSON);
+                var html = new EJS({url: '<%= subdomain %>/template/action-table.ejs'}).render(data.responseJSON);
                 $('#actionTable').html(html);
               },
               error: function(err) {

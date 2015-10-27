@@ -1,4 +1,7 @@
-sequelize-expressjs-example
+UseSkill Capture - NodeJS
 ===========================
 
-An example that shows a proposal for the usage of Sequelize within an Express.JS application.
+Usage of Sequelize within an Express.JS application.
+
+To start application, use app-fm.js to start server with configuration to restart server when it down.
+
