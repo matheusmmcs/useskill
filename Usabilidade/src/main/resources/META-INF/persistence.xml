@@ -24,4 +24,29 @@
     <class>br.ufpi.datamining.models.TaskDataMining</class>
     <class>br.ufpi.datamining.models.FieldSearchTupleDataMining</class>
   </persistence-unit>
+  
+    <persistence-unit name="onthefly" transaction-type="RESOURCE_LOCAL">
+<!-- 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider> -->
+		<class>br.ufpi.datamining.models.ActionDataMining</class>
+	    <class>br.ufpi.datamining.models.ActionSingleDataMining</class>
+	    <class>br.ufpi.datamining.models.TestDataMining</class>
+	    <class>br.ufpi.datamining.models.TaskDataMining</class>
+	    <class>br.ufpi.datamining.models.FieldSearchTupleDataMining</class>
+
+		<properties>
+<!-- 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" /> -->
+			<property name="hibernate.connection.driver_class" value="org.hibernate.dialect.MySQLDialect" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.query.substitutions" value="true=1, false=0" />
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.format_sql" value="true" />
+	
+<!-- 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/usabilidade_onthefly_linode?jdbcCompliantTruncation=false" /> -->
+			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/useskill_fuzzy?jdbcCompliantTruncation=false" />
+			<property name="hibernate.connection.username" value="root" />
+			<property name="hibernate.connection.password" value="" />
+		</properties>
+	
+		
+	</persistence-unit>
 </persistence>

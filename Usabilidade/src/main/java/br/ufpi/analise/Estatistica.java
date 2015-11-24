@@ -3,6 +3,7 @@
  */
 package br.ufpi.analise;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -159,21 +160,20 @@ public class Estatistica {
 				quantidadeUsuariosNAmediaTempo++;
 			}
 		}
+		
+		DecimalFormat df = new DecimalFormat("#.00");
+		
 		int faixaMediaAbaixoAcao=(int) (mediaAcao - desvioPadraoAcao);
 		int faixaMediaAcimaAcao=(int) (mediaAcao + desvioPadraoAcao);
-		retorno.put(
-				"media_Acoes_" + tipoConvidado,
-				(faixaMediaAbaixoAcao + " - " + faixaMediaAcimaAcao));
+		retorno.put("media_Acoes_" + tipoConvidado, (df.format(mediaAcao) + "(" + faixaMediaAbaixoAcao + " a " + faixaMediaAcimaAcao + ")"));
+		
 		int faixaMediaAbaixo=(int) ((mediaTempo - desvioPadraoTempo)/1000);
 		int faixaMediaAcima=(int) ((mediaTempo + desvioPadraoTempo)/1000);
-		retorno.put(
-				"media_tempo_" + tipoConvidado,
-				faixaMediaAbaixo+ " Seg  à " + faixaMediaAcima+" Seg");
+		retorno.put("media_tempo_" + tipoConvidado, (df.format(mediaTempo) + "(" + faixaMediaAbaixo+ " à " + faixaMediaAcima+" segs)"));
+		
 		retorno.put("total_fluxos_" + tipoConvidado, fluxos.size());
-		retorno.put("total_fluxos_media_tempo_" + tipoConvidado,
-				quantidadeUsuariosNAmediaTempo);
-		retorno.put("total_fluxos_media_acao_" + tipoConvidado,
-				quantidadeUsuariosNAmediaTempo);
+		retorno.put("total_fluxos_media_tempo_" + tipoConvidado, quantidadeUsuariosNAmediaTempo);
+		retorno.put("total_fluxos_media_acao_" + tipoConvidado, quantidadeUsuariosNAmediaTempo);
 
 		return retorno;
 	}

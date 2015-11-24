@@ -12,6 +12,12 @@
 	"stdv": "Desvio Padrão",
 	"actions": "ações",
 	
+	"description": "Descrição",
+	"count": "Count",
+	
+	"date.initial": "Data Inicial",
+	"date.end": "Data Final",
+	
 	"datamining.back" : "Voltar",
 	"datamining.cancel" : "Cancelar",
 	"datamining.new" : "Criar",
@@ -36,7 +42,15 @@
 	"datamining.testes.title" : "Título",
 	"datamining.testes.abbrev" : "Abreviação do Cliente",
 	"datamining.testes.url" : "Url do Sistema",
+	
+	"datamining.testes.analyzes" : "Analisar Dados do Teste",
 	"datamining.testes.tasks" : "Tarefas do Teste",
+	"datamining.testes.featuresmostaccessed" : "Funcionalidades Mais Utilizadas",
+	"datamining.testes.featuresmostaccessed.list" : "Lista das Funcionalidades",
+	"datamining.testes.featuresmostaccessed.search" : "Buscar Funcionalidades Mais Utilizadas",
+	"datamining.testes.featuresmostaccessed.datafield" : "Campo Base da Busca",
+	"datamining.testes.featuresmostaccessed.datafield.select" : "- Selecione o Campo Base -",
+	"datamining.testes.specificsession" : "Visualizar Sessão Específica",
 	
 	"datamining.testes.edit.success" : "Teste alterado com sucesso!",
 	"datamining.testes.new.success" : "Teste cadastrado com sucesso!",

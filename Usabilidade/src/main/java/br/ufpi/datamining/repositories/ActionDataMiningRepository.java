@@ -1,5 +1,8 @@
 package br.ufpi.datamining.repositories;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -9,15 +12,19 @@ import javax.persistence.Query;
 
 import br.com.caelum.vraptor.ioc.Component;
 import br.ufpi.datamining.models.ActionDataMining;
+import br.ufpi.datamining.models.aux.CountActionsAux;
 import br.ufpi.datamining.models.aux.FieldSearch;
+import br.ufpi.datamining.models.aux.OrderSearch;
 import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
+import br.ufpi.datamining.utils.EntityManagerUtil;
 import br.ufpi.repositories.Repository;
 
 @Component
 public class ActionDataMiningRepository extends Repository<ActionDataMining, Long> {
 
 	public ActionDataMiningRepository(EntityManager entityManager) {
-		super(entityManager);
+		super(EntityManagerUtil.getEntityManager());
+		//super(entityManager);
 	}
 
 	public ActionDataMining getUniqueTest(Long id) {
@@ -31,18 +38,18 @@ public class ActionDataMiningRepository extends Repository<ActionDataMining, Lon
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<ActionDataMining> getActions(List<FieldSearch> fields, Set<ActionTypeDataMiningEnum> disregardActions){
-		if(fields.size() > 0){
+	public List<ActionDataMining> getActions(List<FieldSearch> fields, Set<ActionTypeDataMiningEnum> disregardActions, OrderSearch order){
+		if(fields != null && fields.size() > 0){
 			String squery = "SELECT a FROM ActionDataMining a WHERE ";
 			int count = 0;
 			for(FieldSearch f : fields){
 				count++;
-				squery += " " + f.getField() + " = :" + f.getField() + " ";
+				squery += " " + f.getField() + " " + f.getComparator().getDesc() + " :" + f.getAlias() + " ";
 				if(fields.size() > count){
 					squery += " AND ";
 				}
 			}
-			if(disregardActions.size() > 0){
+			if(disregardActions != null && disregardActions.size() > 0){
 				count = 0;
 				squery += " AND sActionType NOT IN (";
 				for(ActionTypeDataMiningEnum da : disregardActions){
@@ -56,10 +63,16 @@ public class ActionDataMiningRepository extends Repository<ActionDataMining, Lon
 			}
 			//ordenar aqui pode causar problemas, pois ao buscar eventos mais recentes, traz null pointer
 			//squery += " ORDER BY a.sTime ASC";
+			if (order != null) {
+				squery += " ORDER BY a." + order.getField();
+				squery += order.isAscending() ? " ASC " : " DESC ";
+			}
+			
+			System.out.println(squery);
 			
 			Query query = entityManager.createQuery(squery);
 			for(FieldSearch f : fields){
-				query.setParameter(f.getField(), f.getValue());
+				query.setParameter(f.getAlias(), f.getValue());
 			}
 			
 			try {
@@ -68,6 +81,52 @@ public class ActionDataMiningRepository extends Repository<ActionDataMining, Lon
 		}
 		return null;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<CountActionsAux> getCountActionsByRestrictions(FieldSearch fieldGroup, List<FieldSearch> fieldsSearch, OrderSearch order){
+		List<CountActionsAux> list = new LinkedList<CountActionsAux>();
+		String squery = "SELECT distinct(" + fieldGroup.getField() + "), count(a) from ActionDataMining a ";
+		
+		if (fieldsSearch != null && fieldsSearch.size() > 0) {
+			squery += " WHERE "; 
+			int count = 0;
+			for(FieldSearch f : fieldsSearch){
+				count++;
+				squery += " " + f.getField() + " " + f.getComparator().getDesc() + " :" + f.getAlias() + " ";
+				if(fieldsSearch.size() > count){
+					squery += " AND ";
+				}
+			}
+		}
+		
+		squery += " GROUP BY " + fieldGroup.getField();
+		
+		if (order != null) {
+			squery += " ORDER BY a." + order.getField();
+			squery += order.isAscending() ? " ASC " : " DESC ";
+		} else {
+			squery += " ORDER BY 2 DESC";
+		}
+		
+		System.out.println(squery);
+		
+		Query query = entityManager.createQuery(squery);
+		for(FieldSearch f : fieldsSearch){
+			query.setParameter(f.getAlias(), f.getValue());
+		}
+		
+		List<Object[]> resultList = query.getResultList();
+		
+		for (Object[] o : resultList) {
+			list.add(new CountActionsAux((String) o[0], null, (Long) o[1]));
+		}
+		
+		try {
+			return list;
+		} catch (NoResultException e) {}
+		return null;
+	}
+	
 	
 	
 	@SuppressWarnings("unchecked")

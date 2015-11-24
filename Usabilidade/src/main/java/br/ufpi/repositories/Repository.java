@@ -39,7 +39,7 @@ public abstract class Repository<T, I extends Serializable> {
 
 	@SuppressWarnings("unchecked")
 	public T last() {
-		Query query = entityManager.createQuery("from " + clazz.getName() +" as a "+ "order by a.id desc");
+		Query query = entityManager.createQuery("from " + clazz.getName() + " as a "+ "order by a.id desc");
 		query.setMaxResults(1);
 		return (T) query.getSingleResult();
 	}
@@ -51,6 +51,14 @@ public abstract class Repository<T, I extends Serializable> {
 		List<T> resultList = query.getResultList();
 
 		return resultList;
+	}
+	
+	public Integer count() {
+		String queryString = "select Count(*) from " + clazz.getName();
+		System.out.println(queryString);
+		Query query = entityManager.createQuery(queryString);
+		Long count = (Long) query.getSingleResult();
+		return count.intValue();
 	}
 
 }

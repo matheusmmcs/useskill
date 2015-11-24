@@ -1,5 +1,5 @@
 angular.module('useskill', 
-		['ngRoute', 'pascalprecht.translate', 'tableSort', 'chart.js', 'ui.bootstrap'])
+		['ngRoute', 'pascalprecht.translate', 'tableSort', 'chart.js', 'datePicker', 'ui.bootstrap'])
 
 .constant('env', 'dev')
 //.constant('env', 'prod')
@@ -53,6 +53,24 @@ angular.module('useskill',
 			templateUrl:config[env].apiUrl+'/templates/tests/detail.html',
 			resolve: {
 				test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
+	    })
+	    .when('/testes/:testId/tarefas', {
+			controller:'TestTasksViewController as testCtrl',
+			templateUrl:config[env].apiUrl+'/templates/tests/tasklist.html',
+			resolve: {
+				test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
+	    })
+	    .when('/testes/:testId/maisacessadas', {
+			controller:'TestMostAccessController as testCtrl',
+			templateUrl:config[env].apiUrl+'/templates/tests/mostaccess.html',
+			resolve: {
+		        test: function (ServerAPI, $route) {
 		        	return ServerAPI.getTest($route.current.params.testId);
 		        }
 		    }
@@ -169,6 +187,11 @@ angular.module('useskill',
         	var promise = $http.post(config[env].apiUrl+'/datamining/testes/salvar', test);
         	return promise;
         },
+        getTestMostAccess: function(testId, field, init, end){
+            var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId+'/maisacessados/'+field+'/init/'+init+'/end/'+end});
+            return promise;
+        },
+        
         
         getTask: function(testId, taskId){
             var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId+'/tarefas/'+taskId});
@@ -230,6 +253,14 @@ angular.module('useskill',
 	 	]
 	};
 })
+.factory("MostAccessTypeEnum", function(){
+	return {
+		datatypes : [
+	 	    {name:'JHM', value:'sJhm'},
+	 	    {name:'URL', value:'sUrl'}
+	 	]
+	};
+})
 
 //Tests Controllers
 
@@ -238,6 +269,10 @@ angular.module('useskill',
 	testCtrl.tests = JSON.parse(tests.data.string);
 })
 .controller('TestViewController', function(test, ServerAPI, $route, $rootScope, $filter) {
+	var testCtrl = this;
+	testCtrl.test = JSON.parse(test.data.string);
+})
+.controller('TestTasksViewController', function(test, ServerAPI, $route, $rootScope, $filter) {
 	var testCtrl = this;
 	testCtrl.test = JSON.parse(test.data.string);
 	testCtrl.priority = function(){
@@ -256,6 +291,15 @@ angular.module('useskill',
 			  placement: 'bottom'
 		  }
 	};
+	
+//	testCtrl.minDate = 1425376800000;
+//	testCtrl.maxDate = 1425387600000;
+//	testCtrl.mostaccess = function(){
+//		var min, max;
+//		min = typeof testCtrl.minDate === "object" ? testCtrl.minDate._i : testCtrl.minDate;
+//		max = typeof testCtrl.maxDate === "object" ? testCtrl.maxDate._i : testCtrl.maxDate;
+//		console.log(min, max);
+//	}
 	
 	angular.forEach(testCtrl.test.tasks, function(task){
 		task.popovercontent = contentPopover(task);
@@ -280,6 +324,34 @@ angular.module('useskill',
 		return content;
 	}
 	console.log(testCtrl);
+})
+.controller('TestMostAccessController', function($filter, test, MostAccessTypeEnum, ServerAPI) {
+	var testCtrl = this;
+	testCtrl.test = JSON.parse(test.data.string);
+	testCtrl.testId = testCtrl.test.id;
+	
+	testCtrl.minDate = new Date().getTime();
+	testCtrl.maxDate = new Date().getTime();
+	
+	testCtrl.actions = [];
+	testCtrl.datatypes = MostAccessTypeEnum.datatypes;
+	
+	testCtrl.actionTitle = $filter('translate')('datamining.testes.featuresmostaccessed.search');
+	testCtrl.mostaccess = function() {
+		testCtrl.minDate = typeof testCtrl.minDate === "object" ? testCtrl.minDate._i : testCtrl.minDate;
+		testCtrl.maxDate = typeof testCtrl.maxDate === "object" ? testCtrl.maxDate._i : testCtrl.maxDate;
+		
+		if (testCtrl.datatype !== undefined) {
+			console.log(testCtrl.testId, testCtrl.datatype.value, testCtrl.minDate, testCtrl.maxDate);
+			ServerAPI.getTestMostAccess(testCtrl.testId, testCtrl.datatype.value, testCtrl.minDate, testCtrl.maxDate).then(function(data){
+				console.log(data.data);
+				testCtrl.actions = JSON.parse(data.data.string);
+			}, function(data){
+				console.log(data);
+			});
+		}
+	}
+	
 })
 .controller('TestNewController', function($filter, ServerAPI) {
 	var testCtrl = this;

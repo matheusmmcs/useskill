@@ -1,0 +1,130 @@
+<div class="container-padding-left">
+	
+		<ul class="breadcrumb">
+			<li>
+				<a ng-href="/"> 
+					{{ 'inicio' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li>
+				<a ng-href="#/testes/"> 
+					{{ 'datamining' | translate}} - {{ 'datamining.testes.list' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li>
+				<a ng-href="#/testes/{{testCtrl.testId}}"> 
+					{{ 'datamining.testes.details' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li class="active">{{ 'datamining.testes.featuresmostaccessed' | translate}}</li>
+		</ul>
+		
+		<div ng-show="success" class="alert alert-success">
+			{{ success }}<br />
+		</div>
+		<div ng-show="errors" class="alert alert-error">
+			<span ng-repeat="error in errors">
+				{{ error }}<br />
+			</span>
+		</div>
+	    
+		<div class="row show-grid">
+			<div class="span4">
+		    	<div class="usdm-box">
+		    		<h2 class="usdm-box-header">
+			    		{{ 'datamining.testes.details' | translate}}
+		            </h2>
+		            
+		            <div class="usdm-box-body">
+			            <dl>
+			            	<dt>{{ 'datamining.testes.title' | translate}}:</dt>
+			            	<dd>
+			            		{{testCtrl.test.title}}
+			            		<a class="btn pull-right" ng-href="#/testes/editar/{{testCtrl.test.id}}" title="{{ 'datamining.edit' | translate}}"><span class="icon-edit"></span> {{ 'datamining.edit' | translate }}</a>
+			            		<div class="clear-both"></div>
+			            	</dd>
+			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.testes.abbrev' | translate}}:</dt>
+			            	<dd>{{testCtrl.test.clientAbbreviation}}</dd>
+			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.testes.url' | translate}}:</dt>
+			            	<dd>{{testCtrl.test.urlSystem}}</dd>
+			            </dl>
+			            
+			            <dl>
+			            	<dt>{{ 'datamining.priority' | translate}}:</dt>
+			            	<dd>
+			            		<a class="btn btn-primary pull-right" ng-click="testCtrl.priority()" title="{{ 'datamining.priority' | translate}}"><span class="icon-white icon-tasks"></span> {{ 'datamining.priority' | translate}}</a>
+			            		<div class="clear-both"></div>
+							</dd>
+			            </dl>
+			            
+		            </div>
+		    	</div>
+		    </div>
+	        <div class="span8">
+	            <form name="myForm" class="datamining-form form-layout">
+					<fieldset>
+						<legend>
+							<span>{{ testCtrl.actionTitle }}</span>
+							<hr/>
+						</legend>
+						
+						<div class="control-group">
+			            	<label class="control-label" for="pickerMinSelector">{{ 'date.initial' | translate}}:*</label>
+			            	<div class="controls">
+			                	<input placeholder="{{ 'date.initial' | translate}}" date-time ng-model="testCtrl.minDate" id="pickerMinSelector" date-change="testCtrl.changeMinMax" max-date="testCtrl.maxDate" view="date" format="DD/MM/YYYY HH:mm" /> 
+			            	</div>
+			        	</div>
+			        	
+			        	<div class="control-group">
+			            	<label class="control-label" for="pickerMaxSelector">{{ 'date.end' | translate}}:*</label>
+			            	<div class="controls">
+			                	<input placeholder="{{ 'date.end' | translate}}" date-time ng-model="testCtrl.maxDate" id="pickerMaxSelector" date-change="testCtrl.changeMinMax" min-date="testCtrl.minDate" view="date" format="DD/MM/YYYY HH:mm" /> 
+			            	</div>
+			        	</div>
+			        	
+			        	<div class="control-group">
+			            	<label class="control-label" for="datatype">{{ 'datamining.testes.featuresmostaccessed.datafield' | translate}}:*</label>
+			            	<div class="controls">
+			                	<select ng-model="testCtrl.datatype" id="datatype" ng-options="datatype as datatype.name for datatype in testCtrl.datatypes" class="input">
+			                		<option value="">{{ 'datamining.testes.featuresmostaccessed.datafield.select' | translate }}</option>
+			                	</select>
+			            	</div>
+			        	</div>
+			
+						<hr/>
+						
+			        	<div class="form-actions">
+<!-- 			        		<a class="btn btn-primary pull-right" ng-click="testCtrl.mostaccess()" ng-href="#/testes/{{testCtrl.test.id}}/maisacessados/sJhm/init/1425376800000/end/1425387600000" title="{{ 'datamining.testes.mostaccess' | translate}}"><span class="icon-white icon-tasks"></span> {{ 'datamining.testes.mostaccess' | translate}}</a> -->
+			            	<button ng-click="testCtrl.mostaccess()"  class="btn btn-primary pull-right submit">{{ testCtrl.actionTitle }}</button>
+			            	<a href="#/" onclick="window.history.go(-1); return false;" class="btn pull-right">{{ 'datamining.back' | translate}}</a>
+			        	</div>
+			        	
+					</fieldset>
+				</form>
+	            
+	            
+	            <table ng-show="testCtrl.actions.length" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" style="background-color: white" ts-wrapper>
+	                <thead>
+	                    <tr>
+	                    	<th ts-criteria="count|parseFloat" ts-default="descending">{{ 'description' | translate }}</th>
+	                        <th ts-criteria="description|lowercase">{{ 'description' | translate }}</th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+                        <tr ng-repeat="action in testCtrl.actions | orderBy:'count'" ts-repeat>
+                        	<td>{{ action.count | number:0}}</td>
+                            <td>{{ action.description }}</td>
+                        </tr>
+	                </tbody>
+	            </table>
+	        </div>
+	    </div>	    
+
+    </div>

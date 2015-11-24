@@ -3,6 +3,8 @@ package br.ufpi.datamining.analisys;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +20,10 @@ import br.ufpi.datamining.models.FieldSearchTupleDataMining;
 import br.ufpi.datamining.models.PageViewActionDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.aux.CorrectnessTask;
+import br.ufpi.datamining.models.aux.CountActionsAux;
 import br.ufpi.datamining.models.aux.FieldSearch;
+import br.ufpi.datamining.models.aux.FieldSearchComparatorEnum;
+import br.ufpi.datamining.models.aux.OrderSearch;
 import br.ufpi.datamining.models.aux.ResultDataMining;
 import br.ufpi.datamining.models.aux.SessionResultDataMining;
 import br.ufpi.datamining.models.aux.UserResultDataMining;
@@ -26,6 +31,7 @@ import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
+import br.ufpi.datamining.utils.EntityDefaultManagerUtil;
 import br.ufpi.datamining.utils.EntityManagerUtil;
 import br.ufpi.datamining.utils.StatisticsUtils;
 import br.ufpi.datamining.utils.UsabilityUtils;
@@ -107,12 +113,58 @@ public class WebUsageMining {
 	
 	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException, IOException {
 		EntityManager entityManager = EntityManagerUtil.getEntityManager();
-		TaskDataMiningRepository taskDataMiningRepository = new TaskDataMiningRepository(entityManager);
+		EntityManager entityDafaultManager = EntityDefaultManagerUtil.getEntityManager();
+		
+		TaskDataMiningRepository taskDataMiningRepository = new TaskDataMiningRepository(entityDafaultManager);
 		ActionDataMiningRepository actionDataMiningRepository = new ActionDataMiningRepository(entityManager);
-		ResultDataMining resultDataMining = analyze(14l, taskDataMiningRepository, actionDataMiningRepository);
-		System.out.println(resultDataMining.getSessions().size());
+		
+		System.out.println(taskDataMiningRepository.count());
+		System.out.println(actionDataMiningRepository.count());
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR_OF_DAY,0);
+		cal.set(Calendar.MINUTE,0);
+		cal.set(Calendar.SECOND,0);
+		cal.set(Calendar.MILLISECOND,0);
+
+		cal.set(Calendar.HOUR_OF_DAY,7);
+		cal.set(Calendar.DAY_OF_MONTH,3);
+		cal.set(Calendar.MONTH,2);
+		cal.set(Calendar.YEAR,2015);
+		Date initialDate = cal.getTime();
+		
+		System.out.println(initialDate.getTime());
+		
+		cal.set(Calendar.HOUR_OF_DAY,10);
+//		cal.set(Calendar.DAY_OF_MONTH,30);
+//		cal.set(Calendar.MONTH,8);
+		Date finalDate = cal.getTime();
+		
+		System.out.println(finalDate.getTime());
+		
+		//retorna as ações realizadas entre duas datas
+		//List<ActionDataMining> listActionsBetweenDates = WebUsageMining.listActionsBetweenDates(14l, taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate);
+		//System.out.println(listActionsBetweenDates.size());
+		
+		//ações mais realizadas agrupadas de acordo com filtro
+//		List<CountActionsAux> counts = WebUsageMining.countActionsByRestrictions(14l, new FieldSearch("sJhm", "sJhm", null, null), taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate);
+//		for (CountActionsAux c : counts) {
+//			System.out.println(c.getDescription() + " -> " + c.getCount());
+//		}
+		
+		//ações realizadas por determinado usuário
+//		List<ActionDataMining> actionsFromUserBetweenDates = WebUsageMining.listActionsFromUserBetweenDates(14l, "gomes", new FieldSearch("sJhm", "local", "MarcarExameAuditor", FieldSearchComparatorEnum.EQUALS), taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate);
+//		System.out.println(actionsFromUserBetweenDates.size());
+//		for (ActionDataMining a : actionsFromUserBetweenDates) {
+//			System.out.println(a.getId() + " = " + a.getsJhm() + ", " + a.getsStepJhm() + " ... " + a.getsActionType());
+//		}
+		
+
+		//analisar a usabilidade
+		
+		//ResultDataMining resultDataMining = analyze(14l, taskDataMiningRepository, actionDataMiningRepository);
+		//System.out.println(resultDataMining.getSessions().size());
 	}
-	
 	
 	public static ResultDataMining analyze(Long taskId, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
 		
@@ -135,17 +187,17 @@ public class WebUsageMining {
 		HashMap<String, List<ActionDataMining>> initialActionOfsectionsFromUser = new HashMap<String, List<ActionDataMining>>();
 		for(ActionSingleDataMining a : taskDataMining.getActionsInitial()){
 			List<FieldSearch> fieldsSearch = new ArrayList<FieldSearch>();
-			fieldsSearch.add(new FieldSearch("sActionType", a.getActionType().getAction()));
+			fieldsSearch.add(new FieldSearch("sActionType", "sActionType", a.getActionType().getAction(), FieldSearchComparatorEnum.EQUALS));
 			for(FieldSearchTupleDataMining f : a.getElementFiedlSearch()){
-				fieldsSearch.add(new FieldSearch(f.getField(), f.valueToObject()));
+				fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
 			}
 			for(FieldSearchTupleDataMining f : a.getUrlFieldSearch()){
 				if(!f.getField().equals("sUrl")){
-					fieldsSearch.add(new FieldSearch(f.getField(), f.valueToObject()));
+					fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
 				}
 			}
 			
-			List<ActionDataMining> actions = actionDataMiningRepository.getActions(fieldsSearch, taskDataMining.getDisregardActions());
+			List<ActionDataMining> actions = actionDataMiningRepository.getActions(fieldsSearch, taskDataMining.getDisregardActions(), null);
 			for(ActionDataMining ai : actions){
 				if(initialActionOfsectionsFromUser.get(ai.getsUsername()) == null){
 					initialActionOfsectionsFromUser.put(ai.getsUsername(), new ArrayList<ActionDataMining>());
@@ -541,6 +593,56 @@ public class WebUsageMining {
 		System.out.println("Times = " + (result.getMaxTimesOk() - result.getMeanTimesOk()) / result.getStdDevTimesOk());
 		
 		return result;
+	}
+	
+	public static List<CountActionsAux> countActionsByRestrictions(Long taskId, FieldSearch fieldGroup, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository, Date initialDate, Date finalDate) {
+		TaskDataMining taskDataMining = taskDataMiningRepository.find(taskId);
+		String clientAbbreviation = taskDataMining.getTestDataMining().getClientAbbreviation();
+		
+		List<FieldSearch> fieldsSearch = new ArrayList<FieldSearch>();
+		fieldsSearch.add(new FieldSearch("sClient", "sClient", clientAbbreviation, FieldSearchComparatorEnum.EQUALS));
+		if (initialDate != null) {
+			fieldsSearch.add(new FieldSearch("sTime", "sTime1", initialDate.getTime(), FieldSearchComparatorEnum.GREATER_EQUALS_THAN));
+		}
+		if (finalDate != null) {
+			fieldsSearch.add(new FieldSearch("sTime", "sTime2", finalDate.getTime(), FieldSearchComparatorEnum.LESS_EQUALS_THAN));
+		}
+		
+		return actionDataMiningRepository.getCountActionsByRestrictions(fieldGroup, fieldsSearch, null);
+	}
+	
+	public static List<ActionDataMining> listActionsBetweenDates(Long taskId, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository, Date initialDate, Date finalDate) {
+		TaskDataMining taskDataMining = taskDataMiningRepository.find(taskId);
+		String clientAbbreviation = taskDataMining.getTestDataMining().getClientAbbreviation();
+		
+		List<FieldSearch> fieldsSearch = new ArrayList<FieldSearch>();
+		fieldsSearch.add(new FieldSearch("sClient", "sClient", clientAbbreviation, FieldSearchComparatorEnum.EQUALS));
+		if (initialDate != null) {
+			fieldsSearch.add(new FieldSearch("sTime", "sTime1", initialDate.getTime(), FieldSearchComparatorEnum.GREATER_EQUALS_THAN));
+		}
+		if (finalDate != null) {
+			fieldsSearch.add(new FieldSearch("sTime", "sTime2", finalDate.getTime(), FieldSearchComparatorEnum.LESS_EQUALS_THAN));
+		}
+		
+		return actionDataMiningRepository.getActions(fieldsSearch, null, new OrderSearch("sTime", true));
+	}
+	
+	public static List<ActionDataMining> listActionsFromUserBetweenDates(Long taskId, String username, FieldSearch actionLocal, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository, Date initialDate, Date finalDate) {
+		TaskDataMining taskDataMining = taskDataMiningRepository.find(taskId);
+		String clientAbbreviation = taskDataMining.getTestDataMining().getClientAbbreviation();
+		
+		List<FieldSearch> fieldsSearch = new ArrayList<FieldSearch>();
+		fieldsSearch.add(new FieldSearch("sClient", "sClient", clientAbbreviation, FieldSearchComparatorEnum.EQUALS));
+		if (initialDate != null) {
+			fieldsSearch.add(new FieldSearch("sTime", "sTime1", initialDate.getTime(), FieldSearchComparatorEnum.GREATER_EQUALS_THAN));
+		}
+		if (finalDate != null) {
+			fieldsSearch.add(new FieldSearch("sTime", "sTime2", finalDate.getTime(), FieldSearchComparatorEnum.LESS_EQUALS_THAN));
+		}
+		fieldsSearch.add(new FieldSearch("sUsername", "sUsername", username, FieldSearchComparatorEnum.EQUALS));
+		fieldsSearch.add(new FieldSearch(actionLocal.getField(), actionLocal.getAlias(), actionLocal.getValue(), FieldSearchComparatorEnum.EQUALS));
+		
+		return actionDataMiningRepository.getActions(fieldsSearch, null, new OrderSearch("sTime", true));
 	}
 	
 	private static boolean listContainsAction(List<ActionDataMining> list, ActionDataMining action){

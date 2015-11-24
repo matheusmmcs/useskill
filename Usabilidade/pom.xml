@@ -5,7 +5,7 @@
 	<groupId>Usabilidade</groupId>
 	<artifactId>Usabilidade</artifactId>
 	<packaging>war</packaging>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 	<name>Usabilidade</name>
 
 	<properties>
@@ -219,6 +219,7 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>3.3.2.GA</version>
+<!-- 			<version>4.1.1.Final</version> -->
 			<exclusions>
 				<exclusion>
 					<artifactId>ejb3-persistence</artifactId>
@@ -230,7 +231,9 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-c3p0</artifactId>
 			<version>3.6.7.Final</version>
+<!-- 			<version>4.1.1.Final</version> -->
 		</dependency>
+		
 		<dependency>
 			<groupId>javax.sql</groupId>
 			<artifactId>jdbc-stdext</artifactId>

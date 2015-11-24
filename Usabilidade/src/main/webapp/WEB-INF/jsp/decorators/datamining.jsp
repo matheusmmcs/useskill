@@ -13,6 +13,7 @@
 	<link href="${pageContext.request.contextPath}/plugin/vis/vis.css" rel="stylesheet" type="text/css" />
 	<link href="${pageContext.request.contextPath}/css/tablesort.css" rel="stylesheet" type="text/css" />
 	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/angular-chart/angular-chart.css" rel="stylesheet" type="text/css" />
+	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/datepicker/angular-datepicker.min.css" rel="stylesheet" type="text/css" />
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.js"></script>
 	<script src="${pageContext.request.contextPath}/jscripts/libs/less-1.3.0.min.js"></script>
@@ -56,6 +57,8 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-tablesort.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-chart/angular-chart.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/ui-bootstrap/ui-bootstrap-tpls-0.13.0.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/moment.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/datepicker/angular-datepicker.min.js"></script>
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/app/app.js"></script>
 	
