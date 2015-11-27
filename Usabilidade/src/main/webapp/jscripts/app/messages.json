@@ -15,6 +15,14 @@
 	"description": "Descrição",
 	"count": "Count",
 	
+	"sTime":"Hora",
+	"sActionType":"Ação",
+	"sTag":"Tag",
+	"sJhm":"Jhm",
+	"sStepJhm":"StepJhm",
+	"sXPath":"XPath",
+	
+	
 	"date.initial": "Data Inicial",
 	"date.end": "Data Final",
 	
@@ -51,6 +59,8 @@
 	"datamining.testes.featuresmostaccessed.datafield" : "Campo Base da Busca",
 	"datamining.testes.featuresmostaccessed.datafield.select" : "- Selecione o Campo Base -",
 	"datamining.testes.specificsession" : "Visualizar Sessão Específica",
+	"datamining.testes.specificsession.search" : "Buscar Sessão Específica",
+	"datamining.testes.specificsession.limit" : "Máximo de Ações Retornadas",
 	
 	"datamining.testes.edit.success" : "Teste alterado com sucesso!",
 	"datamining.testes.new.success" : "Teste cadastrado com sucesso!",

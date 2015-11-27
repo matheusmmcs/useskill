@@ -19,11 +19,13 @@ import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
 import br.ufpi.datamining.analisys.Fuzzy;
 import br.ufpi.datamining.analisys.WebUsageMining;
+import br.ufpi.datamining.models.ActionDataMining;
 import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.aux.CountActionsAux;
 import br.ufpi.datamining.models.aux.FieldSearch;
+import br.ufpi.datamining.models.aux.FieldSearchComparatorEnum;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.vo.ReturnVO;
 import br.ufpi.datamining.models.vo.TestDataMiningVO;
@@ -198,13 +200,36 @@ public class DataMiningTestController extends BaseController {
 		Date initialDate = new Date(initDate);
 		Date finalDate = new Date(endDate);
 		
-		List<CountActionsAux> counts = WebUsageMining.countActionsByRestrictions(14l, new FieldSearch(field, field, null, null), taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate);
+		List<CountActionsAux> counts = WebUsageMining.countActionsByRestrictions(idTeste, new FieldSearch(field, field, null, null), taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate);
 		for (CountActionsAux c : counts) {
 			System.out.println(c.getDescription() + " -> " + c.getCount());
 		}
 		
 		result.use(Results.json()).from(gson.toJson(counts)).serialize();
 	}
+	
+	@Get("/testes/{idTeste}/sessaoespecifica/{username}/local/{local}/init/{initDate}/end/{endDate}/limit/{limit}")
+	@Logado
+	public void actionsBetweenDates(Long idTeste, String username, String local, Long initDate, Long endDate, Long limit) {
+		Gson gson = new Gson();
+		
+		TestDataMining testPertencente = testeDataMiningRepository.getTestPertencente(usuarioLogado.getUsuario().getId(), idTeste);
+		validateComponente.validarNotNull(testPertencente, "datamining.accessdenied");
+		validator.onErrorRedirectTo(this).list();
+		
+		Date initialDate = new Date(initDate);
+		Date finalDate = new Date(endDate);
+		
+		
+		FieldSearch fieldLocation = new FieldSearch("sJhm", "local", local, FieldSearchComparatorEnum.EQUALS);
+		fieldLocation = null;
+		List<ActionDataMining> listActionsBetweenDates = WebUsageMining.listActionsFromUserBetweenDates(idTeste, username, fieldLocation, taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate, limit);
+		
+		result.use(Results.json()).from(gson.toJson(listActionsBetweenDates)).serialize();
+	}
+	
+	//
+			//System.out.println(listActionsBetweenDates.size());
 	
 	private boolean testePertenceUsuarioLogado(Long idTeste) {
 		validateComponente.validarId(idTeste);

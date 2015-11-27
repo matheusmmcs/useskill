@@ -59,7 +59,9 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/ui-bootstrap/ui-bootstrap-tpls-0.13.0.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/moment.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/datepicker/angular-datepicker.min.js"></script>
-	
+	<script src="//cdn.jsdelivr.net/angular.moment/0.6.2/angular-moment.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/ngprogress.min.js"></script>
+
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/app/app.js"></script>
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap/bootstrap-popover.js"></script>

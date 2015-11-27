@@ -38,7 +38,7 @@ public class ActionDataMiningRepository extends Repository<ActionDataMining, Lon
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<ActionDataMining> getActions(List<FieldSearch> fields, Set<ActionTypeDataMiningEnum> disregardActions, OrderSearch order){
+	public List<ActionDataMining> getActions(List<FieldSearch> fields, Set<ActionTypeDataMiningEnum> disregardActions, OrderSearch order, Long limit){
 		if(fields != null && fields.size() > 0){
 			String squery = "SELECT a FROM ActionDataMining a WHERE ";
 			int count = 0;
@@ -66,6 +66,10 @@ public class ActionDataMiningRepository extends Repository<ActionDataMining, Lon
 			if (order != null) {
 				squery += " ORDER BY a." + order.getField();
 				squery += order.isAscending() ? " ASC " : " DESC ";
+			}
+			
+			if (limit != null) {
+				squery += " LIMIT " + limit;
 			}
 			
 			System.out.println(squery);

@@ -1,5 +1,5 @@
 angular.module('useskill', 
-		['ngRoute', 'pascalprecht.translate', 'tableSort', 'chart.js', 'datePicker', 'ui.bootstrap'])
+		['ngRoute', 'pascalprecht.translate', 'tableSort', 'chart.js', 'datePicker', 'ui.bootstrap', 'angularMoment', 'ngProgress'])
 
 .constant('env', 'dev')
 //.constant('env', 'prod')
@@ -69,6 +69,15 @@ angular.module('useskill',
 	    .when('/testes/:testId/maisacessadas', {
 			controller:'TestMostAccessController as testCtrl',
 			templateUrl:config[env].apiUrl+'/templates/tests/mostaccess.html',
+			resolve: {
+		        test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
+	    })
+	    .when('/testes/:testId/sessaoespecifica', {
+			controller:'TestSpecificSessionController as testCtrl',
+			templateUrl:config[env].apiUrl+'/templates/tests/viewsession.html',
 			resolve: {
 		        test: function (ServerAPI, $route) {
 		        	return ServerAPI.getTest($route.current.params.testId);
@@ -168,47 +177,63 @@ angular.module('useskill',
     };
     return responseInterceptor;
 }])
-.factory("ServerAPI", ['$q', '$http', 'env', 'config', 
-                function($q, $http, env, config){
+.factory("ServerAPI", ['$q', '$http', 'env', 'config', 'ngProgressFactory',
+                function($q, $http, env, config, ngProgressFactory) {
+	
+	function doRequest(type, url, data) {
+		var deferred = $q.defer();
+		
+		progressbar = ngProgressFactory.createInstance();
+		progressbar.setColor('#324b6f');
+		progressbar.setHeight('2px');
+		progressbar.start();
+		
+		$http({ method: type, url: config[env].apiUrl + url}, data).then(function successCallback(response) {
+			console.log('request ok: ', response);
+			progressbar.complete();
+			deferred.resolve(response);
+		}, function errorCallback(response) {
+			console.log('request error: ', response);
+			progressbar.complete();
+			deferred.reject(response);
+		});
+		return deferred.promise;
+	};
+	
     return {
-        getTests: function(){
-            var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes'});
-            return promise;
+    	getTests: function(){
+            return doRequest('GET', '/datamining/testes');
         },
         getTest: function(testId){
-            var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId});
-            return promise;
+            return doRequest('GET', '/datamining/testes/'+testId);
         },
         priorityTest: function(testId){
-            var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId+'/priorizar'});
-            return promise;
+            return doRequest('GET', '/datamining/testes/'+testId+'/priorizar');
         },
         saveTest: function(test){
-        	var promise = $http.post(config[env].apiUrl+'/datamining/testes/salvar', test);
-        	return promise;
+        	return doRequest('POST', '/datamining/testes/salvar', test);
         },
         getTestMostAccess: function(testId, field, init, end){
-            var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId+'/maisacessados/'+field+'/init/'+init+'/end/'+end});
-            return promise;
+            return doRequest('GET', '/datamining/testes/'+testId+'/maisacessados/'+field+'/init/'+init+'/end/'+end);
         },
+        getSpecificSession: function(testId, user, local, init, end, limit){
+            return doRequest('GET', '/datamining/testes/'+testId+'/sessaoespecifica/'+user+'/local/'+local+'/init/'+init+'/end/'+end+'/limit/'+limit);
+        },
+        
         
         
         getTask: function(testId, taskId){
-            var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId+'/tarefas/'+taskId});
-            return promise;
+            return doRequest('GET', '/datamining/testes/'+testId+'/tarefas/'+taskId);
         },
         saveTask: function(task){
-        	var promise = $http.post(config[env].apiUrl+'/datamining/testes/tarefas/salvar', task);
-        	return promise;
+        	return doRequest('POST', '/datamining/testes/tarefas/salvar', task);
         },
         evaluateTask: function(testId, taskId){
-        	var promise = $http({ method: 'GET', url: config[env].apiUrl+'/datamining/testes/'+testId+'/tarefas/'+taskId+'/avaliar'});
-        	return promise;
+        	return doRequest('GET', '/datamining/testes/'+testId+'/tarefas/'+taskId+'/avaliar');
         },
         
         saveAction: function(actionJHeatVO){
-        	var promise = $http.post(config[env].apiUrl+'/datamining/testes/tarefas/acoes/salvar', actionJHeatVO);
-        	return promise;
+        	return doRequest('POST', '/datamining/testes/tarefas/acoes/salvar', actionJHeatVO);
         },
         deleteAction: function(actionJHeatVO, list){
         	var promise = $http.post(config[env].apiUrl+'/datamining/testes/tarefas/acoes/deletar', actionJHeatVO);
@@ -292,15 +317,6 @@ angular.module('useskill',
 		  }
 	};
 	
-//	testCtrl.minDate = 1425376800000;
-//	testCtrl.maxDate = 1425387600000;
-//	testCtrl.mostaccess = function(){
-//		var min, max;
-//		min = typeof testCtrl.minDate === "object" ? testCtrl.minDate._i : testCtrl.minDate;
-//		max = typeof testCtrl.maxDate === "object" ? testCtrl.maxDate._i : testCtrl.maxDate;
-//		console.log(min, max);
-//	}
-	
 	angular.forEach(testCtrl.test.tasks, function(task){
 		task.popovercontent = contentPopover(task);
 	});
@@ -327,6 +343,7 @@ angular.module('useskill',
 })
 .controller('TestMostAccessController', function($filter, test, MostAccessTypeEnum, ServerAPI) {
 	var testCtrl = this;
+	testCtrl.actionTitle = $filter('translate')('datamining.testes.featuresmostaccessed.search');
 	testCtrl.test = JSON.parse(test.data.string);
 	testCtrl.testId = testCtrl.test.id;
 	
@@ -336,7 +353,6 @@ angular.module('useskill',
 	testCtrl.actions = [];
 	testCtrl.datatypes = MostAccessTypeEnum.datatypes;
 	
-	testCtrl.actionTitle = $filter('translate')('datamining.testes.featuresmostaccessed.search');
 	testCtrl.mostaccess = function() {
 		testCtrl.minDate = typeof testCtrl.minDate === "object" ? testCtrl.minDate._i : testCtrl.minDate;
 		testCtrl.maxDate = typeof testCtrl.maxDate === "object" ? testCtrl.maxDate._i : testCtrl.maxDate;
@@ -352,6 +368,30 @@ angular.module('useskill',
 		}
 	}
 	
+})
+.controller('TestSpecificSessionController', function($filter, test, MostAccessTypeEnum, ServerAPI) {
+	var testCtrl = this;
+	testCtrl.actionTitle = $filter('translate')('datamining.testes.specificsession.search');
+	testCtrl.test = JSON.parse(test.data.string);
+	testCtrl.testId = testCtrl.test.id;
+	
+	testCtrl.minDate = new Date().getTime();
+	testCtrl.maxDate = new Date().getTime();
+	
+	testCtrl.actions = [];
+	testCtrl.specificSession = function() {
+		testCtrl.minDate = typeof testCtrl.minDate === "object" ? testCtrl.minDate._i : testCtrl.minDate;
+		testCtrl.maxDate = typeof testCtrl.maxDate === "object" ? testCtrl.maxDate._i : testCtrl.maxDate;
+		
+		console.log(testCtrl.testId, testCtrl.username, testCtrl.minDate, testCtrl.maxDate, testCtrl.limit);
+		ServerAPI.getSpecificSession(testCtrl.testId, testCtrl.username, testCtrl.local, testCtrl.minDate, testCtrl.maxDate, testCtrl.limit).then(function(data){
+			testCtrl.actions = JSON.parse(data.data.string);
+			console.log(testCtrl.actions);
+		}, function(data){
+			console.log(data);
+		});
+	}
+	//getSpecificSession
 })
 .controller('TestNewController', function($filter, ServerAPI) {
 	var testCtrl = this;
