@@ -14,6 +14,7 @@
 	
 	"description": "Descrição",
 	"count": "Count",
+	"id": "ID",
 	
 	"sTime":"Hora",
 	"sActionType":"Ação",
@@ -53,11 +54,20 @@
 	
 	"datamining.testes.analyzes" : "Analisar Dados do Teste",
 	"datamining.testes.tasks" : "Tarefas do Teste",
+	"datamining.testes.tasks.crud" : "Gestão das Tarefas do Teste",
+	
+	"datamining.testes.evaluation" : "Análise de Tarefas",
+	"datamining.testes.evaluations" : "Analisar Tarefas (Janelas Temporais)",
+	"datamining.testes.evaluations.availables" : "Janelas Temporais Disponíveis",
+	"datamining.testes.evaluations.newdates" : "Criar Janela Temporal para Avaliar Tarefas",
+	"datamining.testes.evaluations.newdates.alreadyexists" : "Janela Temporal informada já está disponível!",
+	
 	"datamining.testes.featuresmostaccessed" : "Funcionalidades Mais Utilizadas",
 	"datamining.testes.featuresmostaccessed.list" : "Lista das Funcionalidades",
 	"datamining.testes.featuresmostaccessed.search" : "Buscar Funcionalidades Mais Utilizadas",
 	"datamining.testes.featuresmostaccessed.datafield" : "Campo Base da Busca",
 	"datamining.testes.featuresmostaccessed.datafield.select" : "- Selecione o Campo Base -",
+	
 	"datamining.testes.specificsession" : "Visualizar Sessão Específica",
 	"datamining.testes.specificsession.search" : "Buscar Sessão Específica",
 	"datamining.testes.specificsession.limit" : "Máximo de Ações Retornadas",

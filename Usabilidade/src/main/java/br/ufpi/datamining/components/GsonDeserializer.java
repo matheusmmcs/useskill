@@ -1,8 +1,17 @@
 package br.ufpi.datamining.components;
 
 import java.io.InputStream;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 import br.com.caelum.vraptor.deserialization.Deserializer;
 import br.com.caelum.vraptor.deserialization.Deserializes;
@@ -17,17 +26,24 @@ public class GsonDeserializer implements Deserializer {
 	public Object[] deserialize(InputStream inputStream, ResourceMethod method) {
 		// TODO Auto-generated method stub
 		Class<?>[] parameterTypes = method.getMethod().getParameterTypes();
+		
 		System.out.println("Parametros: "+parameterTypes);
 		
 		if(parameterTypes.length > 0){
 			String streamString = convertStreamToString(inputStream);
 			Gson gson = new Gson();
-			Object fromJson = gson.fromJson(streamString, parameterTypes[0]);
 			
-			System.out.println("streamString: "+streamString);
-			System.out.println("fromJson: "+fromJson);
+			Object[] result = new Object[parameterTypes.length];
+			int count = 0;
 			
-			return new Object[]{fromJson};
+			JsonObject jsonObject = new JsonParser().parse(streamString).getAsJsonObject();
+			Set<Map.Entry<String,JsonElement>> entrySet = jsonObject.entrySet();
+			for (Map.Entry<String,JsonElement> entry : entrySet) {
+				JsonElement jsonElement = jsonObject.get(entry.getKey());
+				result[count] = gson.fromJson(jsonElement, parameterTypes[count]);
+				count++;
+			}
+			return result;
 		}
 		
 		return null;
@@ -42,13 +58,36 @@ public class GsonDeserializer implements Deserializer {
 	
 	public static void main(String[] args) { 
 		Gson gson = new Gson();
-		String streamString = "{\"title\":\"qwe\",\"clientAbbreviation\":\"asd\",\"urlSystem\":\"zxc\"}";
+		String streamString = "{\"id\":123, \"obj\": {\"title\":\"qwe\",\"clientAbbreviation\":\"asd\",\"urlSystem\":\"zxc\"}}";
 		TestDataMining fromJson = gson.fromJson(streamString, TestDataMining.class);
-		System.out.println(fromJson.getTitle());
 		
-		streamString = "{\"actionType\":\"form_submit\"}";
-		ActionSingleDataMining action = gson.fromJson(streamString, ActionSingleDataMining.class);
-		System.out.println(action.getActionType());
+		
+		Class<?>[] parameterTypes = new Class<?>[]{Long.class, TestDataMining.class};
+		Object[] result = new Object[parameterTypes.length];
+		int count = 0;
+		
+		JsonObject jsonObject = new JsonParser().parse(streamString).getAsJsonObject();
+		Set<Map.Entry<String,JsonElement>> entrySet = jsonObject.entrySet();
+		for (Map.Entry<String,JsonElement> entry : entrySet) {
+			JsonElement jsonElement = jsonObject.get(entry.getKey());
+			result[count] = gson.fromJson(jsonElement, parameterTypes[count]);
+			count++;
+		}
+		
+		
+		
+//		Type typeMap = new TypeToken<HashMap<String, Object>>(){}.getType();
+//		HashMap<String, Object> map = gson.fromJson(streamString, typeMap);
+//		Set<String> keySet = map.keySet();
+//		
+//		for (String key : keySet) {
+//			System.out.println(key);
+//			System.out.println(map.get(key));
+//		}
+		
+//		streamString = "{\"actionType\":\"form_submit\"}";
+//		ActionSingleDataMining action = gson.fromJson(streamString, ActionSingleDataMining.class);
+//		System.out.println(action.getActionType());
 		
 	}
 	

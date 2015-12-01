@@ -318,6 +318,7 @@ ul.horizontal{
 
 @color-principal:			#426392;
 @color-principal-hover:		#264879;
+@color-principal-active:	#0C2F61;
 
 .container-padding-left{
 	padding-left: 20px;
@@ -430,13 +431,12 @@ ul.horizontal{
 	&clickable-box{
 		display: block;
 		box-sizing: border-box;
-		cursor: pointer;
 		width: 100%;
 		min-height: 40px;
 		margin: 5px 0;
 		text-decoration: none;
 		
-		background-color: #f8f8f8;
+		background-color: #f4f4f4;
 		padding: 10px;
 		border-radius: 5px;
 		border: 1px solid #becde2;
@@ -445,16 +445,38 @@ ul.horizontal{
 		
 		color: @color-principal;
 		
-		&:hover {
+		&:hover,  &--active {
 			text-decoration: none;
-			background-color: white;
-			box-shadow: 1px 2px 5px #becde2;
 			color: @color-principal-hover;
+		}
+		
+		&:hover {
+			background-color: #f9f9f9;
+			box-shadow: 1px 2px 5px #becde2;
+		}
+		
+		&--active {
+			background-color: white !important;
+			box-shadow: 0px 3px 10px #becde2;
 		}
 		
 		h2{
 			font-size: 16px;
 			line-height: 40px;
+			
+			&.usdm-title-collapse {
+				cursor: pointer;
+			}
+		}
+		
+		&-content {
+			padding-top: 10px;
+			border-top: 1px solid #ccc;
+		}
+		
+		&-form-lite {
+			border: none;
+    		box-shadow: none;
 		}
 	}
 }
@@ -513,31 +535,3 @@ a[ng-click]{
     cursor: pointer;
 }
 
-/* Styling for the ngProgress itself */
-#ngProgress {
-    margin: 0;
-    padding: 0;
-    z-index: 99998;
-    background-color: green;
-    color: green;
-    box-shadow: 0 0 10px 0; /* Inherits the font color */
-    height: 2px;
-    opacity: 0;
-
-    /* Add CSS3 styles for transition smoothing */
-    -webkit-transition: all 0.5s ease-in-out;
-    -moz-transition: all 0.5s ease-in-out;
-    -o-transition: all 0.5s ease-in-out;
-    transition: all 0.5s ease-in-out;
-}
-
-/* Styling for the ngProgress-container */
-#ngProgress-container {
-    position: fixed;
-    margin: 0;
-    padding: 0;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 99999;
-}

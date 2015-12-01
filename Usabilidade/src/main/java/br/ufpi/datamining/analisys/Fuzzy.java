@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Map.Entry;
 
 import br.ufpi.datamining.analisys.fuzzy.FuzzyCMeansAlgorithm;
 import br.ufpi.datamining.analisys.fuzzy.Point;
+import br.ufpi.datamining.models.EvaluationTaskDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.aux.SessionResultDataMining;
 import br.ufpi.datamining.models.aux.UserResultDataMining;
@@ -407,26 +409,27 @@ public class Fuzzy {
 	
 	/* FUZZY CMEANS - RESULTADOS DAS TAREFAS */
 	
-	public static void executeFuzzySystemWithFCMTasks(List<TaskDataMining> tasks, boolean debug) {
-		FIS fis = createMembershipFunctionsWithFCMTasks(tasks, FCL_EftEfcSes_CMEANS);
+	public static void executeFuzzySystemWithFCMTasks(List<TaskDataMining> tasks, Date init, Date end, boolean debug) {
+		FIS fis = createMembershipFunctionsWithFCMTasks(tasks, init, end, FCL_EftEfcSes_CMEANS);
 		
 		for(TaskDataMining t : tasks){
-			if(t.getEvalEffectivenessNormalized() == null || t.getEvalEfficiencyNormalized() == null || t.getEvalCountSessionsNormalized() == null){
-				t.setEvalFuzzyPriority(0d);
+			EvaluationTaskDataMining e = t.getEvaluationBetweenDates(init, end);
+			if(e.getEvalEffectivenessNormalized() == null || e.getEvalEfficiencyNormalized() == null || e.getEvalCountSessionsNormalized() == null){
+				e.setEvalFuzzyPriority(0d);
 				continue;
 			}
 			
 			/* Set inputs [Importance x Coupling x Complexity] of the class */
-			fis.setVariable("efficiency", (1-t.getEvalEfficiencyNormalized()));
-			fis.setVariable("effectiveness", (1-t.getEvalEffectivenessNormalized()));
-			fis.setVariable("sessions", t.getEvalCountSessionsNormalized());
+			fis.setVariable("efficiency", (1-e.getEvalEfficiencyNormalized()));
+			fis.setVariable("effectiveness", (1-e.getEvalEffectivenessNormalized()));
+			fis.setVariable("sessions", e.getEvalCountSessionsNormalized());
 			
 			/* Evaluate */
 	        fis.evaluate();
 	        double defuzzifiedValue = fis.getVariable("priority").getLatestDefuzzifiedValue();
-	        t.setEvalFuzzyPriority(defuzzifiedValue);
+	        e.setEvalFuzzyPriority(defuzzifiedValue);
 	        
-	        System.out.println(t.getTitle() + " -> (" + t.getEvalEfficiency() + ", " + t.getEvalEffectiveness() + ", " + t.getEvalCountSessions() + ") = " + t.getEvalFuzzyPriority());
+	        System.out.println(t.getTitle() + " -> (" + e.getEvalEfficiency() + ", " + e.getEvalEffectiveness() + ", " + e.getEvalCountSessions() + ") = " + e.getEvalFuzzyPriority());
 		}
 		
 		/* Just for debug: Show chart*/ 
@@ -435,7 +438,7 @@ public class Fuzzy {
 		}
 	}
 	
-	public static FIS createMembershipFunctionsWithFCMTasks(List<TaskDataMining> tasks, String fclPath){
+	public static FIS createMembershipFunctionsWithFCMTasks(List<TaskDataMining> tasks, Date init, Date end, String fclPath){
 		//Fuzzy CMeans
 		ArrayList<Point> efficiencyPoints = new ArrayList<Point>(), 
 				effectivenessPoints = new ArrayList<Point>(), 
@@ -443,13 +446,14 @@ public class Fuzzy {
 		
 		long globalCount = 1l;
 		for(TaskDataMining t : tasks){
-			if(t.getEvalEffectivenessNormalized() == null || t.getEvalEfficiencyNormalized() == null || t.getEvalCountSessionsNormalized() == null){
+			EvaluationTaskDataMining e = t.getEvaluationBetweenDates(init, end);
+			if(e.getEvalEffectivenessNormalized() == null || e.getEvalEfficiencyNormalized() == null || e.getEvalCountSessionsNormalized() == null){
 				continue;
 			}
 			
-			efficiencyPoints.add(new Point(globalCount++, (1-t.getEvalEfficiencyNormalized()), 1.0));
-			effectivenessPoints.add(new Point(globalCount++, (1-t.getEvalEffectivenessNormalized()), 1.0));
-			sessionsPoints.add(new Point(globalCount++, t.getEvalCountSessionsNormalized(), 1.0));
+			efficiencyPoints.add(new Point(globalCount++, (1-e.getEvalEfficiencyNormalized()), 1.0));
+			effectivenessPoints.add(new Point(globalCount++, (1-e.getEvalEffectivenessNormalized()), 1.0));
+			sessionsPoints.add(new Point(globalCount++, e.getEvalCountSessionsNormalized(), 1.0));
 		}
 		
 		/* Execute FCM Algorithm: actions variable */

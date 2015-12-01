@@ -19,6 +19,7 @@ import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.FieldSearchTupleDataMining;
 import br.ufpi.datamining.models.PageViewActionDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
+import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.aux.CorrectnessTask;
 import br.ufpi.datamining.models.aux.CountActionsAux;
 import br.ufpi.datamining.models.aux.FieldSearch;
@@ -31,6 +32,7 @@ import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
+import br.ufpi.datamining.repositories.TestDataMiningRepository;
 import br.ufpi.datamining.utils.EntityDefaultManagerUtil;
 import br.ufpi.datamining.utils.EntityManagerUtil;
 import br.ufpi.datamining.utils.StatisticsUtils;
@@ -595,9 +597,9 @@ public class WebUsageMining {
 		return result;
 	}
 	
-	public static List<CountActionsAux> countActionsByRestrictions(Long taskId, FieldSearch fieldGroup, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository, Date initialDate, Date finalDate) {
-		TaskDataMining taskDataMining = taskDataMiningRepository.find(taskId);
-		String clientAbbreviation = taskDataMining.getTestDataMining().getClientAbbreviation();
+	public static List<CountActionsAux> countActionsByRestrictions(Long taskId, FieldSearch fieldGroup, TestDataMiningRepository testDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository, Date initialDate, Date finalDate) {
+		TestDataMining taskDataMining = testDataMiningRepository.find(taskId);
+		String clientAbbreviation = taskDataMining.getClientAbbreviation();
 		
 		List<FieldSearch> fieldsSearch = new ArrayList<FieldSearch>();
 		fieldsSearch.add(new FieldSearch("sClient", "sClient", clientAbbreviation, FieldSearchComparatorEnum.EQUALS));

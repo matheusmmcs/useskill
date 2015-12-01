@@ -14,6 +14,7 @@
 	<link href="${pageContext.request.contextPath}/css/tablesort.css" rel="stylesheet" type="text/css" />
 	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/angular-chart/angular-chart.css" rel="stylesheet" type="text/css" />
 	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/datepicker/angular-datepicker.min.css" rel="stylesheet" type="text/css" />
+	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/loading/loading-bar.min.css" rel="stylesheet" type="text/css" />
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.js"></script>
 	<script src="${pageContext.request.contextPath}/jscripts/libs/less-1.3.0.min.js"></script>
@@ -21,13 +22,13 @@
 	
 	<decorator:head />
 </head>
-<body>
+<body ng-app="useskill">
 	
 	<%@include file="topo.jsp"%>
 	<div class="container">
 		<div class="row container-row">
 		
-			<div ng-app="useskill" class="useskill-datamining">
+			<div class="useskill-datamining">
 				<div ng-view></div>
 				<%-- <decorator:body /> --%>
 			</div>
@@ -50,6 +51,7 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/plugin/chart/Chart.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap/bootstrap.min.js"></script>
 	
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-animate.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-resource.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-route.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-translate.min.js"></script>
@@ -60,7 +62,7 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/moment.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/datepicker/angular-datepicker.min.js"></script>
 	<script src="//cdn.jsdelivr.net/angular.moment/0.6.2/angular-moment.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/ngprogress.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/loading/loading-bar.min.js"></script>
 
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/app/app.js"></script>
 	

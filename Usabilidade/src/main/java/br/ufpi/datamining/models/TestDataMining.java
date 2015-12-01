@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -35,6 +36,8 @@ public class TestDataMining implements Serializable {
 	private List<TaskDataMining> tasks;
 	private List<Usuario> users;
 	private Usuario userCreated;
+	private List<EvaluationTestDataMining> evaluations;
+	
 
 	@Id  
 	@GeneratedValue
@@ -96,6 +99,15 @@ public class TestDataMining implements Serializable {
 
 	public void setUserCreated(Usuario userCreated) {
 		this.userCreated = userCreated;
+	}
+	
+	@OneToMany(mappedBy="test", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	public List<EvaluationTestDataMining> getEvaluations() {
+		return evaluations;
+	}
+
+	public void setEvaluations(List<EvaluationTestDataMining> evaluations) {
+		this.evaluations = evaluations;
 	}
 		
 }

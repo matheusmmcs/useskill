@@ -17,6 +17,8 @@ import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
 import br.ufpi.datamining.analisys.WebUsageMining;
+import br.ufpi.datamining.models.EvaluationTaskDataMining;
+import br.ufpi.datamining.models.EvaluationTestDataMining;
 import br.ufpi.datamining.models.FieldSearchTupleDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
@@ -25,6 +27,8 @@ import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.vo.ReturnVO;
 import br.ufpi.datamining.models.vo.TaskDataMiningVO;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
+import br.ufpi.datamining.repositories.EvaluationTaskDataMiningRepository;
+import br.ufpi.datamining.repositories.EvaluationTestDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.repositories.TestDataMiningRepository;
 import br.ufpi.models.Usuario;
@@ -41,6 +45,8 @@ public class DataMiningTaskController extends BaseController {
 	private final TestDataMiningRepository testeDataMiningRepository;
 	private final TaskDataMiningRepository taskDataMiningRepository;
 	private final ActionDataMiningRepository actionDataMiningRepository;
+	private final EvaluationTaskDataMiningRepository evaluationTaskDataMiningRepository;
+	private final EvaluationTestDataMiningRepository evaluationTestDataMiningRepository;
 	
 	private final Localization localization;
 	
@@ -50,11 +56,15 @@ public class DataMiningTaskController extends BaseController {
 			Localization localization,
 			TestDataMiningRepository testeDataMiningRepository,
 			TaskDataMiningRepository taskDataMiningRepository,
-			ActionDataMiningRepository actionDataMiningRepository) {
+			ActionDataMiningRepository actionDataMiningRepository,
+			EvaluationTaskDataMiningRepository evaluationTaskDataMiningRepository,
+			EvaluationTestDataMiningRepository evaluationTestDataMiningRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.testeDataMiningRepository = testeDataMiningRepository;
 		this.taskDataMiningRepository = taskDataMiningRepository;
 		this.actionDataMiningRepository = actionDataMiningRepository;
+		this.evaluationTaskDataMiningRepository = evaluationTaskDataMiningRepository;
+		this.evaluationTestDataMiningRepository = evaluationTestDataMiningRepository;
 		this.localization = localization;
 	}
 	
@@ -64,7 +74,7 @@ public class DataMiningTaskController extends BaseController {
 		Gson gson = new GsonBuilder()
 	        .setExclusionStrategies(new ExclusionStrategy() {
 	            public boolean shouldSkipClass(Class<?> clazz) {
-	                return (clazz == TaskDataMining.class || clazz == Usuario.class);
+	                return (clazz == TaskDataMining.class || clazz == Usuario.class || clazz == EvaluationTestDataMining.class);
 	            }
 
 	            public boolean shouldSkipField(FieldAttributes f) {
@@ -121,33 +131,55 @@ public class DataMiningTaskController extends BaseController {
 		}
 	}
 	
-	@Get("/testes/{idTeste}/tarefas/{idTarefa}/avaliar")
+	@Get("/testes/{idTeste}/tarefas/{idTarefa}/avaliar/{idEvaluationTest}")
 	@Logado
-	public void avaliar(Long idTeste, Long idTarefa) {
+	public void avaliar(Long idTeste, Long idTarefa, Long idEvaluationTest) {
 		Gson gson = new Gson();
 		try {
 			ResultDataMining resultDataMining = WebUsageMining.analyze(idTarefa, taskDataMiningRepository, actionDataMiningRepository);
 			
 			//persist results
 			TaskDataMining taskDataMining = taskDataMiningRepository.find(idTarefa);
-			taskDataMining.setEvalLastDate(new Date());
-			taskDataMining.setEvalCountSessions(resultDataMining.getCountSessions());
-			taskDataMining.setEvalMeanActions(resultDataMining.getActionsAverageOk());
-			taskDataMining.setEvalMeanTimes(resultDataMining.getTimesAverageOk());
-			taskDataMining.setEvalMeanCompletion(resultDataMining.getRateSuccess());
-			taskDataMining.setEvalMeanCorrectness(resultDataMining.getRateRequired());
+			EvaluationTestDataMining evaluationTest = evaluationTestDataMiningRepository.find(idEvaluationTest);
 			
-			taskDataMining.setEvalZScoreActions((resultDataMining.getMaxActionsOk() - resultDataMining.getMeanActionsOk()) / resultDataMining.getStdDevActionsOk());
-			taskDataMining.setEvalZScoreTime((resultDataMining.getMaxTimesOk() - resultDataMining.getMeanTimesOk()) / resultDataMining.getStdDevTimesOk());
+			EvaluationTaskDataMining evaluation = taskDataMining.getEvaluationFromEvalTest(idEvaluationTest);
+			boolean newEvaluation = evaluation == null ? true : false;
 			
-			taskDataMining.setEvalEffectiveness((taskDataMining.getEvalMeanCompletion() * taskDataMining.getEvalMeanCorrectness()) / 100);
-			taskDataMining.setEvalEfficiency(taskDataMining.getEvalEffectiveness() / (taskDataMining.getEvalZScoreActions() * taskDataMining.getEvalZScoreTime()));
+			if (evaluation == null) {
+				evaluation = new EvaluationTaskDataMining();
+			}
 			
-			System.out.println(taskDataMining.getEvalEffectiveness() / (taskDataMining.getEvalZScoreTime()));
-			System.out.println(taskDataMining.getEvalEffectiveness() / (taskDataMining.getEvalZScoreActions() * taskDataMining.getEvalZScoreTime()));
-			System.out.println(taskDataMining.getEvalEffectiveness() / ((taskDataMining.getEvalZScoreActions() + taskDataMining.getEvalZScoreTime()) / 2));
+			evaluation.setEvalLastDate(new Date());
+			evaluation.setEvalCountSessions(resultDataMining.getCountSessions());
+			evaluation.setEvalMeanActions(resultDataMining.getActionsAverageOk());
+			evaluation.setEvalMeanTimes(resultDataMining.getTimesAverageOk());
+			evaluation.setEvalMeanCompletion(resultDataMining.getRateSuccess());
+			evaluation.setEvalMeanCorrectness(resultDataMining.getRateRequired());
 			
-			taskDataMiningRepository.update(taskDataMining);
+			evaluation.setEvalZScoreActions((resultDataMining.getMaxActionsOk() - resultDataMining.getMeanActionsOk()) / resultDataMining.getStdDevActionsOk());
+			evaluation.setEvalZScoreTime((resultDataMining.getMaxTimesOk() - resultDataMining.getMeanTimesOk()) / resultDataMining.getStdDevTimesOk());
+			
+			evaluation.setEvalEffectiveness((evaluation.getEvalMeanCompletion() * evaluation.getEvalMeanCorrectness()) / 100);
+			evaluation.setEvalEfficiency(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime()));
+			
+			System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreTime()));
+			System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime()));
+			System.out.println(evaluation.getEvalEffectiveness() / ((evaluation.getEvalZScoreActions() + evaluation.getEvalZScoreTime()) / 2));
+			
+			if (newEvaluation) {
+				evaluationTaskDataMiningRepository.create(evaluation);
+				
+				taskDataMining.getEvaluations().add(evaluation);
+				taskDataMiningRepository.update(taskDataMining);
+				
+				evaluationTest.getEvaluationsTask().add(evaluation);
+				evaluationTestDataMiningRepository.update(evaluationTest);
+				
+				System.out.println("Nova avaliação cadastrada!");
+			} else {
+				evaluationTaskDataMiningRepository.update(evaluation);
+				System.out.println("Avaliação atualizada!");
+			}
 			
 			result.use(Results.json()).from(gson.toJson(resultDataMining)).serialize();
 		} catch (Exception e) {

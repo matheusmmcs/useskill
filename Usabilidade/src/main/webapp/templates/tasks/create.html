@@ -20,6 +20,12 @@
 				</a>
 				<span class="divider">/</span>
 			</li>
+			<li ng-show="taskCtrl.test.id">
+				<a ng-href="#/testes/{{taskCtrl.test.id}}/tarefas"> 
+					{{ 'datamining.testes.evaluation' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
 			<li class="active">{{ taskCtrl.actionTitle }}</li>
 		</ul>
 		

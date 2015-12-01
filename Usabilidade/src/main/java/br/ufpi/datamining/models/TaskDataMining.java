@@ -18,8 +18,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CollectionOfElements;
 
@@ -41,23 +39,9 @@ public class TaskDataMining implements Serializable {
 	private List<ActionSingleDataMining> actionsEnd;	
 	private List<ActionSingleDataMining> actionsRequired;
 	
-	private TestDataMining testDataMining;
+	private List<EvaluationTaskDataMining> evaluations;
 	
-	//Evaluations Data
-	private Date evalLastDate;
-	private Double evalMeanActions;
-	private Double evalMeanTimes;
-	private Double evalMeanCompletion;
-	private Double evalMeanCorrectness;
-	private Double evalZScoreActions;
-	private Double evalZScoreTime;
-	private Double evalEfficiency;
-	private Double evalEffectiveness;
-	private Double evalEfficiencyNormalized;
-	private Double evalEffectivenessNormalized;
-	private Double evalFuzzyPriority;
-	private Integer evalCountSessions;
-	private Double evalCountSessionsNormalized;
+	private TestDataMining testDataMining;
 	
 	
 	@Id  
@@ -121,10 +105,10 @@ public class TaskDataMining implements Serializable {
 	public List<ActionSingleDataMining> getActionsRequired() {
 		return actionsRequired;
 	}
-	
 	public void setActionsRequired(List<ActionSingleDataMining> actionsRequired) {
 		this.actionsRequired = actionsRequired;
 	}
+	
 	public String getActionsRequiredOrder() {
 		return actionsRequiredOrder;
 	}
@@ -139,102 +123,37 @@ public class TaskDataMining implements Serializable {
 	public Set<ActionTypeDataMiningEnum> getDisregardActions() {
 		return disregardActions;
 	}
-	
 	public void setDisregardActions(Set<ActionTypeDataMiningEnum> disregardActions) {
 		this.disregardActions = disregardActions;
 	}
 	
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getEvalLastDate() {
-		return evalLastDate;
+	
+	@OneToMany(mappedBy="taskDataMining", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	public List<EvaluationTaskDataMining> getEvaluations() {
+		return evaluations;
 	}
-	public void setEvalLastDate(Date evalLastDate) {
-		this.evalLastDate = evalLastDate;
+	public void setEvaluations(List<EvaluationTaskDataMining> evaluations) {
+		this.evaluations = evaluations;
 	}
 	
-	public Double getEvalMeanActions() {
-		return evalMeanActions;
-	}
-	public void setEvalMeanActions(Double evalMeanActions) {
-		this.evalMeanActions = evalMeanActions;
-	}
-	
-	public Double getEvalMeanTimes() {
-		return evalMeanTimes;
-	}
-	public void setEvalMeanTimes(Double evalMeanTimes) {
-		this.evalMeanTimes = evalMeanTimes;
+	public EvaluationTaskDataMining getEvaluationFromEvalTest(Long idEvaluationTest) {
+		for (EvaluationTaskDataMining evTask : evaluations) {
+			if (evTask.getEvaluationTest().getId().equals(idEvaluationTest)) {
+				return evTask;
+			}
+		}
+		return null;
 	}
 	
-	public Double getEvalMeanCompletion() {
-		return evalMeanCompletion;
-	}
-	public void setEvalMeanCompletion(Double evalMeanCompletion) {
-		this.evalMeanCompletion = evalMeanCompletion;
-	}
-	
-	public Double getEvalMeanCorrectness() {
-		return evalMeanCorrectness;
-	}
-	public void setEvalMeanCorrectness(Double evalMeanCorrectness) {
-		this.evalMeanCorrectness = evalMeanCorrectness;
+	public EvaluationTaskDataMining getEvaluationBetweenDates(Date init, Date end) {
+		for (EvaluationTaskDataMining evTask : evaluations) {
+			EvaluationTestDataMining e = evTask.getEvaluationTest();
+			if (e.getInitDate().compareTo(init) == 0 && e.getLastDate().compareTo(end) == 0 ) {
+				return evTask;
+			}
+		}
+		return null;
 	}
 	
-	public Integer getEvalCountSessions() {
-		return evalCountSessions;
-	}
-	public void setEvalCountSessions(Integer evalCountSessions) {
-		this.evalCountSessions = evalCountSessions;
-	}
-	public Double getEvalZScoreActions() {
-		return evalZScoreActions;
-	}
-	public void setEvalZScoreActions(Double evalZScoreActions) {
-		this.evalZScoreActions = evalZScoreActions;
-	}
-	public Double getEvalZScoreTime() {
-		return evalZScoreTime;
-	}
-	public void setEvalZScoreTime(Double evalZScoreTime) {
-		this.evalZScoreTime = evalZScoreTime;
-	}
-	public Double getEvalEfficiency() {
-		return evalEfficiency;
-	}
-	public void setEvalEfficiency(Double evalEfficiency) {
-		this.evalEfficiency = evalEfficiency;
-	}
-	public Double getEvalEffectiveness() {
-		return evalEffectiveness;
-	}
-	public void setEvalEffectiveness(Double evalEffectiveness) {
-		this.evalEffectiveness = evalEffectiveness;
-	}
-	public Double getEvalFuzzyPriority() {
-		return evalFuzzyPriority;
-	}
-	public void setEvalFuzzyPriority(Double evalFuzzyPriority) {
-		this.evalFuzzyPriority = evalFuzzyPriority;
-	}
-	public Double getEvalEfficiencyNormalized() {
-		return evalEfficiencyNormalized;
-	}
-	public void setEvalEfficiencyNormalized(Double evalEfficiencyNormalized) {
-		this.evalEfficiencyNormalized = evalEfficiencyNormalized;
-	}
-	public Double getEvalEffectivenessNormalized() {
-		return evalEffectivenessNormalized;
-	}
-	public void setEvalEffectivenessNormalized(
-			Double evalEffectivenessNormalized) {
-		this.evalEffectivenessNormalized = evalEffectivenessNormalized;
-	}
-	public Double getEvalCountSessionsNormalized() {
-		return evalCountSessionsNormalized;
-	}
-	public void setEvalCountSessionsNormalized(
-			Double evalCountSessionsNormalized) {
-		this.evalCountSessionsNormalized = evalCountSessionsNormalized;
-	}
 		
 }

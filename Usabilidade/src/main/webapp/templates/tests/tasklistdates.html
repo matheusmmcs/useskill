@@ -1,0 +1,155 @@
+<div class="container-padding-left">
+	
+		<ul class="breadcrumb">
+			<li>
+				<a ng-href="/"> 
+					{{ 'inicio' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li>
+				<a ng-href="#/testes/"> 
+					{{ 'datamining' | translate}} - {{ 'datamining.testes.list' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li>
+				<a ng-href="#/testes/{{testCtrl.test.id}}"> 
+					{{ 'datamining.testes.details' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li class="active">{{ 'datamining.testes.evaluation' | translate}}</li>
+		</ul>
+		<div ng-show="success" class="alert alert-success">
+			{{ success }}<br />
+		</div>
+		<div ng-show="errors" class="alert alert-error">
+			<span ng-repeat="error in errors">
+				{{ error }}<br />
+			</span>
+		</div>
+	    
+		<div class="row show-grid">
+		    <div class="span4">
+		    	<div class="usdm-box">
+		    		<h2 class="usdm-box-header">
+			    		{{ 'datamining.testes.details' | translate}}
+		            </h2>
+		            
+		            <div class="usdm-box-body">
+			            <dl>
+			            	<dt>{{ 'datamining.testes.title' | translate}}:</dt>
+			            	<dd>
+			            		{{testCtrl.test.title}}
+			            		<a class="btn pull-right" ng-href="#/testes/editar/{{testCtrl.test.id}}" title="{{ 'datamining.edit' | translate}}"><span class="icon-edit"></span> {{ 'datamining.edit' | translate }}</a>
+			            		<div class="clear-both"></div>
+			            	</dd>
+			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.testes.abbrev' | translate}}:</dt>
+			            	<dd>{{testCtrl.test.clientAbbreviation}}</dd>
+			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.testes.url' | translate}}:</dt>
+			            	<dd>{{testCtrl.test.urlSystem}}</dd>
+			            </dl>
+			            
+			            <dl>
+			            	<dt>{{ 'datamining.priority' | translate}}:</dt>
+			            	<dd>
+			            		<div class="clear-both"></div>
+							</dd>
+			            </dl>
+			            
+		            </div>
+		    	</div>
+		    </div>
+	        <div class="span8">
+	        	
+	        	<!-- TASKS CRUD -->
+	        	<div class="usdm-clickable-box" ng-class="{'usdm-clickable-box--active': testCtrl.showTasks}">
+	            	<h2 class="usdm-title-collapse" ng-click="testCtrl.showTasks =! testCtrl.showTasks">
+	            		{{ 'datamining.testes.tasks.crud' | translate}}
+	            	</h2>
+	            	<div class="usdm-clickable-box-content usdm-animate-show-hide" ng-show="testCtrl.showTasks">
+		            	<h2>
+			            	{{ 'datamining.testes.tasks' | translate}}
+				            <a class="btn btn-primary pull-right" ng-href="#/testes/{{testCtrl.test.id}}/tarefas/criar">{{ 'datamining.tasks.new' | translate}}</a> 
+			            </h2>
+			            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" style="background-color: white" ts-wrapper>
+			                <thead>
+			                    <tr>
+			                        <th ts-criteria="title|lowercase">{{ 'datamining.tasks.title' | translate }}</th>
+			                    </tr>
+			                </thead>
+			                <tbody>
+		                        <tr ng-repeat="task in testCtrl.test.tasks | orderBy:'id'">
+		                            <td class="td-link"><a ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}">{{task.title}}</a></td>
+		                        </tr>
+			                </tbody>
+			            </table>
+	            	</div>
+	            </div>
+	            
+	            <!-- TASKS EVALUATIONS -->
+	            <div class="usdm-clickable-box" ng-class="{'usdm-clickable-box--active': testCtrl.showEvaluations}">
+	            	<h2 class="usdm-title-collapse" ng-click="testCtrl.showEvaluations =! testCtrl.showEvaluations">
+	            		{{ 'datamining.testes.evaluations' | translate}}
+	            	</h2>
+	            	<div class="usdm-clickable-box-content usdm-animate-show-hide" ng-show="testCtrl.showEvaluations">
+		        		<form name="myForm" class="usdm-clickable-box-form-lite form-layout">
+							<fieldset>
+								<div class="row-fluid">
+									<div class="control-group span6">
+						            	<label class="control-label" for="pickerMinSelector">{{ 'date.initial' | translate}}:*</label>
+						            	<div class="controls">
+						                	<input placeholder="{{ 'date.initial' | translate}}" date-time ng-model="testCtrl.minDate" id="pickerMinSelector" date-change="testCtrl.changeMinMax" max-date="testCtrl.maxDate" view="date" format="DD/MM/YYYY HH:mm" /> 
+						            	</div>
+						        	</div>
+						        	
+						        	<div class="control-group span6">
+						            	<label class="control-label" for="pickerMaxSelector">{{ 'date.end' | translate}}:*</label>
+						            	<div class="controls">
+						                	<input placeholder="{{ 'date.end' | translate}}" date-time ng-model="testCtrl.maxDate" id="pickerMaxSelector" date-change="testCtrl.changeMinMax" min-date="testCtrl.minDate" view="date" format="DD/MM/YYYY HH:mm" /> 
+						            	</div>
+						        	</div>
+								</div>
+					        	<div class="form-actions">
+					            	<button ng-click="testCtrl.createDates()"  class="btn btn-primary pull-right submit">{{ 'datamining.testes.evaluations.newdates' | translate }}</button>
+					        	</div>
+							</fieldset>
+						</form>
+						
+		        		<h2>
+			            	{{ 'datamining.testes.evaluations.availables' | translate}}
+			            </h2>
+			            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" style="background-color: white" ts-wrapper>
+			                <thead>
+			                    <tr>
+			                        <th ts-criteria="initDate" ts-default="descending">{{ 'date.initial' | translate }}</th>
+			                        <th ts-criteria="lastDate">{{ 'date.end' | translate }}</th>
+			                        <th>{{ 'datamining.options' | translate }}</th>
+			                    </tr>
+			                </thead>
+			                <tbody>
+		                        <tr ng-repeat="eval in testCtrl.test.evaluations | orderBy:'count'" ts-repeat>
+		                        	<td>
+		                        		{{ testCtrl.formatDate(eval.initDate) }}
+		                        	</td>
+		                            <td>
+		                            	{{ testCtrl.formatDate(eval.lastDate) }}
+									</td>
+		                            <td>
+		                            	<a class="btn btn-primary pull-right" ng-href="#/testes/{{testCtrl.test.id}}/avaliar/{{ eval.id }}">AVALIAR</a>
+		                            </td>
+		                        </tr>
+			                </tbody>
+			            </table>
+		        	</div>
+	        	</div>
+	        	
+	        </div>
+	    </div>	    
+
+    </div>

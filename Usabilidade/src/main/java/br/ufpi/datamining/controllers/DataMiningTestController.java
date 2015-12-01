@@ -21,15 +21,20 @@ import br.ufpi.datamining.analisys.Fuzzy;
 import br.ufpi.datamining.analisys.WebUsageMining;
 import br.ufpi.datamining.models.ActionDataMining;
 import br.ufpi.datamining.models.ActionSingleDataMining;
+import br.ufpi.datamining.models.EvaluationTaskDataMining;
+import br.ufpi.datamining.models.EvaluationTestDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.aux.CountActionsAux;
 import br.ufpi.datamining.models.aux.FieldSearch;
 import br.ufpi.datamining.models.aux.FieldSearchComparatorEnum;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
+import br.ufpi.datamining.models.vo.EvaluationTestDataMiningVO;
 import br.ufpi.datamining.models.vo.ReturnVO;
 import br.ufpi.datamining.models.vo.TestDataMiningVO;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
+import br.ufpi.datamining.repositories.EvaluationTaskDataMiningRepository;
+import br.ufpi.datamining.repositories.EvaluationTestDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.repositories.TestDataMiningRepository;
 import br.ufpi.datamining.utils.GsonExclusionStrategy;
@@ -46,17 +51,23 @@ public class DataMiningTestController extends BaseController {
 	private final TestDataMiningRepository testeDataMiningRepository;
 	private final TaskDataMiningRepository taskDataMiningRepository;
 	private final ActionDataMiningRepository actionDataMiningRepository;
+	private final EvaluationTaskDataMiningRepository evaluationTaskDataMiningRepository;
+	private final EvaluationTestDataMiningRepository evaluationTestDataMiningRepository;
 	
 	public DataMiningTestController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
 			TestDataMiningRepository testeDataMiningRepository,
 			TaskDataMiningRepository taskDataMiningRepository,
-			ActionDataMiningRepository actionDataMiningRepository) {
+			ActionDataMiningRepository actionDataMiningRepository,
+			EvaluationTaskDataMiningRepository evaluationTaskDataMiningRepository,
+			EvaluationTestDataMiningRepository evaluationTestDataMiningRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.testeDataMiningRepository = testeDataMiningRepository;
 		this.taskDataMiningRepository = taskDataMiningRepository;
 		this.actionDataMiningRepository = actionDataMiningRepository;
+		this.evaluationTaskDataMiningRepository = evaluationTaskDataMiningRepository;
+		this.evaluationTestDataMiningRepository = evaluationTestDataMiningRepository;
 	}
 	
 	@Get("/")
@@ -67,7 +78,7 @@ public class DataMiningTestController extends BaseController {
 	@Logado
 	public void list() {
 		Gson gson = new GsonBuilder()
-	        .setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class, TaskDataMining.class))
+	        .setExclusionStrategies(new GsonExclusionStrategy(ActionSingleDataMining.class, TestDataMining.class, TaskDataMining.class))
 	        .serializeNulls()
 	        .create();
 		
@@ -81,9 +92,9 @@ public class DataMiningTestController extends BaseController {
 		result.use(Results.json()).from(json).serialize();
 	}
 	
-	@Get("/testes/{idTeste}/priorizar/")
+	@Get("/testes/{idTeste}/priorizar/init/{init}/end/{end}")
 	@Logado
-	public void priorizar(Long idTeste) {
+	public void priorizar(Long idTeste, Date init, Date end) {
 		Gson gson = new GsonBuilder()
 	        .setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class, ActionSingleDataMining.class))
 	        .serializeNulls()
@@ -97,29 +108,35 @@ public class DataMiningTestController extends BaseController {
 		List<TaskDataMining> tasks = testPertencente.getTasks();
 		Double maxEffectiveness = 0d, maxEfficiency = 0d, maxSessions = 0d;
 		for(TaskDataMining t : tasks){
-			if(t.getEvalMeanCompletion() != null && t.getEvalMeanCorrectness() != null && t.getEvalMeanTimes() != null && t.getEvalMeanActions() != null ){
-				t.setEvalEffectiveness(UsabilityUtils.calcEffectiveness(t.getEvalMeanCompletion(), t.getEvalMeanCorrectness()));
-				t.setEvalEfficiency(UsabilityUtils.calcEfficiency(t.getEvalEffectiveness(), t.getEvalZScoreActions(), t.getEvalZScoreTime()));
+			EvaluationTaskDataMining e = t.getEvaluationBetweenDates(init, end);
+			if(e != null && e.getEvalMeanCompletion() != null && e.getEvalMeanCorrectness() != null && e.getEvalMeanTimes() != null && e.getEvalMeanActions() != null ){
+				e.setEvalEffectiveness(UsabilityUtils.calcEffectiveness(e.getEvalMeanCompletion(), e.getEvalMeanCorrectness()));
+				e.setEvalEfficiency(UsabilityUtils.calcEfficiency(e.getEvalEffectiveness(), e.getEvalZScoreActions(), e.getEvalZScoreTime()));
 				
-				maxEffectiveness = maxEffectiveness < t.getEvalEffectiveness() ? t.getEvalEffectiveness() : maxEffectiveness;
-				maxEfficiency = maxEfficiency < t.getEvalEfficiency() ? t.getEvalEfficiency() : maxEfficiency;
-				maxSessions = maxSessions < t.getEvalCountSessions() ? t.getEvalCountSessions() : maxSessions;
+				maxEffectiveness = maxEffectiveness < e.getEvalEffectiveness() ? e.getEvalEffectiveness() : maxEffectiveness;
+				maxEfficiency = maxEfficiency < e.getEvalEfficiency() ? e.getEvalEfficiency() : maxEfficiency;
+				maxSessions = maxSessions < e.getEvalCountSessions() ? e.getEvalCountSessions() : maxSessions;
 			}
 		}
+		
 		//normaliza
 		for(TaskDataMining t : tasks){
-			if(t.getEvalMeanCompletion() != null && t.getEvalMeanCorrectness() != null && t.getEvalMeanTimes() != null && t.getEvalMeanActions() != null ){
-				t.setEvalEffectivenessNormalized(t.getEvalEffectiveness()/maxEffectiveness);
-				t.setEvalEfficiencyNormalized(t.getEvalEfficiency()/maxEfficiency);
-				t.setEvalCountSessionsNormalized(t.getEvalCountSessions()/maxSessions);
+			EvaluationTaskDataMining e = t.getEvaluationBetweenDates(init, end);
+			if(e != null && e.getEvalMeanCompletion() != null && e.getEvalMeanCorrectness() != null && e.getEvalMeanTimes() != null && e.getEvalMeanActions() != null ){
+				e.setEvalEffectivenessNormalized(e.getEvalEffectiveness()/maxEffectiveness);
+				e.setEvalEfficiencyNormalized(e.getEvalEfficiency()/maxEfficiency);
+				e.setEvalCountSessionsNormalized(e.getEvalCountSessions()/maxSessions);
 			}
 		}
+		
 		//Fuzzy para calcular priorização
-		Fuzzy.executeFuzzySystemWithFCMTasks(tasks, true);
+		Fuzzy.executeFuzzySystemWithFCMTasks(tasks, init, end, true);
+		
 		//salvar novos indices
 		for(TaskDataMining t : tasks){
-			if(t.getEvalMeanCompletion() != null && t.getEvalMeanCorrectness() != null && t.getEvalMeanTimes() != null && t.getEvalMeanActions() != null ){
-				taskDataMiningRepository.update(t);
+			EvaluationTaskDataMining e = t.getEvaluationBetweenDates(init, end);
+			if(e.getEvalMeanCompletion() != null && e.getEvalMeanCorrectness() != null && e.getEvalMeanTimes() != null && e.getEvalMeanActions() != null ){
+				evaluationTaskDataMiningRepository.update(e);
 			}
 		}
 		
@@ -130,7 +147,7 @@ public class DataMiningTestController extends BaseController {
 	@Logado
 	public void view(Long idTeste) {
 		Gson gson = new GsonBuilder()
-	        .setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class, ActionSingleDataMining.class))
+	        .setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class, TaskDataMining.class, ActionSingleDataMining.class))
 	        .serializeNulls()
 	        .create();
 		
@@ -200,7 +217,7 @@ public class DataMiningTestController extends BaseController {
 		Date initialDate = new Date(initDate);
 		Date finalDate = new Date(endDate);
 		
-		List<CountActionsAux> counts = WebUsageMining.countActionsByRestrictions(idTeste, new FieldSearch(field, field, null, null), taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate);
+		List<CountActionsAux> counts = WebUsageMining.countActionsByRestrictions(idTeste, new FieldSearch(field, field, null, null), testeDataMiningRepository, actionDataMiningRepository, initialDate, finalDate);
 		for (CountActionsAux c : counts) {
 			System.out.println(c.getDescription() + " -> " + c.getCount());
 		}
@@ -226,6 +243,35 @@ public class DataMiningTestController extends BaseController {
 		List<ActionDataMining> listActionsBetweenDates = WebUsageMining.listActionsFromUserBetweenDates(idTeste, username, fieldLocation, taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate, limit);
 		
 		result.use(Results.json()).from(gson.toJson(listActionsBetweenDates)).serialize();
+	}
+	
+	@Post("/testes/newevaluationtest")
+	@Consumes("application/json")
+	@Logado
+	public void newevaluationtest(Long idTeste, Long initDate, Long endDate) {
+		Gson gson = new GsonBuilder()
+	        //.setExclusionStrategies(new GsonExclusionStrategy(EvaluationTestDataMining.class, EvaluationTaskDataMining.class, TestDataMining.class, ActionSingleDataMining.class))
+			.setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class, TaskDataMining.class, ActionSingleDataMining.class))
+	        .serializeNulls()
+	        .create();
+		
+		TestDataMining testPertencente = testeDataMiningRepository.getTestPertencente(usuarioLogado.getUsuario().getId(), idTeste);
+		
+		EvaluationTestDataMining eval = new EvaluationTestDataMining();
+		eval.setTest(testPertencente);
+		eval.setInitDate(new Date(initDate));
+		eval.setLastDate(new Date(endDate));
+		
+		List<EvaluationTestDataMining> evaluationTests = evaluationTestDataMiningRepository.getEvaluationTests(testPertencente, eval.getInitDate(), eval.getLastDate());
+		
+		if (evaluationTests.size() == 0) {
+			evaluationTestDataMiningRepository.create(eval);
+			result.use(Results.json()).from(gson.toJson(new TestDataMiningVO(testPertencente))).serialize();
+		} else {
+			System.out.println("already exists");
+			result.use(Results.json()).from(gson.toJson(new ReturnVO(ReturnStatusEnum.ERRO, "datamining.testes.evaluations.newdates.alreadyexists"))).serialize();
+		}
+		
 	}
 	
 	//

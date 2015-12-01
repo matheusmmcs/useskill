@@ -1,5 +1,14 @@
 angular.module('useskill', 
-		['ngRoute', 'pascalprecht.translate', 'tableSort', 'chart.js', 'datePicker', 'ui.bootstrap', 'angularMoment', 'ngProgress'])
+		['ngRoute', 
+		 'ngAnimate',
+		 'pascalprecht.translate', 
+		 'tableSort', 
+		 'chart.js', 
+		 'datePicker', 
+		 'ui.bootstrap', 
+		 'angularMoment', 
+		 'angular-loading-bar'
+		 ])
 
 .constant('env', 'dev')
 //.constant('env', 'prod')
@@ -14,10 +23,12 @@ angular.module('useskill',
     }
 })
 		
-.config(['$translateProvider', '$routeProvider', '$httpProvider', 'env', 'config',
-         function($translateProvider, $routeProvider, $httpProvider, env, config) {
+.config(['$translateProvider', '$routeProvider', '$httpProvider', 'env', 'config', 'cfpLoadingBarProvider', 
+         function($translateProvider, $routeProvider, $httpProvider, env, config, cfpLoadingBarProvider) {
 	
 	$httpProvider.interceptors.push('HttpInterceptor');
+	
+	cfpLoadingBarProvider.spinnerTemplate = '<div class="loader__bg usdm-animate-show-hide"><span class="loader__img"/></div>';
 	
 	$translateProvider.useUrlLoader(config[env].apiUrl+'/jscripts/app/messages.json');
 	$translateProvider.preferredLanguage('pt');
@@ -57,15 +68,6 @@ angular.module('useskill',
 		        }
 		    }
 	    })
-	    .when('/testes/:testId/tarefas', {
-			controller:'TestTasksViewController as testCtrl',
-			templateUrl:config[env].apiUrl+'/templates/tests/tasklist.html',
-			resolve: {
-				test: function (ServerAPI, $route) {
-		        	return ServerAPI.getTest($route.current.params.testId);
-		        }
-		    }
-	    })
 	    .when('/testes/:testId/maisacessadas', {
 			controller:'TestMostAccessController as testCtrl',
 			templateUrl:config[env].apiUrl+'/templates/tests/mostaccess.html',
@@ -84,9 +86,26 @@ angular.module('useskill',
 		        }
 		    }
 	    })
+	    .when('/testes/:testId/tarefas', {
+			controller:'TestTasksDatesViewController as testCtrl',
+			templateUrl:config[env].apiUrl+'/templates/tests/tasklistdates.html',
+			resolve: {
+				test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
+	    })
+	    .when('/testes/:testId/avaliar/:evalId', {
+			controller:'TestTasksViewController as testCtrl',
+			templateUrl:config[env].apiUrl+'/templates/tests/tasklist.html',
+			resolve: {
+				test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
+	    })
 	    
 	    //Tasks
-	    
 	    .when('/testes/:testId/tarefas/criar', {
 	    	controller:'TaskNewController as taskCtrl',
 	    	templateUrl:config[env].apiUrl+'/templates/tasks/create.html',
@@ -154,7 +173,14 @@ angular.module('useskill',
 			if(response.status === 200 && angular.isDefined(response.data.string)){
 				resp = JSON.parse(response.data.string);
 				if(resp.status == 'ERRO'){
-					$rootScope.errors = resp.errors;
+					$rootScope.errors = [];
+					if (resp.message) {
+						console.log($filter('translate')(resp.message));
+						console.log(resp.message);
+						$rootScope.errors.push($filter('translate')(resp.message));
+					}
+					$rootScope.errors.concat(resp.errors);
+					console.log($rootScope.errors);
 				}else if(resp.status == 'SUCESSO'){
 					$rootScope.success = $filter('translate')(resp.message);
 				}
@@ -177,25 +203,33 @@ angular.module('useskill',
     };
     return responseInterceptor;
 }])
-.factory("ServerAPI", ['$q', '$http', 'env', 'config', 'ngProgressFactory',
-                function($q, $http, env, config, ngProgressFactory) {
+.factory("ServerAPI", ['$rootScope', '$q', '$http', 'env', 'config', 'cfpLoadingBar',
+                function($rootScope, $q, $http, env, config, cfpLoadingBar) {
 	
 	function doRequest(type, url, data) {
 		var deferred = $q.defer();
 		
-		progressbar = ngProgressFactory.createInstance();
-		progressbar.setColor('#324b6f');
-		progressbar.setHeight('2px');
-		progressbar.start();
+		$rootScope.onRequest = true;
+		cfpLoadingBar.start();
 		
-		$http({ method: type, url: config[env].apiUrl + url}, data).then(function successCallback(response) {
+		var req, reqUrl = config[env].apiUrl + url;
+		
+		if (type.toLowerCase() == 'post') {
+			req = $http.post(reqUrl, data);
+		} else {
+			req = $http({ method: type, url: reqUrl });
+		}
+		
+		req.then(function successCallback(response) {
 			console.log('request ok: ', response);
-			progressbar.complete();
 			deferred.resolve(response);
 		}, function errorCallback(response) {
 			console.log('request error: ', response);
-			progressbar.complete();
+			
 			deferred.reject(response);
+		}).finally(function(){
+			$rootScope.onRequest = false;
+			cfpLoadingBar.complete();
 		});
 		return deferred.promise;
 	};
@@ -218,6 +252,9 @@ angular.module('useskill',
         },
         getSpecificSession: function(testId, user, local, init, end, limit){
             return doRequest('GET', '/datamining/testes/'+testId+'/sessaoespecifica/'+user+'/local/'+local+'/init/'+init+'/end/'+end+'/limit/'+limit);
+        },
+        saveNewEvaluationTest: function(evaluationTest){
+        	return doRequest('POST', '/datamining/testes/newevaluationtest', evaluationTest);
         },
         
         
@@ -296,6 +333,40 @@ angular.module('useskill',
 .controller('TestViewController', function(test, ServerAPI, $route, $rootScope, $filter) {
 	var testCtrl = this;
 	testCtrl.test = JSON.parse(test.data.string);
+})
+.controller('TestTasksDatesViewController', function($filter, test, ServerAPI) {
+	var testCtrl = this;
+	testCtrl.test = JSON.parse(test.data.string);
+	console.log(testCtrl.test);
+	testCtrl.actionTitle = $filter('translate')('datamining.testes.evaluations');
+	
+	testCtrl.showTasks = false;
+	testCtrl.showEvaluations = false;
+	
+	testCtrl.minDate = new Date().getTime();
+	testCtrl.maxDate = new Date().getTime();
+	
+	testCtrl.formatDate = function(date) {
+		return moment(date).format('DD/MM/YYYY, HH:mm:ss');
+	}
+	
+	testCtrl.createDates = function(){
+		testCtrl.minDate = typeof testCtrl.minDate === "object" ? testCtrl.minDate._i : testCtrl.minDate;
+		testCtrl.maxDate = typeof testCtrl.maxDate === "object" ? testCtrl.maxDate._i : testCtrl.maxDate;
+		
+		var newEval = angular.toJson({
+			idTeste: testCtrl.test.id, 
+			initDate: testCtrl.minDate, 
+			endDate: testCtrl.maxDate
+		});
+		
+		ServerAPI.saveNewEvaluationTest(newEval).then(function(data) {
+			console.log(data);
+			testCtrl.test = JSON.parse(data.data.string);
+		}, function(data) {
+			console.log(data);
+		});
+	}
 })
 .controller('TestTasksViewController', function(test, ServerAPI, $route, $rootScope, $filter) {
 	var testCtrl = this;
@@ -398,7 +469,9 @@ angular.module('useskill',
 	testCtrl.test = {};
 	testCtrl.actionTitle = $filter('translate')('datamining.testes.new');
 	testCtrl.save = function() {
-		var test = angular.toJson(testCtrl.test);
+		var test = angular.toJson({
+			'test' : testCtrl.test
+		});
 		ServerAPI.saveTest(test);
 	};
 })
@@ -408,7 +481,9 @@ angular.module('useskill',
 	testCtrl.test = JSON.parse(test.data.string);
 	testCtrl.actionTitle = $filter('translate')('datamining.testes.edit');
 	testCtrl.save = function() {
-		var test = angular.toJson(testCtrl.test);
+		var test = angular.toJson({
+			'test' : testCtrl.test
+		});
 		ServerAPI.saveTest(test);
 	};
 })
@@ -484,7 +559,9 @@ angular.module('useskill',
 	
 	this.save = function() {
 		this.task.testDataMining = this.test;
-		var task = angular.toJson(this.task);
+		var task = angular.toJson({
+			'task' : this.task
+		});
 		ServerAPI.saveTask(task);
 	};
 })
@@ -650,7 +727,9 @@ angular.module('useskill',
 			actionCtrl.action.momentType = actionCtrl.action.momentType.value;
 		}
 		console.log(actionCtrl.action);
-		var action = angular.toJson(actionCtrl.action);
+		var action = angular.toJson({
+			'actionJHeatVO' : actionCtrl.action
+		});
 		ServerAPI.saveAction(action);
 	};
 })

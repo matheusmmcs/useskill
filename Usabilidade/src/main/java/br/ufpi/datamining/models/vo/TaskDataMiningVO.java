@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import br.ufpi.datamining.models.ActionSingleDataMining;
+import br.ufpi.datamining.models.EvaluationTaskDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
@@ -21,6 +22,7 @@ public class TaskDataMiningVO {
 	private List<ActionSingleDataMining> actionsRequired;
 	
 	private TestDataMining testDataMining;
+	private List<EvaluationTaskDataMining> evaluations;
 	
 	public TaskDataMiningVO(TaskDataMining taskDataMining) {
 		super();
@@ -33,6 +35,7 @@ public class TaskDataMiningVO {
 		this.testDataMining = taskDataMining.getTestDataMining();
 		this.disregardActions = taskDataMining.getDisregardActions();
 		this.actionsRequiredOrder = taskDataMining.getActionsRequiredOrder();
+		this.setEvaluations(taskDataMining.getEvaluations());
 	}
 	
 	public Long getId() {
@@ -94,6 +97,14 @@ public class TaskDataMiningVO {
 
 	public void setActionsRequiredOrder(String actionsRequiredOrder) {
 		this.actionsRequiredOrder = actionsRequiredOrder;
+	}
+
+	public List<EvaluationTaskDataMining> getEvaluations() {
+		return evaluations;
+	}
+
+	public void setEvaluations(List<EvaluationTaskDataMining> evaluations) {
+		this.evaluations = evaluations;
 	}
 	
 	
