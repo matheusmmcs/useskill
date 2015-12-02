@@ -22,7 +22,6 @@ public class EvaluationTestDataMiningRepository extends Repository<EvaluationTes
 	@SuppressWarnings("unchecked")
 	public List<EvaluationTestDataMining> getEvaluationTests(TestDataMining test, Date init, Date end) {
 		
-		//:test = e.test AND :initDate = e.initDate AND :lastDate = e.lastDate
 		Query query = entityManager.createNamedQuery("Eval.Test.ContainsDates");
 		query.setParameter("test", test);
 		query.setParameter("initDate", init);

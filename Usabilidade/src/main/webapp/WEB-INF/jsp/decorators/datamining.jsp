@@ -5,6 +5,7 @@
 <html>
 <head>
 	<!-- decorator = main -->
+	<meta charset="utf-8">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title><decorator:title default="UseSkill" /></title>
 	<link href="${pageContext.request.contextPath}/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
@@ -15,6 +16,7 @@
 	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/angular-chart/angular-chart.css" rel="stylesheet" type="text/css" />
 	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/datepicker/angular-datepicker.min.css" rel="stylesheet" type="text/css" />
 	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/loading/loading-bar.min.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/jscripts/libs/angular/angular-nvd3/nv.d3.css" type="text/css" />
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.js"></script>
 	<script src="${pageContext.request.contextPath}/jscripts/libs/less-1.3.0.min.js"></script>
@@ -61,14 +63,18 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/ui-bootstrap/ui-bootstrap-tpls-0.13.0.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/moment.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/datepicker/angular-datepicker.min.js"></script>
-	<script src="//cdn.jsdelivr.net/angular.moment/0.6.2/angular-moment.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-moment.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/loading/loading-bar.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-nvd3/d3.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-nvd3/nv.d3.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-nvd3/angular-nvd3.min.js"></script>
 
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/app/app.js"></script>
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap/bootstrap-popover.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/useskill.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.easing1.3.js"></script>
+	
 	
 	<!--
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/useskill/capt.mining.useskill.nojquery.js"></script>

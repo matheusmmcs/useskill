@@ -7,7 +7,8 @@ angular.module('useskill',
 		 'datePicker', 
 		 'ui.bootstrap', 
 		 'angularMoment', 
-		 'angular-loading-bar'
+		 'angular-loading-bar',
+		 'nvd3'
 		 ])
 
 .constant('env', 'dev')
@@ -101,6 +102,9 @@ angular.module('useskill',
 			resolve: {
 				test: function (ServerAPI, $route) {
 		        	return ServerAPI.getTest($route.current.params.testId);
+		        },
+		        evalTest: function (ServerAPI, $route) {
+		        	return ServerAPI.getEvaluationTest($route.current.params.testId, $route.current.params.evalId);
 		        }
 		    }
 	    })
@@ -253,21 +257,26 @@ angular.module('useskill',
         getSpecificSession: function(testId, user, local, init, end, limit){
             return doRequest('GET', '/datamining/testes/'+testId+'/sessaoespecifica/'+user+'/local/'+local+'/init/'+init+'/end/'+end+'/limit/'+limit);
         },
+        
+        
         saveNewEvaluationTest: function(evaluationTest){
         	return doRequest('POST', '/datamining/testes/newevaluationtest', evaluationTest);
         },
+        getEvaluationTest: function(testId, evalId) {
+        	return doRequest('GET', '/datamining/testes/'+testId+'/avaliacao/'+evalId);
+        },
         
         
-        
-        getTask: function(testId, taskId){
+        getTask: function(testId, taskId) {
             return doRequest('GET', '/datamining/testes/'+testId+'/tarefas/'+taskId);
         },
-        saveTask: function(task){
+        saveTask: function(task) {
         	return doRequest('POST', '/datamining/testes/tarefas/salvar', task);
         },
         evaluateTask: function(testId, taskId){
         	return doRequest('GET', '/datamining/testes/'+testId+'/tarefas/'+taskId+'/avaliar');
         },
+        
         
         saveAction: function(actionJHeatVO){
         	return doRequest('POST', '/datamining/testes/tarefas/acoes/salvar', actionJHeatVO);
@@ -368,9 +377,15 @@ angular.module('useskill',
 		});
 	}
 })
-.controller('TestTasksViewController', function(test, ServerAPI, $route, $rootScope, $filter) {
+.controller('TestTasksViewController', function(test, evalTest, ServerAPI, $route, $rootScope, $filter) {
 	var testCtrl = this;
+	
 	testCtrl.test = JSON.parse(test.data.string);
+	testCtrl.evalTest = JSON.parse(evalTest.data.string);
+	
+	console.log(testCtrl.test);
+	console.log(testCtrl.evalTest);
+	
 	testCtrl.priority = function(){
 		ServerAPI.priorityTest(testCtrl.test.id).success(function(data){
 			$rootScope.mgsRealod = {
@@ -412,7 +427,7 @@ angular.module('useskill',
 	}
 	console.log(testCtrl);
 })
-.controller('TestMostAccessController', function($filter, test, MostAccessTypeEnum, ServerAPI) {
+.controller('TestMostAccessController', function($scope, $filter, $timeout, test, MostAccessTypeEnum, ServerAPI) {
 	var testCtrl = this;
 	testCtrl.actionTitle = $filter('translate')('datamining.testes.featuresmostaccessed.search');
 	testCtrl.test = JSON.parse(test.data.string);
@@ -421,8 +436,10 @@ angular.module('useskill',
 	testCtrl.minDate = new Date().getTime();
 	testCtrl.maxDate = new Date().getTime();
 	
-	testCtrl.actions = [];
+	testCtrl.actions = null;
 	testCtrl.datatypes = MostAccessTypeEnum.datatypes;
+	
+	
 	
 	testCtrl.mostaccess = function() {
 		testCtrl.minDate = typeof testCtrl.minDate === "object" ? testCtrl.minDate._i : testCtrl.minDate;
@@ -433,6 +450,78 @@ angular.module('useskill',
 			ServerAPI.getTestMostAccess(testCtrl.testId, testCtrl.datatype.value, testCtrl.minDate, testCtrl.maxDate).then(function(data){
 				console.log(data.data);
 				testCtrl.actions = JSON.parse(data.data.string);
+				
+				//sort actions desc
+				testCtrl.actions.sort(function(a, b) {
+				    return b.count - a.count;
+				});
+				
+				$scope.pieOptions = {
+		            chart: {
+		                type: 'pieChart',
+		                height: 300,
+		                x: function(d){
+		                	return d.description;
+		                },
+		                y: function(d){
+		                	return d.count;
+		                },
+		                //color: ['#0D3C55', '#0F5B78', '#117899', '#1395BA', '#5CA793', '#A5A8AA'],
+		                showLabels: false,
+		                transitionDuration: 500,
+		                labelThreshold: 0.01,
+		                showLegend: true,
+		                legend: {
+		                    margin: {
+		                        top: 5,
+		                        right: 35,
+		                        bottom: 5,
+		                        left: 0
+		                    }
+		                },
+		                tooltip: {
+		                	contentGenerator: function(obj) {
+		                        return '<h4>' + obj.data.description + '</h4>' +'<p>' + obj.data.count + '</p>';
+		                    }
+		                },
+		            }
+		        };
+				
+				var MIN = 3, MAX = 15;
+				$scope.sizePie = 5;
+				$scope.canChange = true;
+				
+				$scope.renderPieMost = function(size) {
+					size = size == null ? 5 : size;
+					size = size < MIN ? MIN : size;
+					size = size > MAX ? MAX : size;
+					
+					if ($scope.canChange) {
+						$scope.canChange = false;
+						//best 5
+						$scope.pieData = testCtrl.actions.slice(0,size);
+						
+						//others
+						var sum = 0;
+						angular.forEach(testCtrl.actions.slice(size), function(elem){
+							sum += elem.count;
+						});
+						$scope.pieData.push({
+							description: $filter('translate')('others...'), 
+							count: sum
+						});
+						
+						//rerender
+						$timeout(function(){
+							$scope.pieApi.refresh();
+							$timeout(function(){ $scope.canChange = true; }, 200);
+						});
+					}
+				}
+				
+				$scope.renderPieMost($scope.sizePie);
+				
+				
 			}, function(data){
 				console.log(data);
 			});

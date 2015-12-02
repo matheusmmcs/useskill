@@ -104,14 +104,14 @@
 									<div class="control-group span6">
 						            	<label class="control-label" for="pickerMinSelector">{{ 'date.initial' | translate}}:*</label>
 						            	<div class="controls">
-						                	<input placeholder="{{ 'date.initial' | translate}}" date-time ng-model="testCtrl.minDate" id="pickerMinSelector" date-change="testCtrl.changeMinMax" max-date="testCtrl.maxDate" view="date" format="DD/MM/YYYY HH:mm" /> 
+						                	<input class="span12" type="datetime" placeholder="{{ 'date.initial' | translate}}" date-time ng-model="testCtrl.minDate" id="pickerMinSelector" date-change="testCtrl.changeMinMax" max-date="testCtrl.maxDate" view="date" format="DD/MM/YYYY HH:mm" /> 
 						            	</div>
 						        	</div>
 						        	
 						        	<div class="control-group span6">
 						            	<label class="control-label" for="pickerMaxSelector">{{ 'date.end' | translate}}:*</label>
 						            	<div class="controls">
-						                	<input placeholder="{{ 'date.end' | translate}}" date-time ng-model="testCtrl.maxDate" id="pickerMaxSelector" date-change="testCtrl.changeMinMax" min-date="testCtrl.minDate" view="date" format="DD/MM/YYYY HH:mm" /> 
+						                	<input class="span12" type="datetime" placeholder="{{ 'date.end' | translate}}" date-time ng-model="testCtrl.maxDate" id="pickerMaxSelector" date-change="testCtrl.changeMinMax" min-date="testCtrl.minDate" view="date" format="DD/MM/YYYY HH:mm" /> 
 						            	</div>
 						        	</div>
 								</div>
@@ -120,6 +120,8 @@
 					        	</div>
 							</fieldset>
 						</form>
+						
+						<hr/>
 						
 		        		<h2>
 			            	{{ 'datamining.testes.evaluations.availables' | translate}}

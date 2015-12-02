@@ -271,11 +271,30 @@ public class DataMiningTestController extends BaseController {
 			System.out.println("already exists");
 			result.use(Results.json()).from(gson.toJson(new ReturnVO(ReturnStatusEnum.ERRO, "datamining.testes.evaluations.newdates.alreadyexists"))).serialize();
 		}
-		
 	}
 	
-	//
-			//System.out.println(listActionsBetweenDates.size());
+	@Get("/testes/{idTeste}/avaliacao/{idEvalTest}")
+	@Logado
+	public void getTestEvaluation(Long idTeste, Long idEvalTest) {
+		Gson gson = new GsonBuilder()
+			.setExclusionStrategies(new GsonExclusionStrategy(EvaluationTestDataMining.class, TestDataMining.class, ActionSingleDataMining.class))
+	        .serializeNulls()
+	        .create();
+		
+		EvaluationTestDataMining evaluationTestDataMining = evaluationTestDataMiningRepository.find(idEvalTest);
+		validateComponente.validarEquals(evaluationTestDataMining.getTest().getId(), idTeste, "datamining.accessdenied");
+		
+		ReturnVO returnvo;
+		
+		if(!validator.hasErrors()){
+			result.use(Results.json()).from(gson.toJson(new EvaluationTestDataMiningVO(evaluationTestDataMining))).serialize();
+		} else {
+			returnvo = new ReturnVO(ReturnStatusEnum.ERRO, "erro");
+			returnvo.setErrorsMessage(validator.getErrors());
+			
+			validator.onErrorUse(Results.json()).from(gson.toJson(returnvo)).serialize();
+		}
+	}
 	
 	private boolean testePertenceUsuarioLogado(Long idTeste) {
 		validateComponente.validarId(idTeste);
