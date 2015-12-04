@@ -96,13 +96,13 @@ public class TarefaRepositoryImpl extends Repository<Tarefa, Long> implements
 			queryVariaveis.setParameter("teste", idTeste);
 			queryVariaveis.setParameter("tarefa", idTarefa);
 			
-			Collection<VariavelRoteiro> variaveis = (Collection<VariavelRoteiro>) queryVariaveis.getResultList();
+			Tarefa tarefa = (Tarefa) queryVariaveis.getSingleResult();
 			
 			//alterar as variaveis no roteiro
-			if(variaveis != null){
+			if(tarefa.getVariaveisRoteiro() != null){
 				ValorRoteiroRepositoryImpl valorRoteiroRepositoryImpl = new ValorRoteiroRepositoryImpl(entityManager);
 				
-				for(VariavelRoteiro var : variaveis){
+				for(VariavelRoteiro var : tarefa.getVariaveisRoteiro()){
 					ValorRoteiro valor = null;
 					
 					for(ValorRoteiro val: var.getValores()){

@@ -21,6 +21,7 @@
 			</li>
 			<li class="active">{{ 'datamining.testes.evaluation' | translate}}</li>
 		</ul>
+		
 		<div ng-show="success" class="alert alert-success">
 			{{ success }}<br />
 		</div>
@@ -53,13 +54,6 @@
 			            <dl>
 			            	<dt>{{ 'datamining.testes.url' | translate}}:</dt>
 			            	<dd>{{testCtrl.test.urlSystem}}</dd>
-			            </dl>
-			            
-			            <dl>
-			            	<dt>{{ 'datamining.priority' | translate}}:</dt>
-			            	<dd>
-			            		<div class="clear-both"></div>
-							</dd>
 			            </dl>
 			            
 		            </div>
@@ -143,7 +137,10 @@
 		                            	{{ testCtrl.formatDate(eval.lastDate) }}
 									</td>
 		                            <td>
-		                            	<a class="btn btn-primary pull-right" ng-href="#/testes/{{testCtrl.test.id}}/avaliar/{{ eval.id }}">AVALIAR</a>
+		                            	<a class="btn btn-primary pull-right" ng-href="#/testes/{{testCtrl.test.id}}/avaliar/{{ eval.id }}">
+		                            		<span class="icon-white icon-tasks"></span>
+		                            		{{ 'datamining.evaluate' | translate }}
+		                            	</a>
 		                            </td>
 		                        </tr>
 			                </tbody>

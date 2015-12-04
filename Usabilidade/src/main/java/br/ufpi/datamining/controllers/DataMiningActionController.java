@@ -14,17 +14,14 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
-import br.ufpi.datamining.models.ActionDataMining;
 import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.FieldSearchTupleDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
-import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.enums.MomentTypeActionDataMiningEnum;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.vo.ActionSingleDataMiningVO;
 import br.ufpi.datamining.models.vo.ActionSingleJHeatDataMiningVO;
 import br.ufpi.datamining.models.vo.ReturnVO;
-import br.ufpi.datamining.models.vo.TaskDataMiningVO;
 import br.ufpi.datamining.repositories.ActionSingleDataMiningRepository;
 import br.ufpi.datamining.repositories.FieldSearchTupleDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
@@ -65,7 +62,7 @@ public class DataMiningActionController extends BaseController {
 	@Logado
 	public void view(Long idTeste, Long idTarefa, Long idAcao) {
 		Gson gson = new GsonBuilder()
-	        .setExclusionStrategies(new GsonExclusionStrategy(ActionSingleDataMining.class, Usuario.class))
+	        .setExclusionStrategies(ActionSingleDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
 	        .create();
 		ActionSingleDataMining action = actionSingleDataMiningRepository.find(idAcao);

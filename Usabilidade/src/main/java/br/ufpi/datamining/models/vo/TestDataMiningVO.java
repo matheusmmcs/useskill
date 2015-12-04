@@ -3,12 +3,20 @@ package br.ufpi.datamining.models.vo;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.ExclusionStrategy;
+
+import br.ufpi.datamining.models.ActionSingleDataMining;
+import br.ufpi.datamining.models.EvaluationTaskDataMining;
 import br.ufpi.datamining.models.EvaluationTestDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
+import br.ufpi.datamining.utils.GsonExclusionStrategy;
 
 public class TestDataMiningVO {
 
+	public static ExclusionStrategy exclusionStrategy = new GsonExclusionStrategy(
+			TestDataMining.class, TaskDataMining.class, ActionSingleDataMining.class, EvaluationTaskDataMining.class);
+	
 	private Long id;
 	private String title;
 	private String clientAbbreviation;

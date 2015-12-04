@@ -47,7 +47,11 @@
 		            <div class="usdm-box-body">
 			            <dl>
 			            	<dt>{{ 'datamining.tasks.title' | translate}}:</dt>
-			            	<dd>{{taskCtrl.task.title}}</dd>
+			            	<dd>
+			            		{{taskCtrl.task.title}}
+			            		<a class="btn pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/editar/{{taskCtrl.task.id}}" title="{{ 'datamining.edit' | translate}}"><span class="icon-edit"></span> {{ 'datamining.edit' | translate}}</a>
+		        				<div class="clear-both"></div>
+			            	</dd>
 			            </dl>
 			            <dl>
 			            	<dt>{{ 'datamining.tasks.threshold' | translate}}:</dt>
@@ -61,11 +65,6 @@
 			            	<dt>{{ 'datamining.tasks.disregard' | translate}}:</dt>
 			            	<dd><label ng-repeat="type in taskCtrl.task.disregardActions">{{taskCtrl.getActionTypeName(type)}}</label></dd>
 			            </dl>
-			            <div class="actions-bottom">
-							<a class="btn btn-primary pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/{{taskCtrl.task.id}}/avaliar" title="{{ 'datamining.evaluate' | translate}}"><span class="icon-white icon-tasks"></span> {{ 'datamining.tasks.evaluate' | translate}}</a>
-		        			<a class="btn pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/editar/{{taskCtrl.task.id}}" title="{{ 'datamining.edit' | translate}}"><span class="icon-edit"></span> {{ 'datamining.edit' | translate}}</a>
-		        			<div class="clear-both"></div>
-			            </div>
 		            </div>
 		    	</div>
 		    </div>

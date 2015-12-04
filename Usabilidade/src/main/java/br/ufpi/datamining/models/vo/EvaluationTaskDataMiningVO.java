@@ -11,6 +11,7 @@ public class EvaluationTaskDataMiningVO {
 	private Long id;
 	private EvaluationTestDataMining evaluationTest;
 	private TaskDataMining taskDataMining;
+	private Long idTaskDataMining;
 	
 	private Date evalLastDate;
 	private Double evalMeanActions;
@@ -46,6 +47,7 @@ public class EvaluationTaskDataMiningVO {
 		this.evalFuzzyPriority = eval.getEvalFuzzyPriority();
 		this.evalCountSessions = eval.getEvalCountSessions();
 		this.evalCountSessionsNormalized = eval.getEvalCountSessionsNormalized();
+		this.idTaskDataMining = this.taskDataMining.getId();
 	}
 
 	public Long getId() {
@@ -149,6 +151,14 @@ public class EvaluationTaskDataMiningVO {
 	}
 	public void setEvalCountSessionsNormalized(Double evalCountSessionsNormalized) {
 		this.evalCountSessionsNormalized = evalCountSessionsNormalized;
+	}
+
+	public Long getIdTaskDataMining() {
+		return idTaskDataMining;
+	}
+
+	public void setIdTaskDataMining(Long idTaskDataMining) {
+		this.idTaskDataMining = idTaskDataMining;
 	}
 	
 }

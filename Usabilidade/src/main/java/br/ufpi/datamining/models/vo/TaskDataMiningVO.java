@@ -5,11 +5,26 @@ import java.util.Set;
 
 import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.EvaluationTaskDataMining;
+import br.ufpi.datamining.models.EvaluationTestDataMining;
+import br.ufpi.datamining.models.FieldSearchTupleDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
+import br.ufpi.models.Usuario;
+
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 
 public class TaskDataMiningVO {
+	
+	public static ExclusionStrategy exclusionStrategy = new ExclusionStrategy() {
+        public boolean shouldSkipClass(Class<?> clazz) {
+            return (clazz == TaskDataMining.class || clazz == Usuario.class || clazz == EvaluationTestDataMining.class);
+        }
+        public boolean shouldSkipField(FieldAttributes f) {
+            return (f.getDeclaringClass() == FieldSearchTupleDataMining.class && f.getName().equals("action"));
+        }
+     };
 
 	private Long id;
 	private String title;

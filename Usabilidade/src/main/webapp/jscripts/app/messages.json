@@ -11,6 +11,8 @@
 	"mean": "Média",
 	"stdv": "Desvio Padrão",
 	"actions": "ações",
+	"between": "Entre",
+	"and": "e",
 	
 	"description": "Descrição",
 	"count": "Count",
@@ -34,6 +36,7 @@
 	"datamining.delete" : "Excluir",
 	"datamining.edit" : "Editar",
 	"datamining.priority" : "Priorizar",
+	"datamining.evaluate" : "Avaliar",
 	"datamining.details" : "Detalhes",
 	"datamining.options" : "Opções",
 	"datamining.areyousure" : "Você deseja prosseguir?",
@@ -62,6 +65,8 @@
 	"datamining.testes.evaluations.availables" : "Janelas Temporais Disponíveis",
 	"datamining.testes.evaluations.newdates" : "Criar Janela Temporal para Avaliar Tarefas",
 	"datamining.testes.evaluations.newdates.alreadyexists" : "Janela Temporal informada já está disponível!",
+	"datamining.testes.evaluations.task" : "Análise de Tarefas",
+	"datamining.testes.evaluations.none" : "Não há avaliações anteriores para essa tarefa e essa janela temporal.",
 	
 	"datamining.testes.featuresmostaccessed" : "Funcionalidades Mais Utilizadas",
 	"datamining.testes.featuresmostaccessed.list" : "Lista das Funcionalidades",

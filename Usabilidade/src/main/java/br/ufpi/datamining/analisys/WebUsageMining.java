@@ -120,29 +120,8 @@ public class WebUsageMining {
 		TaskDataMiningRepository taskDataMiningRepository = new TaskDataMiningRepository(entityDafaultManager);
 		ActionDataMiningRepository actionDataMiningRepository = new ActionDataMiningRepository(entityManager);
 		
-		System.out.println(taskDataMiningRepository.count());
-		System.out.println(actionDataMiningRepository.count());
-		
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.HOUR_OF_DAY,0);
-		cal.set(Calendar.MINUTE,0);
-		cal.set(Calendar.SECOND,0);
-		cal.set(Calendar.MILLISECOND,0);
-
-		cal.set(Calendar.HOUR_OF_DAY,7);
-		cal.set(Calendar.DAY_OF_MONTH,3);
-		cal.set(Calendar.MONTH,2);
-		cal.set(Calendar.YEAR,2015);
-		Date initialDate = cal.getTime();
-		
-		System.out.println(initialDate.getTime());
-		
-		cal.set(Calendar.HOUR_OF_DAY,10);
-//		cal.set(Calendar.DAY_OF_MONTH,30);
-//		cal.set(Calendar.MONTH,8);
-		Date finalDate = cal.getTime();
-		
-		System.out.println(finalDate.getTime());
+		//01 - 31/08/2015 / 15 (1439607600000)
+		analyze(14l, 1438398000000l, 1439607600000l, taskDataMiningRepository, actionDataMiningRepository);
 		
 		//retorna as ações realizadas entre duas datas
 		//List<ActionDataMining> listActionsBetweenDates = WebUsageMining.listActionsBetweenDates(14l, taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate);
@@ -168,9 +147,9 @@ public class WebUsageMining {
 		//System.out.println(resultDataMining.getSessions().size());
 	}
 	
-	public static ResultDataMining analyze(Long taskId, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
+	public static ResultDataMining analyze(Long taskId, Long initDate, Long endDate, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
 		
-		boolean DEBUG = false;//false;
+		boolean DEBUG = true;//false;
 		TaskDataMining taskDataMining = taskDataMiningRepository.find(taskId);
 		
 		//#0 - pegar as configurações da tarefa
@@ -198,6 +177,9 @@ public class WebUsageMining {
 					fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
 				}
 			}
+			//verifica janela temporal
+			fieldsSearch.add(new FieldSearch("sTime", "sTimeInit", initDate, FieldSearchComparatorEnum.GREATER_EQUALS_THAN));
+			fieldsSearch.add(new FieldSearch("sTime", "sTimeEnd", endDate, FieldSearchComparatorEnum.LESS_EQUALS_THAN));
 			
 			List<ActionDataMining> actions = actionDataMiningRepository.getActions(fieldsSearch, taskDataMining.getDisregardActions(), null, null);
 			for(ActionDataMining ai : actions){
@@ -245,8 +227,25 @@ public class WebUsageMining {
 		Double countActionsRequiredTask = 0d;
 		
 		
+		/*
+		 DESCRIÇÃO DOS "FORs":
+		 
+		 itera todos os usuários
+			- contabiliza indices (erro, ok, limiar, reinicio, mediatempo, mediaacoes, etc) por usuário;
+			itera todas as sessões desse usuário
+				- contabiliza índices por sessão;
+				itera todas as ações de determinada sessão
+					- cria labels que identificam cada ação e contabilizam qtas vezes foram realizadas; (geral, todos usuários)
+					- verifica de acordo com as ações se a sessão é repetida, sucesso ou ultrapassou limiar;
+		 */
+		
 		Set<String> usersWithInitialActions = initialActionOfsectionsFromUser.keySet();
 		for(String username : usersWithInitialActions){
+			
+			if (DEBUG) {
+				System.out.println("-----"+username+"-----");
+			}
+			
 			List<ActionDataMining> userInitialActions = initialActionOfsectionsFromUser.get(username);
 			
 			//variaveis para contabilizar resultado dos usuarios
@@ -255,6 +254,10 @@ public class WebUsageMining {
 			List<String> sessionsResultIds = new ArrayList<String>();
 			
 			Double countActionsRequiredUser = 0d;
+			
+			if (DEBUG) {
+				System.out.println("UserSessions: "+countUserSessions);
+			}
 			
 			//verificar cada sessao
 			for(int i = 0; i < countUserSessions; i++){
@@ -277,6 +280,10 @@ public class WebUsageMining {
 				boolean okThreshold = true;
 				
 				HashMap<String, Integer> actionsRequiredSession = getActionsRequired(actionsRequired);
+				
+				if (DEBUG) {
+					System.out.println("Session("+ (i+1) + "/" + countUserSessions + "), size: " + sectionSize);
+				}
 				
 				//iterar acoes do usuario na sessao
 				ActionDataMining action = null;
@@ -354,8 +361,8 @@ public class WebUsageMining {
 					endTime = action.getsTime();
 				}
 				
-				if(DEBUG){
-					//System.out.println("-"+classification);
+				if (DEBUG) {
+					System.out.println(", classification: " + classification);
 				}
 				
 				//resultados da sessao
@@ -547,6 +554,7 @@ public class WebUsageMining {
 			
 			
 			/* Fuzzy CMeans */
+			DEBUG = false;
 			Fuzzy.executeFuzzySystemWithFCMUsersEfcEft(usersResult, IGNORE_ZERO, DEBUG);
 			System.out.println("### Fuzzy CMeans Users EfcEft Ok");
 			
@@ -629,10 +637,7 @@ public class WebUsageMining {
 		return actionDataMiningRepository.getActions(fieldsSearch, null, new OrderSearch("sTime", true), limit);
 	}
 	
-	public static List<ActionDataMining> listActionsFromUserBetweenDates(Long taskId, String username, FieldSearch actionLocal, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository, Date initialDate, Date finalDate, Long limit) {
-		TaskDataMining taskDataMining = taskDataMiningRepository.find(taskId);
-		String clientAbbreviation = taskDataMining.getTestDataMining().getClientAbbreviation();
-		
+	public static List<ActionDataMining> listActionsFromUserBetweenDates(String clientAbbreviation, String username, FieldSearch actionLocal, ActionDataMiningRepository actionDataMiningRepository, Date initialDate, Date finalDate, Long limit) {
 		List<FieldSearch> fieldsSearch = new ArrayList<FieldSearch>();
 		fieldsSearch.add(new FieldSearch("sClient", "sClient", clientAbbreviation, FieldSearchComparatorEnum.EQUALS));
 		fieldsSearch.add(new FieldSearch("sUsername", "sUsername", username, FieldSearchComparatorEnum.EQUALS));

@@ -1,6 +1,7 @@
 package br.ufpi.datamining.controllers;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Get;
@@ -17,6 +18,7 @@ import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
 import br.ufpi.datamining.analisys.WebUsageMining;
+import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.EvaluationTaskDataMining;
 import br.ufpi.datamining.models.EvaluationTestDataMining;
 import br.ufpi.datamining.models.FieldSearchTupleDataMining;
@@ -31,6 +33,7 @@ import br.ufpi.datamining.repositories.EvaluationTaskDataMiningRepository;
 import br.ufpi.datamining.repositories.EvaluationTestDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.repositories.TestDataMiningRepository;
+import br.ufpi.datamining.utils.GsonExclusionStrategy;
 import br.ufpi.models.Usuario;
 
 import com.google.gson.ExclusionStrategy;
@@ -72,16 +75,7 @@ public class DataMiningTaskController extends BaseController {
 	@Logado
 	public void view(Long idTeste, Long idTarefa) {
 		Gson gson = new GsonBuilder()
-	        .setExclusionStrategies(new ExclusionStrategy() {
-	            public boolean shouldSkipClass(Class<?> clazz) {
-	                return (clazz == TaskDataMining.class || clazz == Usuario.class || clazz == EvaluationTestDataMining.class);
-	            }
-
-	            public boolean shouldSkipField(FieldAttributes f) {
-	                return (f.getDeclaringClass() == FieldSearchTupleDataMining.class && f.getName().equals("action"));
-	            }
-
-	         })
+	        .setExclusionStrategies(TaskDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
 	        .create();
 		TaskDataMining task = taskDataMiningRepository.find(idTarefa);
@@ -131,22 +125,28 @@ public class DataMiningTaskController extends BaseController {
 		}
 	}
 	
-	@Get("/testes/{idTeste}/tarefas/{idTarefa}/avaliar/{idEvaluationTest}")
+	@Get("/testes/{idTeste}/avaliacao/{idEvaluationTest}/tarefas/{idTarefa}/avaliar")
 	@Logado
-	public void avaliar(Long idTeste, Long idTarefa, Long idEvaluationTest) {
-		Gson gson = new Gson();
+	public void avaliar(Long idTeste, Long idEvaluationTest, Long idTarefa) {
+		Gson gson = new GsonBuilder()
+	        .setExclusionStrategies(TaskDataMiningVO.exclusionStrategy)
+	        .serializeNulls()
+	        .create();
+		
 		try {
-			ResultDataMining resultDataMining = WebUsageMining.analyze(idTarefa, taskDataMiningRepository, actionDataMiningRepository);
-			
 			//persist results
 			TaskDataMining taskDataMining = taskDataMiningRepository.find(idTarefa);
 			EvaluationTestDataMining evaluationTest = evaluationTestDataMiningRepository.find(idEvaluationTest);
+			
+			ResultDataMining resultDataMining = WebUsageMining.analyze(idTarefa, evaluationTest.getInitDate().getTime(), evaluationTest.getLastDate().getTime(), taskDataMiningRepository, actionDataMiningRepository);
 			
 			EvaluationTaskDataMining evaluation = taskDataMining.getEvaluationFromEvalTest(idEvaluationTest);
 			boolean newEvaluation = evaluation == null ? true : false;
 			
 			if (evaluation == null) {
 				evaluation = new EvaluationTaskDataMining();
+				evaluation.setEvaluationTest(evaluationTest);
+				evaluation.setTaskDataMining(taskDataMining);
 			}
 			
 			evaluation.setEvalLastDate(new Date());
@@ -181,7 +181,12 @@ public class DataMiningTaskController extends BaseController {
 				System.out.println("Avaliação atualizada!");
 			}
 			
-			result.use(Results.json()).from(gson.toJson(resultDataMining)).serialize();
+			HashMap<String, String> resultMap = new HashMap<String, String>();
+			resultMap.put("result", gson.toJson(resultDataMining));
+			resultMap.put("evalTask", gson.toJson(evaluation));
+			resultMap.put("task", gson.toJson(new TaskDataMiningVO(taskDataMining)));
+			
+			result.use(Results.json()).from(resultMap).serialize();
 		} catch (Exception e) {
 			e.printStackTrace();
 			ReturnVO returnVO = new ReturnVO(ReturnStatusEnum.ERRO, "erro");

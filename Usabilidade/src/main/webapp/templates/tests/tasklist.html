@@ -19,6 +19,12 @@
 				</a>
 				<span class="divider">/</span>
 			</li>
+			<li>
+				<a ng-href="#/testes/{{testCtrl.test.id}}/tarefas"> 
+					{{ 'datamining.testes.evaluation' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
 			<li class="active">{{ 'datamining.testes.tasks' | translate}}</li>
 		</ul>
 		<div ng-show="success" class="alert alert-success">
@@ -52,13 +58,12 @@
 			            </dl>
 			            <dl>
 			            	<dt>{{ 'datamining.testes.url' | translate}}:</dt>
-			            	<dd>{{testCtrl.test.urlSystem}}</dd>
+			            	<dd>{{ testCtrl.test.urlSystem}}</dd>
 			            </dl>
-			            
 			            <dl>
 			            	<dt>{{ 'datamining.priority' | translate}}:</dt>
 			            	<dd>
-			            		<a class="btn btn-primary pull-right" ng-click="testCtrl.priority()" title="{{ 'datamining.priority' | translate}}"><span class="icon-white icon-tasks"></span> {{ 'datamining.priority' | translate}}</a>
+			            		<a disabled="disabled" class="btn btn-primary pull-right" ng-click="testCtrl.priority()" title="{{ 'datamining.priority' | translate}}"><span class="icon-white icon-tasks"></span> {{ 'datamining.priority' | translate}}</a>
 			            		<div class="clear-both"></div>
 							</dd>
 			            </dl>
@@ -68,41 +73,50 @@
 		    </div>
 	        <div class="span8">
 	            <h2>
-	            	{{ 'datamining.testes.tasks' | translate}}
-		            <a class="btn btn-primary pull-right" ng-href="#/testes/{{testCtrl.test.id}}/tarefas/criar">{{ 'datamining.tasks.new' | translate}}</a> 
+	            	{{ 'datamining.testes.evaluations.task' | translate}}
 	            </h2>
+	            <h4 class="usdm-mintitle">
+	            	({{ 'between' | translate }} <u>{{ testCtrl.formatDate(testCtrl.evalTest.initDate) }}</u> {{ 'and' | translate }}  <u>{{ testCtrl.formatDate(testCtrl.evalTest.lastDate) }}</u>)
+	            </h4>
+	            
 	            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" style="background-color: white" ts-wrapper>
 	                <thead>
 	                    <tr>
 	                        <th ts-criteria="title|lowercase">{{ 'datamining.tasks.title' | translate }}</th>
-					      	<th ts-criteria="evalCountSessions|parseFloat">Sess.</th>
+					      	<th ts-criteria="actualEvaluation.evalCountSessions|parseFloat">Sess.</th>
 					      	
 <!-- 					      	<th ts-criteria="evalMeanCompletion|parseFloat">Compl.</th> -->
 <!-- 					      	<th ts-criteria="evalMeanCorrectness|parseFloat">Corr.</th> -->
 <!-- 					      	<th ts-criteria="evalMeanActions|parseFloat">Ações</th> -->
 <!-- 					      	<th ts-criteria="evalMeanTimes|parseFloat">Tempo</th> -->
 
-					      	<th ts-criteria="evalEffectiveness|parseFloat">Eficá.</th>
-					      	<th ts-criteria="evalEfficiency|parseFloat">Efici.</th>
-					      	<th ts-criteria="evalFuzzyPriority|parseFloat" ts-default="descending">Priori.</th>
+					      	<th ts-criteria="actualEvaluation.evalEffectiveness|parseFloat">Eficá.</th>
+					      	<th ts-criteria="actualEvaluation.evalEfficiency|parseFloat">Efici.</th>
 					      	
+<!-- 					      	<th ts-criteria="evalFuzzyPriority|parseFloat" ts-default="descending">Priori.</th> -->
+					      	
+					      	<th>{{ 'datamining.options' | translate }}</th>
 	                    </tr>
 	                </thead>
 	                <tbody>
                         <tr ng-repeat="task in testCtrl.test.tasks | orderBy:'id'" ts-repeat ng-model="task.popovercontent" popup-title="task.title" popup="testCtrl.popup.options">
                             <td class="td-link"><a ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}">{{task.title}}</a></td>
                             
-                            <td>{{ task.evalCountSessions }}</td>
+                            <td>{{ task.actualEvaluation.evalCountSessions }}</td>
                             
 <!--                             <td>{{ task.evalMeanCompletion | number:2}} %</td> -->
 <!--                             <td>{{ task.evalMeanCorrectness | number:2}} %</td> -->
 <!--                             <td>{{ task.evalMeanActions | number:2}}</td> -->
 <!--                             <td>{{ task.evalMeanTimes | msConverter}}</td> -->
                             
-                            <td>{{ task.evalEffectiveness | number:2}}</td>
-                            <td>{{ task.evalEfficiency | number:2}}</td>
-                            <td>{{ task.evalFuzzyPriority | number:2}}</td>
+                            <td>{{ task.actualEvaluation.evalEffectiveness | number:2}}</td>
+                            <td>{{ task.actualEvaluation.evalEfficiency | number:2}}</td>
                             
+<!--                             <td>{{ task.evalFuzzyPriority | number:2}}</td> -->
+                            
+                            <td>
+                            	<a class="btn btn-primary pull-right" ng-href="#/testes/{{testCtrl.test.id}}/avaliacao/{{testCtrl.evalTest.id}}/tarefas/{{task.id}}/avaliar" title="{{ 'datamining.evaluate' | translate}}">{{ 'datamining.evaluate' | translate }}</a>
+							</td>
                         </tr>
 	                </tbody>
 	            </table>

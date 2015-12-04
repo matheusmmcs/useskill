@@ -112,7 +112,7 @@ public class FuzzyCMeansAlgorithm {
 		} while(toleranceLevel2 && lessThanMaxIterations);
 		
 		//verify if is NaN
-		if(this.actualError == Double.NaN){
+		if(Double.isNaN(this.actualError)){
 			System.out.println("{ERRO} - Error is NaN...");
 			this.matrixU = lastFineMatrixU;
 			this.centroids = lastFineCentroids;
@@ -361,14 +361,21 @@ public class FuzzyCMeansAlgorithm {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ArrayList<Point> points = new ArrayList<Point>();
-		points.add(new Point(1l, 1.0, 3.0));
-		points.add(new Point(2l, 1.5, 3.2));
-		points.add(new Point(3l, 1.3, 2.8));
-		points.add(new Point(4l, 3.0, 1.0));
+//		ArrayList<Point> points = new ArrayList<Point>();
+//		points.add(new Point(1l, 1.0, 3.0));
+//		points.add(new Point(2l, 1.5, 3.2));
+//		points.add(new Point(3l, 1.3, 2.8));
+//		points.add(new Point(4l, 3.0, 1.0));
+//		
+//		FuzzyCMeansAlgorithm algorithm = new FuzzyCMeansAlgorithm(2, 1.25, points, 0.0, null);
 		
-		FuzzyCMeansAlgorithm algorithm = new FuzzyCMeansAlgorithm(2, 1.25, points, 0.0, null);
-		algorithm.execute();
+		ArrayList<Point> points = new ArrayList<Point>();
+		points.add(new Point(5l, 0.8358847528613207, 1.0));
+		points.add(new Point(2l, 1.0, 1.0));
+		
+		FuzzyCMeansAlgorithm algorithm = new FuzzyCMeansAlgorithm(3, 2.0, points, 0.01, null);
+		
+		algorithm.executeFCM();
 		
 		System.out.println("Matrix U: ");
 		System.out.println(algorithm.getMatrixU().toString());

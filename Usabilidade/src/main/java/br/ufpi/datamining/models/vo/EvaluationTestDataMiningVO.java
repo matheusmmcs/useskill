@@ -4,12 +4,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.EvaluationTaskDataMining;
 import br.ufpi.datamining.models.EvaluationTestDataMining;
+import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
+import br.ufpi.datamining.utils.GsonExclusionStrategy;
+
+import com.google.gson.ExclusionStrategy;
 
 public class EvaluationTestDataMiningVO {
 
+	public static ExclusionStrategy exclusionStrategy = new GsonExclusionStrategy(
+			EvaluationTestDataMining.class, TestDataMining.class, ActionSingleDataMining.class, TaskDataMining.class);
+	
 	private Long id;
 	private TestDataMining test;
 	private Date initDate;

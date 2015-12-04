@@ -76,15 +76,15 @@
 			            <dl>
 			            	<dt>{{ 'datamining.tasks.evaluate.actions.ok.title' | translate}}:</dt>
 			            	<dd>
-			            		{{ 'qtd' | translate }}: <span class="text-green">{{taskCtrl.evaluate.minActionsOk | number:0}}</span> {{ 'to' | translate }} <span class="text-red">{{taskCtrl.evaluate.maxActionsOk | number:0}}</span> {{ 'actions' | translate }}. <br/>
-			            		{{ 'mean' | translate }}: <b>{{taskCtrl.evaluate.meanActionsOk | number:2}}</b> | {{ 'stdv' | translate }}: <b>{{taskCtrl.evaluate.stdDevActionsOk | number:2}} </b> {{ 'actions' | translate }}.
+			            		{{ 'qtd' | translate }}: <span class="text-green">{{taskCtrl.result.minActionsOk | number:0}}</span> {{ 'to' | translate }} <span class="text-red">{{taskCtrl.result.maxActionsOk | number:0}}</span> {{ 'actions' | translate }}. <br/>
+			            		{{ 'mean' | translate }}: <b>{{taskCtrl.result.meanActionsOk | number:2}}</b> | {{ 'stdv' | translate }}: <b>{{taskCtrl.result.stdDevActionsOk | number:2}} </b> {{ 'actions' | translate }}.
 			            	</dd>
 			            </dl>
 			            <dl>
 			            	<dt>{{ 'datamining.tasks.evaluate.time.ok.title' | translate}}:</dt>
 			            	<dd>
-			            		{{ 'qtd' | translate }}: <span class="text-green">{{taskCtrl.evaluate.minTimesOk | msConverter}}</span> {{ 'to' | translate }} <span class="text-red">{{taskCtrl.evaluate.maxTimesOk | msConverter}}</span>. <br/>
-			            		{{ 'mean' | translate }}: <b>{{taskCtrl.evaluate.meanTimesOk | msConverter}}</b> | {{ 'stdv' | translate }}: <b>{{taskCtrl.evaluate.stdDevTimesOk | msConverter}}.</b>
+			            		{{ 'qtd' | translate }}: <span class="text-green">{{taskCtrl.result.minTimesOk | msConverter}}</span> {{ 'to' | translate }} <span class="text-red">{{taskCtrl.result.maxTimesOk | msConverter}}</span>. <br/>
+			            		{{ 'mean' | translate }}: <b>{{taskCtrl.result.meanTimesOk | msConverter}}</b> | {{ 'stdv' | translate }}: <b>{{taskCtrl.result.stdDevTimesOk | msConverter}}.</b>
 			            	</dd>
 			            </dl>
 		            </div>
@@ -127,7 +127,7 @@
 							    </tr>
 							  </thead>
 							  <tbody>
-							    <tr ng-repeat="user in taskCtrl.evaluate.users" ts-repeat>
+							    <tr ng-repeat="user in taskCtrl.result.users" ts-repeat>
 							      <td><a ng-click="showUserSessions(user)">{{user.username}}</a></td>
 							      
 							      <td>{{user.actionsAverageOk | number:2}}</td>
@@ -191,7 +191,7 @@
 							    </tr>
 							  </thead>
 							  <tbody>
-							    <tr class="useskill-action-popover" ng-repeat="session in taskCtrl.evaluate.sessions" ts-repeat>
+							    <tr class="useskill-action-popover" ng-repeat="session in taskCtrl.result.sessions" ts-repeat>
 							      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
 							      <td>{{session.actions.length | number:2}}</td>
 							      <td>{{session.time | msConverter}}</td>
@@ -217,7 +217,7 @@
 							  </thead>
 							  <tbody>
 							    <tr ng-repeat="action in taskCtrl.userSession.actions" ts-repeat>
-							      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.evaluate.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
+							      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
 							      <td>{{action.time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</td>
 							      <td>{{action.action}}</td>
 							      <td title="{{action.element}}">{{action.element | cut:true:15:'&hellip;'}}</td>

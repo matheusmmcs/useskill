@@ -137,15 +137,12 @@ angular.module('useskill',
 		        }
 		    }
 	    })
-	    .when('/testes/:testId/tarefas/:taskId/avaliar', {
+	    .when('/testes/:testId/avaliacao/:evalTestId/tarefas/:taskId/avaliar', {
 	    	controller:'TaskEvaluateController as taskCtrl',
 	    	templateUrl:config[env].apiUrl+'/templates/tasks/evaluate.html',
 	    	resolve: {
-		        task: function (ServerAPI, $route) {
-		        	return ServerAPI.getTask($route.current.params.testId, $route.current.params.taskId);
-		        },
 		        evaluate: function (ServerAPI, $route) {
-		        	return ServerAPI.evaluateTask($route.current.params.testId, $route.current.params.taskId);
+		        	return ServerAPI.evaluateTask($route.current.params.testId, $route.current.params.evalTestId, $route.current.params.taskId);
 		        }
 		    }
 	    })
@@ -273,8 +270,8 @@ angular.module('useskill',
         saveTask: function(task) {
         	return doRequest('POST', '/datamining/testes/tarefas/salvar', task);
         },
-        evaluateTask: function(testId, taskId){
-        	return doRequest('GET', '/datamining/testes/'+testId+'/tarefas/'+taskId+'/avaliar');
+        evaluateTask: function(testId, evalTestId, taskId){
+        	return doRequest('GET', '/datamining/testes/'+testId+'/avaliacao/'+evalTestId+'/tarefas/'+taskId+'/avaliar');
         },
         
         
@@ -356,7 +353,7 @@ angular.module('useskill',
 	testCtrl.maxDate = new Date().getTime();
 	
 	testCtrl.formatDate = function(date) {
-		return moment(date).format('DD/MM/YYYY, HH:mm:ss');
+		return moment(date, 'MMM DD, YYYY hh:mm:ss A').format('DD/MM/YYYY, HH:mm:ss');
 	}
 	
 	testCtrl.createDates = function(){
@@ -383,17 +380,28 @@ angular.module('useskill',
 	testCtrl.test = JSON.parse(test.data.string);
 	testCtrl.evalTest = JSON.parse(evalTest.data.string);
 	
-	console.log(testCtrl.test);
-	console.log(testCtrl.evalTest);
-	
-	testCtrl.priority = function(){
-		ServerAPI.priorityTest(testCtrl.test.id).success(function(data){
-			$rootScope.mgsRealod = {
-					success:$filter('translate')('datamining.tasks.priority.done')
-			};
-			$route.reload();
+	angular.forEach(testCtrl.evalTest.evaluationsTask, function(eval){
+		angular.forEach(testCtrl.test.tasks, function(task){
+			if (task.id == eval.idTaskDataMining) {
+				task.actualEvaluation = eval;
+			}
 		});
+	});
+	
+	console.log(testCtrl);
+	
+	testCtrl.formatDate = function(date) {
+		return moment(date, 'MMM DD, YYYY hh:mm:ss A').format('DD/MM/YYYY, HH:mm:ss');
 	}
+	
+//	testCtrl.priority = function(){
+//		ServerAPI.priorityTest(testCtrl.test.id).success(function(data){
+//			$rootScope.mgsRealod = {
+//					success:$filter('translate')('datamining.tasks.priority.done')
+//			};
+//			$route.reload();
+//		});
+//	}
 	
 	testCtrl.popup = {
 		  options: {
@@ -412,20 +420,25 @@ angular.module('useskill',
 	}
 	
 	function contentPopover(task){
-		var content = 'Data da Avaliação = '+task.evalLastDate+'<br/>';
-		content += 'Média de Ações = '+reduceNumber(task.evalMeanActions)+' [z='+reduceNumber(task.evalZScoreActions)+']<br/>';
-		content += 'Média de Tempos = '+reduceNumber(task.evalMeanTimes)+', [z='+reduceNumber(task.evalZScoreTime)+']<br/>';
-		content += 'Completude = '+reduceNumber(task.evalMeanCompletion)+', Corretude = '+reduceNumber(task.evalMeanCorrectness)+'<br/>';
-		
-		content += 'Sessões = '+reduceNumber(task.evalCountSessions)+', ['+reduceNumber(task.evalCountSessionsNormalized)+']<br/>';
-		//content += 'Eficácia = (Completude * Corretude)/100<br/>';
-		content += 'Eficácia = '+reduceNumber(task.evalEffectiveness)+', ['+reduceNumber(task.evalEffectivenessNormalized)+']<br/>';
-		//content += 'Eficiência = Eficácia / ((AçõesZscore + TemposZscore)/2)<br/>';
-		content += 'Eficiência = '+reduceNumber(task.evalEfficiency)+', ['+reduceNumber(task.evalEfficiencyNormalized)+']<br/>';
-		content += 'Prioridade (Fuzzy) = '+reduceNumber(task.evalFuzzyPriority)+'<br/>';
+		var content = "";
+		task = task.actualEvaluation;
+		if (task) {
+			content = 'Data da Avaliação = '+task.evalLastDate+'<br/>';
+			content += 'Média de Ações = '+reduceNumber(task.evalMeanActions)+' [z='+reduceNumber(task.evalZScoreActions)+']<br/>';
+			content += 'Média de Tempos = '+reduceNumber(task.evalMeanTimes)+', [z='+reduceNumber(task.evalZScoreTime)+']<br/>';
+			content += 'Completude = '+reduceNumber(task.evalMeanCompletion)+', Corretude = '+reduceNumber(task.evalMeanCorrectness)+'<br/>';
+			
+			content += 'Sessões = '+reduceNumber(task.evalCountSessions)+', ['+reduceNumber(task.evalCountSessionsNormalized)+']<br/>';
+			//content += 'Eficácia = (Completude * Corretude)/100<br/>';
+			content += 'Eficácia = '+reduceNumber(task.evalEffectiveness)+', ['+reduceNumber(task.evalEffectivenessNormalized)+']<br/>';
+			//content += 'Eficiência = Eficácia / ((AçõesZscore + TemposZscore)/2)<br/>';
+			content += 'Eficiência = '+reduceNumber(task.evalEfficiency)+', ['+reduceNumber(task.evalEfficiencyNormalized)+']<br/>';
+			content += 'Prioridade (Fuzzy) = '+reduceNumber(task.evalFuzzyPriority)+'<br/>';
+		} else {
+			content = $filter('translate')('datamining.testes.evaluations.none');
+		}
 		return content;
 	}
-	console.log(testCtrl);
 })
 .controller('TestMostAccessController', function($scope, $filter, $timeout, test, MostAccessTypeEnum, ServerAPI) {
 	var testCtrl = this;
@@ -666,8 +679,14 @@ angular.module('useskill',
 	taskCtrl.task = task;
 	taskCtrl.actionTitle = $filter('translate')('datamining.tasks.edit');
 })
-.controller('TaskEvaluateController', function($scope, task, evaluate, $filter, ServerAPI) {
+.controller('TaskEvaluateController', function($scope, evaluate, $filter, ServerAPI) {
 	var taskCtrl = this;
+	
+	var map = evaluate.data.map;
+	for (var i in map) {
+		taskCtrl[map[i][0]] = JSON.parse(map[i][1]);
+	}
+	console.log(taskCtrl);
 	
 	var modesArr = [{
 				name: 'users', 
@@ -712,15 +731,11 @@ angular.module('useskill',
 	taskCtrl.modes = modes;
 	taskCtrl.modesArr = modesArr;
 	taskCtrl.mode = modes.users;
-	
-	taskCtrl.task = JSON.parse(task.data.string);
-	taskCtrl.evaluate = JSON.parse(evaluate.data.string);
-	console.log(taskCtrl);
 
-	var actionsArr = $filter('toArray')(taskCtrl.evaluate.pageViewActionIds),
+	var actionsArr = $filter('toArray')(taskCtrl.result.pageViewActionIds),
 		maxCount = 0;
 	angular.forEach(actionsArr, function(action){
-		action.count = taskCtrl.evaluate.pageViewActionCount[action.$key];
+		action.count = taskCtrl.result.pageViewActionCount[action.$key];
 		if(maxCount < action.count){
 			maxCount = action.count;
 		}
@@ -728,14 +743,14 @@ angular.module('useskill',
 	
 	taskCtrl.actionsMaxCount = maxCount;
 	taskCtrl.actionsArr = actionsArr;
-	taskCtrl.actionsRequiredArr = $filter('toArray')(taskCtrl.evaluate.actionsRequiredTask);
+	taskCtrl.actionsRequiredArr = $filter('toArray')(taskCtrl.result.actionsRequiredTask);
 	
 	$scope.showUserSessions = function(user){
 		var sessions = [];
 		for(var i in user.sessionsId){
 			var userSession = user.sessionsId[i];
-			for(var s in taskCtrl.evaluate.sessions){
-				var session = taskCtrl.evaluate.sessions[s];
+			for(var s in taskCtrl.result.sessions){
+				var session = taskCtrl.result.sessions[s];
 				if(session.id == userSession){
 					sessions.push(session);
 					break;
@@ -782,9 +797,9 @@ angular.module('useskill',
 	                             $filter('translate')('datamining.tasks.evaluate.restart'),
 	                             $filter('translate')('datamining.tasks.evaluate.threshold')];
     $scope.graphSuccessData = [
-                               	taskCtrl.evaluate.countSessionsSuccess, 
-                               	taskCtrl.evaluate.countSessionsRepeat,
-                               	taskCtrl.evaluate.countSessionsThreshold];
+                               	taskCtrl.result.countSessionsSuccess, 
+                               	taskCtrl.result.countSessionsRepeat,
+                               	taskCtrl.result.countSessionsThreshold];
     $scope.graphSuccessColours = ["#46BFBD", "#FDB45C", "#F7464A"];
     $scope.graphSuccessType = 'Pie';
     $scope.graphSuccessToggle = function () {
@@ -938,9 +953,8 @@ angular.module('useskill',
 		    },
 		    link: function(scope, element) {
 		    	
-		    		//scope.taskCtrl.evaluate.pageViewActionCount
 		    	var id = (scope.colorActionElem.$key || scope.colorActionElem.identifier);
-		    	var count = scope.colorCtrl.evaluate.pageViewActionCount[id];
+		    	var count = scope.colorCtrl.result.pageViewActionCount[id];
 		    	var a = count > 0 ? (count / scope.colorCtrl.actionsMaxCount) : 0;
 		    	
 		    	element.css('background', 'rgba(66,99,146, '+a+')');
@@ -948,7 +962,6 @@ angular.module('useskill',
 		    		element.css('color', 'white');
 		    	}
 		    	//console.log(id);
-		    	//taskCtrl.evaluate.pageViewActionCount
 		    	
 		    	/*
 		    	var a = (scope.colorActionElem.count/taskCtrl.actionsMaxCount || 0);

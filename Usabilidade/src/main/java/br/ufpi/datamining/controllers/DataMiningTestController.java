@@ -20,7 +20,6 @@ import br.ufpi.controllers.BaseController;
 import br.ufpi.datamining.analisys.Fuzzy;
 import br.ufpi.datamining.analisys.WebUsageMining;
 import br.ufpi.datamining.models.ActionDataMining;
-import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.EvaluationTaskDataMining;
 import br.ufpi.datamining.models.EvaluationTestDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
@@ -37,7 +36,6 @@ import br.ufpi.datamining.repositories.EvaluationTaskDataMiningRepository;
 import br.ufpi.datamining.repositories.EvaluationTestDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.repositories.TestDataMiningRepository;
-import br.ufpi.datamining.utils.GsonExclusionStrategy;
 import br.ufpi.datamining.utils.UsabilityUtils;
 import br.ufpi.models.Usuario;
 
@@ -78,7 +76,7 @@ public class DataMiningTestController extends BaseController {
 	@Logado
 	public void list() {
 		Gson gson = new GsonBuilder()
-	        .setExclusionStrategies(new GsonExclusionStrategy(ActionSingleDataMining.class, TestDataMining.class, TaskDataMining.class))
+	        .setExclusionStrategies(TestDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
 	        .create();
 		
@@ -96,7 +94,7 @@ public class DataMiningTestController extends BaseController {
 	@Logado
 	public void priorizar(Long idTeste, Date init, Date end) {
 		Gson gson = new GsonBuilder()
-	        .setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class, ActionSingleDataMining.class))
+	        .setExclusionStrategies(TestDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
 	        .create();
 		
@@ -147,7 +145,7 @@ public class DataMiningTestController extends BaseController {
 	@Logado
 	public void view(Long idTeste) {
 		Gson gson = new GsonBuilder()
-	        .setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class, TaskDataMining.class, ActionSingleDataMining.class))
+	        .setExclusionStrategies(TestDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
 	        .create();
 		
@@ -240,7 +238,7 @@ public class DataMiningTestController extends BaseController {
 		
 		FieldSearch fieldLocation = new FieldSearch("sJhm", "local", local, FieldSearchComparatorEnum.EQUALS);
 		fieldLocation = null;
-		List<ActionDataMining> listActionsBetweenDates = WebUsageMining.listActionsFromUserBetweenDates(idTeste, username, fieldLocation, taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate, limit);
+		List<ActionDataMining> listActionsBetweenDates = WebUsageMining.listActionsFromUserBetweenDates(testPertencente.getClientAbbreviation(), username, fieldLocation, actionDataMiningRepository, initialDate, finalDate, limit);
 		
 		result.use(Results.json()).from(gson.toJson(listActionsBetweenDates)).serialize();
 	}
@@ -250,8 +248,7 @@ public class DataMiningTestController extends BaseController {
 	@Logado
 	public void newevaluationtest(Long idTeste, Long initDate, Long endDate) {
 		Gson gson = new GsonBuilder()
-	        //.setExclusionStrategies(new GsonExclusionStrategy(EvaluationTestDataMining.class, EvaluationTaskDataMining.class, TestDataMining.class, ActionSingleDataMining.class))
-			.setExclusionStrategies(new GsonExclusionStrategy(TestDataMining.class, TaskDataMining.class, ActionSingleDataMining.class))
+			.setExclusionStrategies(TestDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
 	        .create();
 		
@@ -277,7 +274,7 @@ public class DataMiningTestController extends BaseController {
 	@Logado
 	public void getTestEvaluation(Long idTeste, Long idEvalTest) {
 		Gson gson = new GsonBuilder()
-			.setExclusionStrategies(new GsonExclusionStrategy(EvaluationTestDataMining.class, TestDataMining.class, ActionSingleDataMining.class))
+			.setExclusionStrategies(EvaluationTestDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
 	        .create();
 		
@@ -296,10 +293,10 @@ public class DataMiningTestController extends BaseController {
 		}
 	}
 	
-	private boolean testePertenceUsuarioLogado(Long idTeste) {
-		validateComponente.validarId(idTeste);
-		TestDataMining teste = testeDataMiningRepository.getTestPertencente(usuarioLogado.getUsuario().getId(), idTeste);
-		return teste != null;
-	}
+//	private boolean testePertenceUsuarioLogado(Long idTeste) {
+//		validateComponente.validarId(idTeste);
+//		TestDataMining teste = testeDataMiningRepository.getTestPertencente(usuarioLogado.getUsuario().getId(), idTeste);
+//		return teste != null;
+//	}
 
 }

@@ -2,13 +2,22 @@ package br.ufpi.datamining.models.vo;
 
 import java.util.List;
 
+import com.google.gson.ExclusionStrategy;
+
 import br.ufpi.datamining.models.ActionSingleDataMining;
+import br.ufpi.datamining.models.EvaluationTaskDataMining;
 import br.ufpi.datamining.models.FieldSearchTupleDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
+import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
 import br.ufpi.datamining.models.enums.MomentTypeActionDataMiningEnum;
+import br.ufpi.datamining.utils.GsonExclusionStrategy;
+import br.ufpi.models.Usuario;
 
 public class ActionSingleDataMiningVO {
+	
+	public static ExclusionStrategy exclusionStrategy = new GsonExclusionStrategy(
+			ActionSingleDataMining.class, Usuario.class);
 
 	private Long id;
 	private TaskDataMining task;
