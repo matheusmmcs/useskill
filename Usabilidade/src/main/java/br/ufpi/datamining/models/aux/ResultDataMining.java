@@ -32,6 +32,8 @@ public class ResultDataMining {
 	private HashMap<String, String> pageViewActionIds;
 	private HashMap<String, Integer> pageViewActionCount;
 	
+	private HashMap<String, String> usersSequences;
+	
 	private List<UserResultDataMining> users;
 	private List<SessionResultDataMining> sessions;
 	
@@ -233,6 +235,14 @@ public class ResultDataMining {
 
 	public void setActionsRequiredTask(HashMap<String, Integer> actionsRequiredTask) {
 		this.actionsRequiredTask = actionsRequiredTask;
+	}
+
+	public HashMap<String, String> getUsersSequences() {
+		return usersSequences;
+	}
+
+	public void setUsersSequences(HashMap<String, String> usersSequences) {
+		this.usersSequences = usersSequences;
 	}
 		
 }

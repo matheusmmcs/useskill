@@ -143,6 +143,9 @@ angular.module('useskill',
 	    	resolve: {
 		        evaluate: function (ServerAPI, $route) {
 		        	return ServerAPI.evaluateTask($route.current.params.testId, $route.current.params.evalTestId, $route.current.params.taskId);
+		        },
+		        evalTestId: function ($route) {
+		        	return $route.current.params.evalTestId;
 		        }
 		    }
 	    })
@@ -679,9 +682,10 @@ angular.module('useskill',
 	taskCtrl.task = task;
 	taskCtrl.actionTitle = $filter('translate')('datamining.tasks.edit');
 })
-.controller('TaskEvaluateController', function($scope, evaluate, $filter, ServerAPI) {
+.controller('TaskEvaluateController', function($scope, evaluate, evalTestId, $filter, ServerAPI) {
 	var taskCtrl = this;
 	
+	taskCtrl.evalTestId = evalTestId;
 	var map = evaluate.data.map;
 	for (var i in map) {
 		taskCtrl[map[i][0]] = JSON.parse(map[i][1]);

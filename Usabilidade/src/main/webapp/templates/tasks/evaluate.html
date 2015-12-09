@@ -26,12 +26,13 @@
 				<span class="divider">/</span>
 			</li>
 			<li>
-				<a ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/{{taskCtrl.task.id}}"> 
-					{{ 'datamining.tasks.details' | translate}}
+				<a ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/avaliar/{{taskCtrl.evalTestId}}"> 
+					{{ 'datamining.testes.tasks' | translate}}
 				</a>
 				<span class="divider">/</span>
 			</li>
 			<li class="active">{{ 'datamining.tasks.evaluate' | translate}}</li>
+
 		</ul>
 		
 		<div ng-show="success" class="alert alert-success">

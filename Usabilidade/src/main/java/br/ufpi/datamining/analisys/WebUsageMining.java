@@ -120,8 +120,28 @@ public class WebUsageMining {
 		TaskDataMiningRepository taskDataMiningRepository = new TaskDataMiningRepository(entityDafaultManager);
 		ActionDataMiningRepository actionDataMiningRepository = new ActionDataMiningRepository(entityManager);
 		
-		//01 - 31/08/2015 / 15 (1439607600000)
-		analyze(14l, 1438398000000l, 1439607600000l, taskDataMiningRepository, actionDataMiningRepository);
+		// 31 (1440990000000) / 15 (1439607600000) / 05 (1438743600000) / 01 (1438398000000)
+		ResultDataMining resultDataMining = analyze(14l, 1438398000000l, 1438743600000l, taskDataMiningRepository, actionDataMiningRepository);
+		
+		Set<String> keySet = resultDataMining.getUsersSequences().keySet();
+		String patterns = "";
+		for (String key : keySet) {
+			System.out.println("----------");
+			System.out.println(key);
+			System.out.println(resultDataMining.getUsersSequences().get(key));
+			patterns += resultDataMining.getUsersSequences().get(key);
+		}
+		
+		System.out.println(patterns);
+		
+		FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
+		fspm.analyze(patterns, 1.0, null, null);
+		
+		//Maximizar o support
+		//Maiores sequencias
+		//Menos pertençam a fluxos "corretos"
+		
+		
 		
 		//retorna as ações realizadas entre duas datas
 		//List<ActionDataMining> listActionsBetweenDates = WebUsageMining.listActionsBetweenDates(14l, taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate);
@@ -239,6 +259,8 @@ public class WebUsageMining {
 					- verifica de acordo com as ações se a sessão é repetida, sucesso ou ultrapassou limiar;
 		 */
 		
+		HashMap<String, String> usersSequences = new HashMap<String, String>();
+		
 		Set<String> usersWithInitialActions = initialActionOfsectionsFromUser.keySet();
 		for(String username : usersWithInitialActions){
 			
@@ -254,6 +276,7 @@ public class WebUsageMining {
 			List<String> sessionsResultIds = new ArrayList<String>();
 			
 			Double countActionsRequiredUser = 0d;
+			String userSequence = "";
 			
 			if (DEBUG) {
 				System.out.println("UserSessions: "+countUserSessions);
@@ -296,7 +319,7 @@ public class WebUsageMining {
 						PageViewActionDataMining pageViewActionDataMining = new PageViewActionDataMining(action);
 						String pvaKey, pvaUnique = pageViewActionDataMining.getPageViewActionUnique();
 						if(pageViewActionIds.get(pvaUnique) == null){
-							pvaKey = "A"+countIdPageViewAction;
+							pvaKey = ""+countIdPageViewAction;
 							pageViewActionIds.put(pvaUnique, pvaKey);
 							countIdPageViewAction++;
 						}else{
@@ -305,6 +328,8 @@ public class WebUsageMining {
 						pageViewActionDataMining.setIdentifier(pvaKey);
 						userSectionPageViewActions.add(pageViewActionDataMining);
 						countActions++;
+						
+						userSequence += pvaKey + " -1 ";
 						
 						if(DEBUG){
 							//System.out.println(pvaUnique);
@@ -351,6 +376,8 @@ public class WebUsageMining {
 						}
 					}
 				}
+				
+				userSequence += "-2\n";
 				
 				if(action == null){
 					if(DEBUG){
@@ -404,6 +431,8 @@ public class WebUsageMining {
 				}
 				
 			}
+			
+			usersSequences.put(username, userSequence);
 			
 			//resultados somado para o total
 			countoktotal += countok;
@@ -582,6 +611,8 @@ public class WebUsageMining {
 		
 		//required
 		Double required = countActionsRequiredTask > 0 ? countActionsRequiredTask / countTaskSessions : 0;
+		
+		result.setUsersSequences(usersSequences);
 		
 		result.setRateRequired(required);
 		result.setActionsRequiredTask(actionsRequiredTask);
