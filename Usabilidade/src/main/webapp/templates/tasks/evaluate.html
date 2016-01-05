@@ -210,6 +210,7 @@
 							  <thead>
 							    <tr>
 							      <th ts-criteria="id">Id</th>
+							      <th ts-criteria="id">Fav.</th>
 							      <th ts-criteria="time |parseInt" ts-default="ascending">Hora</th>
 							      <th ts-criteria="action">Acao</th>
 							      <th ts-criteria="element|lowercase">Elemento</th>
@@ -219,6 +220,10 @@
 							  <tbody>
 							    <tr ng-repeat="action in taskCtrl.userSession.actions" ts-repeat>
 							      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
+							      <td class="text-center" ng-click="toggleFavoriteAction(action)">
+							      	<i ng-show="isActionFavorite(action)" class="icon-star"></i>
+							      	<i ng-hide="isActionFavorite(action)" class="icon-star-empty"></i>
+							      </td>
 							      <td>{{action.time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</td>
 							      <td>{{action.action}}</td>
 							      <td title="{{action.element}}">{{action.element | cut:true:15:'&hellip;'}}</td>
@@ -261,6 +266,110 @@
 							  </tbody>
 							</table>
 						</div>
+						
+						<!-- FREQUENT PATTERN MINING -->
+						<div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'frequentPatterns'">
+							<div id="mynetwork"></div>
+						
+							<div class="usdm-withscroll">
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								      <th>{{ 'pattern' | translate }}</th>
+								      <th ts-criteria="supportSize|parseInt"  ts-default="descending">{{ 'datamining.pattern.support' | translate }}</th>
+								      <th ts-criteria="itemsetsSize|parseInt">{{ 'datamining.pattern.itemsetsize' | translate }}</th>
+								      <th ts-criteria="effectivenessMean|parseFloat">Eficá.</th>
+								      <th ts-criteria="efficiencyMean|parseFloat">Efici.</th>
+								      <th ts-criteria="successMean|parseFloat">Comple.</th>
+								      <th ts-criteria="requiredMean|parseFloat">Corret.</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr ng-repeat="pattern in taskCtrl.frequentPatterns" ts-repeat>
+								      <td><a ng-click="showFrequentPattern(pattern)">{{ 'pattern' | translate }} {{pattern.key}}</a></td>
+								      <td>{{pattern.supportSize}}</td>
+								      <td>{{pattern.itemsetsSize}}</td>
+								      <td>{{pattern.effectivenessMean | number:2}} %</td>
+								      <td>{{pattern.efficiencyMean | number:2}} %</td>
+								      <td>{{pattern.successMean | number:2}} %</td>
+								      <td>{{pattern.requiredMean | number:2}} %</td>
+								    </tr>
+								  </tbody>
+								</table>
+							</div>
+			            </div>
+			            <div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'pattern'">
+			            
+			            	<div class="usdm-box-body">
+					            <dl>
+					            	<dt class="ng-binding">Métricas do Padrão Encontrado:</dt>
+					            	<dd class="ng-binding">
+			            				{{ 'datamining.pattern.support.desc' | translate }}: <b>{{taskCtrl.frequentPatternActive.supportSize}}</b>.<br/>
+			            				{{ 'datamining.pattern.effectiveness.desc' | translate }}: <b>{{taskCtrl.frequentPatternActive.effectivenessMean | number:2}}</b>.<br/>
+			            				{{ 'datamining.pattern.efficiency.desc' | translate }}: <b>{{taskCtrl.frequentPatternActive.efficiencyMean | number:2}}</b>.<br/>
+			            				{{ 'datamining.pattern.rateSuccess.desc' | translate }}: <b>{{taskCtrl.frequentPatternActive.successMean | number:2}}</b>.<br/>
+			            				{{ 'datamining.pattern.rateRequired.desc' | translate }}: <b>{{taskCtrl.frequentPatternActive.requiredMean | number:2}}</b>.
+					            	</dd>
+					            </dl>
+		            		</div>
+		            		
+		            		
+		            		<br/>
+		            		<h3>{{ 'datamining.pattern.actions' | translate }}</h3>
+		            		<div class="usdm-withscroll">
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								      <th ts-criteria="itemset|parseInt" ts-default="ascending">{{ 'index' | translate }}</th>
+								      <th ts-criteria="id|parseInt">{{ 'id' | translate }}</th>
+								      <th ts-criteria="count|parseInt">{{ 'count' | translate }}</th>
+								      <th ts-criteria="desc">{{ 'datamining.tasks.actions.description' | translate }}</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr ng-repeat="action in taskCtrl.frequentPatternActive.itemsetsFormatted" ts-repeat>
+								      <td><a href="#">{{action.itemset}}</a></td>
+								      <td>{{action.idAction}}</td>
+								      <td>{{action.count}}</td>
+								      <td>{{action.desc}}</td>
+								    </tr>
+								  </tbody>
+								</table>
+							</div>
+							
+							
+							<br/>
+		            		<h3>{{ 'datamining.pattern.sessions' | translate }}</h3>
+		            		<div class="usdm-withscroll">
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
+								      <th ts-criteria="actions|parseInt">Acoes</th>
+								      <th ts-criteria="time|parseInt">Tempo</th>
+								      <th ts-criteria="userRateSuccess|parseFloat">Completude</th>
+								      <th ts-criteria="userRateRequired*100|parseFloat">Corretude</th>
+								      <th ts-criteria="classification|lowercase">Class</th>
+								      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">Fuzzy</th>
+								      <th ts-criteria="fuzzyPriorityEfcEft|parseFloat">F2</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr ng-repeat="session in taskCtrl.frequentPatternActive.sessionsFormatted" ts-repeat>
+								      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
+								      <td>{{session.actions.length | number:2}}</td>
+								      <td>{{session.time | msConverter}}</td>
+								      <td>{{session.userRateSuccess | number:2}} %</td>
+								      <td>{{session.userRateRequired | number:2}} %</td>
+								      <td>{{session.classification}}</td>
+								      <td>{{session.fuzzyPriority | number:3}}</td>
+								      <td title="Efici.={{session.efficiency | number:2}}[{{session.efficiencyNormalized | number:2}}], Efica.={{session.effectiveness | number:2}}[{{session.effectivenessNormalized | number:2}}]">{{session.fuzzyPriorityEfcEft | number:3}}</td>
+								    </tr>
+								  </tbody>
+								</table>
+							</div>
+							
+			            </div>
 						
 						
 						<hr/>

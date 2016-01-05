@@ -154,5 +154,4 @@ public class EvaluationTaskDataMining implements Serializable {
 			Double evalCountSessionsNormalized) {
 		this.evalCountSessionsNormalized = evalCountSessionsNormalized;
 	}
-	
 }

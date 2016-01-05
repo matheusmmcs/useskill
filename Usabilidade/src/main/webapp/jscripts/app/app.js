@@ -722,6 +722,16 @@ angular.module('useskill',
 				title: $filter('translate')('datamining.tasks.evaluate.actions.required.count.title'),
 				desc: $filter('translate')('datamining.tasks.evaluate.actions.required.count.title'),
 				notAnOption: false
+			},{
+				name: 'frequentPatterns', 
+				title: $filter('translate')('datamining.patterns'),
+				desc: $filter('translate')('datamining.patterns'),
+				notAnOption: false
+			},{
+				name: 'pattern', 
+				title: $filter('translate')('datamining.pattern'),
+				desc: $filter('translate')('datamining.pattern'),
+				notAnOption: true
 	}];
 	
 	var modes = {
@@ -729,13 +739,16 @@ angular.module('useskill',
 			'userSessions': modesArr[1],
 			'sessions': modesArr[2],
 			'actions': modesArr[3],
-			'actionsCount': modesArr[4]
+			'actionsCount': modesArr[4],
+			'pattern': modesArr[7]
 	}
 	
 	taskCtrl.modes = modes;
 	taskCtrl.modesArr = modesArr;
 	taskCtrl.mode = modes.users;
-
+	taskCtrl.result.pageViewActionFavorites = [];
+	
+	//count actions
 	var actionsArr = $filter('toArray')(taskCtrl.result.pageViewActionIds),
 		maxCount = 0;
 	angular.forEach(actionsArr, function(action){
@@ -748,6 +761,73 @@ angular.module('useskill',
 	taskCtrl.actionsMaxCount = maxCount;
 	taskCtrl.actionsArr = actionsArr;
 	taskCtrl.actionsRequiredArr = $filter('toArray')(taskCtrl.result.actionsRequiredTask);
+	
+	
+	
+	//adjust frequentPatterns
+	angular.forEach(taskCtrl.frequentPatterns, function(fp, keyFp){
+		fp.key = keyFp;
+		fp.itemsetsFormatted = [];
+		fp.sessionsFormatted = [];
+		fp.effectivenessMean = 0;
+		fp.efficiencyMean = 0;
+		fp.successMean = 0;
+		fp.requiredMean = 0;
+		fp.usersSessions = {};
+		
+		angular.forEach(fp.itemsets, function(itset, keyItset){
+			angular.forEach(itset.items, function(item){
+				//update action referente to frequentpatterns and itemsets
+				var action = {
+					idAction: item,
+					desc: taskCtrl.result.pageViewActionIds[item],
+					count: taskCtrl.result.pageViewActionCount[item],
+					itemset: keyItset
+				};
+				//actionsArr
+				fp.itemsetsFormatted.push(action);
+			});
+		});
+		
+		angular.forEach(fp.sequencesIds, function(seq){
+			var sess = taskCtrl.result.sessions[seq];
+			fp.sessionsFormatted.push(sess);
+			
+			fp.effectivenessMean += (sess.effectivenessNormalized * 100);
+			fp.efficiencyMean += (sess.efficiencyNormalized * 100);
+			fp.successMean += sess.userRateSuccess;
+			fp.requiredMean += sess.userRateRequired;
+			
+			if (fp.usersSessions[sess.username] === undefined) {
+				fp.usersSessions[sess.username] = {
+					count: 0,
+					sessions: []
+				};
+			}
+			fp.usersSessions[sess.username].count++;
+			fp.usersSessions[sess.username].sessions.push(sess.id);
+		});
+		
+		fp.effectivenessMean = fp.effectivenessMean / fp.sequencesIds.length;
+		fp.efficiencyMean = fp.efficiencyMean / fp.sequencesIds.length;
+		fp.successMean = fp.successMean / fp.sequencesIds.length;
+		fp.requiredMean = fp.requiredMean / fp.sequencesIds.length;
+	});
+	
+	$scope.toggleFavoriteAction = function(action) {
+		var idx = taskCtrl.result.pageViewActionFavorites.indexOf(action.identifier);
+		if (idx === -1) {
+			taskCtrl.result.pageViewActionFavorites.push(action.identifier);
+		} else if (idx === 0) {
+			taskCtrl.result.pageViewActionFavorites.shift();
+		} else {
+			taskCtrl.result.pageViewActionFavorites.splice(1, idx);
+		}
+	}
+	
+	$scope.isActionFavorite = function(action) {
+		return taskCtrl.result.pageViewActionFavorites.indexOf(action.identifier) !== -1;
+	}
 	
 	$scope.showUserSessions = function(user){
 		var sessions = [];
@@ -776,6 +856,11 @@ angular.module('useskill',
 	
 	$scope.showSessions = function(){
 		changeMode('sessions');
+	}
+	
+	$scope.showFrequentPattern = function(pattern){
+		taskCtrl.frequentPatternActive = pattern;
+		changeMode('pattern');
 	}
 	
 	function changeMode(newMode){
@@ -809,6 +894,9 @@ angular.module('useskill',
     $scope.graphSuccessToggle = function () {
     	$scope.graphSuccessType = $scope.graphSuccessType === 'Pie' ? 'PolarArea' : 'Pie';
     };
+    
+    //render graphPatterns
+    drawGraph('mynetwork', taskCtrl.frequentPatterns);
     
 })
 

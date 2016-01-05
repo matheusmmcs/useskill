@@ -11,7 +11,7 @@
 	<link href="${pageContext.request.contextPath}/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
 	<link rel="stylesheet/less" href="${pageContext.request.contextPath}/less/style.less" />
-	<link href="${pageContext.request.contextPath}/plugin/vis/vis.css" rel="stylesheet" type="text/css" />
+	<link href="${pageContext.request.contextPath}/jscripts/libs/vis/vis.min.css" rel="stylesheet" type="text/css" />
 	<link href="${pageContext.request.contextPath}/css/tablesort.css" rel="stylesheet" type="text/css" />
 	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/angular-chart/angular-chart.css" rel="stylesheet" type="text/css" />
 	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/datepicker/angular-datepicker.min.css" rel="stylesheet" type="text/css" />
@@ -52,6 +52,7 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/json2.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/plugin/chart/Chart.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap/bootstrap.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/vis/vis.min.js"></script>
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-animate.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-resource.min.js"></script>
@@ -69,6 +70,7 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-nvd3/nv.d3.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-nvd3/angular-nvd3.min.js"></script>
 
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/app/graph.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/app/app.js"></script>
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap/bootstrap-popover.js"></script>

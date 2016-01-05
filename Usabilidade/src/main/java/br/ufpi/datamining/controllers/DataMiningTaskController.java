@@ -2,6 +2,7 @@ package br.ufpi.datamining.controllers;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Get;
@@ -17,6 +18,7 @@ import br.ufpi.componets.TesteView;
 import br.ufpi.componets.UsuarioLogado;
 import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
+import br.ufpi.datamining.analisys.FrequentSequentialPatternMining;
 import br.ufpi.datamining.analisys.WebUsageMining;
 import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.EvaluationTaskDataMining;
@@ -26,6 +28,8 @@ import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.aux.ResultDataMining;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
+import br.ufpi.datamining.models.vo.EvaluationTaskDataMiningVO;
+import br.ufpi.datamining.models.vo.FrequentSequentialPatternResultVO;
 import br.ufpi.datamining.models.vo.ReturnVO;
 import br.ufpi.datamining.models.vo.TaskDataMiningVO;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
@@ -151,20 +155,25 @@ public class DataMiningTaskController extends BaseController {
 			
 			evaluation.setEvalLastDate(new Date());
 			evaluation.setEvalCountSessions(resultDataMining.getCountSessions());
-			evaluation.setEvalMeanActions(resultDataMining.getActionsAverageOk());
-			evaluation.setEvalMeanTimes(resultDataMining.getTimesAverageOk());
-			evaluation.setEvalMeanCompletion(resultDataMining.getRateSuccess());
-			evaluation.setEvalMeanCorrectness(resultDataMining.getRateRequired());
 			
-			evaluation.setEvalZScoreActions((resultDataMining.getMaxActionsOk() - resultDataMining.getMeanActionsOk()) / resultDataMining.getStdDevActionsOk());
-			evaluation.setEvalZScoreTime((resultDataMining.getMaxTimesOk() - resultDataMining.getMeanTimesOk()) / resultDataMining.getStdDevTimesOk());
-			
-			evaluation.setEvalEffectiveness((evaluation.getEvalMeanCompletion() * evaluation.getEvalMeanCorrectness()) / 100);
-			evaluation.setEvalEfficiency(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime()));
-			
-			System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreTime()));
-			System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime()));
-			System.out.println(evaluation.getEvalEffectiveness() / ((evaluation.getEvalZScoreActions() + evaluation.getEvalZScoreTime()) / 2));
+			if (evaluation.getEvalCountSessions() > 0) {
+				evaluation.setEvalMeanActions(resultDataMining.getActionsAverageOk());
+				evaluation.setEvalMeanTimes(resultDataMining.getTimesAverageOk());
+				evaluation.setEvalMeanCompletion(resultDataMining.getRateSuccess());
+				evaluation.setEvalMeanCorrectness(resultDataMining.getRateRequired());
+				
+				evaluation.setEvalZScoreActions((resultDataMining.getMaxActionsOk() - resultDataMining.getMeanActionsOk()) / resultDataMining.getStdDevActionsOk());
+				evaluation.setEvalZScoreTime((resultDataMining.getMaxTimesOk() - resultDataMining.getMeanTimesOk()) / resultDataMining.getStdDevTimesOk());
+				
+				evaluation.setEvalEffectiveness((evaluation.getEvalMeanCompletion() * evaluation.getEvalMeanCorrectness()) / 100);
+				evaluation.setEvalEfficiency(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime()));
+				
+				System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreTime()));
+				System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime()));
+				System.out.println(evaluation.getEvalEffectiveness() / ((evaluation.getEvalZScoreActions() + evaluation.getEvalZScoreTime()) / 2));
+			} else {
+				evaluation = EvaluationTaskDataMiningVO.zeroEvaluation(evaluation);
+			}
 			
 			if (newEvaluation) {
 				evaluationTaskDataMiningRepository.create(evaluation);
@@ -181,7 +190,22 @@ public class DataMiningTaskController extends BaseController {
 				System.out.println("Avaliação atualizada!");
 			}
 			
+			FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
+			List<FrequentSequentialPatternResultVO> frequentPatterns = null;
+			
+			if (evaluation.getEvalCountSessions() > 0) {
+				//automatic patterns: (100/80/60/40/20)
+				int defaultMinItens = 4;
+				double[] minSups = new double[]{1.0, 0.8, 0.6, 0.4, 0.2};
+				for (int i = 0; i < minSups.length; i++) {
+					if (frequentPatterns == null || frequentPatterns.size() == 0) {
+						frequentPatterns = fspm.analyze(resultDataMining, minSups[i], null, defaultMinItens);
+					}
+				}
+			}
+			
 			HashMap<String, String> resultMap = new HashMap<String, String>();
+			resultMap.put("frequentPatterns", gson.toJson(frequentPatterns));
 			resultMap.put("result", gson.toJson(resultDataMining));
 			resultMap.put("evalTask", gson.toJson(evaluation));
 			resultMap.put("task", gson.toJson(new TaskDataMiningVO(taskDataMining)));

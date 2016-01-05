@@ -161,4 +161,20 @@ public class EvaluationTaskDataMiningVO {
 		this.idTaskDataMining = idTaskDataMining;
 	}
 	
+	public static EvaluationTaskDataMining zeroEvaluation(EvaluationTaskDataMining eval) {
+		eval.setEvalMeanActions(0d);
+		eval.setEvalMeanTimes(0d);
+		eval.setEvalMeanCompletion(0d);
+		eval.setEvalMeanCorrectness(0d);
+		eval.setEvalZScoreActions(0d);
+		eval.setEvalZScoreTime(0d);
+		eval.setEvalEfficiency(0d);
+		eval.setEvalEffectiveness(0d);
+		eval.setEvalEfficiencyNormalized(0d);
+		eval.setEvalEffectivenessNormalized(0d);
+		eval.setEvalFuzzyPriority(0d);
+		eval.setEvalCountSessionsNormalized(0d);
+		return eval;
+	}
+	
 }

@@ -1,8 +1,12 @@
 package br.ufpi.datamining.analisys;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import br.ufpi.datamining.models.aux.ResultDataMining;
+import br.ufpi.datamining.models.vo.FrequentSequentialPatternResultVO;
 import ca.pfv.spmf.algorithms.sequentialpatterns.BIDE_and_prefixspan.AlgoPrefixSpan;
 import ca.pfv.spmf.algorithms.sequentialpatterns.BIDE_and_prefixspan.SequentialPattern;
 import ca.pfv.spmf.algorithms.sequentialpatterns.BIDE_and_prefixspan.SequentialPatterns;
@@ -23,8 +27,24 @@ public class FrequentSequentialPatternMining {
 		FrequentSequentialPatternMining f = new FrequentSequentialPatternMining();
 		f.analyze(teste, .5, null, null);
 	}
+	
+	
 
-	public void analyze(String sessions, double minsup, Integer maxPatternLength, Integer minPatternLength) throws IOException {
+	public List<FrequentSequentialPatternResultVO> analyze(ResultDataMining resultDataMining, double minsup, Integer maxPatternLength, Integer minPatternLength) throws IOException {
+		Set<String> keySet = resultDataMining.getUsersSequences().keySet();
+		String patterns = "";
+		for (String key : keySet) {
+			System.out.println("----------");
+			System.out.println(key);
+			System.out.println(resultDataMining.getUsersSequences().get(key));
+			patterns += resultDataMining.getUsersSequences().get(key);
+		}
+		
+		System.out.println(patterns);
+		return analyze(patterns, minsup, maxPatternLength, minPatternLength);
+	}
+	
+	public List<FrequentSequentialPatternResultVO> analyze(String sessions, double minsup, Integer maxPatternLength, Integer minPatternLength) throws IOException {
 		// Load a sequence database
 		SequenceDatabase sequenceDatabase = new SequenceDatabase(); 
 		
@@ -45,17 +65,22 @@ public class FrequentSequentialPatternMining {
 		algo.printStatistics(sequenceDatabase.size());
 		
 		System.out.println(" == PATTERNS ==");
+		List<FrequentSequentialPatternResultVO> retorno = new ArrayList<FrequentSequentialPatternResultVO>();
 		for(List<SequentialPattern> level : patterns.levels) {
 			for(SequentialPattern pattern : level){
 				if (minPatternLength != null) {
 					if (pattern.size() >= minPatternLength) {
+						retorno.add(new FrequentSequentialPatternResultVO(pattern));
 						System.out.println(pattern + " support : " + pattern.getAbsoluteSupport());
 					}
 				} else {
+					retorno.add(new FrequentSequentialPatternResultVO(pattern));
 					System.out.println(pattern + " support : " + pattern.getAbsoluteSupport());
 				}
 			}
 		}
+		
+		return retorno;
 	}
 	
 }

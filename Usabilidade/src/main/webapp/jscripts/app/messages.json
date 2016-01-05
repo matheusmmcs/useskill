@@ -17,6 +17,7 @@
 	"description": "Descrição",
 	"count": "Count",
 	"id": "ID",
+	"index": "Índice",
 	"others...": "Outros...",
 	
 	"sTime":"Hora",
@@ -43,6 +44,24 @@
 	"datamining.areyousure.confirm" : "Confirmar",
 	"datamining.areyousure.cancel" : "Cancelar",
 	"datamining.accessdenied" : "Ação não permitida para o usuário!",
+	
+	"pattern" : "Padrão",
+	"datamining.pattern" : "Padrão Sequencial de Ações",
+	"datamining.pattern.actions" : "Ações do Padrão Identificado",
+	"datamining.pattern.sections" : "Sessões do Padrão Identificado",
+	"datamining.pattern.usersdo" : "Usuários que Realizam esse Padrão Identificado",
+	"datamining.patterns" : "Padrões Sequenciais de Ações",
+	"datamining.pattern.itemsetsize" : "Qtd. ItemSets",
+	"datamining.pattern.support" : "Suporte",
+	
+	"datamining.pattern.support.desc" : "Suporte (Qtd. Sessões)",
+	"datamining.pattern.effectiveness.desc" : "Eficácia (Média de Sessões)",
+	"datamining.pattern.efficiency.desc" : "Eficiência (Média de Sessões)",
+	"datamining.pattern.rateSuccess.desc" : "Completude (Média de Sessões)",
+	"datamining.pattern.rateRequired.desc" : "Corretude (Média de Sessões)",
+	
+	
+	
 	
 	"datamining.teste" : "Teste",
 	"datamining.testes" : "Testes",

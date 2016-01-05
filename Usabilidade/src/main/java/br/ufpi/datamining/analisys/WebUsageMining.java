@@ -12,6 +12,10 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import ca.pfv.spmf.algorithms.sequentialpatterns.BIDE_and_prefixspan.SequentialPattern;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.membership.MembershipFunctionPieceWiseLinear;
 import br.ufpi.datamining.models.ActionDataMining;
@@ -30,6 +34,7 @@ import br.ufpi.datamining.models.aux.SessionResultDataMining;
 import br.ufpi.datamining.models.aux.UserResultDataMining;
 import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
+import br.ufpi.datamining.models.vo.FrequentSequentialPatternResultVO;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.repositories.TestDataMiningRepository;
@@ -123,19 +128,15 @@ public class WebUsageMining {
 		// 31 (1440990000000) / 15 (1439607600000) / 05 (1438743600000) / 01 (1438398000000)
 		ResultDataMining resultDataMining = analyze(14l, 1438398000000l, 1438743600000l, taskDataMiningRepository, actionDataMiningRepository);
 		
-		Set<String> keySet = resultDataMining.getUsersSequences().keySet();
-		String patterns = "";
-		for (String key : keySet) {
-			System.out.println("----------");
-			System.out.println(key);
-			System.out.println(resultDataMining.getUsersSequences().get(key));
-			patterns += resultDataMining.getUsersSequences().get(key);
-		}
-		
-		System.out.println(patterns);
-		
 		FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
-		fspm.analyze(patterns, 1.0, null, null);
+		List<FrequentSequentialPatternResultVO> frequentPatterns = fspm.analyze(resultDataMining, 1.0, null, 7);
+		
+		
+		System.out.println(frequentPatterns.size());
+		
+		Gson gson = new GsonBuilder().create();
+		System.out.println(gson.toJson(frequentPatterns));
+		System.out.println(gson.toJson(resultDataMining.getSessions()));
 		
 		//Maximizar o support
 		//Maiores sequencias
@@ -377,6 +378,11 @@ public class WebUsageMining {
 					}
 				}
 				
+				//
+				if (countActions == 0) {
+					userSequence += "0 -1 ";
+				}
+				
 				userSequence += "-2\n";
 				
 				if(action == null){
@@ -613,27 +619,51 @@ public class WebUsageMining {
 		Double required = countActionsRequiredTask > 0 ? countActionsRequiredTask / countTaskSessions : 0;
 		
 		result.setUsersSequences(usersSequences);
-		
-		result.setRateRequired(required);
 		result.setActionsRequiredTask(actionsRequiredTask);
 		
-		result.setMeanActionsOk(meanActionsOk);
-		result.setMeanTimesOk(meanTimesOk);
-		//
-		result.setStdDevActionsOk(stdDevActionsOk);
-		result.setStdDevTimesOk(stdDevTimesOk);
-		//
-		result.setMinActionsOk(minDouble(actionsOkSize));
-		result.setMinTimesOk(minDouble(timesOkSize));
-		//
-		result.setMaxActionsOk(maxDouble(actionsOkSize));
-		result.setMaxTimesOk(maxDouble(timesOkSize));
+		if (result.getCountSessions() > 0) {
+			result.setRateRequired(required);
+			
+			result.setMeanActionsOk(meanActionsOk);
+			result.setMeanTimesOk(meanTimesOk);
+			//
+			result.setStdDevActionsOk(stdDevActionsOk);
+			result.setStdDevTimesOk(stdDevTimesOk);
+			//
+			result.setMinActionsOk(minDouble(actionsOkSize));
+			result.setMinTimesOk(minDouble(timesOkSize));
+			//
+			result.setMaxActionsOk(maxDouble(actionsOkSize));
+			result.setMaxTimesOk(maxDouble(timesOkSize));
+		} else {
+			generateResultWithoutSessions(result);
+		}
+		
 		
 		System.out.println("MaxActions = "+result.getMaxActionsOk()+" ;MaxTime = "+result.getMaxTimesOk());
 		System.out.println("Actions = " + (result.getMaxActionsOk() - result.getMeanActionsOk()) / result.getStdDevActionsOk());
 		System.out.println("Times = " + (result.getMaxTimesOk() - result.getMeanTimesOk()) / result.getStdDevTimesOk());
 		
 		return result;
+	}
+	
+	private static void generateResultWithoutSessions(ResultDataMining result){
+		result.setActionsAverageOk(0d);
+		result.setTimesAverageOk(0d);
+		result.setRateRequired(0d);
+		result.setRateSuccess(0d);
+		
+		result.setMeanActionsOk(0d);
+		result.setMeanTimesOk(0d);
+		//
+		result.setStdDevActionsOk(0d);
+		result.setStdDevTimesOk(0d);
+		//
+		result.setMinActionsOk(0d);
+		result.setMinTimesOk(0d);
+		//
+		result.setMaxActionsOk(0d);
+		result.setMaxTimesOk(0d);
 	}
 	
 	public static List<CountActionsAux> countActionsByRestrictions(Long taskId, FieldSearch fieldGroup, TestDataMiningRepository testDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository, Date initialDate, Date finalDate) {
