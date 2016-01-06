@@ -761,7 +761,15 @@ angular.module('useskill',
 	taskCtrl.actionsMaxCount = maxCount;
 	taskCtrl.actionsArr = actionsArr;
 	taskCtrl.actionsRequiredArr = $filter('toArray')(taskCtrl.result.actionsRequiredTask);
-	
+	for (var i in taskCtrl.actionsRequiredArr) {
+		var act = taskCtrl.actionsRequiredArr[i];
+		for (var a in actionsArr) {
+			if (actionsArr[a].value == act.$key) {
+				taskCtrl.actionsRequiredArr[i].id = actionsArr[a].$key;
+				break;
+			}
+		}
+	}
 	
 	
 	//adjust frequentPatterns
@@ -812,6 +820,9 @@ angular.module('useskill',
 		fp.efficiencyMean = fp.efficiencyMean / fp.sequencesIds.length;
 		fp.successMean = fp.successMean / fp.sequencesIds.length;
 		fp.requiredMean = fp.requiredMean / fp.sequencesIds.length;
+		fp.itemsetsFormattedText = fp.itemsetsFormatted.map(function(elem){
+		    return elem.idAction;
+		}).join(", ");
 	});
 	
 	$scope.toggleFavoriteAction = function(action) {
@@ -861,6 +872,7 @@ angular.module('useskill',
 	$scope.showFrequentPattern = function(pattern){
 		taskCtrl.frequentPatternActive = pattern;
 		changeMode('pattern');
+		$scope.renderGraph();
 	}
 	
 	function changeMode(newMode){
@@ -896,8 +908,20 @@ angular.module('useskill',
     };
     
     //render graphPatterns
-    drawGraph('mynetwork', taskCtrl.frequentPatterns);
-    
+    var graph, isPatternsActual;
+    $scope.changeGraphType = function(isPatterns) {
+    	isPatternsActual = isPatterns;
+    	$scope.renderGraph();
+    }
+    $scope.renderGraph = function() {
+    	if (isPatternsActual) {
+    		type = 'patterns';
+    	} else {
+    		type = 'sessions';
+    	}
+    	graph = drawGraph(type, 'mynetwork', taskCtrl.frequentPatterns, taskCtrl.result.sessions, taskCtrl.actionsRequiredArr, taskCtrl.result.pageViewActionFavorites);
+    }
+    $scope.changeGraphType(true);
 })
 
 //Actions Controllers

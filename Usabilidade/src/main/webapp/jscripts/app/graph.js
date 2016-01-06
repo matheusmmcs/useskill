@@ -124,7 +124,7 @@ var optionsGraphUseSkill = {
 };
 
 
-function drawGraph(idContainer, frequentPatterns){
+function drawGraph(type, idContainer, frequentPatterns, sessions, actionsRequired, favorites){
 	  function getEdge(from, to, arrEdges) {
 	    for (var i in arrEdges) {
 	      if (arrEdges[i].to == to && arrEdges[i].from == from) {
@@ -142,17 +142,49 @@ function drawGraph(idContainer, frequentPatterns){
 	    }
 	    return null;
 	  }
+	  
+	  function getRandomInt(min, max) {
+		    return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+	  
+//	  function patternsContainsNodeBefore(id, patterns) {
+//		  for (var pti in patterns) {
+//			  var itensFormatted = patterns[pti].itemsetsFormatted;
+//			  for (var i = 0; i < itensFormatted.length; i++) {
+//				  if (itensFormatted[i].idAction == id && i > 0) {
+//					  return true;
+//				  }
+//			  }
+//		  }
+//		  return false;
+//	  }
+	  
+	//encontrar ação que representa as primeiras ações das sessões -> auxílio na disposição dos nós
+//	  var firstItens = [], realFirstItens = [];
+//	  for (var pti in frequentPatterns) {
+//		  var id = frequentPatterns[pti].itemsetsFormatted[0].idAction;
+//		  if (firstItens.indexOf(id) == -1) {
+//			  firstItens.push(id);
+//		  }
+//	  }
+//	  for (var i in firstItens) {
+//		  var id = firstItens[i];
+//		  if (!patternsContainsNodeBefore(id, frequentPatterns)) {
+//			  realFirstItens.push(id);
+//		  }
+//	  }
 	
-	  var arrNodes = [], arrEdges = [];
+	  //construir árvore com ações do padrão
+	  var arrNodes = [], arrEdges = [], maxVal = 0;
 	  for (var pti in frequentPatterns) {
 	    var patternAtual = frequentPatterns[pti];
-	    console.log(patternAtual);
+	    //console.log(patternAtual);
 	    var itemAnterior = null;
 	    for (var i in patternAtual.itemsetsFormatted) {
 	      var itemAtual = patternAtual.itemsetsFormatted[i],
 	        idItemAtual = itemAtual.idAction;
 	      
-	      console.log(idItemAtual);
+	      //console.log(idItemAtual);
 	      var node = getNode(idItemAtual, arrNodes);
 	
 	      if (!node) {
@@ -161,11 +193,11 @@ function drawGraph(idContainer, frequentPatterns){
 	          label: 'Action '+idItemAtual,
 	          value: 1
 	        });
+	        posX++;
 	      } else {
 	        node.value++;
+	        maxVal = node.value > maxVal ? node.value : maxVal; 
 	      }
-	
-	      
 	
 	      if (itemAnterior != null) {
 	        var idItemAnterior = itemAnterior.idAction;
@@ -185,6 +217,71 @@ function drawGraph(idContainer, frequentPatterns){
 	      itemAnterior = itemAtual;
 	    }
 	  }
+	  
+	  //colorir grafo e organizar
+	  var posX = 0, scaleX = (50 + 2 * maxVal);
+	  arrNodes.sort(function(a, b) {
+		    return a.id - b.id;
+	  });
+	  for (var n in arrNodes) {
+		  arrNodes[n].x = posX * scaleX;
+		  arrNodes[n].y = getRandomInt(0, 2 * scaleX);
+		  posX++;
+		  for (var f in favorites) {
+			  if (arrNodes[n].id == favorites[f]) {
+				  arrNodes[n].color = optionsGraphUseSkill.groups.green.color;
+			  }
+		  }
+		  
+		  for (var a in actionsRequired) {
+			  if (arrNodes[n].id == actionsRequired[a].id) {
+				  arrNodes[n].color = optionsGraphUseSkill.groups.blue.color;
+			  }
+		  }
+	  }
+	  
+	  //construir grafos com as ações do padrão sequencial, mas o tamanho dos nós e das arestas são relativos à quantidade de sessões que realizaram
+	  if (type == 'sessions') {
+		  //resetar largura de nós
+		  for (var n in arrNodes) {
+			  arrNodes[n].value = 0;
+		  }
+		  //arestas serão reconstruídas
+		  arrEdges = [];
+		  
+		  for (var s in sessions) {
+			  var actions = sessions[s].actions,
+			  	idNodeBefore = null;
+			  
+			  //console.log('###########');
+			  //console.log('SESSION', s, actions);
+			  
+			  for (var a in actions) {
+				  var node = getNode(actions[a].identifier, arrNodes);
+				  if (node) {
+					  node.value++;
+					  //console.log('Node: ', node.id, node.value);
+					  
+					  if (idNodeBefore != null) {
+						  var edge = getEdge(idNodeBefore, node.id, arrEdges);
+						  if (!edge) {
+					          arrEdges.push({
+					            from: idNodeBefore, 
+					            to: node.id,
+					            value: 1
+					          });
+					          //console.log('NewEdge: ('+ idNodeBefore + ' -> ' + node.id + ')');
+					        } else {
+					          edge.value++;
+					          //console.log('Edge: ('+ idNodeBefore + ' -> ' + node.id + ') = ' + edge.value);
+					        }
+					  }
+					  
+					  idNodeBefore = node.id;
+				  }
+			  }
+		  }
+	  }
 	
 	  var nodes = new vis.DataSet(arrNodes);
 	  var edges = new vis.DataSet(arrEdges);
@@ -201,4 +298,19 @@ function drawGraph(idContainer, frequentPatterns){
 	
 	  // initialize your network!
       var network = new vis.Network(container, data, optionsGraphUseSkill);
+      network.on("selectNode", function (params) {
+    	  var node = network.body.nodes[params.nodes[0]];
+          console.log("selectNode", node);
+          //document.getElementById('eventSpan').innerHTML = '<h2>Click event:</h2>' + JSON.stringify(params, null, 4);
+      });
+      network.on("selectEdge", function (params) {
+    	  var edge = network.body.edges[params.edges[0]];
+          console.log("selectEdge", edge);
+          console.log(edge.from.id, edge.to.id, edge.options.value);
+      });
+      console.log(network);
+      
+      network.body.edges
+      
+      return network;
 }

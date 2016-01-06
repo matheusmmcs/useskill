@@ -193,16 +193,19 @@ public class DataMiningTaskController extends BaseController {
 			FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
 			List<FrequentSequentialPatternResultVO> frequentPatterns = null;
 			
+			double lastMinSup = 0d;
 			if (evaluation.getEvalCountSessions() > 0) {
 				//automatic patterns: (100/80/60/40/20)
 				int defaultMinItens = 4;
 				double[] minSups = new double[]{1.0, 0.8, 0.6, 0.4, 0.2};
 				for (int i = 0; i < minSups.length; i++) {
 					if (frequentPatterns == null || frequentPatterns.size() == 0) {
+						lastMinSup = minSups[i];
 						frequentPatterns = fspm.analyze(resultDataMining, minSups[i], null, defaultMinItens);
 					}
 				}
 			}
+			resultDataMining.setLastMinSup(lastMinSup);
 			
 			HashMap<String, String> resultMap = new HashMap<String, String>();
 			resultMap.put("frequentPatterns", gson.toJson(frequentPatterns));

@@ -47,6 +47,7 @@
 	
 	"pattern" : "Padrão",
 	"datamining.pattern" : "Padrão Sequencial de Ações",
+	"datamining.pattern.metrics" : "Métricas do Padrão Encontrado",
 	"datamining.pattern.actions" : "Ações do Padrão Identificado",
 	"datamining.pattern.sections" : "Sessões do Padrão Identificado",
 	"datamining.pattern.usersdo" : "Usuários que Realizam esse Padrão Identificado",
