@@ -103,46 +103,170 @@
 	        
 	        	<div class="row-fluid">
 	        		<div class="span4">
-	        			<a class="usdm-clickable-box text-center" ng-click="">
+	        			<a class="usdm-clickable-box text-center" ng-class="{ 'usdm-clickable-box--active': isShowContentGraph() }" ng-click="showContentGraph()">
+			            	<h2 class="ng-binding">Visualizar Grafo</h2>
+			            </a>
+	        		</div>
+	        		<div class="span4">
+	        			<a class="usdm-clickable-box text-center" ng-class="{ 'usdm-clickable-box--active': isShowContentGuide() }" ng-click="showContentGuide()">
 			            	<h2 class="ng-binding">Análise Guiada</h2>
 			            </a>
 	        		</div>
 	        		<div class="span4">
-	        			<a class="usdm-clickable-box text-center" ng-click="">
+	        			<a class="usdm-clickable-box text-center" ng-class="{ 'usdm-clickable-box--active': isShowContentAdvanced() }" ng-click="showContentAdvanced()">
 			            	<h2 class="ng-binding">Análise Avançada</h2>
-			            </a>
-	        		</div>
-	        		<div class="span4">
-	        			<a class="usdm-clickable-box text-center" ng-click="">
-			            	<h2 class="ng-binding">Grafo de Uso</h2>
 			            </a>
 	        		</div>	        	
 	        	</div>
-	        
-	        
-	            <div class="usdm-box">
-		    		
+	        	
+	        	<div>
+	        		<!-- VISUALIZAR GRAFO -->
+	        		<div ng-show="isShowContentGraph()">
+		        		<div class="usdm-box">
+		        			<h2 class="usdm-box-header">
+		        				Visualizar Grafo
+		        			</h2>
+		        			<div class="usdm-box-body">
+		        				<dl>
+					            	<dt class="ng-binding">Configurações do Grafo:</dt>
+					            	<dd class="ng-binding">
+					            		Quantidade de nós: <b>{{ graph.body.nodeIndices.length }}</b>.<br/>
+			            				Quantidade de arestas: <b>{{ graph.body.edgeIndices.length }}</b>.<br/>
+			            				Tipo do Grafo: <b>{{ graphType.desc }}</b>.<br/>
+			            				<span>Alterar Tipo do Grafo:</span> 
+			        					<a class="btn ng-binding" ng-class="{ 'btn-primary' : graphType.id == 'sessions' }" ng-click="changeGraphType(false)">{{ graphTypeEnum.SESSIONS.desc }}</a>
+			        					<a class="btn ng-binding" ng-class="{ 'btn-primary' : graphType.id == 'patterns' }" ng-click="changeGraphType(true)">{{ graphTypeEnum.PATTERNS.desc }}</a>
+					            	</dd>
+					            </dl>
+		        				<div id="mynetwork"></div>
+		        			</div>
+		        		</div>
+		        		
+		        		<div id="mynetwork-info" class="usdm-box" ng-show="taskCtrl.nodeSelected != null || taskCtrl.edgeSelected != null">
+	       					<div ng-show="taskCtrl.nodeSelected != null">
+	       						<h2 class="usdm-box-header">
+			        				Nó Selecionado
+			        			</h2>
+			        			<div class="usdm-box-body">
+		       						<dl>
+						            	<dt class="ng-binding">Informações da Ação:</dt>
+						            	<dd class="ng-binding">
+						            		Ação: <b>{{ taskCtrl.nodeSelected.action.action }}</b>;<br/>
+						            		Tag: <b>{{ taskCtrl.nodeSelected.action.infoTag }}</b>;<br/>
+				            				Name: <b>{{ taskCtrl.nodeSelected.action.infoName }}</b>;<br/>
+				            				Conteúdo: <b>{{ taskCtrl.nodeSelected.action.infoContent }}</b>;<br/>
+				            				Posição [X,Y]: <b>[{{ taskCtrl.nodeSelected.action.infoPosX }},{{ taskCtrl.nodeSelected.action.infoPosY }}]</b>;<br/>
+				            				Elemento (XPath): <b>{{ taskCtrl.nodeSelected.action.element }}</b>;<br/>
+				            				Local: <b>{{ taskCtrl.nodeSelected.action.local }}</b>;<br/>
+						            	</dd>
+						            </dl>
+		       						<dl class="dl-with-margin-bottom">
+						            	<dt class="ng-binding">Informações do Nó:</dt>
+						            	<dd class="ng-binding">
+						            		Situação: <select ng-model="situationAux"
+										        ng-change="selectSituationAction(taskCtrl.nodeSelected.id, situationAux)"
+						            			ng-options="s as s.desc for (k, s) in situationsEnum"></select> 
+						            			<span ng-show="taskCtrl.nodeSelected.action.required"> (Ação Obrigatória)</span><br/>
+						            		Id: <b>{{ taskCtrl.nodeSelected.id }}</b>;<br/>
+				            				Nome: <b>{{ taskCtrl.nodeSelected.name }}</b>;<br/>
+				            				Realizado: <b>{{ taskCtrl.nodeSelected.value }} vezes</b>;<br/>
+				            				Arestas Para: <b>{{ taskCtrl.nodeSelected.edgesTo }}</b>;<br/>
+				            				Arestas De: <b>{{ taskCtrl.nodeSelected.edgesFrom }}</b>;<br/>
+				            				Padrões Presentes: <b>{{ taskCtrl.nodeSelected.patternsCount }} / {{ taskCtrl.frequentPatterns.length }}</b>;<br/>
+				            				Quantidade de Sessões: <b>{{ taskCtrl.nodeSelected.sessions.length }}</b>.<br/>
+						            	</dd>
+						            </dl>
+						            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+							  			<thead>
+							  				<th ts-criteria="id|lowercase">Id</th>
+							  				<th ts-criteria="qdtActions|parseInt">Qtd. Ações</th>
+							  				<th ts-criteria="time|parseInt">Tempo</th>
+							  				<th ts-criteria="success|parseFloat">Completude</th>
+							  				<th ts-criteria="required|parseFloat">Corretude</th>
+							  				<th ts-criteria="effectiveness|parseFloat">Eficácia</th>
+							  				<th ts-criteria="efficiency|parseFloat">Eficiência</th>
+							  			</thead>
+							            <tbody>
+										    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.nodeSelected.sessions" ts-repeat>
+										      <td><a ng-click="showActionsSessionFromGraph(session)">{{session.id}}</a></td>
+										      <td>{{session.qdtActions}}</td>
+										      <td>{{session.time | msConverter}}</td>
+										      <td>{{session.success | number:2}}</td>
+										      <td>{{session.required | number:2}}</td>
+										      <td>{{session.effectiveness | number:2}}</td>
+										      <td>{{session.efficiency | number:2}}</td>
+										    </tr>
+										</tbody>
+									</table>
+								</div>
+	       					</div>
+	       					<div ng-show="taskCtrl.edgeSelected != null">
+	       						<h2 class="usdm-box-header">
+			        				Aresta Selecionada
+			        			</h2>
+			        			<div class="usdm-box-body">
+			        				<dl>
+						            	<dt class="ng-binding">Informações da Aresta:</dt>
+						            	<dd class="ng-binding">
+						            		De: <b>{{ taskCtrl.edgeSelected.fromId }}</b>.<br/>
+				            				Para: <b>{{ taskCtrl.edgeSelected.toId }}</b>.<br/>
+				            				Realizado: <b>{{ taskCtrl.edgeSelected.value }} vezes</b>.<br/>
+		<!-- 				            				Padrões Presentes: <b>{{ taskCtrl.edgeSelected.patternsCount }} / {{ taskCtrl.frequentPatterns.length }}</b>.<br/> -->
+						            	</dd>
+						            </dl>
+						            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+							  			<thead>
+							  				<th ts-criteria="id|lowercase">Id</th>
+							  				<th ts-criteria="qdtActions|parseInt">Qtd. Ações</th>
+							  				<th ts-criteria="time|parseInt">Tempo</th>
+							  				<th ts-criteria="success|parseFloat">Completude</th>
+							  				<th ts-criteria="required|parseFloat">Corretude</th>
+							  				<th ts-criteria="effectiveness|parseFloat">Eficácia</th>
+							  				<th ts-criteria="efficiency|parseFloat">Eficiência</th>
+							  			</thead>
+							            <tbody>
+										    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.edgeSelected.sessions" ts-repeat>
+										      <td>{{session.id}}</td>
+										      <td>{{session.qdtActions}}</td>
+										      <td>{{session.time | msConverter}}</td>
+										      <td>{{session.success | number:2}}</td>
+										      <td>{{session.required | number:2}}</td>
+										      <td>{{session.effectiveness | number:2}}</td>
+										      <td>{{session.efficiency | number:2}}</td>
+										    </tr>
+										</tbody>
+									</table>
+			        			</div>
+					        </div>
+	       				</div>
+	       			</div>
+	        		
+	        		
+	        		
+	        		<!-- ANALISE GUIADA -->
+	        		<div class="usdm-box" ng-show="isShowContentGuide()">
+	        			Análise Guiada
+	        		</div>
+	        	
+	        		<!-- ANALISE AVANCADA -->
+	        		<div class="usdm-box" ng-show="isShowContentAdvanced()">
 		            	<h2 class="usdm-box-header">
 		            		<a ng-show="taskCtrl.previousMode" class="btn" ng-click="backMode()" style="margin-bottom: 4px;"><i class="icon-chevron-left"></i></a>
 				    		{{ taskCtrl.mode.title }} 
 				    		<select ng-model="taskCtrl.mode" ng-options="m as m.desc for m in taskCtrl.modesArr | filter:{ notAnOption : false }" class="pull-right"></select>
 			            </h2>
-			            
 			            <div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'users'">
 				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 							  <thead>
 							    <tr>
 							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
-							      
 							      <th ts-criteria="actionsAverageOk|parseFloat">{{ 'datamining.tasks.evaluate.actions' | translate }}</th>
 							      <th ts-criteria="timesAverageOk|parseFloat">{{ 'datamining.tasks.evaluate.time' | translate }}</th>
 							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateSuccess' | translate }}</th>
 							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateRequired' | translate }}</th>
 							      <th ts-criteria="countSessionsSuccess+countSessionsRepeat+countSessionsThreshold|parseInt">{{ 'datamining.tasks.evaluate.sessions.total' | translate }}</th>
-
 <!-- 							      <th ts-criteria="efficiency|parseFloat">Eficiência</th> -->
 <!-- 							      <th ts-criteria="effectiveness|parseFloat">Eficácia</th> -->
-							      
 							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">{{ 'datamining.tasks.evaluate.priority' | translate }}</th>
 							      <th ts-criteria="fuzzyPriorityEfcEft|parseFloat">F2</th>
 							    </tr>
@@ -158,10 +282,8 @@
 							      <td title="{{ 'datamining.tasks.evaluate.complete' | translate }} = {{user.countSessionsSuccess}} | {{ 'datamining.tasks.evaluate.restart' | translate }} = {{user.countSessionsRepeat}} | {{ 'datamining.tasks.evaluate.threshold' | translate }} = {{user.countSessionsThreshold}}">
 							      	{{user.countSessionsSuccess + user.countSessionsRepeat + user.countSessionsThreshold}}
 							      </td>
-							      
 <!-- 							      <td>{{user.efficiency | number:3}}</td> -->
 <!-- 							      <td>{{user.effectiveness | number:3}}</td> -->
-							      
 							      <td>{{user.fuzzyPriority | number:3}}</td>
 							      <td title="Efici.={{user.efficiency | number:2}}[{{user.efficiencyNormalized | number:2}}], Efica.={{user.effectiveness | number:2}}[{{user.effectivenessNormalized | number:2}}]">{{user.fuzzyPriorityEfcEft | number:3}}</td>
 							      
@@ -226,11 +348,35 @@
 							</table>
 						</div>
 						<div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'actions'">
+							<dl class="dl-with-margin-bottom">
+								<dt class="ng-binding">Informações da Sessão:</dt>
+				            	<dd class="ng-binding">
+									Id: <b>{{ taskCtrl.userSession.id }}</b>;<br/>
+									Classificação: <b>{{ taskCtrl.userSession.classification }}</b>;<br/>
+									Usuário: <b>{{ taskCtrl.userSession.username }}</b>;<br/>
+									Completude: <b>{{ taskCtrl.userSession.userRateSuccess | number:2}} %</b>;<br/>
+									Corretude: <b>{{ taskCtrl.userSession.userRateRequired | number:2}} %</b>;<br/>
+				            	</dd>
+				            </dl>
+							<dl class="dl-with-margin-bottom" ng-show="actionViewSelected != null">
+				            	<dt class="ng-binding">Informações da Ação:</dt>
+				            	<dd class="ng-binding">
+				            		Id: <b>{{ actionViewSelected.id }}</b>;<br/>
+				            		Ação: <b>{{ actionViewSelected.action }}</b>;<br/>
+				            		Tag: <b>{{ actionViewSelected.infoTag }}</b>;<br/>
+		            				Name: <b>{{ actionViewSelected.infoName }}</b>;<br/>
+		            				Conteúdo: <b>{{ actionViewSelected.infoContent }}</b>;<br/>
+		            				Posição [X,Y]: <b>[{{ actionViewSelected.infoPosX }},{{ actionViewSelected.infoPosY }}]</b>;<br/>
+		            				Elemento (XPath): <b>{{ actionViewSelected.element }}</b>;<br/>
+		            				Local: <b>{{ actionViewSelected.local }}</b>;<br/>
+				            	</dd>
+				            </dl>
 				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 							  <thead>
 							    <tr>
 							      <th ts-criteria="id">Id</th>
-							      <th ts-criteria="id">Fav.</th>
+							      <th ts-criteria="id">Ok</th>
+							      <th ts-criteria="id">Err</th>
 							      <th ts-criteria="time |parseInt" ts-default="ascending">Hora</th>
 							      <th ts-criteria="action">Acao</th>
 							      <th ts-criteria="element|lowercase">Elemento</th>
@@ -238,11 +384,15 @@
 							    </tr>
 							  </thead>
 							  <tbody>
-							    <tr ng-repeat="action in taskCtrl.userSession.actions" ts-repeat>
+							    <tr ng-click="setActionViewSelected(action)" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in taskCtrl.userSession.actions" ts-repeat>
 							      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
-							      <td class="text-center" ng-click="toggleFavoriteAction(action)">
-							      	<i ng-show="isActionFavorite(action)" class="icon-star"></i>
-							      	<i ng-hide="isActionFavorite(action)" class="icon-star-empty"></i>
+							      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.OK)">
+							      	<i ng-show="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-sign"></i>
+							      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-circle"></i>
+							      </td>
+							      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.ERROR)">
+							      	<i ng-show="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-sign"></i>
+							      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-circle"></i>
 							      </td>
 							      <td>{{action.time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</td>
 							      <td>{{action.action}}</td>
@@ -263,9 +413,9 @@
 							  </thead>
 							  <tbody>
 							    <tr ng-repeat="action in taskCtrl.actionsArr" ts-repeat>
-								      <td color-action color-action-elem="action" color-ctrl="taskCtrl">{{ action.$key }}</td>
-								      <td>{{ action.count }}</td>
-								      <td>{{ action.value }}</td>
+							      <td color-action color-action-elem="action" color-ctrl="taskCtrl">{{ action.$key }}</td>
+							      <td>{{ action.count }}</td>
+							      <td>{{ action.value }}</td>
 							    </tr>
 							  </tbody>
 							</table>
@@ -289,10 +439,6 @@
 						
 						<!-- FREQUENT PATTERN MINING -->
 						<div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'frequentPatterns'">
-							<div id="mynetwork"></div>
-						
-							<button ng-click="changeGraphType(false)">Sessions</button>
-							<button ng-click="changeGraphType(true)">Patterns</button>
 							<div class="usdm-withscroll">
 					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 								  <thead>
@@ -315,7 +461,6 @@
 							</div>
 			            </div>
 			            <div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'pattern'">
-			            
 			            	<div class="usdm-box-body">
 					            <dl>
 					            	<dt class="ng-binding">{{ 'datamining.pattern.metrics' | translate }}:</dt>
@@ -329,8 +474,6 @@
 					            	</dd>
 					            </dl>
 		            		</div>
-		            		
-		            		
 		            		<br/>
 		            		<h3>{{ 'datamining.pattern.actions' | translate }}</h3>
 		            		<div class="usdm-withscroll">
@@ -351,8 +494,6 @@
 								  </tbody>
 								</table>
 							</div>
-							
-							
 							<br/>
 		            		<h3>{{ 'datamining.pattern.sessions' | translate }}</h3>
 		            		<div class="usdm-withscroll">
@@ -383,12 +524,17 @@
 								  </tbody>
 								</table>
 							</div>
-							
 			            </div>
 						
 						
 						<hr/>
 					</div>
+	        		
+	        	</div>
+	        	
+	        	
+	        	
+	        	
 			    	
 		    	</div>
 	        </div>

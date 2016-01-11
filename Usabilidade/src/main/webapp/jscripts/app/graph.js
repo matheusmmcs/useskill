@@ -22,7 +22,7 @@ var optionsGraphUseSkill = {
     arrows: {
       to: {
         enabled: true,
-        scaleFactor: 0.1
+        scaleFactor: 0.4
       }
     },
     color: 'gray',
@@ -124,7 +124,7 @@ var optionsGraphUseSkill = {
 };
 
 
-function drawGraph(type, idContainer, frequentPatterns, sessions, actionsRequired, favorites){
+function drawGraph(type, idContainer, frequentPatterns, sessions, actionsSituation, situationsEnum){
 	  function getEdge(from, to, arrEdges) {
 	    for (var i in arrEdges) {
 	      if (arrEdges[i].to == to && arrEdges[i].from == from) {
@@ -191,11 +191,26 @@ function drawGraph(type, idContainer, frequentPatterns, sessions, actionsRequire
 	        arrNodes.push({
 	          id: idItemAtual, 
 	          label: 'Action '+idItemAtual,
-	          value: 1
+	          sessions: [],
+	          countPatterns: 1,
+	          value: 1,
+	          scaling: {
+	        	  customScalingFunction: function (min,max,total,value) {
+	        		  if (max === min) {
+        			    return 0.5;
+        			  }
+        			  else {
+        				  min = min/2;
+        			    var scale = 1 / (max - min);
+        			    return Math.max(0,(value - min)*scale);
+        			  }
+	        	  }
+	          }
 	        });
 	        posX++;
 	      } else {
 	        node.value++;
+	        node.countPatterns++;
 	        maxVal = node.value > maxVal ? node.value : maxVal; 
 	      }
 	
@@ -207,10 +222,13 @@ function drawGraph(type, idContainer, frequentPatterns, sessions, actionsRequire
 	          arrEdges.push({
 	            from: idItemAnterior, 
 	            to: idItemAtual,
+	            countPatterns: 1,
+	            sessions: [],
 	            value: 1
 	          });
 	        } else {
 	          edge.value++;
+	          edge.countPatterns++;
 	        }
 	      }
 	
@@ -227,18 +245,9 @@ function drawGraph(type, idContainer, frequentPatterns, sessions, actionsRequire
 		  arrNodes[n].x = posX * scaleX;
 		  arrNodes[n].y = getRandomInt(0, 2 * scaleX);
 		  posX++;
-		  for (var f in favorites) {
-			  if (arrNodes[n].id == favorites[f]) {
-				  arrNodes[n].color = optionsGraphUseSkill.groups.green.color;
-			  }
-		  }
-		  
-		  for (var a in actionsRequired) {
-			  if (arrNodes[n].id == actionsRequired[a].id) {
-				  arrNodes[n].color = optionsGraphUseSkill.groups.blue.color;
-			  }
-		  }
 	  }
+	  
+	  //redraw
 	  
 	  //construir grafos com as ações do padrão sequencial, mas o tamanho dos nós e das arestas são relativos à quantidade de sessões que realizaram
 	  if (type == 'sessions') {
@@ -250,42 +259,70 @@ function drawGraph(type, idContainer, frequentPatterns, sessions, actionsRequire
 		  arrEdges = [];
 		  
 		  for (var s in sessions) {
-			  var actions = sessions[s].actions,
+			  var session = sessions[s], 
+			  	actions = session.actions,
 			  	idNodeBefore = null;
-			  
-			  //console.log('###########');
-			  //console.log('SESSION', s, actions);
-			  
 			  for (var a in actions) {
 				  var node = getNode(actions[a].identifier, arrNodes);
 				  if (node) {
 					  node.value++;
-					  //console.log('Node: ', node.id, node.value);
-					  
 					  if (idNodeBefore != null) {
 						  var edge = getEdge(idNodeBefore, node.id, arrEdges);
 						  if (!edge) {
-					          arrEdges.push({
+							  edge = {
 					            from: idNodeBefore, 
 					            to: node.id,
+					            sessions: [],
 					            value: 1
-					          });
-					          //console.log('NewEdge: ('+ idNodeBefore + ' -> ' + node.id + ')');
+					          };
+					          arrEdges.push(edge);
 					        } else {
 					          edge.value++;
-					          //console.log('Edge: ('+ idNodeBefore + ' -> ' + node.id + ') = ' + edge.value);
 					        }
 					  }
-					  
 					  idNodeBefore = node.id;
 				  }
+			  }
+		  }
+	  }
+
+	  //add more info
+	  for (var s in sessions) {
+		  var session = sessions[s], 
+		  	actions = session.actions,
+		  	idNodeBefore = null;
+		  var sessionDetails = {
+			  id : session.id,
+			  username : session.username,
+			  required : session.userRateRequired,
+			  success : session.userRateSuccess,
+			  time : session.time,
+			  qdtActions : session.actions.length,
+			  effectiveness : session.effectiveness,
+			  efficiency : session.efficiency,
+			  classification: session.classification
+		  };
+		  for (var a in actions) {
+			  var node = getNode(actions[a].identifier, arrNodes);
+			  if (node) {
+				  node.action = actions[a];
+				  if (node.sessions.indexOf(sessionDetails) == -1) {
+					  node.sessions.push(sessionDetails);
+				  }
+				  if (idNodeBefore != null) {
+					  var edge = getEdge(idNodeBefore, node.id, arrEdges);
+					  if (edge != null && edge.sessions.indexOf(sessionDetails) == -1) {
+						  edge.sessions.push(sessionDetails);
+					  }
+				  }
+				  idNodeBefore = node.id;
 			  }
 		  }
 	  }
 	
 	  var nodes = new vis.DataSet(arrNodes);
 	  var edges = new vis.DataSet(arrEdges);
-	
+	  
 	  // create a network
 	  var container = document.getElementById(idContainer);
 	
@@ -298,19 +335,47 @@ function drawGraph(type, idContainer, frequentPatterns, sessions, actionsRequire
 	
 	  // initialize your network!
       var network = new vis.Network(container, data, optionsGraphUseSkill);
-      network.on("selectNode", function (params) {
-    	  var node = network.body.nodes[params.nodes[0]];
-          console.log("selectNode", node);
-          //document.getElementById('eventSpan').innerHTML = '<h2>Click event:</h2>' + JSON.stringify(params, null, 4);
-      });
-      network.on("selectEdge", function (params) {
-    	  var edge = network.body.edges[params.edges[0]];
-          console.log("selectEdge", edge);
-          console.log(edge.from.id, edge.to.id, edge.options.value);
-      });
-      console.log(network);
       
-      network.body.edges
+      //add information on edges
+      for (var e in network.body.edges) {
+		  for (var a in arrEdges) {
+			  if (arrEdges[a].sessions != undefined && arrEdges[a].id == network.body.edges[e].id) {
+				  network.body.edges[e].options.sessions = arrEdges[a].sessions;
+			  } 
+		  }
+	  }
+      
+      refreshGraph(network, actionsSituation, situationsEnum);
       
       return network;
+}
+
+function refreshGraph(network, actionsSituation, situationsEnum){
+	var arrNodes = network.body.nodes;
+	for (var n in arrNodes) {
+		
+		console.log(arrNodes[n]);
+		var hasChanged = false,
+			actionSituation = actionsSituation[arrNodes[n].id];
+		
+		if (actionSituation != null) {
+			for (var s in situationsEnum) {
+				if (situationsEnum[s].id == actionSituation.id) {
+					arrNodes[n].options.color = optionsGraphUseSkill.groups[actionSituation.group].color;
+					hasChanged = true;
+				}
+			}
+		}
+		
+		if (arrNodes[n].options.action != null && arrNodes[n].options.action.required == true) {
+			arrNodes[n].options.color = optionsGraphUseSkill.groups.blue.color;
+			hasChanged = true;
+		}
+		
+		if (!hasChanged) {
+			arrNodes[n].options.color = optionsGraphUseSkill.nodes.color;
+			
+		}
+	}
+	network.redraw();
 }

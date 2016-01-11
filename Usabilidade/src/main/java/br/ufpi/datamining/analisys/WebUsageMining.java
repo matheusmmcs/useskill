@@ -327,19 +327,19 @@ public class WebUsageMining {
 							pvaKey = pageViewActionIds.get(pvaUnique);
 						}
 						pageViewActionDataMining.setIdentifier(pvaKey);
-						userSectionPageViewActions.add(pageViewActionDataMining);
-						countActions++;
 						
 						userSequence += pvaKey + " -1 ";
 						
-						if(DEBUG){
-							//System.out.println(pvaUnique);
-						}
-						
+						//verificar se ação é "required"
 						if(actionsRequiredTask.get(pvaUnique) != null){
 							actionsRequiredTask.put(pvaUnique, (actionsRequiredTask.get(pvaUnique) + 1));
 							actionsRequiredSession.put(pvaUnique, (actionsRequiredSession.get(pvaUnique) + 1));
+							pageViewActionDataMining.setRequired(true);
 						}
+						
+						userSectionPageViewActions.add(pageViewActionDataMining);
+						countActions++;
+						
 						
 						if(j == 0){
 							initialTime = action.getsTime();

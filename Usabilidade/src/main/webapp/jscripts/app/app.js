@@ -746,7 +746,7 @@ angular.module('useskill',
 	taskCtrl.modes = modes;
 	taskCtrl.modesArr = modesArr;
 	taskCtrl.mode = modes.users;
-	taskCtrl.result.pageViewActionFavorites = [];
+	taskCtrl.actionsSituation = {};
 	
 	//count actions
 	var actionsArr = $filter('toArray')(taskCtrl.result.pageViewActionIds),
@@ -825,20 +825,60 @@ angular.module('useskill',
 		}).join(", ");
 	});
 	
-	$scope.toggleFavoriteAction = function(action) {
-		var idx = taskCtrl.result.pageViewActionFavorites.indexOf(action.identifier);
-		if (idx === -1) {
-			taskCtrl.result.pageViewActionFavorites.push(action.identifier);
-		} else if (idx === 0) {
-			taskCtrl.result.pageViewActionFavorites.shift();
-		} else {
-			taskCtrl.result.pageViewActionFavorites.splice(1, idx);
+	/************ Sitations ************/
+	$scope.situationsEnum = {
+    	OK: {
+    		id: 'ok',
+    		desc: 'Correta',
+    		group: 'green'
+    	},
+    	ERROR: {
+    		id: 'error',
+    		desc: 'Incorreta',
+    		group: 'red'
+    	},
+    	DEFAULT: {
+    		id: 'default',
+    		desc: 'Sem Situação Definida'
+    	},
+    }
+	function resetSituationAux(actionId) {
+		var sit = taskCtrl.actionsSituation[actionId];
+		$scope.situationAux = sit !== undefined ? sit : $scope.situationsEnum.DEFAULT;
+	}
+	$scope.setSituationAction = function(actionId, situation) {
+		for (var i in $scope.situationsEnum) {
+			if ($scope.situationsEnum[i].id === situation.id) {
+				var sit = taskCtrl.actionsSituation[actionId];
+				if (sit !== undefined && sit.id === situation.id){
+					taskCtrl.actionsSituation[actionId] = undefined;
+				}else {
+					taskCtrl.actionsSituation[actionId] = situation;
+				}
+				break;
+			}
 		}
 	}
-	
-	$scope.isActionFavorite = function(action) {
-		return taskCtrl.result.pageViewActionFavorites.indexOf(action.identifier) !== -1;
+	$scope.isSituationAction = function(actionId, situation) {
+		var sit = taskCtrl.actionsSituation[actionId];
+		if (sit !== undefined && sit.id === situation.id) {
+			return true;
+		}
+		return false;
 	}
+	$scope.selectSituationAction = function(actionId, situation) {
+		$scope.setSituationAction(actionId, situation);
+		$scope.redraw();
+	}
+	$scope.descSituationAction = function(actionId) {
+		var sit = taskCtrl.actionsSituation[actionId];
+		return sit !== undefined ? sit.desc : '-';
+	}
+	$scope.idSituationAction = function(actionId) {
+		var sit = taskCtrl.actionsSituation[actionId];
+		return sit !== undefined ? sit.id : '';
+	}
+	
 	
 	$scope.showUserSessions = function(user){
 		var sessions = [];
@@ -857,6 +897,7 @@ angular.module('useskill',
 	}
 	
 	$scope.showActionsSession = function(session){
+		$scope.showContentAdvanced();
 		taskCtrl.userSession = session;
 		changeMode('actions');
 	}
@@ -876,12 +917,19 @@ angular.module('useskill',
 	}
 	
 	function changeMode(newMode){
+		$scope.actionViewSelected = null;
 		taskCtrl.previousMode = taskCtrl.mode;
 		taskCtrl.mode = modes[newMode];
 	}
 	
 	$scope.backMode = function(){
 		taskCtrl.mode = taskCtrl.previousMode;
+	}
+	
+	/** LISTA DE AÇÕES **/
+	
+	$scope.setActionViewSelected = function(action){
+		$scope.actionViewSelected = action;
 	}
 	
 	//history graph
@@ -907,21 +955,126 @@ angular.module('useskill',
     	$scope.graphSuccessType = $scope.graphSuccessType === 'Pie' ? 'PolarArea' : 'Pie';
     };
     
-    //render graphPatterns
-    var graph, isPatternsActual;
+    
+    /*************   CONTEUDO GERAL AVALIACAO   *************/
+    var contentShowEnum = {
+    	GRAPH: 'graph',
+    	GUIDE: 'guide',
+    	ADVANCED: 'advanced'
+    }
+    $scope.contentShow = contentShowEnum.GRAPH;
+    $scope.showContentGraph = function() {
+    	$scope.redraw();
+    	$scope.contentShow = contentShowEnum.GRAPH;
+    }
+    $scope.showContentGuide = function() {
+    	$scope.contentShow = contentShowEnum.GUIDE;
+    }
+    $scope.showContentAdvanced = function() {
+    	$scope.contentShow = contentShowEnum.ADVANCED;
+    }
+    $scope.isShowContentGraph = function() {
+    	return $scope.contentShow === contentShowEnum.GRAPH;
+    }
+    $scope.isShowContentGuide = function() {
+    	return $scope.contentShow === contentShowEnum.GUIDE;
+    }
+    $scope.isShowContentAdvanced = function() {
+    	return $scope.contentShow === contentShowEnum.ADVANCED;
+    }
+    
+    /*************   GRAFO   *************/
+    $scope.graphTypeEnum = {
+    	PATTERNS: {
+    		id: 'patterns',
+    		desc: 'Padrões de Uso'
+    	},
+    	SESSIONS: {
+    		id: 'sessions',
+    		desc: 'Sessões dos Usuários'
+    	}
+    }
+    var isPatternsActual;
     $scope.changeGraphType = function(isPatterns) {
     	isPatternsActual = isPatterns;
     	$scope.renderGraph();
     }
     $scope.renderGraph = function() {
     	if (isPatternsActual) {
-    		type = 'patterns';
+    		$scope.graphType = $scope.graphTypeEnum.PATTERNS;
     	} else {
-    		type = 'sessions';
+    		$scope.graphType = $scope.graphTypeEnum.SESSIONS;
     	}
-    	graph = drawGraph(type, 'mynetwork', taskCtrl.frequentPatterns, taskCtrl.result.sessions, taskCtrl.actionsRequiredArr, taskCtrl.result.pageViewActionFavorites);
+    	$scope.graph = drawGraph($scope.graphType.id, 'mynetwork', taskCtrl.frequentPatterns, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum);
+    	$scope.graph.on("selectNode", function (params) {
+      	  	var node = $scope.graph.body.nodes[params.nodes[0]];
+      	  	var edgesFrom = [], edgesTo = [];
+      	  	resetSituationAux(node.id);
+      	  	angular.forEach(node.edges, function(edge){
+      	  		if (edge.from.id != node.id) {
+      	  			edgesFrom.push(edge.from.id);
+      	  		} else if (edge.to.id != node.id) {
+      	  			edgesTo.push(edge.to.id);
+      	  		} else {
+      	  			edgesFrom.push(edge.from.id);
+      	  			edgesTo.push(edge.to.id);
+      	  		}
+      	  	});
+      	  
+      	  	taskCtrl.edgeSelected = null;
+      	  	taskCtrl.nodeSelected = {
+      	  		'id': node.id,
+      	  		'name': node.options.label,
+      	  		'value': node.options.value,
+  				'edgesFrom': edgesFrom.join(", "),
+  				'edgesTo': edgesTo.join(", "),
+  				'sessions': node.options.sessions,
+  				'patternsCount': node.options.countPatterns,
+  				'action': node.options.action
+      	  	}
+      	  	console.log(node);
+      	  	$scope.$apply();
+        });
+    	$scope.graph.on("selectEdge", function (params) {
+    		var edge = $scope.graph.body.edges[params.edges[0]];
+    		taskCtrl.nodeSelected = null;
+	  		taskCtrl.edgeSelected = {
+	  			'fromId' : edge.fromId,
+	  			'toId' : edge.toId,
+	  			'value' : edge.options.value,
+	  			'sessions': edge.options.sessions,
+	  			'patternsCount' : edge.options.countPatterns
+	      	}
+	  		console.log(edge, taskCtrl.edgeSelected);
+	  		$scope.$apply();
+        });
+    	$scope.graph.on("deselectNode", function () {
+    		taskCtrl.nodeSelected = null;
+    		$scope.$apply();
+    	});
+    	$scope.graph.on("deselectEdge", function () {
+    		taskCtrl.edgeSelected = null;
+    		$scope.$apply();
+    	});	
     }
-    $scope.changeGraphType(true);
+    $scope.redraw = function() {
+    	refreshGraph($scope.graph, taskCtrl.actionsSituation, $scope.situationsEnum);
+    }
+    $scope.showActionsSessionFromGraph = function(session){
+    	$scope.showContentAdvanced();
+    	var sessions = taskCtrl.result.sessions, realSession;
+    	for (var s in sessions) {
+    		if (sessions[s].id == session.id) {
+    			realSession = sessions[s];
+    		}
+    	}
+		taskCtrl.userSession = realSession;
+		changeMode('actions');
+	}
+    
+    $scope.changeGraphType(false);
+    
+    
 })
 
 //Actions Controllers
@@ -1073,11 +1226,11 @@ angular.module('useskill',
 		    	var count = scope.colorCtrl.result.pageViewActionCount[id];
 		    	var a = count > 0 ? (count / scope.colorCtrl.actionsMaxCount) : 0;
 		    	
-		    	element.css('background', 'rgba(66,99,146, '+a+')');
+		    	
+		    	jQuery(element).style('background', 'rgba(66,99,146, '+a+')', 'important')
 		    	if(a > .5){
 		    		element.css('color', 'white');
 		    	}
-		    	//console.log(id);
 		    	
 		    	/*
 		    	var a = (scope.colorActionElem.count/taskCtrl.actionsMaxCount || 0);
@@ -1146,3 +1299,67 @@ angular.module('useskill',
         return value + (tail || ' …');
     };
 });
+(function($) {    
+  if ($.fn.style) {
+    return;
+  }
+
+  // Escape regex chars with \
+  var escape = function(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  };
+
+  // For those who need them (< IE 9), add support for CSS functions
+  var isStyleFuncSupported = !!CSSStyleDeclaration.prototype.getPropertyValue;
+  if (!isStyleFuncSupported) {
+    CSSStyleDeclaration.prototype.getPropertyValue = function(a) {
+      return this.getAttribute(a);
+    };
+    CSSStyleDeclaration.prototype.setProperty = function(styleName, value, priority) {
+      this.setAttribute(styleName, value);
+      var priority = typeof priority != 'undefined' ? priority : '';
+      if (priority != '') {
+        // Add priority manually
+        var rule = new RegExp(escape(styleName) + '\\s*:\\s*' + escape(value) +
+            '(\\s*;)?', 'gmi');
+        this.cssText =
+            this.cssText.replace(rule, styleName + ': ' + value + ' !' + priority + ';');
+      }
+    };
+    CSSStyleDeclaration.prototype.removeProperty = function(a) {
+      return this.removeAttribute(a);
+    };
+    CSSStyleDeclaration.prototype.getPropertyPriority = function(styleName) {
+      var rule = new RegExp(escape(styleName) + '\\s*:\\s*[^\\s]*\\s*!important(\\s*;)?',
+          'gmi');
+      return rule.test(this.cssText) ? 'important' : '';
+    }
+  }
+
+  // The style function
+  $.fn.style = function(styleName, value, priority) {
+    // DOM node
+    var node = this.get(0);
+    // Ensure we have a DOM node
+    if (typeof node == 'undefined') {
+      return this;
+    }
+    // CSSStyleDeclaration
+    var style = this.get(0).style;
+    // Getter/Setter
+    if (typeof styleName != 'undefined') {
+      if (typeof value != 'undefined') {
+        // Set style property
+        priority = typeof priority != 'undefined' ? priority : '';
+        style.setProperty(styleName, value, priority);
+        return this;
+      } else {
+        // Get style property
+        return style.getPropertyValue(styleName);
+      }
+    } else {
+      // Get CSSStyleDeclaration
+      return style;
+    }
+  };
+})(jQuery);

@@ -422,6 +422,9 @@ ul.horizontal{
 					margin-left: 0;
 				}
 				
+				&.dl-with-margin-bottom {
+					margin: 10px 5px;
+				}
 				padding: 5px 0;
 				margin: 10px 5px 0;
 				border-bottom: 1px solid lighten(#becde2, 12%);
@@ -565,6 +568,35 @@ input[type=number].number-disable::-webkit-outer-spin-button {
     height: 280px;
     border: 1px solid lightgray;
     margin: 10px 0;
-    box-shadow: 1px 1px 4px #CCC;
+    box-shadow: 1px 1px 3px #DDD;
     border-radius: 3px;
+}
+
+
+.session{
+	&-SUCCESS td {
+		background: rgb(209, 255, 209) !important;
+		color: black;
+	}
+	&-ERROR td {
+		background: rgb(255, 209, 209) !important;
+		color: red;
+	}
+	&-THRESHOLD td {
+		background: rgb(255, 209, 209) !important;
+		color: black;
+	}
+	&-REPEAT td {
+		background: rgb(255, 242, 209) !important;
+		color: black;
+	}
+}
+
+.action-situation{
+	&-ok td {
+		background: rgb(209, 255, 209) !important;
+	}
+	&-error td {
+		background: rgb(255, 209, 209) !important;
+	}
 }
