@@ -771,7 +771,6 @@ angular.module('useskill',
 		}
 	}
 	
-	
 	//adjust frequentPatterns
 	angular.forEach(taskCtrl.frequentPatterns, function(fp, keyFp){
 		fp.key = keyFp;
@@ -825,21 +824,67 @@ angular.module('useskill',
 		}).join(", ");
 	});
 	
+	
+	/************ Classifications ************/
+	
+	$scope.classificationEnum = {
+		success : {
+			id: "SUCCESS",
+			desc: $filter('translate')('datamining.tasks.evaluate.complete'),
+			val: 0,
+			classLabel: 'label-success'
+		},
+		threshold : {
+			id: "THRESHOLD",
+			desc: $filter('translate')('datamining.tasks.evaluate.threshold'),
+			val: 2,
+			classLabel: 'label-important'
+		},
+		repeat : {
+			id: "REPEAT",
+			desc: $filter('translate')('datamining.tasks.evaluate.restart'),
+			val: 1,
+			classLabel: 'label-warning'
+		},
+		error : {
+			id: "ERROR",
+			desc: '',
+			val: 3,
+			classLabel: 'label-important'
+		}
+	}
+	
+	$scope.getClassificationFromEnum = function(classif) {
+		for (var c in $scope.classificationEnum) {
+			if ($scope.classificationEnum[c].id == classif) {
+				return $scope.classificationEnum[c];
+			}
+		}
+		return {
+			id: "-",
+			desc: '-',
+			val: 9
+		};
+	}
+	
 	/************ Sitations ************/
 	$scope.situationsEnum = {
     	OK: {
     		id: 'ok',
     		desc: 'Correta',
-    		group: 'green'
+    		group: 'green',
+    		classLabel: 'label-success'
     	},
     	ERROR: {
     		id: 'error',
     		desc: 'Incorreta',
-    		group: 'red'
+    		group: 'red',
+    		classLabel: 'label-important'
     	},
     	DEFAULT: {
     		id: 'default',
-    		desc: 'Sem Situação Definida'
+    		desc: 'Sem Situação Definida',
+    		classLabel: ''
     	},
     }
 	function resetSituationAux(actionId) {
@@ -877,6 +922,17 @@ angular.module('useskill',
 	$scope.idSituationAction = function(actionId) {
 		var sit = taskCtrl.actionsSituation[actionId];
 		return sit !== undefined ? sit.id : '';
+	}
+	$scope.getActionInfoFromId = function(actionId) {
+		for (var s in taskCtrl.result.sessions) {
+			var session = taskCtrl.result.sessions[s];
+			for (var a in session.actions) {
+				if (session.actions[a].identifier == actionId) {
+					return session.actions[a];
+				}
+			}
+		}
+		return null;
 	}
 	
 	
@@ -926,10 +982,13 @@ angular.module('useskill',
 		taskCtrl.mode = taskCtrl.previousMode;
 	}
 	
-	/** LISTA DE AÇÕES **/
+	/*************   LISTA DE AÇÕES   *************/
 	
 	$scope.setActionViewSelected = function(action){
 		$scope.actionViewSelected = action;
+	}
+	$scope.setActionViewGuideSelected = function(actionId){
+		$scope.actionViewSelected = $scope.getActionInfoFromId(actionId);
 	}
 	
 	//history graph
@@ -962,12 +1021,16 @@ angular.module('useskill',
     	GUIDE: 'guide',
     	ADVANCED: 'advanced'
     }
+    
     $scope.contentShow = contentShowEnum.GRAPH;
     $scope.showContentGraph = function() {
     	$scope.redraw();
     	$scope.contentShow = contentShowEnum.GRAPH;
     }
     $scope.showContentGuide = function() {
+    	if (!$scope.step) {
+    		$scope.goToGuideStep("1");
+    	}
     	$scope.contentShow = contentShowEnum.GUIDE;
     }
     $scope.showContentAdvanced = function() {
@@ -1073,6 +1136,50 @@ angular.module('useskill',
 	}
     
     $scope.changeGraphType(false);
+    
+    /*************   GUIDE   *************/
+    
+    $scope.goToGuideStep = function(step, data){
+    	$scope.step = step;
+    	if (step == "1") {
+    		//ordenar prioridade: classificacao > corretude > completude > tempo > qtd.acoes
+    		var sess = taskCtrl.result.sessions;
+    		sess.sort(function(a, b) {
+    		    return a.actions.length - b.actions.length; //menor
+    		});
+    		sess.sort(function(a, b) {
+    		    return a.time - b.time; //menor
+    		});
+    		sess.sort(function(a, b) {
+    		    return b.userRateSuccess - a.userRateSuccess; //maior
+    		});
+    		sess.sort(function(a, b) {
+    		    return b.userRateRequired - a.userRateRequired; //maior
+    		});
+    		sess.sort(function(a, b) {
+    		    return classificationPoints(a.classification) - classificationPoints(b.classification); //menor
+    		});
+    		for (var s in sess) {
+    			sess[s].order = s;
+    		}
+    		$scope.sessionsGuide = sess;
+    	} else if (step == "1.1") {
+    		$scope.sessionSelected = data;
+    	}
+    }
+    
+    function classificationPoints(classification) {
+    	return $scope.getClassificationFromEnum(classification).val;
+    }
+    
+    $scope.showActionsSessionGuide = function(session){
+    	if (session) {
+    		$scope.goToGuideStep("1.1", session);
+    	} else {
+    		alert("Selecione uma sessão e tente novamente...");
+    		$scope.goToGuideStep("1");
+    	}
+    }
     
     
 })
@@ -1247,10 +1354,19 @@ angular.module('useskill',
 
 .filter('msConverter', function() {
   return function(n) {
+	  var numberTwoDigits = function(n) {
+		  return (n < 10 ? '0' : '') + n;
+	  }
 	  n = Math.round(n);
 	  var minutes = Math.floor(n / 60000);
 	  var seconds = ((n % 60000) / 1000).toFixed(0);
-	  return minutes + "m:" + (seconds < 10 ? '0' : '') + seconds + "s"; 
+	  if (minutes < 60 ){
+		  return numberTwoDigits(minutes) + "m:" + numberTwoDigits(seconds) + "s";
+	  } else {
+		  var hours = Math.floor(minutes / 60);
+		  minutes = (minutes % 60).toFixed(0);
+		  return hours + "h:" + numberTwoDigits(minutes) + "m:" + numberTwoDigits(seconds) + "s";
+	  }
   }
 })
 .filter('numberSize', function() {

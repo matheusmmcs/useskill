@@ -399,6 +399,11 @@ ul.horizontal{
 		overflow: auto;
 		max-height: 450px;
 		width: 100%;
+		&-x {
+			position: relative;
+			overflow-x: auto;
+			width: 100%;
+		}
 	}
 
 	&box{
@@ -413,9 +418,13 @@ ul.horizontal{
 			border-bottom: 1px solid #becde2;	
 		}
 		&-body{
+			.table-title {
+				font-size: 15px;
+				margin: 5px;
+			}
 			dl{
 				dt{
-					font-size: 14px;
+					font-size: 15px;
 					margin-bottom: 5px;
 				}
 				dd{
@@ -531,6 +540,10 @@ ul.horizontal{
 	font-weight: bold;
 	color: firebrick;
 }
+.litle-margin-x {
+	margin-left: 4px;
+	margin-right: 4px;
+}
 
 .position-relative{
 	position: relative;
@@ -572,31 +585,51 @@ input[type=number].number-disable::-webkit-outer-spin-button {
     border-radius: 3px;
 }
 
-
+@color-sessios-text: 	#324b6f;
 .session{
 	&-SUCCESS td {
 		background: rgb(209, 255, 209) !important;
-		color: black;
+		color: @color-sessios-text;
 	}
 	&-ERROR td {
 		background: rgb(255, 209, 209) !important;
-		color: red;
+		color: @color-sessios-text;
 	}
 	&-THRESHOLD td {
 		background: rgb(255, 209, 209) !important;
-		color: black;
+		color: @color-sessios-text;
 	}
 	&-REPEAT td {
 		background: rgb(255, 242, 209) !important;
-		color: black;
+		color: @color-sessios-text;
 	}
 }
 
+.action-required td,
+.action-required.action-situation-ok td,
+.action-required.action-situation-error td,{
+	background: rgb(215, 234, 251) !important;
+}
 .action-situation{
 	&-ok td {
 		background: rgb(209, 255, 209) !important;
 	}
 	&-error td {
 		background: rgb(255, 209, 209) !important;
+	}
+	&-ok, &-error, &- {
+		cursor: pointer;
+	}
+}
+
+.table-labels {
+	.title{
+		font-size: 9pt;
+		font-weight: bold;
+		color: #888;
+		margin: 5px;
+	}
+	.label {
+		margin: 5px;
 	}
 }

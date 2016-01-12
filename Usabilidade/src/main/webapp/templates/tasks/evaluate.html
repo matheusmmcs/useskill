@@ -120,6 +120,7 @@
 	        	</div>
 	        	
 	        	<div>
+	        	
 	        		<!-- VISUALIZAR GRAFO -->
 	        		<div ng-show="isShowContentGraph()">
 		        		<div class="usdm-box">
@@ -176,6 +177,7 @@
 				            				Quantidade de Sessões: <b>{{ taskCtrl.nodeSelected.sessions.length }}</b>.<br/>
 						            	</dd>
 						            </dl>
+						            <h3 class="table-title">Sessões que contém este nó:</h3>
 						            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 							  			<thead>
 							  				<th ts-criteria="id|lowercase">Id</th>
@@ -198,6 +200,10 @@
 										    </tr>
 										</tbody>
 									</table>
+									<div class="table-labels">
+										<span class="title">{{ 'label' | translate }}:</span>
+										<span ng-repeat="label in classificationEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+									</div>
 								</div>
 	       					</div>
 	       					<div ng-show="taskCtrl.edgeSelected != null">
@@ -208,12 +214,12 @@
 			        				<dl>
 						            	<dt class="ng-binding">Informações da Aresta:</dt>
 						            	<dd class="ng-binding">
-						            		De: <b>{{ taskCtrl.edgeSelected.fromId }}</b>.<br/>
-				            				Para: <b>{{ taskCtrl.edgeSelected.toId }}</b>.<br/>
+						            		De: <b>{{ taskCtrl.edgeSelected.fromId }}</b>;<br/>
+				            				Para: <b>{{ taskCtrl.edgeSelected.toId }}</b>;<br/>
 				            				Realizado: <b>{{ taskCtrl.edgeSelected.value }} vezes</b>.<br/>
-		<!-- 				            				Padrões Presentes: <b>{{ taskCtrl.edgeSelected.patternsCount }} / {{ taskCtrl.frequentPatterns.length }}</b>.<br/> -->
 						            	</dd>
 						            </dl>
+						            <h3 class="table-title">Sessões que contém esta aresta:</h3>
 						            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 							  			<thead>
 							  				<th ts-criteria="id|lowercase">Id</th>
@@ -226,7 +232,7 @@
 							  			</thead>
 							            <tbody>
 										    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.edgeSelected.sessions" ts-repeat>
-										      <td>{{session.id}}</td>
+										      <td><a ng-click="showActionsSessionFromGraph(session)">{{session.id}}</a></td>
 										      <td>{{session.qdtActions}}</td>
 										      <td>{{session.time | msConverter}}</td>
 										      <td>{{session.success | number:2}}</td>
@@ -236,6 +242,10 @@
 										    </tr>
 										</tbody>
 									</table>
+									<div class="table-labels">
+										<span class="title">{{ 'label' | translate }}:</span>
+										<span ng-repeat="label in classificationEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+									</div>
 			        			</div>
 					        </div>
 	       				</div>
@@ -244,9 +254,197 @@
 	        		
 	        		
 	        		<!-- ANALISE GUIADA -->
-	        		<div class="usdm-box" ng-show="isShowContentGuide()">
-	        			Análise Guiada
+	        		<div ng-show="isShowContentGuide()">
+	        			<div class="usdm-box" ng-show="step == '1'">
+	        				<ul class="breadcrumb">
+							  <li class="active">Visualizar Sessões</li>
+							</ul>
+		        			<h2 class="usdm-box-header">
+		        				1 - Visualizar Sessões:
+		        			</h2>
+		        			<div class="usdm-box-body">
+		        				<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								    	<th ts-criteria="order|parseInt" ts-default="ascending">Prior.</th>
+								      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
+								      <th ts-criteria="actions|parseInt">Acoes</th>
+								      <th ts-criteria="time|parseInt">Tempo</th>
+								      <th ts-criteria="userRateSuccess|parseFloat">Complet.</th>
+								      <th ts-criteria="userRateRequired*100|parseFloat">Corret.</th>
+								      <th ts-criteria="classification|lowercase">Classific.</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr class="session-{{session.classification}}" ng-repeat="session in sessionsGuide" ts-repeat>
+								      <td class="text-center">{{session.order}}</td>
+								      <td><a ng-click="showActionsSessionGuide(session)">{{session.id}}</a></td>
+								      <td>{{session.actions.length | number:2}}</td>
+								      <td>{{session.time | msConverter}}</td>
+								      <td>{{session.userRateSuccess | number:2}} %</td>
+								      <td>{{session.userRateRequired | number:2}} %</td>
+								      <td>{{getClassificationFromEnum(session.classification).desc}}</td>
+								    </tr>
+								  </tbody>
+								</table>
+								<div class="table-labels">
+									<span class="title">{{ 'label' | translate }}:</span>
+									<span ng-repeat="label in classificationEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+								</div>
+		        			</div>
+		        		</div>
+		        		<div class="usdm-box" ng-show="step == '1.1'">
+		        			<ul class="breadcrumb">
+							  <li><a ng-click="goToGuideStep('1')">Visualizar Sessões</a> <span class="divider">/</span></li>
+							  <li class="active">Visualizar Ações</li>
+							</ul>
+		        			<h2 class="usdm-box-header">
+		        				1.1 - Visualizar Ações:
+		        				<a ng-click="goToGuideStep('2')" class="btn litle-margin-x btn-primary pull-right">{{ 'nextStep' | translate }}</a>
+		        				<a ng-click="goToGuideStep('1')" class="btn litle-margin-x pull-right">{{ 'backStep' | translate }}</a>
+		        			</h2>
+		        			<div class="usdm-box-body">
+			        			<dl class="dl-with-margin-bottom">
+									<dt class="ng-binding">Informações da Sessão:</dt>
+					            	<dd class="ng-binding">
+										Id: <b>{{ sessionSelected.id }}</b>;<br/>
+										Classificação: <b>{{ getClassificationFromEnum(sessionSelected.classification).desc }}</b>;<br/>
+										Usuário: <b>{{ sessionSelected.username }}</b>;<br/>
+										Completude: <b>{{ sessionSelected.userRateSuccess | number:2}} %</b>;<br/>
+										Corretude: <b>{{ sessionSelected.userRateRequired | number:2}} %</b>;<br/>
+					            	</dd>
+					            </dl>
+								<dl class="dl-with-margin-bottom" ng-show="actionViewSelected != null">
+					            	<dt class="ng-binding">Informações da Ação:</dt>
+					            	<dd class="ng-binding">
+					            		Id: <b>{{ actionViewSelected.identifier }}</b>;<br/>
+					            		Ação: <b>{{ actionViewSelected.action }}</b>;<br/>
+					            		Tag: <b>{{ actionViewSelected.infoTag }}</b>;<br/>
+			            				Name: <b>{{ actionViewSelected.infoName }}</b>;<br/>
+			            				Conteúdo: <b>{{ actionViewSelected.infoContent }}</b>;<br/>
+			            				Posição [X,Y]: <b>[{{ actionViewSelected.infoPosX }},{{ actionViewSelected.infoPosY }}]</b>;<br/>
+			            				Elemento (XPath): <b>{{ actionViewSelected.element }}</b>;<br/>
+			            				Local: <b>{{ actionViewSelected.local }}</b>;<br/>
+					            	</dd>
+					            </dl>
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								      <th ts-criteria="id">Id</th>
+								      <th ts-criteria="id">Ok</th>
+								      <th ts-criteria="id">Err</th>
+								      <th ts-criteria="time |parseInt" ts-default="ascending">Hora</th>
+								      <th ts-criteria="action">Acao</th>
+								      <th ts-criteria="element|lowercase">Elemento</th>
+								      <th ts-criteria="local|lowercase">Local</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr ng-click="setActionViewSelected(action)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in sessionSelected.actions" ts-repeat>
+								      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
+								      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.OK)">
+								      	<i ng-show="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-sign"></i>
+								      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-circle"></i>
+								      </td>
+								      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.ERROR)">
+								      	<i ng-show="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-sign"></i>
+								      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-circle"></i>
+								      </td>
+								      <td>{{action.time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</td>
+								      <td>{{action.action}}</td>
+								      <td title="{{action.element}}">{{action.element | cut:true:15:'&hellip;'}}</td>
+								      <td title="{{action.local}}">{{action.local | cut:true:15:'&hellip;'}}</td>
+								    </tr>
+								  </tbody>
+								</table>
+								<div class="table-labels">
+									<span class="title">{{ 'label' | translate }}:</span>
+									<span ng-repeat="label in situationsEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+									<span class="label label-info">{{ 'required' | translate }}</span>
+								</div>
+		        			</div>
+		        		</div>
+		        		<div class="usdm-box" ng-show="step == '2'">
+		        			<ul class="breadcrumb">
+							  <li><a ng-click="goToGuideStep('1')">Visualizar Sessões</a> <span class="divider">/</span></li>
+							  <li><a ng-click="goToGuideStep('1.1', sessionSelected)">Visualizar Ações</a> <span class="divider">/</span></li>
+							  <li class="active">Ações Mais Realizadas</li>
+							</ul>
+		        			<h2 class="usdm-box-header">
+		        				2 - Ações Mais Realizadas:
+		        				<a class="btn litle-margin-x btn-primary pull-right" ng-click="goToGuideStep('3')">{{ 'nextStep' | translate }}</a>
+		        				<a class="btn litle-margin-x pull-right" ng-click="goToGuideStep('1.1', sessionSelected)">{{ 'backStep' | translate }}</a>
+		        			</h2>
+		        			<div class="usdm-box-body">
+								<dl class="dl-with-margin-bottom" ng-show="actionViewSelected != null">
+					            	<dt class="ng-binding">Informações da Ação:</dt>
+					            	<dd class="ng-binding">
+					            		Id: <b>{{ actionViewSelected.identifier }}</b>;<br/>
+					            		Ação: <b>{{ actionViewSelected.action }}</b>;<br/>
+					            		Tag: <b>{{ actionViewSelected.infoTag }}</b>;<br/>
+			            				Name: <b>{{ actionViewSelected.infoName }}</b>;<br/>
+			            				Conteúdo: <b>{{ actionViewSelected.infoContent }}</b>;<br/>
+			            				Posição [X,Y]: <b>[{{ actionViewSelected.infoPosX }},{{ actionViewSelected.infoPosY }}]</b>;<br/>
+			            				Elemento (XPath): <b>{{ actionViewSelected.element }}</b>;<br/>
+			            				Local: <b>{{ actionViewSelected.local }}</b>;<br/>
+					            	</dd>
+					            </dl>
+					            <div class="usdm-withscroll-x">
+									<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+									  <thead>
+									    <tr>
+									      <th ts-criteria="identifier">Id</th>
+									      <th ts-criteria="count|parseInt" ts-default="descending">Count</th>
+									      <th ts-criteria="id">Ok</th>
+									      <th ts-criteria="id">Err</th>
+									      <th ts-criteria="value|lowercase">{{ 'datamining.tasks.actions.description' | translate }}</th>
+									    </tr>
+									  </thead>
+									  <tbody>
+									    <tr ng-click="setActionViewGuideSelected(action.$key)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.$key)}}" ng-repeat="action in taskCtrl.actionsArr" ts-repeat>
+									      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.$key]}}">{{action.$key}}</td>
+									      <td>{{ action.count }}</td>
+									      <td class="text-center" ng-click="setSituationAction(action.$key, situationsEnum.OK)">
+									      	<i ng-show="isSituationAction(action.$key, situationsEnum.OK)" class="icon-ok-sign"></i>
+									      	<i ng-hide="isSituationAction(action.$key, situationsEnum.OK)" class="icon-ok-circle"></i>
+									      </td>
+									      <td class="text-center" ng-click="setSituationAction(action.$key, situationsEnum.ERROR)">
+									      	<i ng-show="isSituationAction(action.$key, situationsEnum.ERROR)" class="icon-remove-sign"></i>
+									      	<i ng-hide="isSituationAction(action.$key, situationsEnum.ERROR)" class="icon-remove-circle"></i>
+									      </td>
+									      <td>{{ action.value }}</td>
+									    </tr>
+									  </tbody>
+									</table>
+								</div>
+								<div class="table-labels">
+									<span class="title">{{ 'label' | translate }}:</span>
+									<span ng-repeat="label in situationsEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+									<span class="label label-info">{{ 'required' | translate }}</span>
+								</div>
+		        			</div>
+		        		</div>
+		        		<div class="usdm-box" ng-show="step == '3'">
+	        				<ul class="breadcrumb">
+							  <li><a ng-click="goToGuideStep('1')">Visualizar Sessões</a> <span class="divider">/</span></li>
+							  <li><a ng-click="goToGuideStep('1.1', sessionSelected)">Visualizar Ações</a> <span class="divider">/</span></li>
+							  <li><a ng-click="goToGuideStep('2')">Ações Mais Realizadas</a> <span class="divider">/</span></li>
+							  <li class="active">Visualizar Grafo</li>
+							</ul>
+		        			<h2 class="usdm-box-header">
+		        				3 - Visualizar Grafo:
+		        				<a class="btn litle-margin-x btn-primary pull-right" ng-click="goToGuideStep('4')">{{ 'nextStep' | translate }}</a>
+		        				<a class="btn litle-margin-x pull-right" ng-click="goToGuideStep('2')">{{ 'backStep' | translate }}</a>
+		        			</h2>
+		        			<div class="usdm-box-body">
+		        				<a class="btn btn-primary" ng-click="showContentGraph()">Abrir Grafo</a>
+		        			</div>
+		        		</div>
+		        		
+		        		
 	        		</div>
+	        	
+	        	
 	        	
 	        		<!-- ANALISE AVANCADA -->
 	        		<div class="usdm-box" ng-show="isShowContentAdvanced()">
@@ -265,10 +463,6 @@
 							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateSuccess' | translate }}</th>
 							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateRequired' | translate }}</th>
 							      <th ts-criteria="countSessionsSuccess+countSessionsRepeat+countSessionsThreshold|parseInt">{{ 'datamining.tasks.evaluate.sessions.total' | translate }}</th>
-<!-- 							      <th ts-criteria="efficiency|parseFloat">Eficiência</th> -->
-<!-- 							      <th ts-criteria="effectiveness|parseFloat">Eficácia</th> -->
-							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">{{ 'datamining.tasks.evaluate.priority' | translate }}</th>
-							      <th ts-criteria="fuzzyPriorityEfcEft|parseFloat">F2</th>
 							    </tr>
 							  </thead>
 							  <tbody>
@@ -282,11 +476,6 @@
 							      <td title="{{ 'datamining.tasks.evaluate.complete' | translate }} = {{user.countSessionsSuccess}} | {{ 'datamining.tasks.evaluate.restart' | translate }} = {{user.countSessionsRepeat}} | {{ 'datamining.tasks.evaluate.threshold' | translate }} = {{user.countSessionsThreshold}}">
 							      	{{user.countSessionsSuccess + user.countSessionsRepeat + user.countSessionsThreshold}}
 							      </td>
-<!-- 							      <td>{{user.efficiency | number:3}}</td> -->
-<!-- 							      <td>{{user.effectiveness | number:3}}</td> -->
-							      <td>{{user.fuzzyPriority | number:3}}</td>
-							      <td title="Efici.={{user.efficiency | number:2}}[{{user.efficiencyNormalized | number:2}}], Efica.={{user.effectiveness | number:2}}[{{user.effectivenessNormalized | number:2}}]">{{user.fuzzyPriorityEfcEft | number:3}}</td>
-							      
 							    </tr>
 							  </tbody>
 							</table>
@@ -301,24 +490,25 @@
 							      <th ts-criteria="userRateSuccess|parseFloat">Completude</th>
 							      <th ts-criteria="userRateRequired*100|parseFloat">Corretude</th>
 							      <th ts-criteria="classification|lowercase">Class</th>
-							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">Fuzzy</th>
-							      <th ts-criteria="fuzzyPriorityEfcEft|parseFloat">F2</th>
 							    </tr>
 							  </thead>
 							  <tbody>
-							    <tr ng-repeat="session in taskCtrl.userSessions" ts-repeat>
+							    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.userSessions" ts-repeat>
 							      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
 							      <td>{{session.actions.length | number:2}}</td>
 							      <td>{{session.time | msConverter}}</td>
 							      <td>{{session.userRateSuccess | number:2}} %</td>
 							      <td>{{session.userRateRequired | number:2}} %</td>
-							      <td>{{session.classification}}</td>
-							      <td>{{session.fuzzyPriority | number:3}}</td>
-							      <td title="Efici.={{session.efficiency | number:2}}[{{session.efficiencyNormalized | number:2}}], Efica.={{session.effectiveness | number:2}}[{{session.effectivenessNormalized | number:2}}]">{{session.fuzzyPriorityEfcEft | number:3}}</td>
+							      <td>{{getClassificationFromEnum(session.classification).desc}}</td>
 							    </tr>
 							  </tbody>
 							</table>
+							<div class="table-labels">
+								<span class="title">{{ 'label' | translate }}:</span>
+								<span ng-repeat="label in classificationEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+							</div>
 			            </div>
+			            
 			            <div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'sessions'">
 				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 							  <thead>
@@ -329,30 +519,31 @@
 							      <th ts-criteria="userRateSuccess|parseFloat">Completude</th>
 							      <th ts-criteria="userRateRequired*100|parseFloat">Corretude</th>
 							      <th ts-criteria="classification|lowercase">Class</th>
-							      <th ts-criteria="fuzzyPriority|parseFloat" ts-default="descending">Fuzzy</th>
-							      <th ts-criteria="fuzzyPriorityEfcEft|parseFloat">F2</th>
 							    </tr>
 							  </thead>
 							  <tbody>
-							    <tr class="useskill-action-popover" ng-repeat="session in taskCtrl.result.sessions" ts-repeat>
+							    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.result.sessions" ts-repeat>
 							      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
 							      <td>{{session.actions.length | number:2}}</td>
 							      <td>{{session.time | msConverter}}</td>
 							      <td>{{session.userRateSuccess | number:2}} %</td>
 							      <td>{{session.userRateRequired | number:2}} %</td>
-							      <td>{{session.classification}}</td>
-							      <td>{{session.fuzzyPriority | number:3}}</td>
-							      <td title="Efici.={{session.efficiency | number:2}}[{{session.efficiencyNormalized | number:2}}], Efica.={{session.effectiveness | number:2}}[{{session.effectivenessNormalized | number:2}}]">{{session.fuzzyPriorityEfcEft | number:3}}</td>
+							      <td>{{getClassificationFromEnum(session.classification).desc}}</td>
 							    </tr>
 							  </tbody>
 							</table>
+							<div class="table-labels">
+								<span class="title">{{ 'label' | translate }}:</span>
+								<span ng-repeat="label in classificationEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+							</div>
 						</div>
+						
 						<div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'actions'">
 							<dl class="dl-with-margin-bottom">
 								<dt class="ng-binding">Informações da Sessão:</dt>
 				            	<dd class="ng-binding">
 									Id: <b>{{ taskCtrl.userSession.id }}</b>;<br/>
-									Classificação: <b>{{ taskCtrl.userSession.classification }}</b>;<br/>
+									Classificação: <b>{{ getClassificationFromEnum(taskCtrl.userSession.classification).desc }}</b>;<br/>
 									Usuário: <b>{{ taskCtrl.userSession.username }}</b>;<br/>
 									Completude: <b>{{ taskCtrl.userSession.userRateSuccess | number:2}} %</b>;<br/>
 									Corretude: <b>{{ taskCtrl.userSession.userRateRequired | number:2}} %</b>;<br/>
@@ -361,7 +552,7 @@
 							<dl class="dl-with-margin-bottom" ng-show="actionViewSelected != null">
 				            	<dt class="ng-binding">Informações da Ação:</dt>
 				            	<dd class="ng-binding">
-				            		Id: <b>{{ actionViewSelected.id }}</b>;<br/>
+				            		Id: <b>{{ actionViewSelected.identifier }}</b>;<br/>
 				            		Ação: <b>{{ actionViewSelected.action }}</b>;<br/>
 				            		Tag: <b>{{ actionViewSelected.infoTag }}</b>;<br/>
 		            				Name: <b>{{ actionViewSelected.infoName }}</b>;<br/>
@@ -384,7 +575,7 @@
 							    </tr>
 							  </thead>
 							  <tbody>
-							    <tr ng-click="setActionViewSelected(action)" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in taskCtrl.userSession.actions" ts-repeat>
+							    <tr ng-click="setActionViewSelected(action)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in taskCtrl.userSession.actions" ts-repeat>
 							      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
 							      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.OK)">
 							      	<i ng-show="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-sign"></i>
@@ -401,6 +592,11 @@
 							    </tr>
 							  </tbody>
 							</table>
+							<div class="table-labels">
+								<span class="title">{{ 'label' | translate }}:</span>
+								<span ng-repeat="label in situationsEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+								<span class="label label-info">{{ 'required' | translate }}</span>
+							</div>
 						</div>
 						<div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'actionsCount'">
 				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
@@ -517,12 +713,16 @@
 								      <td>{{session.time | msConverter}}</td>
 								      <td>{{session.userRateSuccess | number:2}} %</td>
 								      <td>{{session.userRateRequired | number:2}} %</td>
-								      <td>{{session.classification}}</td>
+								      <td>{{getClassificationFromEnum(session.classification).desc}}</td>
 								      <td>{{session.fuzzyPriority | number:3}}</td>
 								      <td title="Efici.={{session.efficiency | number:2}}[{{session.efficiencyNormalized | number:2}}], Efica.={{session.effectiveness | number:2}}[{{session.effectivenessNormalized | number:2}}]">{{session.fuzzyPriorityEfcEft | number:3}}</td>
 								    </tr>
 								  </tbody>
 								</table>
+								<div class="table-labels">
+									<span class="title">{{ 'label' | translate }}:</span>
+									<span ng-repeat="label in classificationEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+								</div>
 							</div>
 			            </div>
 						
