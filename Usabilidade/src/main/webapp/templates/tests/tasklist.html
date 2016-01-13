@@ -115,7 +115,7 @@
 <!--                             <td>{{ task.evalFuzzyPriority | number:2}}</td> -->
                             
                             <td>
-                            	<a class="btn btn-primary pull-right" ng-href="#/testes/{{testCtrl.test.id}}/avaliacao/{{testCtrl.evalTest.id}}/tarefas/{{task.id}}/avaliar" title="{{ 'datamining.evaluate' | translate}}">{{ 'datamining.evaluate' | translate }}</a>
+                            	<a class="btn btn-primary pull-right" ng-click="setLongLoaderTime(task.actualEvaluation.meanTimeLoading)" ng-href="#/testes/{{testCtrl.test.id}}/avaliacao/{{testCtrl.evalTest.id}}/tarefas/{{task.id}}/avaliar" title="{{ 'datamining.evaluate' | translate}}">{{ 'datamining.evaluate' | translate }}</a>
 							</td>
                         </tr>
 	                </tbody>
