@@ -24,11 +24,11 @@ angular.module('useskill',
     }
 })
 		
-.config(['$translateProvider', '$routeProvider', '$httpProvider', 'env', 'config', 'cfpLoadingBarProvider', 
+.config(['$translateProvider', '$routeProvider', '$httpProvider', 'env', 'config', 'cfpLoadingBarProvider',
          function($translateProvider, $routeProvider, $httpProvider, env, config, cfpLoadingBarProvider) {
 	
 	$httpProvider.interceptors.push('HttpInterceptor');
-	
+
 	cfpLoadingBarProvider.spinnerTemplate = '<div class="loader__bg usdm-animate-show-hide"><span class="loader__img"/></div>';
 	
 	$translateProvider.useUrlLoader(config[env].apiUrl+'/jscripts/app/messages.json');
@@ -55,7 +55,7 @@ angular.module('useskill',
 	    	controller:'TestEditController as testCtrl',
 	    	templateUrl:config[env].apiUrl+'/templates/tests/create.html',
 	    	resolve: {
-				test: function (ServerAPI, $route) {
+				test: function (ServerAPI, $route, $rootScope) {
 		        	return ServerAPI.getTest($route.current.params.testId);
 		        }
 		    }
@@ -64,7 +64,7 @@ angular.module('useskill',
 			controller:'TestViewController as testCtrl',
 			templateUrl:config[env].apiUrl+'/templates/tests/detail.html',
 			resolve: {
-				test: function (ServerAPI, $route) {
+				test: function (ServerAPI, $route, $rootScope) {
 		        	return ServerAPI.getTest($route.current.params.testId);
 		        }
 		    }
@@ -147,6 +147,9 @@ angular.module('useskill',
 		        evalTestId: function ($route) {
 		        	return $route.current.params.evalTestId;
 		        }
+		    },
+		    data: {
+		        longLoading: true
 		    }
 	    })
 	    
@@ -377,7 +380,7 @@ angular.module('useskill',
 		});
 	}
 })
-.controller('TestTasksViewController', function(test, evalTest, ServerAPI, $route, $rootScope, $filter) {
+.controller('TestTasksViewController', function(test, evalTest, ServerAPI, $route, $scope, $rootScope, $filter) {
 	var testCtrl = this;
 	
 	testCtrl.test = JSON.parse(test.data.string);
@@ -437,10 +440,17 @@ angular.module('useskill',
 			//content += 'Eficiência = Eficácia / ((AçõesZscore + TemposZscore)/2)<br/>';
 			content += 'Eficiência = '+reduceNumber(task.evalEfficiency)+', ['+reduceNumber(task.evalEfficiencyNormalized)+']<br/>';
 			content += 'Prioridade (Fuzzy) = '+reduceNumber(task.evalFuzzyPriority)+'<br/>';
+			content += "Tempo Estimado = " + $filter('msConverter')(task.meanTimeLoading || 0);
 		} else {
 			content = $filter('translate')('datamining.testes.evaluations.none');
 		}
 		return content;
+	}
+	
+	$scope.setLongLoaderTime = function(meanTimeLoading){
+		if (meanTimeLoading) {
+			$rootScope.longLoadingTime = meanTimeLoading/1000;
+		}
 	}
 })
 .controller('TestMostAccessController', function($scope, $filter, $timeout, test, MostAccessTypeEnum, ServerAPI) {
@@ -594,7 +604,7 @@ angular.module('useskill',
 })
 
 //Tasks Controllers
-.controller('TaskViewController', function($scope, task, ServerAPI, ActionTypeEnum) {
+.controller('TaskViewController', function($scope, task, ServerAPI, ActionTypeEnum, $rootScope) {
 	var taskCtrl = this;
 	taskCtrl.task = JSON.parse(task.data.string);
 	console.log(taskCtrl.task);
@@ -1047,6 +1057,7 @@ angular.module('useskill',
     }
     
     /*************   GRAFO   *************/
+    $scope.factorScaleX = 4;
     $scope.graphTypeEnum = {
     	PATTERNS: {
     		id: 'patterns',
@@ -1068,7 +1079,7 @@ angular.module('useskill',
     	} else {
     		$scope.graphType = $scope.graphTypeEnum.SESSIONS;
     	}
-    	$scope.graph = drawGraph($scope.graphType.id, 'mynetwork', taskCtrl.frequentPatterns, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum);
+    	$scope.graph = drawGraph($scope.graphType.id, 'mynetwork', taskCtrl.frequentPatterns, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX);
     	$scope.graph.on("selectNode", function (params) {
       	  	var node = $scope.graph.body.nodes[params.nodes[0]];
       	  	var edgesFrom = [], edgesTo = [];
@@ -1349,6 +1360,143 @@ angular.module('useskill',
 		    }
 	  };
 })
+.directive('longLoader', function($rootScope) {
+	  return {
+		    restrict: 'A',
+		    scope: { },
+		    link: function(scope, element) {
+		    	
+		    	var DEFAULT_PADDING_TIME = 30, 
+		    		DEFAULT_VELOCITY = 90,
+		    		DEFAULT_TIME_MSGS = 2;
+		    	
+		    	function fakeLoading($obj, seconds) {
+		    		if (typeof seconds == "undefined") seconds = DEFAULT_VELOCITY;
+		    		seconds += DEFAULT_PADDING_TIME;
+		    		var v = 0;
+		    		var messages = {
+		    			'0.25': {
+		    				message: 'Carregando...' 
+		    			},
+		    			'0.5': {
+		    				message: 'Opa, chegou na metade! :)' 
+		    			},
+		    			'0.7': {
+		    				message: 'Z z Z z ...' 
+		    			},
+		    			'0.85': {
+		    				message: 'Tá pertinho... :D' 
+		    			}
+		    		};
+		    		
+		    		var l = function() {
+		    				var newadd = 0.2 / seconds;
+		    				newadd = v >= 0.6 ? 0.1 / seconds : newadd;
+		    				newadd = v >= 0.82 ? 0.05 / seconds : newadd;
+		    				
+		    				for (var m in messages) {
+		    					if (v >= parseFloat(m) && messages[m].done != true) {
+		    						var timeMsg = messages[m].time || DEFAULT_TIME_MSGS;
+		    						messages[m].done = true;
+		    						$obj.ElasticProgress("showMessage", messages[m].message, timeMsg);
+		    					}
+		    				}
+		    				
+		    				if (v == 2) {
+		    					v = 1;
+		    				}else if (v >= 1) {
+		    					v = 0.999;
+		    				} else {
+		    					v += newadd;
+		    				}
+		    				
+		    				if (typeof $obj.jquery != "undefined") {
+		    						$obj.ElasticProgress("setValue", v);
+		    				} else {
+		    						$obj.setValue(v);
+		    				}
+		    				if (v < 1) {
+		    						TweenMax.delayedCall(0.05 + (Math.random() * 0.14), l);
+		    				}
+		    		};
+		    		l();
+			    }
+		    	
+		    	var velocity = DEFAULT_VELOCITY;
+		    	var progress = jQuery(element).show().ElasticProgress({
+	    			align: "center",
+	    			bleedTop: 110,
+	    			bleedBottom: 40,
+	    			buttonSize: 50,
+	    			labelTilt: 70,
+	    			arrowDirection: "down",
+	    			fontFamily: "Montserrat",
+	    			colorBg: "#80ACFD",
+	    			colorFg: "#425b92",
+	    			textComplete: 'Últimos detalhes...',
+	    			onClick: function(event) {
+	    					console.log("onClick");
+	    					$(this).ElasticProgress("open");
+	    			},
+	    			onOpen: function(event) {
+	    					console.log("onOpen", new Date());
+	    					fakeLoading($(this), velocity);
+	    			},
+	    			onComplete: function(event) {
+	    					console.log("onComplete", new Date());
+	    			},
+	    			onClose: function(event) {
+	    					console.log("onClose");
+	    			},
+	    			onFail: function(event) {
+	    					console.log("onFail");
+	    					$(this).ElasticProgress("open");
+	    			},
+	    			onCancel: function(event) {
+	    					console.log("onCancel");
+	    					$(this).ElasticProgress("open");
+	    			}
+	    		}).hide();
+		    	
+		    	var loading = false;
+		    	
+		    	function initLongLoading() {
+		    		loading = true;
+		    		progress.ElasticProgress("setValue", 0);
+		    		velocity = $rootScope.longLoadingTime || DEFAULT_VELOCITY;
+		    		progress.show().ElasticProgress("open");
+		    	}
+		    	
+		    	function endLongLoading() {
+		    		loading = false;
+		    		progress.ElasticProgress("setValue", 0);
+		    		progress.hide().ElasticProgress("close");
+		    	}		    	
+		    	
+		    	$rootScope.$on('$routeChangeStart', function(event, next, current) {
+		    		if (next.data && next.data.longLoading) {
+		    			initLongLoading();
+		    		} else {
+		    			endLongLoading();
+		    		}
+		    	});
+		    	
+		    	$rootScope.$on('cfpLoadingBar:loading', function(){
+		    		var x = jQuery('.loader__img');
+		    		console.log(loading, x.length);
+		    		if (loading && x.length) {
+		    			x.hide();
+		    		} else {
+		    			x.show();
+		    		}
+		    	});
+		    	
+		    	$rootScope.$on('cfpLoadingBar:completed', function(){
+		    		endLongLoading();
+		    	});
+		    }
+	  };
+})
 
 /* FILTER */
 
@@ -1415,6 +1563,7 @@ angular.module('useskill',
         return value + (tail || ' …');
     };
 });
+
 (function($) {    
   if ($.fn.style) {
     return;

@@ -124,7 +124,7 @@ var optionsGraphUseSkill = {
 };
 
 
-function drawGraph(type, idContainer, frequentPatterns, sessions, actionsSituation, situationsEnum){
+function drawGraph(type, idContainer, frequentPatterns, sessions, actionsSituation, situationsEnum, factorScaleX){
 	  function getEdge(from, to, arrEdges) {
 	    for (var i in arrEdges) {
 	      if (arrEdges[i].to == to && arrEdges[i].from == from) {
@@ -173,6 +173,8 @@ function drawGraph(type, idContainer, frequentPatterns, sessions, actionsSituati
 //			  realFirstItens.push(id);
 //		  }
 //	  }
+	  
+	  factorScaleX = factorScaleX || 4;
 	
 	  //construir árvore com ações do padrão
 	  var arrNodes = [], arrEdges = [], maxVal = 0;
@@ -200,7 +202,7 @@ function drawGraph(type, idContainer, frequentPatterns, sessions, actionsSituati
         			    return 0.5;
         			  }
         			  else {
-        				  min = min/2;
+        				min = min/2;
         			    var scale = 1 / (max - min);
         			    return Math.max(0,(value - min)*scale);
         			  }
@@ -237,7 +239,7 @@ function drawGraph(type, idContainer, frequentPatterns, sessions, actionsSituati
 	  }
 	  
 	  //colorir grafo e organizar
-	  var posX = 0, scaleX = (50 + 2 * maxVal);
+	  var posX = 0, scaleX = (50 + factorScaleX * maxVal);
 	  arrNodes.sort(function(a, b) {
 		    return a.id - b.id;
 	  });

@@ -28,6 +28,8 @@ public class EvaluationTaskDataMiningVO {
 	private Integer evalCountSessions;
 	private Double evalCountSessionsNormalized;
 	
+	private Long meanTimeLoading;
+	
 	public EvaluationTaskDataMiningVO(EvaluationTaskDataMining eval) {
 		this.id = eval.getId();
 		this.evaluationTest = eval.getEvaluationTest();
@@ -48,6 +50,8 @@ public class EvaluationTaskDataMiningVO {
 		this.evalCountSessions = eval.getEvalCountSessions();
 		this.evalCountSessionsNormalized = eval.getEvalCountSessionsNormalized();
 		this.idTaskDataMining = this.taskDataMining.getId();
+		
+		this.meanTimeLoading = eval.getMeanTimeLoading();
 	}
 
 	public Long getId() {
@@ -174,7 +178,16 @@ public class EvaluationTaskDataMiningVO {
 		eval.setEvalEffectivenessNormalized(0d);
 		eval.setEvalFuzzyPriority(0d);
 		eval.setEvalCountSessionsNormalized(0d);
+		eval.setMeanTimeLoading(0l);
 		return eval;
+	}
+
+	public Long getMeanTimeLoading() {
+		return meanTimeLoading;
+	}
+
+	public void setMeanTimeLoading(Long meanTimeLoading) {
+		this.meanTimeLoading = meanTimeLoading;
 	}
 	
 }

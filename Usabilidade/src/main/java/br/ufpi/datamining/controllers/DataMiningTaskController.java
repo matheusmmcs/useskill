@@ -132,6 +132,7 @@ public class DataMiningTaskController extends BaseController {
 	@Get("/testes/{idTeste}/avaliacao/{idEvaluationTest}/tarefas/{idTarefa}/avaliar")
 	@Logado
 	public void avaliar(Long idTeste, Long idEvaluationTest, Long idTarefa) {
+		Long init = new Date().getTime();
 		Gson gson = new GsonBuilder()
 	        .setExclusionStrategies(TaskDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
@@ -175,21 +176,6 @@ public class DataMiningTaskController extends BaseController {
 				evaluation = EvaluationTaskDataMiningVO.zeroEvaluation(evaluation);
 			}
 			
-			if (newEvaluation) {
-				evaluationTaskDataMiningRepository.create(evaluation);
-				
-				taskDataMining.getEvaluations().add(evaluation);
-				taskDataMiningRepository.update(taskDataMining);
-				
-				evaluationTest.getEvaluationsTask().add(evaluation);
-				evaluationTestDataMiningRepository.update(evaluationTest);
-				
-				System.out.println("Nova avaliação cadastrada!");
-			} else {
-				evaluationTaskDataMiningRepository.update(evaluation);
-				System.out.println("Avaliação atualizada!");
-			}
-			
 			FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
 			List<FrequentSequentialPatternResultVO> frequentPatterns = null;
 			
@@ -206,6 +192,30 @@ public class DataMiningTaskController extends BaseController {
 				}
 			}
 			resultDataMining.setLastMinSup(lastMinSup);
+			
+			Long diffTime = new Date().getTime() - init;
+			if (evaluation.getMeanTimeLoading() != null) {
+				evaluation.setMeanTimeLoading((evaluation.getMeanTimeLoading() + diffTime) / 2);
+			} else {
+				evaluation.setMeanTimeLoading(diffTime);
+			}
+			
+			
+			if (newEvaluation) {
+				evaluationTaskDataMiningRepository.create(evaluation);
+				
+				taskDataMining.getEvaluations().add(evaluation);
+				taskDataMiningRepository.update(taskDataMining);
+				
+				evaluationTest.getEvaluationsTask().add(evaluation);
+				evaluationTestDataMiningRepository.update(evaluationTest);
+				
+				System.out.println("Nova avaliação cadastrada!");
+			} else {
+				evaluationTaskDataMiningRepository.update(evaluation);
+				System.out.println("Avaliação atualizada!");
+			}
+			
 			
 			HashMap<String, String> resultMap = new HashMap<String, String>();
 			resultMap.put("frequentPatterns", gson.toJson(frequentPatterns));

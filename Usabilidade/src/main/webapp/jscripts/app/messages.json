@@ -49,11 +49,16 @@
 	"datamining.areyousure.cancel" : "Cancelar",
 	"datamining.accessdenied" : "Ação não permitida para o usuário!",
 	
+	"datamining" : "Mineração de Dados",
+	"datamining.mining.minsupport" : "Suporte Mínimo",
+	"datamining.mining.maxpattern" : "Tamanho Máx. Padrões",
+	"datamining.mining.minpattern" : "Tamanho Min. Padrões",
+	
 	"pattern" : "Padrão",
 	"datamining.pattern" : "Padrão Sequencial de Ações",
 	"datamining.pattern.metrics" : "Métricas do Padrão Encontrado",
 	"datamining.pattern.actions" : "Ações do Padrão Identificado",
-	"datamining.pattern.sections" : "Sessões do Padrão Identificado",
+	"datamining.pattern.sessions" : "Sessões do Padrão Identificado",
 	"datamining.pattern.usersdo" : "Usuários que Realizam esse Padrão Identificado",
 	"datamining.patterns" : "Padrões Sequenciais de Ações",
 	"datamining.pattern.itemsetsize" : "Qtd. ItemSets",
@@ -104,7 +109,6 @@
 	
 	"datamining.testes.edit.success" : "Teste alterado com sucesso!",
 	"datamining.testes.new.success" : "Teste cadastrado com sucesso!",
-	
 	
 	"datamining.task" : "Tarefa",
 	"datamining.tasks" : "Tarefas",

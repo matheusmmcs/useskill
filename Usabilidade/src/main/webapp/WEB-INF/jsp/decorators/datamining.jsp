@@ -25,7 +25,8 @@
 	<decorator:head />
 </head>
 <body ng-app="useskill">
-	
+
+	<div long-loader class="hide longLoader" data-progressbar-label="Loading..."></div>
 	<%@include file="topo.jsp"%>
 	<div class="container">
 		<div class="row container-row">
@@ -76,6 +77,9 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/bootstrap/bootstrap-popover.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/useskill.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.easing1.3.js"></script>
+	
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/TweenMax.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/elastic-progress.js"></script>
 	
 	
 	<!--

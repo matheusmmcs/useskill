@@ -37,6 +37,8 @@ public class EvaluationTaskDataMining implements Serializable {
 	private Integer evalCountSessions;
 	private Double evalCountSessionsNormalized;
 	
+	private Long meanTimeLoading;
+	
 	@Id  
 	@GeneratedValue
 	public Long getId() {
@@ -153,5 +155,11 @@ public class EvaluationTaskDataMining implements Serializable {
 	public void setEvalCountSessionsNormalized(
 			Double evalCountSessionsNormalized) {
 		this.evalCountSessionsNormalized = evalCountSessionsNormalized;
+	}
+	public Long getMeanTimeLoading() {
+		return meanTimeLoading;
+	}
+	public void setMeanTimeLoading(Long meanTimeLoading) {
+		this.meanTimeLoading = meanTimeLoading;
 	}
 }

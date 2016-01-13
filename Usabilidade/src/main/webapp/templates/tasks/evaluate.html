@@ -62,6 +62,21 @@
 			            </dl>
 		            </div>
 		            
+		            <h3 class="usdm-box-header">
+			    		{{ 'datamining' | translate}}
+		            </h3>
+		            
+		            <div class="usdm-box-body">
+			            <dl>
+			            	<dt>{{ 'datamining.mining.minsupport' | translate}}:</dt>
+			            	<dd>{{taskCtrl.result.lastMinSup * 100}} %</dd>
+			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.mining.minpattern' | translate}}:</dt>
+			            	<dd>4</dd>
+			            </dl>
+		            </div>
+		            
 		            <br/>
 		            
 		            <h3 class="usdm-box-header">
@@ -137,6 +152,8 @@
 			            				<span>Alterar Tipo do Grafo:</span> 
 			        					<a class="btn ng-binding" ng-class="{ 'btn-primary' : graphType.id == 'sessions' }" ng-click="changeGraphType(false)">{{ graphTypeEnum.SESSIONS.desc }}</a>
 			        					<a class="btn ng-binding" ng-class="{ 'btn-primary' : graphType.id == 'patterns' }" ng-click="changeGraphType(true)">{{ graphTypeEnum.PATTERNS.desc }}</a>
+			        					<br/>
+			        					Distância entre nós do Grafo (X): <input style="margin: 5px;" type="text" class="span1" placeholder="Distância entre nós (X)" ng-model="factorScaleX"/>
 					            	</dd>
 					            </dl>
 		        				<div id="mynetwork"></div>
@@ -437,7 +454,7 @@
 		        				<a class="btn litle-margin-x pull-right" ng-click="goToGuideStep('2')">{{ 'backStep' | translate }}</a>
 		        			</h2>
 		        			<div class="usdm-box-body">
-		        				<a class="btn btn-primary" ng-click="showContentGraph()">Abrir Grafo</a>
+		        				<a class="btn btn-primary btn-large-middle" ng-click="showContentGraph()">Abrir Grafo</a>
 		        			</div>
 		        		</div>
 		        		
@@ -707,7 +724,7 @@
 								    </tr>
 								  </thead>
 								  <tbody>
-								    <tr ng-repeat="session in taskCtrl.frequentPatternActive.sessionsFormatted" ts-repeat>
+								    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.frequentPatternActive.sessionsFormatted" ts-repeat>
 								      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
 								      <td>{{session.actions.length | number:2}}</td>
 								      <td>{{session.time | msConverter}}</td>
