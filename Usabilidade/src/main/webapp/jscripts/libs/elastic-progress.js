@@ -7617,7 +7617,7 @@ ElasticProgress.prototype=extend(
 	    Tween.delayedCall(time,function(){
 	    	console.log(state);
 	    	console.log(instance);
-	    	//instance.changeText("0%");
+	    	instance.changeText("--%");
 	    	instance.setState(["animating"],false);
 	    	//instance.setState(["animating","completing"],false);
 	    });

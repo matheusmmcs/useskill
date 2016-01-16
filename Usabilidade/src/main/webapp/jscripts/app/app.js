@@ -702,6 +702,9 @@ angular.module('useskill',
 	}
 	console.log(taskCtrl);
 	
+	//gambys para a apresentação
+	jQuery('.popover').remove();
+	
 	var modesArr = [{
 				name: 'users', 
 				title: $filter('translate')('datamining.tasks.evaluate.users.sessions.title'),
@@ -999,6 +1002,9 @@ angular.module('useskill',
 	}
 	$scope.setActionViewGuideSelected = function(actionId){
 		$scope.actionViewSelected = $scope.getActionInfoFromId(actionId);
+	}
+	$scope.setActionViewSelectedMostRealized = function(actionId){
+		$scope.actionViewSelectedMost = $scope.getActionInfoFromId(actionId);
 	}
 	
 	//history graph
@@ -1366,14 +1372,15 @@ angular.module('useskill',
 		    scope: { },
 		    link: function(scope, element) {
 		    	
-		    	var DEFAULT_PADDING_TIME = 30, 
-		    		DEFAULT_VELOCITY = 90,
+		    	var DEFAULT_PADDING_TIME = 20, 
+		    		DEFAULT_VELOCITY = 100,
 		    		DEFAULT_TIME_MSGS = 2;
 		    	
+		    	var v = 0, endFunc = false;
 		    	function fakeLoading($obj, seconds) {
 		    		if (typeof seconds == "undefined") seconds = DEFAULT_VELOCITY;
 		    		seconds += DEFAULT_PADDING_TIME;
-		    		var v = 0;
+		    		endFunc = false;
 		    		var messages = {
 		    			'0.25': {
 		    				message: 'Carregando...' 
@@ -1388,7 +1395,7 @@ angular.module('useskill',
 		    				message: 'Tá pertinho... :D' 
 		    			}
 		    		};
-		    		
+		    		v = 0;
 		    		var l = function() {
 		    				var newadd = 0.2 / seconds;
 		    				newadd = v >= 0.6 ? 0.1 / seconds : newadd;
@@ -1402,12 +1409,20 @@ angular.module('useskill',
 		    					}
 		    				}
 		    				
+		    				console.log(v, newadd);
+		    				
 		    				if (v == 2) {
 		    					v = 1;
+		    					endFunc = true;
 		    				}else if (v >= 1) {
 		    					v = 0.999;
+		    					endFunc = true;
 		    				} else {
 		    					v += newadd;
+		    				}
+		    				
+		    				if (!loading) {
+		    					return;
 		    				}
 		    				
 		    				if (typeof $obj.jquery != "undefined") {
@@ -1415,7 +1430,8 @@ angular.module('useskill',
 		    				} else {
 		    						$obj.setValue(v);
 		    				}
-		    				if (v < 1) {
+		    				
+		    				if (!endFunc) {
 		    						TweenMax.delayedCall(0.05 + (Math.random() * 0.14), l);
 		    				}
 		    		};
@@ -1461,14 +1477,20 @@ angular.module('useskill',
 		    	var loading = false;
 		    	
 		    	function initLongLoading() {
+		    		console.log('initLongLoading');
 		    		loading = true;
+		    		v = 0;
+		    		endFunc = false;
 		    		progress.ElasticProgress("setValue", 0);
 		    		velocity = $rootScope.longLoadingTime || DEFAULT_VELOCITY;
 		    		progress.show().ElasticProgress("open");
 		    	}
 		    	
 		    	function endLongLoading() {
+		    		console.log('endLongLoading');
 		    		loading = false;
+		    		v = 0;
+		    		endFunc = true;
 		    		progress.ElasticProgress("setValue", 0);
 		    		progress.hide().ElasticProgress("close");
 		    	}		    	

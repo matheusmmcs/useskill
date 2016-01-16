@@ -615,39 +615,100 @@
 								<span class="label label-info">{{ 'required' | translate }}</span>
 							</div>
 						</div>
+						
 						<div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'actionsCount'">
-				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-							  <thead>
-							    <tr>
-							      <th ts-criteria="$key|lowercase">Id</th>
-							      <th ts-criteria="count|parseInt" ts-default="descending">Count</th>
-							      <th ts-criteria="value|lowercase">{{ 'datamining.tasks.actions.description' | translate }}</th>
-							    </tr>
-							  </thead>
-							  <tbody>
-							    <tr ng-repeat="action in taskCtrl.actionsArr" ts-repeat>
-							      <td color-action color-action-elem="action" color-ctrl="taskCtrl">{{ action.$key }}</td>
-							      <td>{{ action.count }}</td>
-							      <td>{{ action.value }}</td>
-							    </tr>
-							  </tbody>
-							</table>
+							<dl class="dl-with-margin-bottom" ng-show="actionViewSelectedMost != null">
+				            	<dt class="ng-binding">Informações da Ação:</dt>
+				            	<dd class="ng-binding">
+				            		Id: <b>{{ actionViewSelectedMost.identifier }}</b>;<br/>
+				            		Ação: <b>{{ actionViewSelectedMost.action }}</b>;<br/>
+				            		Tag: <b>{{ actionViewSelectedMost.infoTag }}</b>;<br/>
+		            				Name: <b>{{ actionViewSelectedMost.infoName }}</b>;<br/>
+		            				Conteúdo: <b>{{ actionViewSelectedMost.infoContent }}</b>;<br/>
+		            				Posição [X,Y]: <b>[{{ actionViewSelectedMost.infoPosX }},{{ actionViewSelectedMost.infoPosY }}]</b>;<br/>
+		            				Elemento (XPath): <b>{{ actionViewSelectedMost.element }}</b>;<br/>
+		            				Local: <b>{{ actionViewSelectedMost.local }}</b>;<br/>
+				            	</dd>
+				            </dl>
+				            <div class="usdm-withscroll">
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								      <th ts-criteria="$key|lowercase">Id</th>
+								      <th ts-criteria="$key|lowercase">Ok</th>
+								      <th ts-criteria="$key|lowercase">Err</th>
+								      <th ts-criteria="count|parseInt" ts-default="descending">Count</th>
+								      <th ts-criteria="value|lowercase">{{ 'datamining.tasks.actions.description' | translate }}</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr ng-click="setActionViewSelectedMostRealized(action.$key)" ng-class="{ 'action-required': getActionInfoFromId(action.$key).required == true }" class="action-situation-{{idSituationAction(action.$key)}}" ng-repeat="action in taskCtrl.actionsArr" ts-repeat>
+								      <td color-action color-action-elem="action" color-ctrl="taskCtrl">{{ action.$key }}</td>
+								      <td class="text-center" ng-click="setSituationAction(action.$key, situationsEnum.OK)">
+								      	<i ng-show="isSituationAction(action.$key, situationsEnum.OK)" class="icon-ok-sign"></i>
+								      	<i ng-hide="isSituationAction(action.$key, situationsEnum.OK)" class="icon-ok-circle"></i>
+								      </td>
+								      <td class="text-center" ng-click="setSituationAction(action.$key, situationsEnum.ERROR)">
+								      	<i ng-show="isSituationAction(action.$key, situationsEnum.ERROR)" class="icon-remove-sign"></i>
+								      	<i ng-hide="isSituationAction(action.$key, situationsEnum.ERROR)" class="icon-remove-circle"></i>
+								      </td>
+								      <td>{{ action.count }}</td>
+								      <td>{{ action.value }}</td>
+								    </tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="table-labels">
+								<span class="title">{{ 'label' | translate }}:</span>
+								<span ng-repeat="label in situationsEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+								<span class="label label-info">{{ 'required' | translate }}</span>
+							</div>
 						</div>
+						
 						<div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'actionsRequiredCount'">
-				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-							  <thead>
-							    <tr>
-							    	<th ts-criteria="value|parseInt" ts-default="descending">Count</th>
-							      <th ts-criteria="$key|lowercase">{{ 'datamining.tasks.actions.description' | translate }}</th>
-							    </tr>
-							  </thead>
-							  <tbody>
-							    <tr ng-repeat="action in taskCtrl.actionsRequiredArr" ts-repeat>
-							      <td>{{ action.value }}</td>
-							      <td>{{ action.$key }}</td>
-							    </tr>
-							  </tbody>
-							</table>
+							<dl class="dl-with-margin-bottom" ng-show="actionViewSelectedMost != null">
+				            	<dt class="ng-binding">Informações da Ação:</dt>
+				            	<dd class="ng-binding">
+				            		Id: <b>{{ actionViewSelectedMost.identifier }}</b>;<br/>
+				            		Ação: <b>{{ actionViewSelectedMost.action }}</b>;<br/>
+				            		Tag: <b>{{ actionViewSelectedMost.infoTag }}</b>;<br/>
+		            				Name: <b>{{ actionViewSelectedMost.infoName }}</b>;<br/>
+		            				Conteúdo: <b>{{ actionViewSelectedMost.infoContent }}</b>;<br/>
+		            				Posição [X,Y]: <b>[{{ actionViewSelectedMost.infoPosX }},{{ actionViewSelectedMost.infoPosY }}]</b>;<br/>
+		            				Elemento (XPath): <b>{{ actionViewSelectedMost.element }}</b>;<br/>
+		            				Local: <b>{{ actionViewSelectedMost.local }}</b>;<br/>
+				            	</dd>
+				            </dl>
+				            <div class="usdm-withscroll">
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								    	<th ts-criteria="value|lowercase" ts-default="descending">Id</th>
+								    	<th ts-criteria="id|lowercase">Ok</th>
+									    <th ts-criteria="id|lowercase">Err</th>
+								      	<th ts-criteria="$key|lowercase">{{ 'datamining.tasks.actions.description' | translate }}</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr ng-click="setActionViewSelectedMostRealized(action.id)" class="action-situation-{{idSituationAction(action.id)}}" ng-repeat="action in taskCtrl.actionsRequiredArr" ts-repeat>
+								       	<td color-action color-action-elem="action" color-ctrl="taskCtrl">{{ action.id }}</td>
+								      	<td class="text-center" ng-click="setSituationAction(action.id, situationsEnum.OK)">
+								      		<i ng-show="isSituationAction(action.id, situationsEnum.OK)" class="icon-ok-sign"></i>
+								      		<i ng-hide="isSituationAction(action.id, situationsEnum.OK)" class="icon-ok-circle"></i>
+								      	</td>
+								      	<td class="text-center" ng-click="setSituationAction(action.id, situationsEnum.ERROR)">
+								      		<i ng-show="isSituationAction(action.id, situationsEnum.ERROR)" class="icon-remove-sign"></i>
+								      		<i ng-hide="isSituationAction(action.id, situationsEnum.ERROR)" class="icon-remove-circle"></i>
+								      	</td>
+								      	<td>{{ action.$key }}</td>
+								    </tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="table-labels">
+								<span class="title">{{ 'label' | translate }}:</span>
+								<span ng-repeat="label in situationsEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+							</div>
 						</div>
 						
 						<!-- FREQUENT PATTERN MINING -->
