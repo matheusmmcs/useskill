@@ -926,7 +926,7 @@ angular.module('useskill',
 	}
 	$scope.selectSituationAction = function(actionId, situation) {
 		$scope.setSituationAction(actionId, situation);
-		$scope.redraw();
+		$scope.redrawAll();
 	}
 	$scope.descSituationAction = function(actionId) {
 		var sit = taskCtrl.actionsSituation[actionId];
@@ -997,8 +997,16 @@ angular.module('useskill',
 	
 	/*************   LISTA DE AÇÕES   *************/
 	
-	$scope.setActionViewSelected = function(action){
-		$scope.actionViewSelected = action;
+	$scope.setActionViewSelected = function(action, isTask){
+		if (isTask) {
+			if (!taskCtrl.actionViewSelected) {
+				taskCtrl.actionViewSelected = {};
+			}
+			taskCtrl.actionViewSelected.action = action;
+		} else {
+			$scope.actionViewSelected = action;
+		}
+		$scope.redraw($scope.graphIdsEnum.GRAPH_SESSION);
 	}
 	$scope.setActionViewGuideSelected = function(actionId){
 		$scope.actionViewSelected = $scope.getActionInfoFromId(actionId);
@@ -1040,7 +1048,7 @@ angular.module('useskill',
     
     $scope.contentShow = contentShowEnum.GRAPH;
     $scope.showContentGraph = function() {
-    	$scope.redraw();
+    	$scope.redraw($scope.graphIdsEnum.GRAPH_DEFAULT);
     	$scope.contentShow = contentShowEnum.GRAPH;
     }
     $scope.showContentGuide = function() {
@@ -1074,10 +1082,19 @@ angular.module('useskill',
     		desc: 'Sessões dos Usuários'
     	}
     }
+    $scope.graphIdsEnum = {
+		GRAPH_DEFAULT: 'graph',
+		GRAPH_SESSION: 'graphsession'
+    }
     var isPatternsActual;
     $scope.changeGraphType = function(isPatterns) {
     	isPatternsActual = isPatterns;
     	$scope.renderGraph();
+    }
+    $scope.renderGraphSession = function(session) {
+    	var graphData = generateGraphSession(taskCtrl.frequentPatterns, session);
+    	$scope[$scope.graphIdsEnum.GRAPH_SESSION] = drawGraph('mynetworkSession', graphData, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX);
+    	$scope.resetGraph($scope.graphIdsEnum.GRAPH_SESSION, "actionViewSelected", "edgeSelectedSession");
     }
     $scope.renderGraph = function() {
     	if (isPatternsActual) {
@@ -1085,9 +1102,15 @@ angular.module('useskill',
     	} else {
     		$scope.graphType = $scope.graphTypeEnum.SESSIONS;
     	}
-    	$scope.graph = drawGraph($scope.graphType.id, 'mynetwork', taskCtrl.frequentPatterns, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX);
-    	$scope.graph.on("selectNode", function (params) {
-      	  	var node = $scope.graph.body.nodes[params.nodes[0]];
+    	
+    	var graphData = generateGraphFrequentPatterns($scope.graphType.id, taskCtrl.frequentPatterns, taskCtrl.result.sessions);
+    	$scope[$scope.graphIdsEnum.GRAPH_DEFAULT] = drawGraph('mynetwork', graphData, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX);
+    	$scope.resetGraph($scope.graphIdsEnum.GRAPH_DEFAULT, "nodeSelected", "edgeSelected");
+    }
+    
+    $scope.resetGraph = function(graphName, nodeSelectedName, edgeSelectedName) {
+    	$scope[graphName].on("selectNode", function (params) {
+      	  	var node = $scope[graphName].body.nodes[params.nodes[0]];
       	  	var edgesFrom = [], edgesTo = [];
       	  	resetSituationAux(node.id);
       	  	angular.forEach(node.edges, function(edge){
@@ -1101,8 +1124,8 @@ angular.module('useskill',
       	  		}
       	  	});
       	  
-      	  	taskCtrl.edgeSelected = null;
-      	  	taskCtrl.nodeSelected = {
+      	  	taskCtrl[edgeSelectedName] = null;
+      	  	taskCtrl[nodeSelectedName] = {
       	  		'id': node.id,
       	  		'name': node.options.label,
       	  		'value': node.options.value,
@@ -1115,30 +1138,35 @@ angular.module('useskill',
       	  	console.log(node);
       	  	$scope.$apply();
         });
-    	$scope.graph.on("selectEdge", function (params) {
-    		var edge = $scope.graph.body.edges[params.edges[0]];
-    		taskCtrl.nodeSelected = null;
-	  		taskCtrl.edgeSelected = {
+    	$scope[graphName].on("selectEdge", function (params) {
+    		var edge = $scope[graphName].body.edges[params.edges[0]];
+    		taskCtrl[nodeSelectedName] = null;
+	  		taskCtrl[edgeSelectedName] = {
 	  			'fromId' : edge.fromId,
 	  			'toId' : edge.toId,
 	  			'value' : edge.options.value,
 	  			'sessions': edge.options.sessions,
 	  			'patternsCount' : edge.options.countPatterns
 	      	}
-	  		console.log(edge, taskCtrl.edgeSelected);
+	  		console.log(edge, taskCtrl[edgeSelectedName]);
 	  		$scope.$apply();
         });
-    	$scope.graph.on("deselectNode", function () {
-    		taskCtrl.nodeSelected = null;
+    	$scope[graphName].on("deselectNode", function () {
+    		taskCtrl[nodeSelectedName] = null;
     		$scope.$apply();
     	});
-    	$scope.graph.on("deselectEdge", function () {
-    		taskCtrl.edgeSelected = null;
+    	$scope[graphName].on("deselectEdge", function () {
+    		taskCtrl[edgeSelectedName] = null;
     		$scope.$apply();
     	});	
     }
-    $scope.redraw = function() {
-    	refreshGraph($scope.graph, taskCtrl.actionsSituation, $scope.situationsEnum);
+    
+    $scope.redrawAll = function() {
+    	$scope.redraw($scope.graphIdsEnum.GRAPH_DEFAULT);
+    	$scope.redraw($scope.graphIdsEnum.GRAPH_SESSION);
+    }
+    $scope.redraw = function(graphName) {
+    	refreshGraph($scope[graphName], taskCtrl.actionsSituation, $scope.situationsEnum);
     }
     $scope.showActionsSessionFromGraph = function(session){
     	$scope.showContentAdvanced();
@@ -1182,6 +1210,7 @@ angular.module('useskill',
     		$scope.sessionsGuide = sess;
     	} else if (step == "1.1") {
     		$scope.sessionSelected = data;
+    		$scope.renderGraphSession(data);
     	}
     }
     

@@ -156,7 +156,7 @@
 			        					Distância entre nós do Grafo (X): <input style="margin: 5px;" type="text" class="span1" placeholder="Distância entre nós (X)" ng-model="factorScaleX"/>
 					            	</dd>
 					            </dl>
-		        				<div id="mynetwork"></div>
+		        				<div id="mynetwork" class="graph-actions"></div>
 		        			</div>
 		        		</div>
 		        		
@@ -329,19 +329,22 @@
 										Usuário: <b>{{ sessionSelected.username }}</b>;<br/>
 										Completude: <b>{{ sessionSelected.userRateSuccess | number:2}} %</b>;<br/>
 										Corretude: <b>{{ sessionSelected.userRateRequired | number:2}} %</b>;<br/>
+										Quantidade de nós: <b>{{ graphsession.body.nodeIndices.length }}</b>;<br/>
+			            				Quantidade de arestas: <b>{{ graphsession.body.edgeIndices.length }}</b>.<br/>
 					            	</dd>
 					            </dl>
-								<dl class="dl-with-margin-bottom" ng-show="actionViewSelected != null">
+					            <div id="mynetworkSession" class="graph-actions"></div>
+								<dl class="dl-with-margin-bottom" ng-show="taskCtrl.actionViewSelected != null">
 					            	<dt class="ng-binding">Informações da Ação:</dt>
 					            	<dd class="ng-binding">
-					            		Id: <b>{{ actionViewSelected.identifier }}</b>;<br/>
-					            		Ação: <b>{{ actionViewSelected.action }}</b>;<br/>
-					            		Tag: <b>{{ actionViewSelected.infoTag }}</b>;<br/>
-			            				Name: <b>{{ actionViewSelected.infoName }}</b>;<br/>
-			            				Conteúdo: <b>{{ actionViewSelected.infoContent }}</b>;<br/>
-			            				Posição [X,Y]: <b>[{{ actionViewSelected.infoPosX }},{{ actionViewSelected.infoPosY }}]</b>;<br/>
-			            				Elemento (XPath): <b>{{ actionViewSelected.element }}</b>;<br/>
-			            				Local: <b>{{ actionViewSelected.local }}</b>;<br/>
+					            		Id: <b>{{ taskCtrl.actionViewSelected.action.identifier }}</b>;<br/>
+					            		Ação: <b>{{ taskCtrl.actionViewSelected.action.action }}</b>;<br/>
+					            		Tag: <b>{{ taskCtrl.actionViewSelected.action.infoTag }}</b>;<br/>
+			            				Name: <b>{{ taskCtrl.actionViewSelected.action.infoName }}</b>;<br/>
+			            				Conteúdo: <b>{{ taskCtrl.actionViewSelected.action.infoContent }}</b>;<br/>
+			            				Posição [X,Y]: <b>[{{ taskCtrl.actionViewSelected.action.infoPosX }},{{ taskCtrl.actionViewSelected.action.infoPosY }}]</b>;<br/>
+			            				Elemento (XPath): <b>{{ taskCtrl.actionViewSelected.action.element }}</b>;<br/>
+			            				Local: <b>{{ taskCtrl.actionViewSelected.action.local }}</b>;<br/>
 					            	</dd>
 					            </dl>
 					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
@@ -357,7 +360,7 @@
 								    </tr>
 								  </thead>
 								  <tbody>
-								    <tr ng-click="setActionViewSelected(action)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in sessionSelected.actions" ts-repeat>
+								    <tr ng-click="setActionViewSelected(action,true)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in sessionSelected.actions" ts-repeat>
 								      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
 								      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.OK)">
 								      	<i ng-show="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-sign"></i>
