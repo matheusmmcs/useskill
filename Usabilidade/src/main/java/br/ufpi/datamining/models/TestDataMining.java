@@ -9,14 +9,16 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
 
 @Entity  
@@ -37,6 +39,9 @@ public class TestDataMining implements Serializable {
 	private List<Usuario> users;
 	private Usuario userCreated;
 	private List<EvaluationTestDataMining> evaluations;
+	
+	private Teste testControl;
+	private Boolean isControl = false;
 	
 
 	@Id  
@@ -108,6 +113,25 @@ public class TestDataMining implements Serializable {
 
 	public void setEvaluations(List<EvaluationTestDataMining> evaluations) {
 		this.evaluations = evaluations;
+	}
+
+	@Column(nullable = false)
+	public Boolean getIsControl() {
+		return isControl;
+	}
+
+	public void setIsControl(Boolean isControl) {
+		this.isControl = isControl;
+	}
+
+	@JoinColumn(name="testControl_id", nullable = true)
+	@OneToOne(cascade = CascadeType.DETACH, optional = true, fetch = FetchType.EAGER, orphanRemoval = false)
+	public Teste getTestControl() {
+		return testControl;
+	}
+
+	public void setTestControl(Teste testControl) {
+		this.testControl = testControl;
 	}
 		
 }

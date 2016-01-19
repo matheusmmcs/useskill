@@ -11,11 +11,13 @@ import br.ufpi.datamining.models.EvaluationTestDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.utils.GsonExclusionStrategy;
+import br.ufpi.models.Tarefa;
+import br.ufpi.models.Teste;
 
 public class TestDataMiningVO {
 
 	public static ExclusionStrategy exclusionStrategy = new GsonExclusionStrategy(
-			TestDataMining.class, TaskDataMining.class, ActionSingleDataMining.class, EvaluationTaskDataMining.class);
+			TestDataMining.class, TaskDataMining.class, ActionSingleDataMining.class, EvaluationTaskDataMining.class, Teste.class, Tarefa.class);
 	
 	private Long id;
 	private String title;
@@ -24,6 +26,9 @@ public class TestDataMiningVO {
 	private List<TaskDataMiningVO> tasks;
 	private List<EvaluationTestDataMining> evaluations;
 	
+	private Teste testControl;
+	private Boolean isControl = false;
+	
 	public TestDataMiningVO(TestDataMining test) {
 		super();
 		this.id = test.getId();
@@ -31,6 +36,8 @@ public class TestDataMiningVO {
 		this.clientAbbreviation = test.getClientAbbreviation();
 		this.urlSystem = test.getUrlSystem();
 		this.setEvaluations(test.getEvaluations());
+		this.setTestControl(test.getTestControl());
+		this.setIsControl(test.getIsControl());
 		
 		List<TaskDataMiningVO> ts = new ArrayList<TaskDataMiningVO>();
 		for (TaskDataMining t : test.getTasks()) {
@@ -73,6 +80,18 @@ public class TestDataMiningVO {
 	}
 	public void setEvaluations(List<EvaluationTestDataMining> evaluations) {
 		this.evaluations = evaluations;
+	}
+	public Teste getTestControl() {
+		return testControl;
+	}
+	public void setTestControl(Teste testControl) {
+		this.testControl = testControl;
+	}
+	public Boolean getIsControl() {
+		return isControl;
+	}
+	public void setIsControl(Boolean isControl) {
+		this.isControl = isControl;
 	}
 	
 }

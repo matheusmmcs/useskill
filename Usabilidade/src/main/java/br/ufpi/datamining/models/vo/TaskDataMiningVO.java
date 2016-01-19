@@ -10,6 +10,7 @@ import br.ufpi.datamining.models.FieldSearchTupleDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
+import br.ufpi.models.Tarefa;
 import br.ufpi.models.Usuario;
 
 import com.google.gson.ExclusionStrategy;
@@ -19,7 +20,7 @@ public class TaskDataMiningVO {
 	
 	public static ExclusionStrategy exclusionStrategy = new ExclusionStrategy() {
         public boolean shouldSkipClass(Class<?> clazz) {
-            return (clazz == TaskDataMining.class || clazz == Usuario.class || clazz == EvaluationTestDataMining.class);
+            return (clazz == TaskDataMining.class || clazz == Usuario.class || clazz == EvaluationTestDataMining.class || clazz == Tarefa.class);
         }
         public boolean shouldSkipField(FieldAttributes f) {
             return (f.getDeclaringClass() == FieldSearchTupleDataMining.class && f.getName().equals("action"));

@@ -65,6 +65,15 @@
 		                	<input type="text" ng-model="testCtrl.test.urlSystem" name="test.urlSystem"  id="testUrlSystem" class="input" /> 
 		            	</div>
 		        	</div>
+		        	
+		        	<div class="control-group">
+		            	<label class="control-label" for="testsControl">{{ 'datamining.testes.control.select' | translate}}:*</label>
+		            	<div class="controls">
+		                	<select ng-model="testCtrl.testControl" id="testsControl" ng-options="key as value for (key , value) in testCtrl.testsControl" class="input">
+		                		<option value="">{{ 'datamining.testes.control.select.none' | translate }}</option>
+		                	</select>
+		            	</div>
+		        	</div>
 		
 					<hr/>
 					

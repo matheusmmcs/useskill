@@ -2,7 +2,12 @@ package br.ufpi.datamining.controllers;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.collections.map.HashedMap;
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Get;
@@ -27,6 +32,7 @@ import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.aux.CountActionsAux;
 import br.ufpi.datamining.models.aux.FieldSearch;
 import br.ufpi.datamining.models.aux.FieldSearchComparatorEnum;
+import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.vo.EvaluationTestDataMiningVO;
 import br.ufpi.datamining.models.vo.ReturnVO;
@@ -37,7 +43,11 @@ import br.ufpi.datamining.repositories.EvaluationTestDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.repositories.TestDataMiningRepository;
 import br.ufpi.datamining.utils.UsabilityUtils;
+import br.ufpi.models.Tarefa;
+import br.ufpi.models.Teste;
 import br.ufpi.models.Usuario;
+import br.ufpi.repositories.TesteRepository;
+import br.ufpi.util.Paginacao;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -46,6 +56,7 @@ import com.google.gson.GsonBuilder;
 @Resource
 public class DataMiningTestController extends BaseController {
 
+	private final TesteRepository testeRepository;
 	private final TestDataMiningRepository testeDataMiningRepository;
 	private final TaskDataMiningRepository taskDataMiningRepository;
 	private final ActionDataMiningRepository actionDataMiningRepository;
@@ -59,13 +70,15 @@ public class DataMiningTestController extends BaseController {
 			TaskDataMiningRepository taskDataMiningRepository,
 			ActionDataMiningRepository actionDataMiningRepository,
 			EvaluationTaskDataMiningRepository evaluationTaskDataMiningRepository,
-			EvaluationTestDataMiningRepository evaluationTestDataMiningRepository) {
+			EvaluationTestDataMiningRepository evaluationTestDataMiningRepository,
+			TesteRepository testeRepository) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.testeDataMiningRepository = testeDataMiningRepository;
 		this.taskDataMiningRepository = taskDataMiningRepository;
 		this.actionDataMiningRepository = actionDataMiningRepository;
 		this.evaluationTaskDataMiningRepository = evaluationTaskDataMiningRepository;
 		this.evaluationTestDataMiningRepository = evaluationTestDataMiningRepository;
+		this.testeRepository = testeRepository;
 	}
 	
 	@Get("/")
@@ -159,7 +172,7 @@ public class DataMiningTestController extends BaseController {
 	@Post("/testes/salvar")
 	@Consumes("application/json")
 	@Logado
-	public void salvar(TestDataMining test) {
+	public void salvar(TestDataMining test, Long testConrolId) {
 		Gson gson = new Gson();
 		//TestDataMining test = gson.fromJson(json, TestDataMining.class);
 		validateComponente.validarString(test.getTitle(), "datamining.testes.title");
@@ -175,6 +188,15 @@ public class DataMiningTestController extends BaseController {
 				testUpdate.setClientAbbreviation(test.getClientAbbreviation());
 				testUpdate.setUrlSystem(test.getUrlSystem());
 				
+				if (testConrolId != null) {
+					Teste teste = testeRepository.find(testConrolId);
+					testUpdate.setTestControl(teste);
+					testUpdate.setIsControl(true);
+				} else {
+					testUpdate.setTestControl(null);
+					testUpdate.setIsControl(false);
+				}
+				
 				testeDataMiningRepository.update(testUpdate);
 				returnvo = new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.testes.edit.success");
 			}else{
@@ -182,6 +204,15 @@ public class DataMiningTestController extends BaseController {
 				users.add(usuarioLogado.getUsuario());
 				test.setUsers(users);
 				test.setUserCreated(usuarioLogado.getUsuario());
+				
+				if (testConrolId != null) {
+					Teste teste = testeRepository.find(testConrolId);
+					test.setTestControl(teste);
+					test.setIsControl(true);
+				} else {
+					test.setTestControl(null);
+					test.setIsControl(false);
+				}
 				
 				testeDataMiningRepository.create(test);
 				returnvo = new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.testes.new.success");
@@ -298,5 +329,68 @@ public class DataMiningTestController extends BaseController {
 //		TestDataMining teste = testeDataMiningRepository.getTestPertencente(usuarioLogado.getUsuario().getId(), idTeste);
 //		return teste != null;
 //	}
+	
+	//CONTROL
+	
+	@Get("/testes/control")
+	@Logado
+	public void listControl() {
+		Gson gson = new GsonBuilder()
+	        .create();
+		
+		List<Teste> testesControl = testeRepository.findAll();
+		HashMap<Long, String> testes = new HashMap<Long, String>();
+		for (Teste t : testesControl) {
+			if (t.getUsuarioCriador().getId().equals(usuarioLogado.getUsuario().getId())) {
+				testes.put(t.getId(), t.getTituloPublico());
+			}
+		}
+		String json = gson.toJson(testes);
+		
+		result.use(Results.json()).from(json).serialize();
+	}
+	
+	@Get("/testes/control/{idTeste}/taskupdate")
+	@Logado
+	public void updateTaskControl(Long idTeste) {
+		Gson gson = new GsonBuilder()
+	        .setExclusionStrategies(TestDataMiningVO.exclusionStrategy)
+	        .serializeNulls()
+	        .create();
+		
+		TestDataMining testPertencente = testeDataMiningRepository.getTestPertencente(usuarioLogado.getUsuario().getId(), idTeste);
+		List<TaskDataMining> tasks = testPertencente.getTasks();
+		
+		Teste testeControl = testPertencente.getTestControl();
+		List<Tarefa> tarefas = testeControl.getTarefas();
+		
+		testPertencente.setTasks(new ArrayList<TaskDataMining>());
+		for (TaskDataMining t : tasks) {
+			taskDataMiningRepository.destroy(t);
+		}
+		
+		Set<ActionTypeDataMiningEnum> disregardActions = new HashSet<ActionTypeDataMiningEnum>();
+		disregardActions.add(ActionTypeDataMiningEnum.mouseover);
+		
+		for (Tarefa t : tarefas) {
+			TaskDataMining task = new TaskDataMining();
+			task.setTitle(t.getNome());
+			task.setThreshold(20);
+			task.setDisregardActions(disregardActions);
+			task.setTaskControl(t);
+			task.setIsControl(true);
+			task.setTestDataMining(testPertencente);
+			
+			testPertencente.getTasks().add(task);
+			
+			taskDataMiningRepository.create(task);
+		}
+		testeDataMiningRepository.update(testPertencente);
+		
+		TestDataMiningVO testVO = new TestDataMiningVO(testPertencente);
+		String json = gson.toJson(testVO);
+		
+		result.use(Results.json()).from(json).serialize();
+	}
 
 }

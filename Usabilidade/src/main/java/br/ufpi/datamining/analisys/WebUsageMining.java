@@ -42,6 +42,9 @@ import br.ufpi.datamining.utils.EntityDefaultManagerUtil;
 import br.ufpi.datamining.utils.EntityManagerUtil;
 import br.ufpi.datamining.utils.StatisticsUtils;
 import br.ufpi.datamining.utils.UsabilityUtils;
+import br.ufpi.models.Action;
+import br.ufpi.models.Fluxo;
+import br.ufpi.models.Tarefa;
 import br.ufpi.util.ApplicationPath;
 
 
@@ -187,29 +190,49 @@ public class WebUsageMining {
 		
 		//#1 - pegar todas as interações que possuem esses pontos de incio e agrupar por usuarios todas as interações;
 		HashMap<String, List<ActionDataMining>> initialActionOfsectionsFromUser = new HashMap<String, List<ActionDataMining>>();
-		for(ActionSingleDataMining a : taskDataMining.getActionsInitial()){
-			List<FieldSearch> fieldsSearch = new ArrayList<FieldSearch>();
-			fieldsSearch.add(new FieldSearch("sActionType", "sActionType", a.getActionType().getAction(), FieldSearchComparatorEnum.EQUALS));
-			for(FieldSearchTupleDataMining f : a.getElementFiedlSearch()){
-				fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
+		HashMap<Long, List<ActionDataMining>> actionsFromInitialActionControl = new HashMap<Long, List<ActionDataMining>>();
+		if (taskDataMining.getIsControl()) {
+			List<Fluxo> fluxos = taskDataMining.getTaskControl().getFluxos();
+			for (Fluxo f : fluxos) {
+				Action a = f.getAcoes().get(0);
+				ActionDataMining adm = new ActionDataMining(a);
+				if(initialActionOfsectionsFromUser.get(f.getUsuario().getNome()) == null){
+					initialActionOfsectionsFromUser.put(f.getUsuario().getNome(), new ArrayList<ActionDataMining>());
+				}
+				initialActionOfsectionsFromUser.get(f.getUsuario().getNome()).add(adm);
+				
+				List<ActionDataMining> actions = new ArrayList<ActionDataMining>();
+				for (Action act : f.getAcoes()) {
+					actions.add(new ActionDataMining(act));
+				}
+				actionsFromInitialActionControl.put(a.getId(), actions);
 			}
-			for(FieldSearchTupleDataMining f : a.getUrlFieldSearch()){
-				if(!f.getField().equals("sUrl")){
+		} else {
+			for(ActionSingleDataMining a : taskDataMining.getActionsInitial()){
+				List<FieldSearch> fieldsSearch = new ArrayList<FieldSearch>();
+				fieldsSearch.add(new FieldSearch("sActionType", "sActionType", a.getActionType().getAction(), FieldSearchComparatorEnum.EQUALS));
+				for(FieldSearchTupleDataMining f : a.getElementFiedlSearch()){
 					fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
 				}
-			}
-			//verifica janela temporal
-			fieldsSearch.add(new FieldSearch("sTime", "sTimeInit", initDate, FieldSearchComparatorEnum.GREATER_EQUALS_THAN));
-			fieldsSearch.add(new FieldSearch("sTime", "sTimeEnd", endDate, FieldSearchComparatorEnum.LESS_EQUALS_THAN));
-			
-			List<ActionDataMining> actions = actionDataMiningRepository.getActions(fieldsSearch, taskDataMining.getDisregardActions(), null, null);
-			for(ActionDataMining ai : actions){
-				if(initialActionOfsectionsFromUser.get(ai.getsUsername()) == null){
-					initialActionOfsectionsFromUser.put(ai.getsUsername(), new ArrayList<ActionDataMining>());
+				for(FieldSearchTupleDataMining f : a.getUrlFieldSearch()){
+					if(!f.getField().equals("sUrl")){
+						fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
+					}
 				}
-				initialActionOfsectionsFromUser.get(ai.getsUsername()).add(ai);
+				//verifica janela temporal
+				fieldsSearch.add(new FieldSearch("sTime", "sTimeInit", initDate, FieldSearchComparatorEnum.GREATER_EQUALS_THAN));
+				fieldsSearch.add(new FieldSearch("sTime", "sTimeEnd", endDate, FieldSearchComparatorEnum.LESS_EQUALS_THAN));
+				
+				List<ActionDataMining> actions = actionDataMiningRepository.getActions(fieldsSearch, taskDataMining.getDisregardActions(), null, null);
+				for(ActionDataMining ai : actions){
+					if(initialActionOfsectionsFromUser.get(ai.getsUsername()) == null){
+						initialActionOfsectionsFromUser.put(ai.getsUsername(), new ArrayList<ActionDataMining>());
+					}
+					initialActionOfsectionsFromUser.get(ai.getsUsername()).add(ai);
+				}
 			}
 		}
+		
 
 		System.out.println(initialActionOfsectionsFromUser.size());
 		for(String u : initialActionOfsectionsFromUser.keySet()){
@@ -289,12 +312,17 @@ public class WebUsageMining {
 				List<ActionDataMining> userSectionActions;
 				
 				//se for a ultima sessão do usuário
-				if(i == countUserSessions-1){
-					userSectionActions = actionDataMiningRepository.getUserActions(username, initialAction.getsTime(), taskDataMining.getDisregardActions());
-				}else{
-					ActionDataMining nextInitialAction = userInitialActions.get(i+1);
-					userSectionActions = actionDataMiningRepository.getUserActions(username, initialAction.getsTime(), nextInitialAction.getsTime(), taskDataMining.getDisregardActions());
+				if (!taskDataMining.getIsControl()) {
+					if(i == countUserSessions-1){
+						userSectionActions = actionDataMiningRepository.getUserActions(username, initialAction.getsTime(), taskDataMining.getDisregardActions());
+					}else{
+						ActionDataMining nextInitialAction = userInitialActions.get(i+1);
+						userSectionActions = actionDataMiningRepository.getUserActions(username, initialAction.getsTime(), nextInitialAction.getsTime(), taskDataMining.getDisregardActions());
+					}
+				} else {
+					userSectionActions = actionsFromInitialActionControl.get(initialAction.getId());
 				}
+				
 				
 				//analise das acoes
 				SessionClassificationDataMiningEnum classification = SessionClassificationDataMiningEnum.ERROR;
@@ -350,6 +378,7 @@ public class WebUsageMining {
 								pageViewActionCount.put(pvaKey, (pageViewActionCount.get(pvaKey) + 1));
 							}
 						}else{
+							
 							//vejo limiar com o anterior
 							ActionDataMining previousAction = userSectionActions.get(j-1);
 							BigDecimal diff = new BigDecimal(action.getsTime() - previousAction.getsTime());
@@ -589,6 +618,7 @@ public class WebUsageMining {
 			
 			
 			/* Fuzzy CMeans */
+			/*
 			DEBUG = false;
 			Fuzzy.executeFuzzySystemWithFCMUsersEfcEft(usersResult, IGNORE_ZERO, DEBUG);
 			System.out.println("### Fuzzy CMeans Users EfcEft Ok");
@@ -601,6 +631,7 @@ public class WebUsageMining {
 			
 			Fuzzy.executeFuzzySystemWithFCMSession(sessionsResult, IGNORE_ZERO, DEBUG);
 			System.out.println("### Fuzzy CMeans Sessions Ok");
+			*/
 		}
 		
 		

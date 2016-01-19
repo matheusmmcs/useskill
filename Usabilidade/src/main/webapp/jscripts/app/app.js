@@ -49,7 +49,12 @@ angular.module('useskill',
 		.when('/testes/', routeInit)
 		.when('/testes/criar', {
 	    	controller:'TestNewController as testCtrl',
-	    	templateUrl:config[env].apiUrl+'/templates/tests/create.html'
+	    	templateUrl:config[env].apiUrl+'/templates/tests/create.html',
+	    	resolve: {
+				testsControl: function (ServerAPI) {
+		        	return ServerAPI.getTestsControl();
+		        }
+		    }
 	    })
 	    .when('/testes/editar/:testId', {
 	    	controller:'TestEditController as testCtrl',
@@ -57,6 +62,9 @@ angular.module('useskill',
 	    	resolve: {
 				test: function (ServerAPI, $route, $rootScope) {
 		        	return ServerAPI.getTest($route.current.params.testId);
+		        },
+		        testsControl: function (ServerAPI) {
+		        	return ServerAPI.getTestsControl();
 		        }
 		    }
 	    })
@@ -297,6 +305,14 @@ angular.module('useskill',
     			}
     		});
         	return promise;
+        },
+        
+        //CONTROL
+        getTestsControl: function(){
+        	return doRequest('GET', '/datamining/testes/control');
+        },
+        updateTaskControl: function(testId){
+        	return doRequest('GET', '/datamining/testes/control/'+testId+'/taskupdate');
         }
         
         
@@ -379,6 +395,16 @@ angular.module('useskill',
 			console.log(data);
 		});
 	}
+	
+	testCtrl.updateTasksControl = function(){
+		ServerAPI.updateTaskControl(testCtrl.test.id).then(function(data){
+			console.log(data);
+			testCtrl.test = JSON.parse(data.data.string);
+		}, function(data) {
+			console.log(data);
+		});
+	}
+	
 })
 .controller('TestTasksViewController', function(test, evalTest, ServerAPI, $route, $scope, $rootScope, $filter) {
 	var testCtrl = this;
@@ -579,25 +605,30 @@ angular.module('useskill',
 	}
 	//getSpecificSession
 })
-.controller('TestNewController', function($filter, ServerAPI) {
+.controller('TestNewController', function($filter, ServerAPI, testsControl) {
 	var testCtrl = this;
 	testCtrl.test = {};
 	testCtrl.actionTitle = $filter('translate')('datamining.testes.new');
+	testCtrl.testsControl = JSON.parse(testsControl.data.string);
+	console.log(testCtrl);
 	testCtrl.save = function() {
 		var test = angular.toJson({
-			'test' : testCtrl.test
+			'test' : testCtrl.test,
+			'testConrolId' : testCtrl.testControl
 		});
 		ServerAPI.saveTest(test);
 	};
 })
-.controller('TestEditController', function(test, $filter, ServerAPI) {
+.controller('TestEditController', function(test, $filter, ServerAPI, testsControl) {
 	var testCtrl = this;
 	console.log(test);
 	testCtrl.test = JSON.parse(test.data.string);
 	testCtrl.actionTitle = $filter('translate')('datamining.testes.edit');
+	testCtrl.testsControl = JSON.parse(testsControl.data.string);
 	testCtrl.save = function() {
 		var test = angular.toJson({
-			'test' : testCtrl.test
+			'test' : testCtrl.test,
+			'testConrolId' : testCtrl.testControl
 		});
 		ServerAPI.saveTest(test);
 	};
@@ -1565,6 +1596,15 @@ angular.module('useskill',
 		  var hours = Math.floor(minutes / 60);
 		  minutes = (minutes % 60).toFixed(0);
 		  return hours + "h:" + numberTwoDigits(minutes) + "m:" + numberTwoDigits(seconds) + "s";
+	  }
+  }
+})
+.filter('booleanText', function($filter) {
+  return function(n) {
+	  if (n == true) {
+		  return $filter('translate')('true');
+	  } else {
+		  return $filter('translate')('false');
 	  }
   }
 })

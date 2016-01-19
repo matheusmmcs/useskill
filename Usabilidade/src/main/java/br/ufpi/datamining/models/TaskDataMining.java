@@ -17,11 +17,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CollectionOfElements;
 
 import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
+import br.ufpi.models.Tarefa;
 
 @Entity  
 @Table(name="datamining_task")
@@ -40,8 +42,10 @@ public class TaskDataMining implements Serializable {
 	private List<ActionSingleDataMining> actionsRequired;
 	
 	private List<EvaluationTaskDataMining> evaluations;
-	
 	private TestDataMining testDataMining;
+	
+	private Tarefa taskControl;
+	private Boolean isControl = false;
 	
 	
 	@Id  
@@ -153,6 +157,25 @@ public class TaskDataMining implements Serializable {
 			}
 		}
 		return null;
+	}
+	
+	@JoinColumn(name="taskControl_id", nullable=false)
+	@OneToOne(cascade = CascadeType.DETACH, optional = true, fetch = FetchType.EAGER, orphanRemoval = false)
+	public Tarefa getTaskControl() {
+		return taskControl;
+	}
+	
+	public void setTaskControl(Tarefa taskControl) {
+		this.taskControl = taskControl;
+	}
+	
+	@Column(nullable = false)
+	public Boolean getIsControl() {
+		return isControl;
+	}
+	
+	public void setIsControl(Boolean isControl) {
+		this.isControl = isControl;
 	}
 	
 		

@@ -13,6 +13,8 @@
 	"actions": "ações",
 	"between": "Entre",
 	"and": "e",
+	"true": "Sim",
+	"false": "Não",
 	
 	"backStep" : "Voltar",
 	"nextStep" : "Avançar",
@@ -80,6 +82,11 @@
 	"datamining.testes.delete" : "Excluir Teste",
 	"datamining.testes.edit" : "Editar Teste",
 	"datamining.testes.details" : "Detalhes do Teste",
+	"datamining.testes.control" : "Teste (UseSkill Control)",
+	"datamining.testes.control.ligation" : "Teste Controlado",
+	"datamining.testes.control.select" : "Selecionar Teste (UseSkill Control)",
+	"datamining.testes.control.select.none" : "Sem Testes da UseSkill Control",
+	"datamining.testes.control.tasks.atualize" : "Atualizar Tarefas",
 	
 	"datamining.testes.title" : "Título",
 	"datamining.testes.abbrev" : "Abreviação do Cliente",

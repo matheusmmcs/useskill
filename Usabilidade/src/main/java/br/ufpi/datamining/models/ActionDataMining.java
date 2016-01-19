@@ -13,6 +13,8 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import br.ufpi.models.Action;
+
 
 
 @NamedQueries({
@@ -51,6 +53,27 @@ public class ActionDataMining implements Serializable {
 	private Boolean sDeleted;
 	private Date createdAt;
 	private Date updatedAt;
+	
+	public ActionDataMining(Action a) {
+		super();
+		this.id = a.getId();
+		this.sActionType = a.getsActionType();
+		this.sContent = a.getsContent();
+		this.sPosX = a.getsPosX();
+		this.sPosY = a.getsPosY();
+		this.sTag = a.getsTag();
+		this.sTagIndex = a.getsTagIndex();
+		this.sTime = a.getsTime();
+		this.sUrl = a.getsUrl();
+		this.sClass = a.getsClass();
+		this.sId = a.getsId();
+		this.sName = a.getsName();
+		this.sXPath = a.getsXPath();
+	}
+	
+	public ActionDataMining() {
+		super();
+	}
 	
 	@Id  
 	@GeneratedValue
