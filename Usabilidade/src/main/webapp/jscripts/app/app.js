@@ -791,6 +791,8 @@ angular.module('useskill',
 	taskCtrl.modesArr = modesArr;
 	taskCtrl.mode = modes.users;
 	taskCtrl.actionsSituation = {};
+	taskCtrl.actionsSpecialSituation = {};
+	
 	
 	//count actions
 	var actionsArr = $filter('toArray')(taskCtrl.result.pageViewActionIds),
@@ -929,7 +931,7 @@ angular.module('useskill',
     		id: 'default',
     		desc: 'Sem Situação Definida',
     		classLabel: ''
-    	},
+    	}
     }
 	function resetSituationAux(actionId) {
 		var sit = taskCtrl.actionsSituation[actionId];
@@ -978,6 +980,96 @@ angular.module('useskill',
 		}
 		return null;
 	}
+	
+	//acoes especiais (inicial/final/obrigatória):
+	$scope.specialActionsEnum = {
+    	INITIAL: {
+    		id: 'initial',
+    		desc: 'Inicial'
+    	},
+    	END: {
+    		id: 'end',
+    		desc: 'Final'
+    	},
+    	REQUIRED: {
+    		id: 'required',
+    		desc: 'Obrigatória'
+    	},
+    	DEFAULT: {
+    		id: 'default',
+    		desc: 'Ação Normal'
+    	}
+    }
+	//taskCtrl.result.sessions
+	$scope.sendDataChange = false;
+	for (var s in taskCtrl.result.sessions) {
+		var sess = taskCtrl.result.sessions[s];
+		for (var a in sess.actions) {
+			if (sess.actions[a].required) {
+				taskCtrl.actionsSpecialSituation[sess.actions[a].identifier] = $scope.specialActionsEnum.REQUIRED;
+			}
+		}
+	}
+	function setSpecialSituationNetwork(network, actionId, sit) {
+		if (network) {
+			var arrNodes = network.body.nodes;
+			for (var n in arrNodes) {
+				if (arrNodes[n].options.action != null && arrNodes[n].options.action.identifier == actionId) {
+					arrNodes[n].options.action[$scope.specialActionsEnum.INITIAL.id] = null;
+					arrNodes[n].options.action[$scope.specialActionsEnum.END.id] = null;
+					arrNodes[n].options.action[$scope.specialActionsEnum.REQUIRED.id] = null;
+					if (sit) {
+						arrNodes[n].options.action[sit.id] = true;
+						$scope.sendDataChange = true;
+					}
+				}
+			}
+		}
+	}
+	function setSpecialSituationRealSessions(actionId, sit) {
+		for (var s in taskCtrl.result.sessions) {
+			var sess = taskCtrl.result.sessions[s];
+			for (var a in sess.actions) {
+				if (sess.actions[a].identifier == actionId) {
+					sess.actions[a][$scope.specialActionsEnum.INITIAL.id] = null;
+					sess.actions[a][$scope.specialActionsEnum.END.id] = null;
+					sess.actions[a][$scope.specialActionsEnum.REQUIRED.id] = null;
+					if (sit) {
+						sess.actions[a][sit.id] = true;
+					}
+				}
+			}
+		}
+	}
+	function resetSpecialSituationAux(actionId) {
+		var sit = taskCtrl.actionsSpecialSituation[actionId];
+		$scope.specialSituationAux = sit !== undefined ? sit : $scope.specialActionsEnum.DEFAULT;
+	}
+	$scope.setSpecialSituationAction = function(actionId, situation) {
+		for (var i in $scope.specialActionsEnum) {
+			if ($scope.specialActionsEnum[i].id === situation.id) {
+				//var sit = taskCtrl.actionsSpecialSituation[actionId];
+				taskCtrl.actionsSpecialSituation[actionId] = situation;
+				setSpecialSituationRealSessions(actionId, situation);
+				setSpecialSituationNetwork($scope[$scope.graphIdsEnum.GRAPH_DEFAULT], actionId, situation);
+				setSpecialSituationNetwork($scope[$scope.graphIdsEnum.GRAPH_SESSION], actionId, situation);
+				break;
+			}
+		}
+	}
+	$scope.isSpecialSituationAction = function(actionId, situation) {
+		var sit = taskCtrl.actionsSpecialSituation[actionId];
+		if (sit !== undefined && sit.id === situation.id) {
+			return true;
+		}
+		return false;
+	}
+	$scope.selectSpecialSituationAction = function(actionId, situation) {
+		$scope.setSpecialSituationAction(actionId, situation);
+		$scope.redrawAll();
+	}
+	
+	
 	
 	
 	$scope.showUserSessions = function(user){
@@ -1144,6 +1236,7 @@ angular.module('useskill',
       	  	var node = $scope[graphName].body.nodes[params.nodes[0]];
       	  	var edgesFrom = [], edgesTo = [];
       	  	resetSituationAux(node.id);
+      	    resetSpecialSituationAux(node.id);
       	  	angular.forEach(node.edges, function(edge){
       	  		if (edge.from.id != node.id) {
       	  			edgesFrom.push(edge.from.id);
@@ -1191,6 +1284,22 @@ angular.module('useskill',
     		$scope.$apply();
     	});	
     }
+    
+    var factorScale = 0.1;
+    $scope.zoomOutGraph = function(graphName){
+    	$scope[graphName].moveTo({
+            scale: network.getScale() - factorScale
+        });
+    }
+    $scope.zoomInGraph = function(graphName){
+    	$scope[graphName].moveTo({
+            scale: network.getScale() + factorScale
+        });
+    }
+    $scope.resetGraph = function(graphName){
+    	$scope[graphName].moveTo($scope.graphName);
+    }
+    
     
     $scope.redrawAll = function() {
     	$scope.redraw($scope.graphIdsEnum.GRAPH_DEFAULT);
@@ -1468,8 +1577,6 @@ angular.module('useskill',
 		    						$obj.ElasticProgress("showMessage", messages[m].message, timeMsg);
 		    					}
 		    				}
-		    				
-		    				console.log(v, newadd);
 		    				
 		    				if (v == 2) {
 		    					v = 1;

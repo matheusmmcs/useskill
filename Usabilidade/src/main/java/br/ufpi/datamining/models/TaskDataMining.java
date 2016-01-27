@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -27,6 +29,9 @@ import br.ufpi.models.Tarefa;
 
 @Entity  
 @Table(name="datamining_task")
+@NamedQueries({
+	@NamedQuery(name = "Tarefas.teste", query = "SELECT t FROM TaskDataMining t WHERE t.testDataMining.id = :testDataMiningId")
+})
 public class TaskDataMining implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -159,7 +164,7 @@ public class TaskDataMining implements Serializable {
 		return null;
 	}
 	
-	@JoinColumn(name="taskControl_id", nullable=false)
+	@JoinColumn(name="taskControl_id")
 	@OneToOne(cascade = CascadeType.DETACH, optional = true, fetch = FetchType.EAGER, orphanRemoval = false)
 	public Tarefa getTaskControl() {
 		return taskControl;

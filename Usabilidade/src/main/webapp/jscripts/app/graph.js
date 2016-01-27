@@ -423,7 +423,6 @@ function refreshGraph(network, actionsSituation, situationsEnum){
 		var arrNodes = network.body.nodes;
 		for (var n in arrNodes) {
 			
-			console.log(arrNodes[n]);
 			var hasChanged = false,
 				actionSituation = actionsSituation[arrNodes[n].id];
 			
@@ -436,9 +435,15 @@ function refreshGraph(network, actionsSituation, situationsEnum){
 				}
 			}
 			
-			if (arrNodes[n].options.action != null && arrNodes[n].options.action.required == true) {
-				arrNodes[n].options.color = optionsGraphUseSkill.groups.blue.color;
-				hasChanged = true;
+			if (arrNodes[n].options.action != null) {
+				if (arrNodes[n].options.action.required == true) {
+					arrNodes[n].options.color = optionsGraphUseSkill.groups.blue.color;
+					hasChanged = true;
+				} else if (arrNodes[n].options.action.initial == true ||
+							arrNodes[n].options.action.end == true) {
+					arrNodes[n].options.color = optionsGraphUseSkill.groups.black.color;
+					hasChanged = true;
+				}
 			}
 			
 			if (!hasChanged) {

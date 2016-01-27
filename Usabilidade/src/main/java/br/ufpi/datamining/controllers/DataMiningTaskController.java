@@ -180,14 +180,17 @@ public class DataMiningTaskController extends BaseController {
 			List<FrequentSequentialPatternResultVO> frequentPatterns = null;
 			
 			double lastMinSup = 0d;
-			if (evaluation.getEvalCountSessions() > 0) {
+			if (evaluation.getEvalCountSessions() > 1) {
 				//automatic patterns: (100/80/60/40/20)
 				int defaultMinItens = 4;
 				double[] minSups = new double[]{1.0, 0.8, 0.6, 0.4, 0.2};
 				for (int i = 0; i < minSups.length; i++) {
 					if (frequentPatterns == null || frequentPatterns.size() == 0) {
 						lastMinSup = minSups[i];
-						frequentPatterns = fspm.analyze(resultDataMining, minSups[i], null, defaultMinItens);
+						//if (!(resultDataMining.getUsersSequences().size() < 2 && lastMinSup == 1.0)) {
+							System.out.println("--INICIAR FSPM: " + lastMinSup);
+							frequentPatterns = fspm.analyze(resultDataMining, minSups[i], null, defaultMinItens);
+						//}
 					}
 				}
 			}

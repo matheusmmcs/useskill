@@ -125,7 +125,7 @@ public class TestDataMining implements Serializable {
 	}
 
 	@JoinColumn(name="testControl_id", nullable = true)
-	@OneToOne(cascade = CascadeType.DETACH, optional = true, fetch = FetchType.EAGER, orphanRemoval = false)
+	@OneToOne(fetch = FetchType.LAZY)
 	public Teste getTestControl() {
 		return testControl;
 	}

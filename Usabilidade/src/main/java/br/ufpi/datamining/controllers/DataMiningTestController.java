@@ -167,7 +167,7 @@ public class DataMiningTestController extends BaseController {
 		validator.onErrorRedirectTo(this).list();
 		
 		result.use(Results.json()).from(gson.toJson(new TestDataMiningVO(testPertencente))).serialize();
-	}
+	} 
 	
 	@Post("/testes/salvar")
 	@Consumes("application/json")
@@ -331,6 +331,30 @@ public class DataMiningTestController extends BaseController {
 //	}
 	
 	//CONTROL
+	
+	@Get("/testes/normalize/{idTeste}")
+	@Logado
+	public void normalize(Long idTeste) {
+		Gson gson = new GsonBuilder()
+	        .setExclusionStrategies(TestDataMiningVO.exclusionStrategy)
+	        .serializeNulls()
+	        .create();
+		
+		TestDataMining testPertencente = testeDataMiningRepository.getTestPertencente(usuarioLogado.getUsuario().getId(), idTeste);
+		List<TaskDataMining> tarefasTeste = taskDataMiningRepository.getTarefasTeste(idTeste);
+		testPertencente.setTasks(new ArrayList<TaskDataMining>());
+		for (TaskDataMining t : tarefasTeste) {
+			t.setTestDataMining(testPertencente);
+			testPertencente.getTasks().add(t);
+			taskDataMiningRepository.update(t);
+		}
+		testeDataMiningRepository.update(testPertencente);
+		validateComponente.validarNotNull(testPertencente, "datamining.accessdenied");
+		validator.onErrorRedirectTo(this).list();
+		
+		result.use(Results.json()).from(gson.toJson(new TestDataMiningVO(testPertencente))).serialize();
+	} 
+	
 	
 	@Get("/testes/control")
 	@Logado

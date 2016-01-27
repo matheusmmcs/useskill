@@ -60,6 +60,17 @@
 			            	<dt>{{ 'datamining.tasks.threshold' | translate}}:</dt>
 			            	<dd>{{taskCtrl.task.threshold}} {{ 'minutes' | translate}}</dd>
 			            </dl>
+			            <dl>
+			            	<dt>Reavaliar Tarefa:</dt>
+			            	<dd>
+			            		<a ng-class="{'disable' : sendDataChange}" class="btn btn-primary" ng-click="testCtrl.priority()" title="{{ 'datamining.priority' | translate}}">
+			            			<span class="icon-white icon-tasks"></span>
+			            			Enviar Dados e Reavaliar
+			            		</a>
+			            		<div class="clear-both"></div>
+							</dd>
+			            </dl>
+			            
 		            </div>
 		            
 		            <h3 class="usdm-box-header">
@@ -157,6 +168,11 @@
 					            	</dd>
 					            </dl>
 		        				<div id="mynetwork" class="graph-actions"></div>
+		        				<div class="btn-group">
+								    <button ng-click="zoomOutGraph('graphsession')" class="btn"><i class="icon-zoom-in"/></button>
+								    <button ng-click="zoomInGraph('graphsession')" class="btn"><i class="icon-zoom-out"/></button>
+								    <button ng-click="resetGraph('graphsession')" class="btn"><i class="icon-screenshot"/></button>
+								 </div>
 		        			</div>
 		        		</div>
 		        		
@@ -185,6 +201,9 @@
 										        ng-change="selectSituationAction(taskCtrl.nodeSelected.id, situationAux)"
 						            			ng-options="s as s.desc for (k, s) in situationsEnum"></select> 
 						            			<span ng-show="taskCtrl.nodeSelected.action.required"> (Ação Obrigatória)</span><br/>
+						            		Ação Especial: <select ng-model="specialSituationAux"
+										        ng-change="selectSpecialSituationAction(taskCtrl.nodeSelected.id, specialSituationAux)"
+						            			ng-options="s as s.desc for (k, s) in specialActionsEnum"></select><br/>
 						            		Id: <b>{{ taskCtrl.nodeSelected.id }}</b>;<br/>
 				            				Nome: <b>{{ taskCtrl.nodeSelected.name }}</b>;<br/>
 				            				Realizado: <b>{{ taskCtrl.nodeSelected.value }} vezes</b>;<br/>
@@ -334,9 +353,21 @@
 					            	</dd>
 					            </dl>
 					            <div id="mynetworkSession" class="graph-actions"></div>
+				            	<div class="btn-group">
+								    <button ng-click="zoomOutGraph('graphsession')" class="btn"><i class="icon-zoom-in"/></button>
+								    <button ng-click="zoomInGraph('graphsession')" class="btn"><i class="icon-zoom-out"/></button>
+								    <button ng-click="resetGraph('graphsession')" class="btn"><i class="icon-screenshot"/></button>
+								 </div>
 								<dl class="dl-with-margin-bottom" ng-show="taskCtrl.actionViewSelected != null">
 					            	<dt class="ng-binding">Informações da Ação:</dt>
 					            	<dd class="ng-binding">
+					            		Situação: <select ng-model="situationAux"
+									        ng-change="selectSituationAction(taskCtrl.actionViewSelected.id, situationAux)"
+					            			ng-options="s as s.desc for (k, s) in situationsEnum"></select> 
+					            			<span ng-show="taskCtrl.nodeSelected.action.required"> (Ação Obrigatória)</span><br/>
+					            		Ação Especial: <select ng-model="specialSituationAux"
+									        ng-change="selectSpecialSituationAction(taskCtrl.actionViewSelected.id, specialSituationAux)"
+					            			ng-options="s as s.desc for (k, s) in specialActionsEnum"></select><br/>
 					            		Id: <b>{{ taskCtrl.actionViewSelected.action.identifier }}</b>;<br/>
 					            		Ação: <b>{{ taskCtrl.actionViewSelected.action.action }}</b>;<br/>
 					            		Tag: <b>{{ taskCtrl.actionViewSelected.action.infoTag }}</b>;<br/>
