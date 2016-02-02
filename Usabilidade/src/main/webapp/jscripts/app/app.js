@@ -466,7 +466,7 @@ angular.module('useskill',
 			//content += 'Eficiência = Eficácia / ((AçõesZscore + TemposZscore)/2)<br/>';
 			content += 'Eficiência = '+reduceNumber(task.evalEfficiency)+', ['+reduceNumber(task.evalEfficiencyNormalized)+']<br/>';
 			content += 'Prioridade (Fuzzy) = '+reduceNumber(task.evalFuzzyPriority)+'<br/>';
-			content += "Tempo Estimado = " + $filter('msConverter')(task.meanTimeLoading || 0);
+			content += "Tempo Estimado da Avaliação = " + $filter('msConverter')(task.meanTimeLoading || 0);
 		} else {
 			content = $filter('translate')('datamining.testes.evaluations.none');
 		}
@@ -1218,6 +1218,8 @@ angular.module('useskill',
     	var graphData = generateGraphSession(taskCtrl.frequentPatterns, session);
     	$scope[$scope.graphIdsEnum.GRAPH_SESSION] = drawGraph('mynetworkSession', graphData, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX);
     	$scope.resetGraph($scope.graphIdsEnum.GRAPH_SESSION, "actionViewSelected", "edgeSelectedSession");
+    	verifyInitialZoom($scope[$scope.graphIdsEnum.GRAPH_SESSION]);
+    	$scope[$scope.graphIdsEnum.GRAPH_SESSION].positionStep = 0;
     }
     $scope.renderGraph = function() {
     	if (isPatternsActual) {
@@ -1229,37 +1231,44 @@ angular.module('useskill',
     	var graphData = generateGraphFrequentPatterns($scope.graphType.id, taskCtrl.frequentPatterns, taskCtrl.result.sessions);
     	$scope[$scope.graphIdsEnum.GRAPH_DEFAULT] = drawGraph('mynetwork', graphData, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX);
     	$scope.resetGraph($scope.graphIdsEnum.GRAPH_DEFAULT, "nodeSelected", "edgeSelected");
+    	verifyInitialZoom($scope[$scope.graphIdsEnum.GRAPH_DEFAULT]);
+    	$scope[$scope.graphIdsEnum.GRAPH_DEFAULT].positionStep = 0;
+    }
+    
+    function selectNode(node, nodeSelectedName, edgeSelectedName) {
+    	var edgesFrom = [], edgesTo = [];
+  	  	resetSituationAux(node.id);
+  	    resetSpecialSituationAux(node.id);
+  	  	angular.forEach(node.edges, function(edge){
+  	  		if (edge.from.id != node.id) {
+  	  			edgesFrom.push(edge.from.id);
+  	  		} else if (edge.to.id != node.id) {
+  	  			edgesTo.push(edge.to.id);
+  	  		} else {
+  	  			edgesFrom.push(edge.from.id);
+  	  			edgesTo.push(edge.to.id);
+  	  		}
+  	  	});
+  	  
+  	  	taskCtrl[edgeSelectedName] = null;
+  	  	taskCtrl[nodeSelectedName] = {
+  	  		'id': node.id,
+  	  		'name': node.options.label,
+  	  		'value': node.options.value,
+				'edgesFrom': edgesFrom.join(", "),
+				'edgesTo': edgesTo.join(", "),
+				'sessions': node.options.sessions,
+				'patternsCount': node.options.countPatterns,
+				'action': node.options.action
+  	  	}
+  	  	console.log(node);
     }
     
     $scope.resetGraph = function(graphName, nodeSelectedName, edgeSelectedName) {
+    	console.log($scope[graphName]);
     	$scope[graphName].on("selectNode", function (params) {
       	  	var node = $scope[graphName].body.nodes[params.nodes[0]];
-      	  	var edgesFrom = [], edgesTo = [];
-      	  	resetSituationAux(node.id);
-      	    resetSpecialSituationAux(node.id);
-      	  	angular.forEach(node.edges, function(edge){
-      	  		if (edge.from.id != node.id) {
-      	  			edgesFrom.push(edge.from.id);
-      	  		} else if (edge.to.id != node.id) {
-      	  			edgesTo.push(edge.to.id);
-      	  		} else {
-      	  			edgesFrom.push(edge.from.id);
-      	  			edgesTo.push(edge.to.id);
-      	  		}
-      	  	});
-      	  
-      	  	taskCtrl[edgeSelectedName] = null;
-      	  	taskCtrl[nodeSelectedName] = {
-      	  		'id': node.id,
-      	  		'name': node.options.label,
-      	  		'value': node.options.value,
-  				'edgesFrom': edgesFrom.join(", "),
-  				'edgesTo': edgesTo.join(", "),
-  				'sessions': node.options.sessions,
-  				'patternsCount': node.options.countPatterns,
-  				'action': node.options.action
-      	  	}
-      	  	console.log(node);
+      	  	selectNode(node, nodeSelectedName, edgeSelectedName);
       	  	$scope.$apply();
         });
     	$scope[graphName].on("selectEdge", function (params) {
@@ -1288,16 +1297,22 @@ angular.module('useskill',
     var factorScale = 0.1;
     $scope.zoomOutGraph = function(graphName){
     	$scope[graphName].moveTo({
-            scale: network.getScale() - factorScale
+            scale: $scope[graphName].getScale() + factorScale
         });
     }
     $scope.zoomInGraph = function(graphName){
+    	var newScale = $scope[graphName].getScale() - factorScale;
     	$scope[graphName].moveTo({
-            scale: network.getScale() + factorScale
+            scale: newScale >= 0 ? newScale : 0
         });
     }
-    $scope.resetGraph = function(graphName){
-    	$scope[graphName].moveTo($scope.graphName);
+    $scope.resetZoomGraph = function(graphName){
+    	$scope[graphName].moveTo({
+    		scale: $scope[graphName].initialZoom
+    	});
+    }
+    function verifyInitialZoom(graph){
+    	graph.initialZoom = graph.initialZoom != null ? graph.initialZoom : graph.getScale();
     }
     
     
@@ -1321,6 +1336,46 @@ angular.module('useskill',
 	}
     
     $scope.changeGraphType(false);
+    
+    /** STEPS ON GRAPH **/
+    $scope.positionStepView = {};
+    $scope.positionStepView[$scope.graphIdsEnum.GRAPH_SESSION] = 0;
+    
+    $scope.forwardStepGraph = function(graphName, session) {
+    	if (session.actions.length > $scope[graphName].positionStep) {
+    		$scope[graphName].positionStep++; 
+    	}
+    	setStepGraph(session, graphName);
+    }
+    
+    $scope.backwardStepGraph = function(graphName, session) {
+    	if ($scope[graphName].positionStep > 1) {
+    		$scope[graphName].positionStep--;
+    	}
+    	setStepGraph(session, graphName);
+    }
+    
+    $scope.repeatStepsGraph = function(graphName, session) {
+    	$scope[graphName].positionStep = 1;
+    	setStepGraph(session, graphName);
+    }
+    
+    function setStepGraph(session, graphName) {
+    	var graph = $scope[graphName];
+    	var action = session.actions[graph.positionStep - 1];
+    	var nodes = graph.body.nodes;
+    	
+    	$scope.positionStepView[$scope.graphIdsEnum.GRAPH_SESSION] = graph.positionStep;
+    	
+    	for (var n in nodes) {
+    		if (action.identifier == nodes[n].id) {
+    			graph.unselectAll();
+    			graph.selectNodes([nodes[n].id]);
+    			selectNode(nodes[n], "actionViewSelected", "edgeSelectedSession");
+    			break;
+    		}
+    	}
+    }
     
     /*************   GUIDE   *************/
     
