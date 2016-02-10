@@ -723,7 +723,7 @@ angular.module('useskill',
 	taskCtrl.task = task;
 	taskCtrl.actionTitle = $filter('translate')('datamining.tasks.edit');
 })
-.controller('TaskEvaluateController', function($scope, evaluate, evalTestId, $filter, ServerAPI) {
+.controller('TaskEvaluateController', function($scope, evaluate, evalTestId, $filter, ServerAPI, $timeout) {
 	var taskCtrl = this;
 	
 	taskCtrl.evalTestId = evalTestId;
@@ -1250,16 +1250,16 @@ angular.module('useskill',
   	  		}
   	  	});
   	  
-  	  	taskCtrl[edgeSelectedName] = null;
+  	  	//taskCtrl[edgeSelectedName] = null;
   	  	taskCtrl[nodeSelectedName] = {
   	  		'id': node.id,
   	  		'name': node.options.label,
   	  		'value': node.options.value,
-				'edgesFrom': edgesFrom.join(", "),
-				'edgesTo': edgesTo.join(", "),
-				'sessions': node.options.sessions,
-				'patternsCount': node.options.countPatterns,
-				'action': node.options.action
+			'edgesFrom': edgesFrom.join(", "),
+			'edgesTo': edgesTo.join(", "),
+			'sessions': node.options.sessions,
+			'patternsCount': node.options.countPatterns,
+			'action': node.options.action
   	  	}
   	  	console.log(node);
     }
@@ -1269,11 +1269,11 @@ angular.module('useskill',
     	$scope[graphName].on("selectNode", function (params) {
       	  	var node = $scope[graphName].body.nodes[params.nodes[0]];
       	  	selectNode(node, nodeSelectedName, edgeSelectedName);
-      	  	$scope.$apply();
+	  		$scope.$apply();
         });
     	$scope[graphName].on("selectEdge", function (params) {
     		var edge = $scope[graphName].body.edges[params.edges[0]];
-    		taskCtrl[nodeSelectedName] = null;
+    		//taskCtrl[nodeSelectedName] = null;
 	  		taskCtrl[edgeSelectedName] = {
 	  			'fromId' : edge.fromId,
 	  			'toId' : edge.toId,
@@ -1282,7 +1282,7 @@ angular.module('useskill',
 	  			'patternsCount' : edge.options.countPatterns
 	      	}
 	  		console.log(edge, taskCtrl[edgeSelectedName]);
-	  		$scope.$apply();
+    		$scope.$apply();
         });
     	$scope[graphName].on("deselectNode", function () {
     		taskCtrl[nodeSelectedName] = null;
@@ -1291,7 +1291,8 @@ angular.module('useskill',
     	$scope[graphName].on("deselectEdge", function () {
     		taskCtrl[edgeSelectedName] = null;
     		$scope.$apply();
-    	});	
+    	});
+    	
     }
     
     var factorScale = 0.1;
@@ -1308,11 +1309,13 @@ angular.module('useskill',
     }
     $scope.resetZoomGraph = function(graphName){
     	$scope[graphName].moveTo({
+    		position: $scope[graphName].initialPosition,
     		scale: $scope[graphName].initialZoom
     	});
     }
     function verifyInitialZoom(graph){
     	graph.initialZoom = graph.initialZoom != null ? graph.initialZoom : graph.getScale();
+    	graph.initialPosition = graph.initialPosition != null ? graph.initialPosition : graph.getViewPosition();
     }
     
     
@@ -1406,11 +1409,22 @@ angular.module('useskill',
     	} else if (step == "1.1") {
     		$scope.sessionSelected = data;
     		$scope.renderGraphSession(data);
+    		$scope.repeatStepsGraph($scope.graphIdsEnum.GRAPH_SESSION, data);
     	}
     }
     
     function classificationPoints(classification) {
     	return $scope.getClassificationFromEnum(classification).val;
+    }
+    
+    function addMoreInfoSession(session) {
+    	var countUserSessions = 0;
+    	for (var s in taskCtrl.result.sessions) {
+    		if (taskCtrl.result.sessions[s].username == session.username) {
+    			countUserSessions++;
+    		}
+    	}
+    	return countUserSessions;
     }
     
     $scope.showActionsSessionGuide = function(session){

@@ -77,16 +77,35 @@
 			    		{{ 'datamining' | translate}}
 		            </h3>
 		            
-		            <div class="usdm-box-body">
+		            <div class="usdm-box-body usdm-box-body-inline">
 			            <dl>
-			            	<dt>{{ 'datamining.mining.minsupport' | translate}}:</dt>
-			            	<dd>{{taskCtrl.result.lastMinSup * 100}} %</dd>
+			            	<dt>
+			            		<span>{{ 'datamining.mining.minsupport' | translate}} (%):</span>
+			            		<input class="min-input" type="text" name="lastMinSup" value="{{taskCtrl.result.lastMinSup * 100}}" />
+			            		<div class="clear-both"></div>
+			            	</dt>
 			            </dl>
 			            <dl>
-			            	<dt>{{ 'datamining.mining.minpattern' | translate}}:</dt>
-			            	<dd>4</dd>
+			            	<dt>
+			            		<span>{{ 'datamining.mining.minpattern' | translate}}:</span>
+			            		<input class="min-input" type="text" name="minpattern" value="4" />
+			            		<div class="clear-both"></div>
+			            	</dt>
 			            </dl>
 		            </div>
+		            
+		            <div class="usdm-box-body usdm-box-body-inline">
+		            	<dl>
+			            	<dt>Minerar Novamente:</dt>
+			            	<dd>
+			            		<a ng-class="{'disable' : sendDataChange}" class="btn btn-primary u-width-full" ng-click="testCtrl.priority()" title="{{ 'datamining.priority' | translate}}">
+			            			<span class="icon-white icon-tasks"></span>
+			            			Enviar Dados e Minerar
+			            		</a>
+			            		<div class="clear-both"></div>
+							</dd>
+			            </dl>
+			        </div>
 		            
 		            <br/>
 		            
@@ -210,7 +229,7 @@
 				            				Arestas Para: <b>{{ taskCtrl.nodeSelected.edgesTo }}</b>;<br/>
 				            				Arestas De: <b>{{ taskCtrl.nodeSelected.edgesFrom }}</b>;<br/>
 				            				Padrões Presentes: <b>{{ taskCtrl.nodeSelected.patternsCount }} / {{ taskCtrl.frequentPatterns.length }}</b>;<br/>
-				            				Quantidade de Sessões: <b>{{ taskCtrl.nodeSelected.sessions.length }}</b>.<br/>
+				            				Quantidade de Sessões: <b>{{ taskCtrl.nodeSelected.sessions.length }} ({{ (taskCtrl.result.sessions.length / taskCtrl.nodeSelected.sessions.length) * 100 }})</b>.<br/>
 						            	</dd>
 						            </dl>
 						            <h3 class="table-title">Sessões que contém este nó:</h3>
@@ -361,7 +380,11 @@
 								    <button ng-click="forwardStepGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-forward"/></button>
 								    <button ng-click="backwardStepGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-backward"/></button>
 								    <button ng-click="repeatStepsGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-repeat"/></button>
-								    <span style="line-height: 24px; padding: 0 10px;" class="pull-right">Ação num: {{positionStepView[graphIdsEnum.GRAPH_SESSION]}}.</span>
+								    <span style="line-height: 24px; padding: 0 10px;" class="pull-right">
+								    	Momento: <b>{{ sessionSelected.actions[positionStepView[graphIdsEnum.GRAPH_SESSION]-1].time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</b>; 
+								    	Passo num: {{positionStepView[graphIdsEnum.GRAPH_SESSION]}}.
+								    </span>
+								    <hr/>
 								 </div>
 								<dl class="dl-with-margin-bottom" ng-show="taskCtrl.actionViewSelected != null">
 					            	<dt class="ng-binding">Informações da Ação:</dt>
@@ -373,6 +396,7 @@
 					            		Ação Especial: <select ng-model="specialSituationAux"
 									        ng-change="selectSpecialSituationAction(taskCtrl.actionViewSelected.id, specialSituationAux)"
 					            			ng-options="s as s.desc for (k, s) in specialActionsEnum"></select><br/>
+					            		
 					            		Id: <b>{{ taskCtrl.actionViewSelected.action.identifier }}</b>;<br/>
 					            		Ação: <b>{{ taskCtrl.actionViewSelected.action.action }}</b>;<br/>
 					            		Tag: <b>{{ taskCtrl.actionViewSelected.action.infoTag }}</b>;<br/>

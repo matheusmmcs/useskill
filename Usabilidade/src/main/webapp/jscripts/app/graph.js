@@ -428,7 +428,7 @@ function refreshGraph(network, actionsSituation, situationsEnum){
 			
 			if (actionSituation != null) {
 				for (var s in situationsEnum) {
-					if (situationsEnum[s].id == actionSituation.id) {
+					if (situationsEnum[s].id == actionSituation.id && actionSituation.group != undefined) {
 						arrNodes[n].options.color = optionsGraphUseSkill.groups[actionSituation.group].color;
 						hasChanged = true;
 					}
