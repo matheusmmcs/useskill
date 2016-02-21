@@ -1,0 +1,96 @@
+<h3 class="usdm-title-margin">Informações da Ação Selecionada:</h3>
+<div class="usdm-info-box">
+	<div class="row-fluid">
+		<div class="usdm-info-box-div2">
+			<div class="usdm-info-box-label">Passo:</div>
+			<div class="usdm-info-box-span">
+				{{ actionInfo.positionStep || '-' }}
+			</div>
+		</div>
+		<div class="usdm-info-box-div2">
+			<div class="usdm-info-box-label">Id Ação:</div>
+			<div class="usdm-info-box-span">
+				{{ actionInfo.action.identifier || actionInfo.identifier }}
+			</div>
+		</div>
+		<div class="usdm-info-box-div4">
+			<div class="usdm-info-box-label">Situação:</div>
+			<div class="usdm-info-box-span usdm-info-box-text-left">
+				<select ng-model="situationAux" class="u-width-100 u-margin-0"
+					ng-change="selectSituation({ id: actionInfo.action.identifier || actionInfo.identifier, sit: situationAux })"
+					ng-options="s as s.desc for (k, s) in situationsEnum">
+				</select>
+			</div>
+		</div>
+		<div class="usdm-info-box-div4">
+			<div class="usdm-info-box-label">Tipo de Ação:</div>
+			<div class="usdm-info-box-span usdm-info-box-text-left">
+				<select ng-model="situationSpecialAux"
+					class="u-width-100 u-margin-0"
+					ng-change="selectSpecialSituation({ id: actionInfo.action.identifier || actionInfo.identifier, sit: situationSpecialAux })"
+					ng-options="s as s.desc for (k, s) in specialActionsEnum"></select>
+			</div>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="usdm-info-box-div3">
+			<div class="usdm-info-box-label">Ação:</div>
+			<div class="usdm-info-box-span usdm-info-box-text-left"
+				title="{{ actionInfo.action.action }}">
+					{{ actionInfo.action.action || actionInfo.action }}
+			</div>
+		</div>
+		<div class="usdm-info-box-div9">
+			<div class="usdm-info-box-label">Momento:</div>
+			<div class="usdm-info-box-span usdm-info-box-text-left">
+				{{ momento || '-' }}
+			</div>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="usdm-info-box-div3">
+			<div class="usdm-info-box-label">Tag:</div>
+			<div class="usdm-info-box-span usdm-info-box-text-left"
+				title="{{ actionInfo.action.infoTag }}">
+					{{ actionInfo.action.infoTag || actionInfo.infoTag }}
+			</div>
+		</div>
+		<div class="usdm-info-box-div6">
+			<div class="usdm-info-box-label">Name:</div>
+			<div class="usdm-info-box-span usdm-info-box-text-left"
+				title="{{ actionInfo.action.infoName }}">{{ actionInfo.action.infoName || actionInfo.infoName }}
+			</div>
+		</div>
+		<div class="usdm-info-box-div3">
+			<div class="usdm-info-box-label">Posição [X,Y]:</div>
+			<div class="usdm-info-box-span usdm-info-box-text-left"
+				title="[{{ actionInfo.action.infoPosX }},{{ actionInfo.action.infoPosY }}]">
+				[{{ actionInfo.action.infoPosX || actionInfo.infoPosX }},{{ actionInfo.action.infoPosY || actionInfo.infoPosY }}]
+			</div>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="usdm-info-box-div12">
+			<div class="usdm-info-box-span usdm-info-box-text-left"
+				title="{{ actionInfo.action.element }}">
+				<label>Elemento (XPath):</label> {{ actionInfo.action.element || actionInfo.element }}
+			</div>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="usdm-info-box-div12">
+			<div class="usdm-info-box-span usdm-info-box-text-left"
+				title="{{ actionInfo.action.local }}">
+				<label>Local:</label> {{ actionInfo.action.local || actionInfo.local }}
+			</div>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="usdm-info-box-div12">
+			<div class="usdm-info-box-span usdm-info-box-text-left"
+				title="{{ actionInfo.action.infoContent }}">
+				<label>Conteúdo: </label> {{ actionInfo.action.infoContent || actionInfo.infoContent }}
+			</div>
+		</div>
+	</div>
+</div>

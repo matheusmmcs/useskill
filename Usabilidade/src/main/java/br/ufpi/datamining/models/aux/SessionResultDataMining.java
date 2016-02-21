@@ -9,6 +9,7 @@ import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
 public class SessionResultDataMining {
 
 	private String id; //"username-count"
+	private String sessionNumber;
 	private String username;
 	
 	private SessionClassificationDataMiningEnum classification;
@@ -34,6 +35,7 @@ public class SessionResultDataMining {
 	private Boolean hasThreshold;
 	
 	public SessionResultDataMining(String id,
+			String sessionNumber,
 			String username,
 			SessionClassificationDataMiningEnum classification, Long time,
 			List<PageViewActionDataMining> actions,
@@ -42,6 +44,7 @@ public class SessionResultDataMining {
 			Boolean hasThreshold) {
 		super();
 		this.username = username;
+		this.sessionNumber = sessionNumber;
 		this.id = id;
 		this.classification = classification;
 		this.time = time;
@@ -198,6 +201,14 @@ public class SessionResultDataMining {
 
 	public void setzScoreTimes(Double zScoreTimes) {
 		this.zScoreTimes = zScoreTimes;
+	}
+
+	public String getSessionNumber() {
+		return sessionNumber;
+	}
+
+	public void setSessionNumber(String sessionNumber) {
+		this.sessionNumber = sessionNumber;
 	}
 		
 }

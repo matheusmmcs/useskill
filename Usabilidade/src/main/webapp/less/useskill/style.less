@@ -320,6 +320,14 @@ ul.horizontal{
 @color-principal-hover:		#264879;
 @color-principal-active:	#0C2F61;
 
+@usdm-color-green: 		rgb(209, 255, 209);
+@usdm-color-red: 		rgb(255, 209, 209);
+@usdm-color-yellow: 	rgb(255, 242, 209);
+@usdm-color-blue: 		rgb(215, 234, 251);
+
+@color-sessios-text: 	#324b6f;
+@usdm-info-box-radius:	5px;
+
 .container-padding-left{
 	padding-left: 20px;
 	
@@ -392,125 +400,235 @@ ul.horizontal{
 	}
 }
 
-.usdm-{
-	
-	&withscroll {
-		position: relative;
-		overflow: auto;
-		max-height: 450px;
-		width: 100%;
-		&-x {
-			position: relative;
-			overflow-x: auto;
-			width: 100%;
-		}
-	}
-
-	&box{
-		background-color: white;
-		padding: 10px;
-		border-radius: 5px;
-		border: 1px solid #becde2;
-		margin-bottom: 10px;
+.useskill-datamining {
+	.usdm-{
 		
-		&-header{
-			margin-bottom: 5px;
-			border-bottom: 1px solid #becde2;	
+		&withscroll {
+			position: relative;
+			overflow: auto;
+			max-height: 450px;
+			width: 100%;
+			&-x {
+				position: relative;
+				overflow-x: auto;
+				width: 100%;
+			}
 		}
-		&-body{
-			.min-input-float {
-			    display: inline-block;
-			    width: 50px;
-			    margin: -7px 0 2px 10px;
-			    float: right;
+	
+		&box{
+			background-color: white;
+			padding: 10px;
+			border-radius: 5px;
+			border: 1px solid #becde2;
+			margin-bottom: 10px;
+			
+			&-header{
+				margin: 15px 0 5px;
+				border-bottom: 1px solid #becde2;
+				
+				&:first-child {
+					margin: 0 0 5px;
+				}	
 			}
-			.table-title {
-				font-size: 15px;
-				margin: 5px;
-			}
-			dl{
-				dt{
-					font-size: 15px;
-					margin-bottom: 5px;
+			
+			&-body{
+				.min-input-float {
+				    display: inline-block;
+				    width: 50px;
+				    margin: -7px 0 2px 10px;
+				    float: right;
 				}
-				dd{
+				.table-title {
+					font-size: 15px;
+					margin: 5px;
+				}
+				dl{
+					dt{
+						font-size: 15px;
+						margin-bottom: 5px;
+					}
+					dd{
+						margin-left: 0;
+					}
+					
+					&.dl-with-margin-bottom {
+						margin: 10px 5px;
+					}
+					padding: 5px 0;
+					margin: 10px 5px 0;
+					border-bottom: 1px solid lighten(#becde2, 12%);
+				}
+				
+				input {
+					margin-bottom: 0;
+				}
+				
+				.actions-bottom{
+					margin: 15px;
+					
+					a{
+						margin-left: 10px;
+					}
+				}
+			}
+		}
+		&clickable-box{
+			display: block;
+			box-sizing: border-box;
+			width: 100%;
+			min-height: 40px;
+			margin: 5px 0;
+			text-decoration: none;
+			
+			background-color: #f4f4f4;
+			padding: 10px;
+			border-radius: 5px;
+			border: 1px solid #becde2;
+			box-shadow: 1px 2px 3px #becde2;
+			transition: all 0.3s;
+			
+			color: @color-principal;
+			
+			&:hover,  &--active {
+				text-decoration: none;
+				color: @color-principal-hover;
+			}
+			
+			&:hover {
+				background-color: #f9f9f9;
+				box-shadow: 1px 2px 5px #becde2;
+			}
+			
+			&--active {
+				background-color: white !important;
+				box-shadow: 0px 3px 10px #becde2;
+			}
+			
+			h2{
+				font-size: 16px;
+				line-height: 40px;
+				
+				&.usdm-title-collapse {
+					cursor: pointer;
+				}
+			}
+			
+			&-content {
+				padding-top: 10px;
+				border-top: 1px solid #ccc;
+			}
+			
+			&-form-lite {
+				border: none;
+	    		box-shadow: none;
+	    		margin-bottom: 0;
+			}
+		}
+		
+		&mintitle {
+			font-size: 14px;
+			margin-bottom: 10px;
+		}
+		
+		&info-box {
+			box-sizing: border-box;
+			border-radius: @usdm-info-box-radius;
+			border: 1px solid #BBB;
+			box-shadow: 1px 1px 3px #DDD;
+			margin: 0 auto 15px;
+			background: #FCFCFC;
+			
+			* {
+				box-sizing: border-box;
+			}
+			
+			&-title {
+				border-top-left-radius: @usdm-info-box-radius;
+				border-top-right-radius: @usdm-info-box-radius;
+				color: @color-sessios-text;
+				
+				.usdm-info-box{
+					&-label, &-span label {
+						color: @color-sessios-text;
+					}
+				}
+				&-SUCCESS {
+					background: @usdm-color-green !important;
+				}
+				&-ERROR {
+					background: @usdm-color-red !important;
+				}
+				&-THRESHOLD {
+					background: @usdm-color-red !important;
+				}
+				&-REPEAT {
+					background: @usdm-color-yellow !important;
+				}
+			}
+			
+			&-div {
+				&2, &3, &4, &5, &6, &8, &9, &12 { 
+					position: relative;
+					padding: 5px 15px;
+					float: left; 
+				    min-height: 30px;
+					line-height: 30px;
+					border-left: 1px solid #DDD;
+					
+					&:first-child {
+						border-left: none !important;
+					}
+				}
+				&2 { width: 16.6%; }
+				&3 { width: 25%; }
+				&4 { width: 33.3%; }
+				&5 { width: 41.6%; }
+				&6 { width: 50%; }
+				&8 { width: 66.67%; }
+				&9 { width: 75%; }
+				&12 { width: 100%; }
+			}
+			
+			&-label {
+				display: block;
+				text-align: left;
+				line-height: 16px;
+				font-size: 12px;
+				color: #9B9EA4;
+			}
+			
+			&-span {
+				&.usdm-info-box-text-left {
+					text-align: left;
 					margin-left: 0;
 				}
 				
-				&.dl-with-margin-bottom {
-					margin: 10px 5px;
+				label {
+					display: inline-block;
+					font-size: 12px;
+					color: #9B9EA4;
+					margin-right: 10px;
 				}
-				padding: 5px 0;
-				margin: 10px 5px 0;
-				border-bottom: 1px solid lighten(#becde2, 12%);
-			}
-			
-			.actions-bottom{
-				margin: 15px;
 				
-				a{
-					margin-left: 10px;
+				text-align: center;
+				display: inline-block;
+				line-height: 25px;
+				min-height: 25px;
+				
+				overflow: hidden;
+    			text-overflow: ellipsis;
+			}
+			
+			.row-fluid {
+				border-bottom: 1px solid #DDD;
+				&:last-child {
+					border-bottom: none;
 				}
 			}
-			
 		}
-	}
-	&clickable-box{
-		display: block;
-		box-sizing: border-box;
-		width: 100%;
-		min-height: 40px;
-		margin: 5px 0;
-		text-decoration: none;
-		
-		background-color: #f4f4f4;
-		padding: 10px;
-		border-radius: 5px;
-		border: 1px solid #becde2;
-		box-shadow: 1px 2px 3px #becde2;
-		transition: all 0.3s;
-		
-		color: @color-principal;
-		
-		&:hover,  &--active {
-			text-decoration: none;
-			color: @color-principal-hover;
+		&title-margin {
+			margin: 15px auto 5px;	
 		}
-		
-		&:hover {
-			background-color: #f9f9f9;
-			box-shadow: 1px 2px 5px #becde2;
-		}
-		
-		&--active {
-			background-color: white !important;
-			box-shadow: 0px 3px 10px #becde2;
-		}
-		
-		h2{
-			font-size: 16px;
-			line-height: 40px;
-			
-			&.usdm-title-collapse {
-				cursor: pointer;
-			}
-		}
-		
-		&-content {
-			padding-top: 10px;
-			border-top: 1px solid #ccc;
-		}
-		
-		&-form-lite {
-			border: none;
-    		box-shadow: none;
-    		margin-bottom: 0;
-		}
-	}
-	
-	&mintitle {
-		font-size: 14px;
-		margin-bottom: 10px;
 	}
 }
 
@@ -591,22 +709,21 @@ input[type=number].number-disable::-webkit-outer-spin-button {
     border-radius: 3px;
 }
 
-@color-sessios-text: 	#324b6f;
 .session{
 	&-SUCCESS td {
-		background: rgb(209, 255, 209) !important;
+		background: @usdm-color-green !important;
 		color: @color-sessios-text;
 	}
 	&-ERROR td {
-		background: rgb(255, 209, 209) !important;
+		background: @usdm-color-red !important;
 		color: @color-sessios-text;
 	}
 	&-THRESHOLD td {
-		background: rgb(255, 209, 209) !important;
+		background: @usdm-color-red !important;
 		color: @color-sessios-text;
 	}
 	&-REPEAT td {
-		background: rgb(255, 242, 209) !important;
+		background: @usdm-color-yellow !important;
 		color: @color-sessios-text;
 	}
 }
@@ -614,14 +731,14 @@ input[type=number].number-disable::-webkit-outer-spin-button {
 .action-required td,
 .action-required.action-situation-ok td,
 .action-required.action-situation-error td,{
-	background: rgb(215, 234, 251) !important;
+	background: @usdm-color-blue !important;
 }
 .action-situation{
 	&-ok td {
-		background: rgb(209, 255, 209) !important;
+		background: @usdm-color-green !important;
 	}
 	&-error td {
-		background: rgb(255, 209, 209) !important;
+		background: @usdm-color-red !important;
 	}
 	&-ok, &-error, &- {
 		cursor: pointer;
@@ -649,12 +766,26 @@ input[type=number].number-disable::-webkit-outer-spin-button {
     padding: 20px 0px;
 }
 .u-width-full {
-	width: 100%;
-    padding-left: 0;
-    padding-right: 0;
+	width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.u-width-100 {
+	width: 100% !important;
+    box-sizing: border-box !important;
+}
+.u-margin-0 {
+	margin: 0 !important;
+}
+select, textarea, input {
+	&.u-input-border-box{
+		padding: 14px 7px;
+	}
 }
 .network-options {
 	margin: 0 0 20px;
+    padding: 5px 5px 10px;
+    border-bottom: 1px solid #EEE;
 }
 .btn-group .pull-right {
 	float: right !important;

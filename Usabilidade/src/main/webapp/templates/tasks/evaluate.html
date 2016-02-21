@@ -60,16 +60,6 @@
 			            	<dt>{{ 'datamining.tasks.threshold' | translate}}:</dt>
 			            	<dd>{{taskCtrl.task.threshold}} {{ 'minutes' | translate}}</dd>
 			            </dl>
-			            <dl>
-			            	<dt>Reavaliar Tarefa:</dt>
-			            	<dd>
-			            		<a ng-class="{'disable' : sendDataChange}" class="btn btn-primary u-width-full" ng-click="testCtrl.priority()" title="{{ 'datamining.priority' | translate}}">
-			            			<span class="icon-white icon-tasks"></span>
-			            			Enviar Dados e Reavaliar
-			            		</a>
-			            		<div class="clear-both"></div>
-							</dd>
-			            </dl>
 			            
 		            </div>
 		            
@@ -81,33 +71,28 @@
 			            <dl>
 			            	<dt>
 			            		<span>{{ 'datamining.mining.minsupport' | translate}} (%):</span>
-			            		<input class="min-input" type="text" name="lastMinSup" value="{{taskCtrl.result.lastMinSup * 100}}" />
+			            		<input class="min-input u-width-100 u-input-border-box" type="text" name="lastMinSup" ng-model="minSup" />
 			            		<div class="clear-both"></div>
 			            	</dt>
 			            </dl>
 			            <dl>
 			            	<dt>
 			            		<span>{{ 'datamining.mining.minpattern' | translate}}:</span>
-			            		<input class="min-input" type="text" name="minpattern" value="4" />
+			            		<input class="min-input u-width-100 u-input-border-box" type="text" name="minpattern" ng-model="minItens" />
 			            		<div class="clear-both"></div>
 			            	</dt>
 			            </dl>
-		            </div>
-		            
-		            <div class="usdm-box-body usdm-box-body-inline">
-		            	<dl>
-			            	<dt>Minerar Novamente:</dt>
+			            <dl>
 			            	<dd>
-			            		<a ng-class="{'disable' : sendDataChange}" class="btn btn-primary u-width-full" ng-click="testCtrl.priority()" title="{{ 'datamining.priority' | translate}}">
-			            			<span class="icon-white icon-tasks"></span>
+			            		<a ng-class="{'disable' : sendDataChange}" class="btn btn-primary u-width-full" 
+			            			ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/avaliacao/{{taskCtrl.evalTestId}}/tarefas/{{taskCtrl.task.id}}/avaliar/minsup/{{ minSup }}/minitens/{{ minItens }}">
+			            			<span class="icon-white icon-repeat"></span>
 			            			Enviar Dados e Minerar
 			            		</a>
 			            		<div class="clear-both"></div>
 							</dd>
 			            </dl>
-			        </div>
-		            
-		            <br/>
+		            </div>
 		            
 		            <h3 class="usdm-box-header">
 			    		{{ 'datamining.tasks.evaluate.graphs.completude' | translate}}
@@ -201,37 +186,28 @@
 			        				Nó Selecionado
 			        			</h2>
 			        			<div class="usdm-box-body">
-		       						<dl>
-						            	<dt class="ng-binding">Informações da Ação:</dt>
-						            	<dd class="ng-binding">
-						            		Ação: <b>{{ taskCtrl.nodeSelected.action.action }}</b>;<br/>
-						            		Tag: <b>{{ taskCtrl.nodeSelected.action.infoTag }}</b>;<br/>
-				            				Name: <b>{{ taskCtrl.nodeSelected.action.infoName }}</b>;<br/>
-				            				Conteúdo: <b>{{ taskCtrl.nodeSelected.action.infoContent }}</b>;<br/>
-				            				Posição [X,Y]: <b>[{{ taskCtrl.nodeSelected.action.infoPosX }},{{ taskCtrl.nodeSelected.action.infoPosY }}]</b>;<br/>
-				            				Elemento (XPath): <b>{{ taskCtrl.nodeSelected.action.element }}</b>;<br/>
-				            				Local: <b>{{ taskCtrl.nodeSelected.action.local }}</b>;<br/>
-						            	</dd>
-						            </dl>
+			        			
+			        				<usdm-action-info action="taskCtrl.nodeSelected"
+									 	situations-enum="situationsEnum"
+									 	special-actions-enum="specialActionsEnum"
+									 	situation-aux="situationAux"
+									 	situation-special-aux="specialSituationAux"
+									 	on-select-situation="selectSituationAction(id, sit)"
+									 	on-select-special-situation="selectSpecialSituationAction(id, sit)">
+									 </usdm-action-info>
+						            
 		       						<dl class="dl-with-margin-bottom">
 						            	<dt class="ng-binding">Informações do Nó:</dt>
 						            	<dd class="ng-binding">
-						            		Situação: <select ng-model="situationAux"
-										        ng-change="selectSituationAction(taskCtrl.nodeSelected.id, situationAux)"
-						            			ng-options="s as s.desc for (k, s) in situationsEnum"></select> 
-						            			<span ng-show="taskCtrl.nodeSelected.action.required"> (Ação Obrigatória)</span><br/>
-						            		Ação Especial: <select ng-model="specialSituationAux"
-										        ng-change="selectSpecialSituationAction(taskCtrl.nodeSelected.id, specialSituationAux)"
-						            			ng-options="s as s.desc for (k, s) in specialActionsEnum"></select><br/>
-						            		Id: <b>{{ taskCtrl.nodeSelected.id }}</b>;<br/>
 				            				Nome: <b>{{ taskCtrl.nodeSelected.name }}</b>;<br/>
 				            				Realizado: <b>{{ taskCtrl.nodeSelected.value }} vezes</b>;<br/>
 				            				Arestas Para: <b>{{ taskCtrl.nodeSelected.edgesTo }}</b>;<br/>
 				            				Arestas De: <b>{{ taskCtrl.nodeSelected.edgesFrom }}</b>;<br/>
-				            				Padrões Presentes: <b>{{ taskCtrl.nodeSelected.patternsCount }} / {{ taskCtrl.frequentPatterns.length }}</b>;<br/>
-				            				Quantidade de Sessões: <b>{{ taskCtrl.nodeSelected.sessions.length }} ({{ (taskCtrl.result.sessions.length / taskCtrl.nodeSelected.sessions.length) * 100 }})</b>.<br/>
+				            				Padrões Presentes: <b>{{ taskCtrl.nodeSelected.patternsCount }} de {{ taskCtrl.frequentPatterns.length }} ({{ ((taskCtrl.nodeSelected.patternsCount / taskCtrl.frequentPatterns.length) * 100) | number:2 }} %)</b>;<br/>
+				            				Quantidade de Sessões: <b>{{ taskCtrl.nodeSelected.sessions.length }} ({{ ((taskCtrl.nodeSelected.sessions.length / taskCtrl.result.sessions.length) * 100) | number:2 }} %)</b>.<br/>
 						            	</dd>
 						            </dl>
+						            
 						            <h3 class="table-title">Sessões que contém este nó:</h3>
 						            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 							  			<thead>
@@ -359,18 +335,15 @@
 		        				<a ng-click="goToGuideStep('1')" class="btn litle-margin-x pull-right">{{ 'backStep' | translate }}</a>
 		        			</h2>
 		        			<div class="usdm-box-body">
-			        			<dl class="dl-with-margin-bottom">
-									<dt class="ng-binding">Informações da Sessão:</dt>
-					            	<dd class="ng-binding">
-										Id: <b>{{ sessionSelected.id }}</b>;<br/>
-										Classificação: <b>{{ getClassificationFromEnum(sessionSelected.classification).desc }}</b>;<br/>
-										Usuário: <b>{{ sessionSelected.username }}</b>;<br/>
-										Completude: <b>{{ sessionSelected.userRateSuccess | number:2}} %</b>;<br/>
-										Corretude: <b>{{ sessionSelected.userRateRequired | number:2}} %</b>;<br/>
-										Quantidade de nós: <b>{{ graphsession.body.nodeIndices.length }}</b>;<br/>
-			            				Quantidade de arestas: <b>{{ graphsession.body.edgeIndices.length }}</b>.<br/>
-					            	</dd>
-					            </dl>
+					            
+					            <usdm-session-info session="sessionSelected"
+					            	graphsession="graphsession"
+					            	get-classification-from-enum="getClassificationFromEnum(clas)">
+					            </usdm-session-info>
+					            
+					            <hr/>
+					            
+					            <h3 class="usdm-title-margin">Grafo das Ações Realizadas na Sessão:</h3>
 					            <div id="mynetworkSession" class="graph-actions"></div>
 				            	<div class="btn-group network-options">
 								    <button ng-click="zoomOutGraph(graphIdsEnum.GRAPH_SESSION)" class="btn"><i class="icon-zoom-in"/></button>
@@ -380,33 +353,29 @@
 								    <button ng-click="forwardStepGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-forward"/></button>
 								    <button ng-click="backwardStepGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-backward"/></button>
 								    <button ng-click="repeatStepsGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-repeat"/></button>
+								    <!--
 								    <span style="line-height: 24px; padding: 0 10px;" class="pull-right">
 								    	Momento: <b>{{ sessionSelected.actions[positionStepView[graphIdsEnum.GRAPH_SESSION]-1].time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</b>; 
 								    	Passo num: {{positionStepView[graphIdsEnum.GRAPH_SESSION]}}.
 								    </span>
-								    <hr/>
+								    -->
 								 </div>
-								<dl class="dl-with-margin-bottom" ng-show="taskCtrl.actionViewSelected != null">
-					            	<dt class="ng-binding">Informações da Ação:</dt>
-					            	<dd class="ng-binding">
-					            		Situação: <select ng-model="situationAux"
-									        ng-change="selectSituationAction(taskCtrl.actionViewSelected.id, situationAux)"
-					            			ng-options="s as s.desc for (k, s) in situationsEnum"></select> 
-					            			<span ng-show="taskCtrl.nodeSelected.action.required"> (Ação Obrigatória)</span><br/>
-					            		Ação Especial: <select ng-model="specialSituationAux"
-									        ng-change="selectSpecialSituationAction(taskCtrl.actionViewSelected.id, specialSituationAux)"
-					            			ng-options="s as s.desc for (k, s) in specialActionsEnum"></select><br/>
-					            		
-					            		Id: <b>{{ taskCtrl.actionViewSelected.action.identifier }}</b>;<br/>
-					            		Ação: <b>{{ taskCtrl.actionViewSelected.action.action }}</b>;<br/>
-					            		Tag: <b>{{ taskCtrl.actionViewSelected.action.infoTag }}</b>;<br/>
-			            				Name: <b>{{ taskCtrl.actionViewSelected.action.infoName }}</b>;<br/>
-			            				Conteúdo: <b>{{ taskCtrl.actionViewSelected.action.infoContent }}</b>;<br/>
-			            				Posição [X,Y]: <b>[{{ taskCtrl.actionViewSelected.action.infoPosX }},{{ taskCtrl.actionViewSelected.action.infoPosY }}]</b>;<br/>
-			            				Elemento (XPath): <b>{{ taskCtrl.actionViewSelected.action.element }}</b>;<br/>
-			            				Local: <b>{{ taskCtrl.actionViewSelected.action.local }}</b>;<br/>
-					            	</dd>
-					            </dl>
+								 
+								 <div ng-show="taskCtrl.actionViewSelected != null">
+									 <usdm-action-info action="taskCtrl.actionViewSelected"
+									 	momento="sessionSelected.actions[positionStepView[graphIdsEnum.GRAPH_SESSION]-1].time | date:'dd/MM/yyyy HH:mm:ss'"
+									 	situations-enum="situationsEnum"
+									 	special-actions-enum="specialActionsEnum"
+									 	situation-aux="situationAux"
+									 	situation-special-aux="specialSituationAux"
+									 	on-select-situation="selectSituationAction(id, sit)"
+									 	on-select-special-situation="selectSpecialSituationAction(id, sit)">
+									 </usdm-action-info>
+					            </div>
+
+								<hr/>
+					            
+					            <h3 class="usdm-title-margin">Lista de Ações Realizadas:</h3>
 					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 								  <thead>
 								    <tr>
@@ -442,6 +411,35 @@
 									<span ng-repeat="label in situationsEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
 									<span class="label label-info">{{ 'required' | translate }}</span>
 								</div>
+								
+								<hr/>
+								
+								<h3 class="usdm-title-margin">Lista de Ações Obrigatórias Realizadas:</h3>
+					            <dl class="dl-with-margin-bottom" ng-show="taskCtrl.actionViewSelected != null">
+					            	<dt>Identificadores das Ações Obrigatórias:</dt>
+					            	<dd ng-bind-html="sessionActionsReqStr | sanitize"></dd>
+					            </dl>
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								      <th ts-criteria="id">Ident.</th>
+								      <th ts-criteria="id">Id Ação</th>
+								      <th ts-criteria="id">Descrição</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr ng-class="{ 'action-required': action.isFound == true }" ng-repeat="action in sessionActionsRequired" ts-repeat>
+								      <td class="text-center">{{action.iddb}}</td>
+								      <td class="text-center">{{action.identifier}}</td>
+								      <td>{{action.resume}}</td>
+								    </tr>
+								  </tbody>
+								</table>
+								<div class="table-labels">
+									<span class="title">{{ 'label' | translate }}:</span>
+									<span class="label label-info">Ações Obrigatórias Encontradas</span>
+								</div>
+								
 		        			</div>
 		        		</div>
 		        		<div class="usdm-box" ng-show="step == '2'">
@@ -456,19 +454,17 @@
 		        				<a class="btn litle-margin-x pull-right" ng-click="goToGuideStep('1.1', sessionSelected)">{{ 'backStep' | translate }}</a>
 		        			</h2>
 		        			<div class="usdm-box-body">
-								<dl class="dl-with-margin-bottom" ng-show="actionViewSelected != null">
-					            	<dt class="ng-binding">Informações da Ação:</dt>
-					            	<dd class="ng-binding">
-					            		Id: <b>{{ actionViewSelected.identifier }}</b>;<br/>
-					            		Ação: <b>{{ actionViewSelected.action }}</b>;<br/>
-					            		Tag: <b>{{ actionViewSelected.infoTag }}</b>;<br/>
-			            				Name: <b>{{ actionViewSelected.infoName }}</b>;<br/>
-			            				Conteúdo: <b>{{ actionViewSelected.infoContent }}</b>;<br/>
-			            				Posição [X,Y]: <b>[{{ actionViewSelected.infoPosX }},{{ actionViewSelected.infoPosY }}]</b>;<br/>
-			            				Elemento (XPath): <b>{{ actionViewSelected.element }}</b>;<br/>
-			            				Local: <b>{{ actionViewSelected.local }}</b>;<br/>
-					            	</dd>
-					            </dl>
+		        				<div ng-show="actionViewSelected != null">
+			        				<usdm-action-info action="actionViewSelected"
+									 	situations-enum="situationsEnum"
+									 	special-actions-enum="specialActionsEnum"
+									 	situation-aux="situationAux"
+									 	situation-special-aux="specialSituationAux"
+									 	on-select-situation="selectSituationAction(id, sit)"
+									 	on-select-special-situation="selectSpecialSituationAction(id, sit)">
+									 </usdm-action-info>
+								</div>
+					            
 					            <div class="usdm-withscroll-x">
 									<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 									  <thead>
@@ -481,7 +477,7 @@
 									    </tr>
 									  </thead>
 									  <tbody>
-									    <tr ng-click="setActionViewGuideSelected(action.$key)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.$key)}}" ng-repeat="action in taskCtrl.actionsArr" ts-repeat>
+									    <tr ng-click="setActionViewGuideSelected(action.$key)" ng-class="{ 'action-required': isSpecialSituationAction(action.$key, specialActionsEnum.REQUIRED) }"  class="action-situation-{{idSituationAction(action.$key)}}" ng-repeat="action in taskCtrl.actionsArr" ts-repeat>
 									      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.$key]}}">{{action.$key}}</td>
 									      <td>{{ action.count }}</td>
 									      <td class="text-center" ng-click="setSituationAction(action.$key, situationsEnum.OK)">
@@ -619,6 +615,8 @@
 						</div>
 						
 						<div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'actions'">
+							
+							<!-- 
 							<dl class="dl-with-margin-bottom">
 								<dt class="ng-binding">Informações da Sessão:</dt>
 				            	<dd class="ng-binding">
@@ -629,19 +627,23 @@
 									Corretude: <b>{{ taskCtrl.userSession.userRateRequired | number:2}} %</b>;<br/>
 				            	</dd>
 				            </dl>
-							<dl class="dl-with-margin-bottom" ng-show="actionViewSelected != null">
-				            	<dt class="ng-binding">Informações da Ação:</dt>
-				            	<dd class="ng-binding">
-				            		Id: <b>{{ actionViewSelected.identifier }}</b>;<br/>
-				            		Ação: <b>{{ actionViewSelected.action }}</b>;<br/>
-				            		Tag: <b>{{ actionViewSelected.infoTag }}</b>;<br/>
-		            				Name: <b>{{ actionViewSelected.infoName }}</b>;<br/>
-		            				Conteúdo: <b>{{ actionViewSelected.infoContent }}</b>;<br/>
-		            				Posição [X,Y]: <b>[{{ actionViewSelected.infoPosX }},{{ actionViewSelected.infoPosY }}]</b>;<br/>
-		            				Elemento (XPath): <b>{{ actionViewSelected.element }}</b>;<br/>
-		            				Local: <b>{{ actionViewSelected.local }}</b>;<br/>
-				            	</dd>
-				            </dl>
+				            -->
+				            
+				            <usdm-session-info session="taskCtrl.userSession"
+				            	get-classification-from-enum="getClassificationFromEnum(clas)">
+				            </usdm-session-info>
+				            
+				            <div ng-show="actionViewSelected != null">
+		        				<usdm-action-info action="actionViewSelected"
+								 	situations-enum="situationsEnum"
+								 	special-actions-enum="specialActionsEnum"
+								 	situation-aux="situationAux"
+								 	situation-special-aux="specialSituationAux"
+								 	on-select-situation="selectSituationAction(id, sit)"
+								 	on-select-special-situation="selectSpecialSituationAction(id, sit)">
+								 </usdm-action-info>
+							</div>
+				            
 				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 							  <thead>
 							    <tr>
@@ -680,19 +682,18 @@
 						</div>
 						
 						<div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'actionsCount'">
-							<dl class="dl-with-margin-bottom" ng-show="actionViewSelectedMost != null">
-				            	<dt class="ng-binding">Informações da Ação:</dt>
-				            	<dd class="ng-binding">
-				            		Id: <b>{{ actionViewSelectedMost.identifier }}</b>;<br/>
-				            		Ação: <b>{{ actionViewSelectedMost.action }}</b>;<br/>
-				            		Tag: <b>{{ actionViewSelectedMost.infoTag }}</b>;<br/>
-		            				Name: <b>{{ actionViewSelectedMost.infoName }}</b>;<br/>
-		            				Conteúdo: <b>{{ actionViewSelectedMost.infoContent }}</b>;<br/>
-		            				Posição [X,Y]: <b>[{{ actionViewSelectedMost.infoPosX }},{{ actionViewSelectedMost.infoPosY }}]</b>;<br/>
-		            				Elemento (XPath): <b>{{ actionViewSelectedMost.element }}</b>;<br/>
-		            				Local: <b>{{ actionViewSelectedMost.local }}</b>;<br/>
-				            	</dd>
-				            </dl>
+							
+							<div ng-show="actionViewSelectedMost != null">
+		        				<usdm-action-info action="actionViewSelectedMost"
+								 	situations-enum="situationsEnum"
+								 	special-actions-enum="specialActionsEnum"
+								 	situation-aux="situationAux"
+								 	situation-special-aux="specialSituationAux"
+								 	on-select-situation="selectSituationAction(id, sit)"
+								 	on-select-special-situation="selectSpecialSituationAction(id, sit)">
+								 </usdm-action-info>
+							</div>
+				            
 				            <div class="usdm-withscroll">
 					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 								  <thead>
@@ -729,19 +730,18 @@
 						</div>
 						
 						<div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'actionsRequiredCount'">
-							<dl class="dl-with-margin-bottom" ng-show="actionViewSelectedMost != null">
-				            	<dt class="ng-binding">Informações da Ação:</dt>
-				            	<dd class="ng-binding">
-				            		Id: <b>{{ actionViewSelectedMost.identifier }}</b>;<br/>
-				            		Ação: <b>{{ actionViewSelectedMost.action }}</b>;<br/>
-				            		Tag: <b>{{ actionViewSelectedMost.infoTag }}</b>;<br/>
-		            				Name: <b>{{ actionViewSelectedMost.infoName }}</b>;<br/>
-		            				Conteúdo: <b>{{ actionViewSelectedMost.infoContent }}</b>;<br/>
-		            				Posição [X,Y]: <b>[{{ actionViewSelectedMost.infoPosX }},{{ actionViewSelectedMost.infoPosY }}]</b>;<br/>
-		            				Elemento (XPath): <b>{{ actionViewSelectedMost.element }}</b>;<br/>
-		            				Local: <b>{{ actionViewSelectedMost.local }}</b>;<br/>
-				            	</dd>
-				            </dl>
+							
+				            <div ng-show="actionViewSelectedMost != null">
+		        				<usdm-action-info action="actionViewSelectedMost"
+								 	situations-enum="situationsEnum"
+								 	special-actions-enum="specialActionsEnum"
+								 	situation-aux="situationAux"
+								 	situation-special-aux="specialSituationAux"
+								 	on-select-situation="selectSituationAction(id, sit)"
+								 	on-select-special-situation="selectSpecialSituationAction(id, sit)">
+								 </usdm-action-info>
+							</div>
+				            
 				            <div class="usdm-withscroll">
 					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 								  <thead>
@@ -873,11 +873,10 @@
 	        		
 	        	</div>
 	        	
-	        	
-	        	
-	        	
 			    	
 		    	</div>
 	        </div>
 	    </div>	    
     </div>
+    
+    

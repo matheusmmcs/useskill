@@ -1,6 +1,7 @@
 angular.module('useskill', 
 		['ngRoute', 
 		 'ngAnimate',
+		 'ngResource',
 		 'pascalprecht.translate', 
 		 'tableSort', 
 		 'chart.js', 
@@ -160,6 +161,22 @@ angular.module('useskill',
 		        longLoading: true
 		    }
 	    })
+	    .when('/testes/:testId/avaliacao/:evalTestId/tarefas/:taskId/avaliar/minsup/:minSup/minitens/:minItens', {
+	    	controller:'TaskEvaluateController as taskCtrl',
+	    	templateUrl:config[env].apiUrl+'/templates/tasks/evaluate.html',
+	    	resolve: {
+		        evaluate: function (ServerAPI, $route) {
+		        	return ServerAPI.evaluateTaskParams($route.current.params.testId, $route.current.params.evalTestId, $route.current.params.taskId,
+		        									$route.current.params.minSup, $route.current.params.minItens);
+		        },
+		        evalTestId: function ($route) {
+		        	return $route.current.params.evalTestId;
+		        }
+		    },
+		    data: {
+		        longLoading: true
+		    }
+	    })
 	    
 	    //Actions
 	    .when('/testes/:testId/tarefas/:taskId/acoes/add', {
@@ -286,6 +303,9 @@ angular.module('useskill',
         },
         evaluateTask: function(testId, evalTestId, taskId){
         	return doRequest('GET', '/datamining/testes/'+testId+'/avaliacao/'+evalTestId+'/tarefas/'+taskId+'/avaliar');
+        },
+        evaluateTaskParams: function(testId, evalTestId, taskId, minSup, minItens){
+        	return doRequest('GET', '/datamining/testes/'+testId+'/avaliacao/'+evalTestId+'/tarefas/'+taskId+'/avaliar/minsup/'+minSup+'/minitens/'+minItens);
         },
         
         
@@ -723,7 +743,7 @@ angular.module('useskill',
 	taskCtrl.task = task;
 	taskCtrl.actionTitle = $filter('translate')('datamining.tasks.edit');
 })
-.controller('TaskEvaluateController', function($scope, evaluate, evalTestId, $filter, ServerAPI, $timeout) {
+.controller('TaskEvaluateController', function($scope, evaluate, evalTestId, $filter, ServerAPI, $timeout, $sce) {
 	var taskCtrl = this;
 	
 	taskCtrl.evalTestId = evalTestId;
@@ -731,6 +751,8 @@ angular.module('useskill',
 	for (var i in map) {
 		taskCtrl[map[i][0]] = JSON.parse(map[i][1]);
 	}
+	
+	console.log("init taskEvaluate: ", evaluate, evalTestId);
 	console.log(taskCtrl);
 	
 	//gambys para a apresentação
@@ -949,6 +971,7 @@ angular.module('useskill',
 				break;
 			}
 		}
+		resetSituationAux(actionId);
 	}
 	$scope.isSituationAction = function(actionId, situation) {
 		var sit = taskCtrl.actionsSituation[actionId];
@@ -958,8 +981,10 @@ angular.module('useskill',
 		return false;
 	}
 	$scope.selectSituationAction = function(actionId, situation) {
-		$scope.setSituationAction(actionId, situation);
-		$scope.redrawAll();
+		if (actionId != null && situation != null) {
+			$scope.setSituationAction(actionId, situation);
+			$scope.redrawAll();
+		}
 	}
 	$scope.descSituationAction = function(actionId) {
 		var sit = taskCtrl.actionsSituation[actionId];
@@ -1065,8 +1090,10 @@ angular.module('useskill',
 		return false;
 	}
 	$scope.selectSpecialSituationAction = function(actionId, situation) {
-		$scope.setSpecialSituationAction(actionId, situation);
-		$scope.redrawAll();
+		if (actionId != null && situation != null) {
+			$scope.setSpecialSituationAction(actionId, situation);
+			$scope.redrawAll();
+		}
 	}
 	
 	
@@ -1126,13 +1153,24 @@ angular.module('useskill',
 				taskCtrl.actionViewSelected = {};
 			}
 			taskCtrl.actionViewSelected.action = action;
+			taskCtrl.actionViewSelected.positionStep = null;
+			var graph = $scope[$scope.graphIdsEnum.GRAPH_SESSION];
+			var node = nodeFromGraph(action.identifier, graph);
+			updateNodeGraph(node, graph);
+	    	selectNode(node, "actionViewSelected", "edgeSelectedSession");
 		} else {
 			$scope.actionViewSelected = action;
+			$scope.actionViewSelected.positionStep = null;
+			resetSituationAux(action.identifier);
+	  	    resetSpecialSituationAux(action.identifier);
 		}
+		
 		$scope.redraw($scope.graphIdsEnum.GRAPH_SESSION);
 	}
 	$scope.setActionViewGuideSelected = function(actionId){
 		$scope.actionViewSelected = $scope.getActionInfoFromId(actionId);
+		resetSituationAux(actionId);
+  	    resetSpecialSituationAux(actionId);
 	}
 	$scope.setActionViewSelectedMostRealized = function(actionId){
 		$scope.actionViewSelectedMost = $scope.getActionInfoFromId(actionId);
@@ -1194,7 +1232,11 @@ angular.module('useskill',
     }
     
     /*************   GRAFO   *************/
-    $scope.factorScaleX = 4;
+    
+    $scope.minSup = (taskCtrl.result.lastMinSup * 100);
+    $scope.minItens = taskCtrl.result.lastMinItens;
+    
+    $scope.factorScaleX = 3;
     $scope.graphTypeEnum = {
     	PATTERNS: {
     		id: 'patterns',
@@ -1259,9 +1301,9 @@ angular.module('useskill',
 			'edgesTo': edgesTo.join(", "),
 			'sessions': node.options.sessions,
 			'patternsCount': node.options.countPatterns,
-			'action': node.options.action
+			'action': node.options.action,
+			'positionStep': null
   	  	}
-  	  	console.log(node);
     }
     
     $scope.resetGraph = function(graphName, nodeSelectedName, edgeSelectedName) {
@@ -1346,7 +1388,7 @@ angular.module('useskill',
     
     $scope.forwardStepGraph = function(graphName, session) {
     	if (session.actions.length > $scope[graphName].positionStep) {
-    		$scope[graphName].positionStep++; 
+    		$scope[graphName].positionStep++;
     	}
     	setStepGraph(session, graphName);
     }
@@ -1366,18 +1408,28 @@ angular.module('useskill',
     function setStepGraph(session, graphName) {
     	var graph = $scope[graphName];
     	var action = session.actions[graph.positionStep - 1];
-    	var nodes = graph.body.nodes;
+    	var node = nodeFromGraph(action.identifier, graph);
     	
     	$scope.positionStepView[$scope.graphIdsEnum.GRAPH_SESSION] = graph.positionStep;
     	
+    	updateNodeGraph(node, graph);
+		selectNode(node, "actionViewSelected", "edgeSelectedSession");
+		taskCtrl.actionViewSelected.positionStep = graph.positionStep;
+    }
+    
+    function updateNodeGraph(node, graph){
+    	graph.unselectAll();
+		graph.selectNodes([node.id]);
+    }
+    
+    function nodeFromGraph(actionId, graph) {
+    	var nodes = graph.body.nodes;
     	for (var n in nodes) {
-    		if (action.identifier == nodes[n].id) {
-    			graph.unselectAll();
-    			graph.selectNodes([nodes[n].id]);
-    			selectNode(nodes[n], "actionViewSelected", "edgeSelectedSession");
-    			break;
+    		if (actionId == nodes[n].id) {
+    			return nodes[n];
     		}
     	}
+    	return null;
     }
     
     /*************   GUIDE   *************/
@@ -1408,10 +1460,83 @@ angular.module('useskill',
     		$scope.sessionsGuide = sess;
     	} else if (step == "1.1") {
     		$scope.sessionSelected = data;
+    		
+    		//filter for required actions dont done
+    		$scope.sessionActionsReqStr = taskCtrl.task.actionsRequiredOrder;
+    		var groupActionsReq = taskCtrl.task.actionsRequiredOrder.split(","),
+    			actionsRequiredSession = [],
+    			actionsFound = [];
+    		
+    		//identify actions req has been done
+    		for (var gar in groupActionsReq) {
+    			var strActionsReqId = groupActionsReq[gar],
+    				actionsReqId = strActionsReqId.replace(/\[|\]/g,"").split(";"),
+    				containsAnyActionGroup = false;
+    			
+    			for (var ari in actionsReqId) {
+    				var actionReqId = actionsReqId[ari];
+    				for (var t in taskCtrl.task.actionsRequired) {
+    					var action = taskCtrl.task.actionsRequired[t];
+    					if (action.id == actionReqId) {
+    						var actionRes = findActionResultFromActionSingleDataMining(action);
+    						actionRes.isFound = false;
+            				for (var a in data.actions) {
+            					if (data.actions[a].identifier == actionRes.identifier) {
+            						containsAnyActionGroup = true;
+            						actionRes.isFound = true;
+            						break;
+            					}
+            				}
+            				actionsFound.push(actionRes);
+    					}
+    				}
+    			}
+    			
+    			//mark only when hasnt any actionreq of group
+    			if (!containsAnyActionGroup) {
+    				$scope.sessionActionsReqStr = $scope.sessionActionsReqStr.replace(strActionsReqId, '<b style="color: #C80707">'+strActionsReqId+'</b>');
+    			}
+    		}
+    		$scope.sessionActionsRequired = actionsFound;
+    		
     		$scope.renderGraphSession(data);
     		$scope.repeatStepsGraph($scope.graphIdsEnum.GRAPH_SESSION, data);
     	}
     }
+    
+    function findActionResultFromActionSingleDataMining (action) {
+    	var actionResult = {}, 
+    		sXPath = '', sJhm = '', sStepJhm = '', actResume = '';
+	
+		//TODO: tornar essa parte genérica (montar de acordo com regra do servidor)
+		for (var u in action.urlFieldSearch) {
+			var ufs = action.urlFieldSearch[u];
+			if (ufs.field == 'sJhm') {
+				sJhm = ufs.value;
+			} else if (ufs.field == 'sStepJhm') {
+				sStepJhm = ufs.value;
+			}
+		}
+		for (var e in action.elementFiedlSearch) {
+			var el = action.elementFiedlSearch[e];
+			if (el.field == 'sXPath') {
+				sXPath = el.value;
+			}
+		}
+		actResume = sJhm+'-'+sStepJhm+' | '+sXPath+' | '+action.actionType;
+		actionResult.resume = actResume;
+		actionResult.iddb = action.id;
+		
+		for (var tar in taskCtrl.actionsRequiredArr) {
+			var act = taskCtrl.actionsRequiredArr[tar];
+			if (act.$key == actResume) {
+				actionResult.identifier = act.id || '-';
+				actionResult.action = act;
+			}
+		}
+		
+		return actionResult;
+    };
     
     function classificationPoints(classification) {
     	return $scope.getClassificationFromEnum(classification).val;
@@ -1474,6 +1599,35 @@ angular.module('useskill',
 
 /* DIRECTIVES */
 /* <a href="#" ng-click="confirmClick() && deleteItem(item)" confirm-click>Delete</a> */
+.directive('usdmActionInfo', function(config, env) {
+  return {
+    restrict: 'E',
+    scope: {
+      actionInfo: '=action',
+      momento: '=momento',
+      
+      situationsEnum: '=situationsEnum',
+      specialActionsEnum: '=specialActionsEnum',
+      situationAux: '=situationAux',
+      situationSpecialAux: '=situationSpecialAux',
+      
+      selectSituation: '&onSelectSituation',
+      selectSpecialSituation: '&onSelectSpecialSituation'
+    },
+    templateUrl: config[env].apiUrl+'/templates/directives/usdm-action-info.html'
+  };
+})
+.directive('usdmSessionInfo', function(config, env) {
+  return {
+    restrict: 'E',
+    scope: {
+    	sessionInfo: '=session',
+    	graphsession: '=graphsession',
+    	getClassificationFromEnum: '&getClassificationFromEnum'
+    },
+    templateUrl: config[env].apiUrl+'/templates/directives/usdm-session-info.html'
+  };
+})
 .directive('confirmClick', ['$q', 'dialogModal', '$filter', function($q, dialogModal, $filter) {
     return {
         link: function (scope, element, attrs) {
@@ -1811,6 +1965,11 @@ angular.module('useskill',
     }
   };
 })
+.filter("sanitize", ['$sce', function($sce) {
+  return function(htmlCode){
+    return $sce.trustAsHtml(htmlCode);
+  }
+}])
 .filter('cut', function () {
     return function (value, wordwise, max, tail) {
         if (!value) return '';

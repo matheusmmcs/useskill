@@ -416,7 +416,7 @@ public class WebUsageMining {
 				
 				if(action == null){
 					if(DEBUG){
-						System.out.println("action null: "+ username + "-" + i);
+						System.out.println("action null: "+ username + "-" + (i+1));
 					}
 					endTime = 0;
 				}else{
@@ -428,14 +428,15 @@ public class WebUsageMining {
 				}
 				
 				//resultados da sessao
-				String sessionKey = username+"-"+i;
+				Integer numberSession = i+1;
+				String sessionKey = username+"-"+ numberSession;
 				Long sessionTime = endTime - initialTime;
 				
 				//required
 				Double required = CorrectnessTask.calcCorrectnessSession(taskDataMining.getActionsRequired(), actionsRequiredSession, taskDataMining.getActionsRequiredOrder());
 				countActionsRequiredUser += required;
 				countActionsRequiredTask += required;
-				sessionsResult.add(new SessionResultDataMining(sessionKey, username, classification, sessionTime, userSectionPageViewActions, actionsRequiredSession, required, !okThreshold));
+				sessionsResult.add(new SessionResultDataMining(sessionKey, numberSession.toString(), username, classification, sessionTime, userSectionPageViewActions, actionsRequiredSession, required, !okThreshold));
 				
 				
 				//resultados do usuario por sessao

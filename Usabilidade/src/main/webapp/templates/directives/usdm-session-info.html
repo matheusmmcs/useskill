@@ -1,0 +1,65 @@
+<h3 class="usdm-title-margin">Informações da Sessão:</h3>
+<div class="usdm-info-box">
+	<div
+		class="usdm-info-box-title usdm-info-box-title-{{sessionInfo.classification}} row-fluid">
+		<div class="usdm-info-box-div3">
+			<div class="usdm-info-box-label">Usuário:</div>
+			<div class="usdm-info-box-span">
+				{{ sessionInfo.username }}
+			</div>
+		</div>
+		<div class="usdm-info-box-div3">
+			<div class="usdm-info-box-label">Sessão Num.:</div>
+			<div class="usdm-info-box-span">
+				{{ sessionInfo.sessionNumber }}
+			</div>
+		</div>
+		<div class="usdm-info-box-div3">
+			<div class="usdm-info-box-label">Tempo:</div>
+			<div class="usdm-info-box-span">
+				{{ sessionInfo.time | msConverter }}
+			</div>
+		</div>
+		<div class="usdm-info-box-div3">
+			<div class="usdm-info-box-label">Classificação:</div>
+			<div class="usdm-info-box-span">
+				{{ getClassificationFromEnum({ clas : sessionInfo.classification}).desc  }}
+			</div>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="usdm-info-box-div3">
+			<div class="usdm-info-box-label">Completude:</div>
+			<div class="usdm-info-box-span">
+			{{ sessionInfo.userRateSuccess | number:2}}%</div>
+		</div>
+		<div class="usdm-info-box-div3">
+			<div class="usdm-info-box-label">Corretude:</div>
+			<div class="usdm-info-box-span">
+			{{ sessionInfo.userRateRequired | number:2}}%</div>
+		</div>
+		<div class="usdm-info-box-div3">
+			<div class="usdm-info-box-label">Eficácia:</div>
+			<div class="usdm-info-box-span">
+			{{ sessionInfo.effectiveness | number:2}}%</div>
+		</div>
+		<div class="usdm-info-box-div3">
+			<div class="usdm-info-box-label">Eficiência:</div>
+			<div class="usdm-info-box-span">
+			{{ sessionInfo.efficiency | number:2}}</div>
+		</div>
+	</div>
+	<div class="row-fluid" ng-show="graphsession != null">
+		<div class="usdm-info-box-div6">
+			<div class="usdm-info-box-label">Qtd. de Nós:</div>
+			<div class="usdm-info-box-span">
+			{{ graphsession.body.nodeIndices.length }}</div>
+		</div>
+		<div class="usdm-info-box-div6">
+			<div class="usdm-info-box-label">Qtd. de Arestas:</div>
+			<div class="usdm-info-box-span">
+			{{ graphsession.body.edgeIndices.length }}</div>
+		</div>
+		
+	</div>
+</div>

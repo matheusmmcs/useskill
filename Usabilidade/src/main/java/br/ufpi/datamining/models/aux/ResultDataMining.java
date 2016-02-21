@@ -29,6 +29,7 @@ public class ResultDataMining {
 	private Double minActionsOk;
 	private Double minTimesOk;
 	private Double lastMinSup;
+	private Integer lastMinItens;
 	
 	private HashMap<String, String> pageViewActionIds;
 	private HashMap<String, Integer> pageViewActionCount;
@@ -252,6 +253,14 @@ public class ResultDataMining {
 
 	public void setLastMinSup(Double lastMinSup) {
 		this.lastMinSup = lastMinSup;
+	}
+
+	public Integer getLastMinItens() {
+		return lastMinItens;
+	}
+
+	public void setLastMinItens(Integer lastMinItens) {
+		this.lastMinItens = lastMinItens;
 	}
 		
 }
