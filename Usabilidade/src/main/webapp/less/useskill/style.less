@@ -629,7 +629,26 @@ ul.horizontal{
 		&title-margin {
 			margin: 15px auto 5px;	
 		}
+		
+		&refresh-link {
+			
+			strong, span {
+				margin-right: 5px;
+			}
+			a {
+				cursor: pointer;
+				background: linear-gradient(1deg, #2864a4, #0086ff);
+				background-size: 400% 400%;
+				animation: usdm-pulse 3s ease infinite;
+			}
+		}
 	}
+}
+
+@keyframes usdm-pulse { 
+    0%{background-position:50% 0%}
+    50%{background-position:50% 100%}
+    100%{background-position:50% 0%}
 }
 
 .useskill-datamining{

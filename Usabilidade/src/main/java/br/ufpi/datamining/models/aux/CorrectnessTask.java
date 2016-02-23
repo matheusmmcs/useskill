@@ -40,7 +40,8 @@ public class CorrectnessTask {
 						String[] numbers = g.replaceAll("\\[|\\]", "").split(";");
 						total++;
 						for(String n : numbers){
-							if(countActionsById.get(Long.parseLong(n)) > 0){
+							if(countActionsById.get(Long.parseLong(n)) != null &&
+								countActionsById.get(Long.parseLong(n)) > 0){
 								//System.out.println(n);
 								count++;
 								break;
@@ -48,7 +49,8 @@ public class CorrectnessTask {
 						}
 					}else{
 						total++;
-						if(countActionsById.get(Long.parseLong(g)) > 0){
+						if(countActionsById.get(Long.parseLong(g)) != null &&
+							countActionsById.get(Long.parseLong(g)) > 0){
 							//System.out.println(g);
 							count++;
 						}
@@ -58,7 +60,8 @@ public class CorrectnessTask {
 			}
 		}else{
 			for(Long l : countActionsById.keySet()){
-				if(countActionsById.get(l) > 0){
+				if(countActionsById.get(l) != null &&
+					countActionsById.get(l) > 0){
 					count++;
 				}
 				total++;

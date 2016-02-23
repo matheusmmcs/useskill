@@ -201,5 +201,6 @@
 	"datamining.tasks.new.success" : "Tarefa cadastrada com sucesso!",
 	
 	"datamining.tasks.actions.edit.success" : "Ação alterada com sucesso!",
-	"datamining.tasks.actions.new.success" : "Ação cadastrada com sucesso!"
+	"datamining.tasks.actions.new.success" : "Ação cadastrada com sucesso!",
+	"datamining.tasks.actions.edits.success" : "Ações alteradas com sucesso!"
 }

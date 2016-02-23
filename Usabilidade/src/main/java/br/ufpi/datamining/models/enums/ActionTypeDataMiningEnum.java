@@ -33,7 +33,7 @@ public enum ActionTypeDataMiningEnum {
 		this.description = description;
 	}
 	
-	public ActionTypeDataMiningEnum getTypeActionByAction(String action){
+	public static ActionTypeDataMiningEnum getTypeActionByAction(String action){
 		for(ActionTypeDataMiningEnum t : ActionTypeDataMiningEnum.values()){
 			if(t.getAction().equals(action)){
 				return t;

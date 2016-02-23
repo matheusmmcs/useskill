@@ -333,8 +333,16 @@ angular.module('useskill',
         },
         updateTaskControl: function(testId){
         	return doRequest('GET', '/datamining/testes/control/'+testId+'/taskupdate');
+        },
+        saveActionSituation: function(testId, evalTestId, taskId, actions){
+        	var data = {
+        		testId: testId, 
+        		evalTestId: evalTestId, 
+        		taskId: taskId, 
+        		actions: actions
+        	}
+        	return doRequest('POST', '/datamining/testes/avaliacao/tarefas/saveActionSituation', data);
         }
-        
         
     };
 }])
@@ -814,6 +822,8 @@ angular.module('useskill',
 	taskCtrl.mode = modes.users;
 	taskCtrl.actionsSituation = {};
 	taskCtrl.actionsSpecialSituation = {};
+	taskCtrl.actionsSituationChanged = {};
+	taskCtrl.actionsSpecialSituationChanged = {};
 	
 	
 	//count actions
@@ -955,6 +965,9 @@ angular.module('useskill',
     		classLabel: ''
     	}
     }
+	$scope.resetSendDataChange = function(){
+		$scope.sendDataChange = false;
+	}
 	function resetSituationAux(actionId) {
 		var sit = taskCtrl.actionsSituation[actionId];
 		$scope.situationAux = sit !== undefined ? sit : $scope.situationsEnum.DEFAULT;
@@ -968,6 +981,8 @@ angular.module('useskill',
 				}else {
 					taskCtrl.actionsSituation[actionId] = situation;
 				}
+				$scope.sendDataChange = true;
+				taskCtrl.actionsSituationChanged[actionId] = taskCtrl.actionsSituation[actionId];
 				break;
 			}
 		}
@@ -1045,7 +1060,6 @@ angular.module('useskill',
 					arrNodes[n].options.action[$scope.specialActionsEnum.REQUIRED.id] = null;
 					if (sit) {
 						arrNodes[n].options.action[sit.id] = true;
-						$scope.sendDataChange = true;
 					}
 				}
 			}
@@ -1074,7 +1088,9 @@ angular.module('useskill',
 		for (var i in $scope.specialActionsEnum) {
 			if ($scope.specialActionsEnum[i].id === situation.id) {
 				//var sit = taskCtrl.actionsSpecialSituation[actionId];
+				$scope.sendDataChange = true;
 				taskCtrl.actionsSpecialSituation[actionId] = situation;
+				taskCtrl.actionsSpecialSituationChanged[actionId] = situation;
 				setSpecialSituationRealSessions(actionId, situation);
 				setSpecialSituationNetwork($scope[$scope.graphIdsEnum.GRAPH_DEFAULT], actionId, situation);
 				setSpecialSituationNetwork($scope[$scope.graphIdsEnum.GRAPH_SESSION], actionId, situation);
@@ -1559,6 +1575,76 @@ angular.module('useskill',
     		alert("Selecione uma sessão e tente novamente...");
     		$scope.goToGuideStep("1");
     	}
+    }
+    
+    $scope.saveChangeSituations = function(){
+    	//taskCtrl.actionsSituationChanged
+    	//taskCtrl.actionsSpecialSituationChanged
+    	var actionInfoMap = {};
+    	for (var a in taskCtrl.actionsSpecialSituationChanged) {
+    		var action = getActionFromActionsArr(a);
+    		var actionInfo = splitActionValue(action.value);
+    		
+    		actionInfo.id = action.$key;
+    		actionInfo.type = taskCtrl.actionsSpecialSituationChanged[a].id;
+    		
+    		actionInfoMap[actionInfo.id] = actionInfo;
+    	}
+    	
+    	for (var a in taskCtrl.actionsSituationChanged) {
+    		var action = getActionFromActionsArr(a);
+    		var actionInfo = actionInfoMap[action.$key];
+    		
+    		if (!actionInfo) {
+    			actionInfo = splitActionValue(action.value);
+        		actionInfo.id = action.$key;
+    		}
+    		
+    		actionInfo.situation = taskCtrl.actionsSituationChanged[a].id;
+    		actionInfoMap[actionInfo.id] = actionInfo;
+    	}
+    	
+    	console.log(actionInfoMap);
+    	var resultActionMap = [];
+    	for (var a in actionInfoMap) {
+    		resultActionMap.push(actionInfoMap[a]);
+    	}
+    	
+    	console.log(angular.toJson(resultActionMap));
+    	
+    	ServerAPI.saveActionSituation(
+    			Number.parseInt(taskCtrl.task.testDataMining.id), 
+    			Number.parseInt(taskCtrl.evalTestId), 
+    			Number.parseInt(taskCtrl.task.id),
+    			angular.toJson(resultActionMap)
+		).then(function(data) {
+			result = JSON.parse(data.data.string);
+			if (result.status == "SUCESSO") {
+				taskCtrl.actionsSpecialSituationChanged = {};
+				$scope.sendDataChange = false;
+				$scope.success = $filter('translate')(result.message);
+			}
+		}, function(data) {
+			console.log(data);
+		});
+    	
+    }
+    
+    function getActionFromActionsArr (id) {
+    	for (var a in taskCtrl.actionsArr) {
+    		if (taskCtrl.actionsArr[a].$key == id) {
+    			return taskCtrl.actionsArr[a];
+    		}
+    	}
+    }
+    
+    function splitActionValue (str) {
+    	var data = str.split(' | ');
+    	return {
+    		location: data[0],
+			element: data[1],
+			action: data[2]
+    	};
     }
     
     

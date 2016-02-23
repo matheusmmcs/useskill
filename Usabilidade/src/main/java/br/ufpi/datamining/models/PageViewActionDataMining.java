@@ -1,5 +1,6 @@
 package br.ufpi.datamining.models;
 
+import br.ufpi.datamining.components.PageViewDataMining;
 import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
 
 public class PageViewActionDataMining {
@@ -22,8 +23,15 @@ public class PageViewActionDataMining {
 	public PageViewActionDataMining(ActionDataMining action) {
 		super();
 		this.id = action.getId();
-		//this.local = PageViewDataMining.getUrlFormatted(action.getsUrl()) + "-" + action.getsJhm() + "-" + action.getsStepJhm();
-		this.local = action.getsJhm() + "-" + action.getsStepJhm();
+		
+		if ((action.getsJhm() == null || action.getsJhm().equals("")) ||
+			(action.getsStepJhm() == null || action.getsStepJhm().equals(""))) {
+			// ":" influencia na forma que o ActionSituationAux monta os FieldSearchTupleDataMining
+			this.local = ":"+PageViewDataMining.getUrlFormatted(action.getsUrl()) + "-" + action.getsJhm() + "-" + action.getsStepJhm();
+		} else {
+			this.local = action.getsJhm() + "-" + action.getsStepJhm();
+		}
+		
 		this.element = action.getsXPath();
 		this.action = action.getsActionType();
 		this.time = action.getsTime();
