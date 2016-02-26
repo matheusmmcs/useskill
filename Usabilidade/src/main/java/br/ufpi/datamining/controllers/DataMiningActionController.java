@@ -113,9 +113,9 @@ public class DataMiningActionController extends BaseController {
 	@Post("/testes/tarefas/acoes/deletar")
 	@Consumes("application/json")
 	@Logado
-	public void delete(ActionSingleJHeatDataMiningVO actionJHeatVO) {
+	public void delete(Long actionId) {
 		Gson gson = new Gson();
-		ActionSingleDataMining action = actionSingleDataMiningRepository.find(actionJHeatVO.getId());
+		ActionSingleDataMining action = actionSingleDataMiningRepository.find(actionId);
 		ReturnVO returnvo;
 		
 		TaskDataMining taskDataMining = taskDataMiningRepository.find(action.getTask().getId());

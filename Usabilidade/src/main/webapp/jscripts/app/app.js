@@ -313,7 +313,7 @@ angular.module('useskill',
         	return doRequest('POST', '/datamining/testes/tarefas/acoes/salvar', actionJHeatVO);
         },
         deleteAction: function(actionJHeatVO, list){
-        	var promise = $http.post(config[env].apiUrl+'/datamining/testes/tarefas/acoes/deletar', actionJHeatVO);
+        	var promise = $http.post(config[env].apiUrl+'/datamining/testes/tarefas/acoes/deletar', { actionId: actionJHeatVO.id });
         	promise.success(function(data){
         		var resp = JSON.parse(data.string);
     			if(resp.status == 'SUCESSO' && list != undefined){
@@ -968,6 +968,9 @@ angular.module('useskill',
 	$scope.resetSendDataChange = function(){
 		$scope.sendDataChange = false;
 	}
+	$scope.resetAlertChangeTask = function(){
+		$scope.alertChangeTask = false;
+	}
 	function resetSituationAux(actionId) {
 		var sit = taskCtrl.actionsSituation[actionId];
 		$scope.situationAux = sit !== undefined ? sit : $scope.situationsEnum.DEFAULT;
@@ -1042,6 +1045,7 @@ angular.module('useskill',
     }
 	//taskCtrl.result.sessions
 	$scope.sendDataChange = false;
+	$scope.alertChangeTask = false;
 	for (var s in taskCtrl.result.sessions) {
 		var sess = taskCtrl.result.sessions[s];
 		for (var a in sess.actions) {
@@ -1190,6 +1194,8 @@ angular.module('useskill',
 	}
 	$scope.setActionViewSelectedMostRealized = function(actionId){
 		$scope.actionViewSelectedMost = $scope.getActionInfoFromId(actionId);
+		resetSituationAux(actionId);
+  	    resetSpecialSituationAux(actionId);
 	}
 	
 	//history graph
@@ -1622,6 +1628,7 @@ angular.module('useskill',
 			if (result.status == "SUCESSO") {
 				taskCtrl.actionsSpecialSituationChanged = {};
 				$scope.sendDataChange = false;
+				$scope.alertChangeTask = true;
 				$scope.success = $filter('translate')(result.message);
 			}
 		}, function(data) {

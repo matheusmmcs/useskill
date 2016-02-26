@@ -32,8 +32,9 @@
 	                <thead>
 	                    <tr>
 	                        <th width="50%">{{ 'datamining.testes.title' | translate}}</th>
-	                        <th width="20%">{{ 'datamining.testes.abbrev' | translate}}</th>
-	                        <th width="15%">{{ 'datamining.testes.control.ligation' | translate}}</th>
+	                        <th width="15%">{{ 'datamining.testes.abbrev' | translate}}</th>
+	                        <th width="10%">{{ 'datamining.testes.control.ligation' | translate}}</th>
+	                        <th width="10%">{{ 'datamining.testes.control.ignoreurl' | translate}}</th>
 	                        <th width="15%">{{ 'datamining.details' | translate}}</th>
 	                    </tr>
 	                </thead>
@@ -42,6 +43,7 @@
                             <td class="td-link"><a ng-href="#/testes/{{test.id}}">{{test.title}}</a></td>
                             <td>{{test.clientAbbreviation}}</td>
                             <td class="text-center">{{test.isControl | booleanText }}</td>
+                            <td class="text-center">{{test.isIgnoreURL | booleanText }}</td>
                             <td class="text-center"><a class="btn btn-primary" ng-href="#/testes/{{test.id}}"><span class="icon-white icon-folder-open"></span> {{ 'datamining.details' | translate}}</a></td>
                         </tr>
 	                </tbody>

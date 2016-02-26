@@ -83,6 +83,7 @@
 	"datamining.testes.edit" : "Editar Teste",
 	"datamining.testes.details" : "Detalhes do Teste",
 	"datamining.testes.control" : "Teste (UseSkill Control)",
+	"datamining.testes.control.ignoreurl" : "Ignora URL",
 	"datamining.testes.control.ligation" : "Teste Controlado",
 	"datamining.testes.control.select" : "Selecionar Teste (UseSkill Control)",
 	"datamining.testes.control.select.none" : "Sem Testes da UseSkill Control",

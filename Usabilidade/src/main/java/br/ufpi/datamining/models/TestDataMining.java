@@ -42,7 +42,7 @@ public class TestDataMining implements Serializable {
 	
 	private Teste testControl;
 	private Boolean isControl = false;
-	
+	private Boolean isIgnoreURL = false;
 
 	@Id  
 	@GeneratedValue
@@ -133,5 +133,14 @@ public class TestDataMining implements Serializable {
 	public void setTestControl(Teste testControl) {
 		this.testControl = testControl;
 	}
-		
+	
+	@Column(nullable = false)
+	public Boolean getIsIgnoreURL() {
+		return isIgnoreURL;
+	}
+	
+	public void setIsIgnoreURL(Boolean isIgnoreURL) {
+		this.isIgnoreURL = isIgnoreURL;
+	}
+	
 }

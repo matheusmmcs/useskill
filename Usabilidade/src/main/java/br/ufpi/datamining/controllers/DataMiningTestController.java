@@ -187,6 +187,7 @@ public class DataMiningTestController extends BaseController {
 				testUpdate.setTitle(test.getTitle());
 				testUpdate.setClientAbbreviation(test.getClientAbbreviation());
 				testUpdate.setUrlSystem(test.getUrlSystem());
+				testUpdate.setIsIgnoreURL(test.getIsIgnoreURL());
 				
 				if (testConrolId != null) {
 					Teste teste = testeRepository.find(testConrolId);

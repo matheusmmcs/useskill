@@ -215,7 +215,11 @@ public class WebUsageMining {
 					fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
 				}
 				for(FieldSearchTupleDataMining f : a.getUrlFieldSearch()){
-					if(!f.getField().equals("sUrl")){
+					if (taskDataMining.getTestDataMining().getIsIgnoreURL()) {
+						if(!f.getField().equals("sUrl")){
+							fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
+						}
+					} else {
 						fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
 					}
 				}

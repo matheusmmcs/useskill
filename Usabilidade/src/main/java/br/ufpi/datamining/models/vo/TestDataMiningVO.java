@@ -28,6 +28,7 @@ public class TestDataMiningVO {
 	
 	private Teste testControl;
 	private Boolean isControl = false;
+	private Boolean isIgnoreURL = false;
 	
 	public TestDataMiningVO(TestDataMining test) {
 		super();
@@ -38,6 +39,7 @@ public class TestDataMiningVO {
 		this.setEvaluations(test.getEvaluations());
 		this.setTestControl(test.getTestControl());
 		this.setIsControl(test.getIsControl());
+		this.setIsIgnoreURL(test.getIsIgnoreURL());
 		
 		List<TaskDataMiningVO> ts = new ArrayList<TaskDataMiningVO>();
 		for (TaskDataMining t : test.getTasks()) {
@@ -92,6 +94,12 @@ public class TestDataMiningVO {
 	}
 	public void setIsControl(Boolean isControl) {
 		this.isControl = isControl;
+	}
+	public Boolean getIsIgnoreURL() {
+		return isIgnoreURL;
+	}
+	public void setIsIgnoreURL(Boolean isIgnoreURL) {
+		this.isIgnoreURL = isIgnoreURL;
 	}
 	
 }

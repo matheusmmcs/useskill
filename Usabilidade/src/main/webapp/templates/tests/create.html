@@ -67,6 +67,13 @@
 		        	</div>
 		        	
 		        	<div class="control-group">
+		            	<label class="control-label" for="testIgnoreURL">{{ 'datamining.testes.control.ignoreurl' | translate}}:*</label>
+		            	<div class="controls">
+		                	<input type="checkbox" ng-model="testCtrl.test.isIgnoreURL" name="test.isIgnoreURL"  id="testIgnoreURL" class="input" /> 
+		            	</div>
+		        	</div>
+		        	
+		        	<div class="control-group">
 		            	<label class="control-label" for="testsControl">{{ 'datamining.testes.control.select' | translate}}:*</label>
 		            	<div class="controls">
 		                	<select ng-model="testCtrl.testControl" id="testsControl" ng-options="key as value for (key , value) in testCtrl.testsControl" class="input">

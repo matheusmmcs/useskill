@@ -1,5 +1,28 @@
 <div class="container-padding-left">
-	
+
+
+		<div class="usdm-fixed-top-info" ng-class="{ 'active' : sendDataChange }">
+			<div class="usdm-refresh-link">
+	  			<span>Dados de ações obrigatórias foram modificados.</span> 
+		  		<a class="btn btn-primary usdm-btn-primary-pulse" ng-click="saveChangeSituations()">
+		  			<i class="icon-white icon-download-alt"></i>
+		  			Clique aqui para salvar!
+		  		</a>
+		  		<button type="button" class="close" ng-click="resetSendDataChange()">&times;</button>
+			</div>
+		</div>
+		
+		<div class="usdm-fixed-top-info" ng-class="{ 'active' : alertChangeTask }">
+			<div class="usdm-refresh-link">
+	  			<span>Definir o novo "Agrupamento de Ações Obrigatórias":</span> 
+		  		<a class="btn" ng-click="resetAlertChangeTask()" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/{{taskCtrl.task.id}}" target="_blank">
+           			<span class="icon-list-alt"></span>
+           			Abrir Tarefa
+           		</a>
+		  		<button type="button" class="close" ng-click="resetAlertChangeTask()">&times;</button>
+			</div>
+		</div>
+			
 		<ul class="breadcrumb">
 			<li>
 				<a ng-href="/"> 
@@ -60,7 +83,15 @@
 			            	<dt>{{ 'datamining.tasks.threshold' | translate}}:</dt>
 			            	<dd>{{taskCtrl.task.threshold}} {{ 'minutes' | translate}}</dd>
 			            </dl>
-			            
+			            <dl>
+			            	<dt>Visualizar Detalhes da Tarefa:</dt>
+			            	<dd>
+								<a class="btn u-width-full" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/{{taskCtrl.task.id}}" target="_blank">
+			            			<span class="icon-list-alt"></span>
+			            			Abrir Tarefa
+			            		</a>
+			            	</dd>
+			            </dl>
 		            </div>
 		            
 		            <h3 class="usdm-box-header">
@@ -87,7 +118,7 @@
 			            		<a class="btn btn-primary u-width-full" 
 			            			ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/avaliacao/{{taskCtrl.evalTestId}}/tarefas/{{taskCtrl.task.id}}/avaliar/minsup/{{ minSup }}/minitens/{{ minItens }}">
 			            			<span class="icon-white icon-repeat"></span>
-			            			Enviar Dados e Minerar
+			            			Minerar
 			            		</a>
 			            		<div class="clear-both"></div>
 							</dd>
@@ -131,6 +162,7 @@
 		    </div>
 	        <div class="span8">
 	        
+	        	<!--
        			<div class="row-fluid" ng-show="sendDataChange">
 	            	<div class="alert alert-info">
 	            		<button type="button" class="close" ng-click="resetSendDataChange">&times;</button>
@@ -144,6 +176,7 @@
 						</div>
 					</div>
 				</div>
+				-->
 	        
 	        	<div class="row-fluid">
 	        		<div class="span4">

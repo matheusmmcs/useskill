@@ -103,15 +103,18 @@ public class ActionSituationAux {
 				List<FieldSearchTupleDataMining> urlsFields = new ArrayList<FieldSearchTupleDataMining>();
 				
 				//com url
+				FieldSearchTupleDataMining fieldURL = new FieldSearchTupleDataMining();
+				fieldURL.setAction(action);
+				fieldURL.setField("sUrl");
+				fieldURL.setType(FieldTypeDataMiningEnum.STRING);
 				if (locations[idx].charAt(0) == ':') {
-					FieldSearchTupleDataMining fieldURL = new FieldSearchTupleDataMining();
-					fieldURL.setAction(action);
-					fieldURL.setField("sUrl");
-					fieldURL.setType(FieldTypeDataMiningEnum.STRING);
 					fieldURL.setValue(PageViewDataMining.getUrlFormatted(locations[idx]));
-					urlsFields.add(fieldURL);
 					idx++;
+				} else {
+					fieldURL.setValue("");
 				}
+				urlsFields.add(fieldURL);
+				
 				
 				FieldSearchTupleDataMining fieldJhm = new FieldSearchTupleDataMining();
 				fieldJhm.setAction(action);
