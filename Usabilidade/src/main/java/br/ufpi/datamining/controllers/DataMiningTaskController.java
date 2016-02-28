@@ -1,5 +1,6 @@
 package br.ufpi.datamining.controllers;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +31,7 @@ import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.aux.ActionSituationAux;
 import br.ufpi.datamining.models.aux.ResultDataMining;
+import br.ufpi.datamining.models.aux.ResultEvaluationDataMining;
 import br.ufpi.datamining.models.enums.MomentTypeActionDataMiningEnum;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.vo.EvaluationTaskDataMiningVO;
@@ -43,6 +45,7 @@ import br.ufpi.datamining.repositories.EvaluationTestDataMiningRepository;
 import br.ufpi.datamining.repositories.FieldSearchTupleDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.repositories.TestDataMiningRepository;
+import br.ufpi.datamining.utils.ConverterUtils;
 import br.ufpi.datamining.utils.GsonExclusionStrategy;
 import br.ufpi.models.Usuario;
 
@@ -146,125 +149,142 @@ public class DataMiningTaskController extends BaseController {
 	@Get("/testes/{idTeste}/avaliacao/{idEvaluationTest}/tarefas/{idTarefa}/avaliar/minsup/{minSup}/minitens/{minItens}")
 	@Logado
 	public void avaliarParams(Long idTeste, Long idEvaluationTest, Long idTarefa, Double minSup, Integer minItens) {
-		minSup = minSup > 0 ? minSup / 100 : 0;
-		this.avaliarTarefa(idTeste, idEvaluationTest, idTarefa, minSup, minItens);
-	}
-	
-	@Get("/testes/{idTeste}/avaliacao/{idEvaluationTest}/tarefas/{idTarefa}/avaliar")
-	@Logado
-	public void avaliar(Long idTeste, Long idEvaluationTest, Long idTarefa) {
-		this.avaliarTarefa(idTeste, idEvaluationTest, idTarefa, null, null);
-	}
-		
-	private void avaliarTarefa(Long idTeste, Long idEvaluationTest, Long idTarefa, Double minSup, Integer minItens) {
-		Long init = new Date().getTime();
 		Gson gson = new GsonBuilder()
 	        .setExclusionStrategies(TaskDataMiningVO.exclusionStrategy)
-	        .serializeNulls()
+	        .serializeSpecialFloatingPointValues()
 	        .create();
 		
+		ResultEvaluationDataMining resultEval = null;
 		try {
-			//persist results
-			TaskDataMining taskDataMining = taskDataMiningRepository.find(idTarefa);
-			EvaluationTestDataMining evaluationTest = evaluationTestDataMiningRepository.find(idEvaluationTest);
-			
-			ResultDataMining resultDataMining = WebUsageMining.analyze(idTarefa, evaluationTest.getInitDate().getTime(), evaluationTest.getLastDate().getTime(), taskDataMiningRepository, actionDataMiningRepository);
-			
-			EvaluationTaskDataMining evaluation = taskDataMining.getEvaluationFromEvalTest(idEvaluationTest);
-			boolean newEvaluation = evaluation == null ? true : false;
-			
-			if (evaluation == null) {
-				evaluation = new EvaluationTaskDataMining();
-				evaluation.setEvaluationTest(evaluationTest);
-				evaluation.setTaskDataMining(taskDataMining);
-			}
-			
-			evaluation.setEvalLastDate(new Date());
-			evaluation.setEvalCountSessions(resultDataMining.getCountSessions());
-			
-			if (evaluation.getEvalCountSessions() > 0) {
-				evaluation.setEvalMeanActions(resultDataMining.getActionsAverageOk());
-				evaluation.setEvalMeanTimes(resultDataMining.getTimesAverageOk());
-				evaluation.setEvalMeanCompletion(resultDataMining.getRateSuccess());
-				evaluation.setEvalMeanCorrectness(resultDataMining.getRateRequired());
-				
-				evaluation.setEvalZScoreActions((resultDataMining.getMaxActionsOk() - resultDataMining.getMeanActionsOk()) / resultDataMining.getStdDevActionsOk());
-				evaluation.setEvalZScoreTime((resultDataMining.getMaxTimesOk() - resultDataMining.getMeanTimesOk()) / resultDataMining.getStdDevTimesOk());
-				
-				evaluation.setEvalEffectiveness((evaluation.getEvalMeanCompletion() * evaluation.getEvalMeanCorrectness()) / 100);
-				evaluation.setEvalEfficiency(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime()));
-				
-				System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreTime()));
-				System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime()));
-				System.out.println(evaluation.getEvalEffectiveness() / ((evaluation.getEvalZScoreActions() + evaluation.getEvalZScoreTime()) / 2));
-			} else {
-				evaluation = EvaluationTaskDataMiningVO.zeroEvaluation(evaluation);
-			}
-			
-			FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
-			List<FrequentSequentialPatternResultVO> frequentPatterns = null;
-			
-			double lastMinSup = minSup != null ? minSup : 0d;
-			int defaultMinItens = minItens != null ? minItens : 4;
-			
-			if (evaluation.getEvalCountSessions() > 1) {
-				if (minSup != null) {
-					frequentPatterns = fspm.analyze(resultDataMining, lastMinSup, null, defaultMinItens);
-				} else {
-					//automatic patterns: (100/80/60/40/20)
-					double[] minSups = new double[]{1.0, 0.8, 0.6, 0.4, 0.2};
-					for (int i = 0; i < minSups.length; i++) {
-						if (frequentPatterns == null || frequentPatterns.size() == 0) {
-							lastMinSup = minSups[i];
-							//if (!(resultDataMining.getUsersSequences().size() < 2 && lastMinSup == 1.0)) {
-							System.out.println("--INICIAR FSPM: " + lastMinSup);
-							frequentPatterns = fspm.analyze(resultDataMining, minSups[i], null, defaultMinItens);
-							//}
-						}
-					}
-				}
-			}
-			resultDataMining.setLastMinSup(lastMinSup);
-			resultDataMining.setLastMinItens(defaultMinItens);
-			
-			
-			
-			Long diffTime = new Date().getTime() - init;
-			if (evaluation.getMeanTimeLoading() != null) {
-				evaluation.setMeanTimeLoading((evaluation.getMeanTimeLoading() + diffTime) / 2);
-			} else {
-				evaluation.setMeanTimeLoading(diffTime);
-			}
-			
-			
-			if (newEvaluation) {
-				evaluationTaskDataMiningRepository.create(evaluation);
-				
-				taskDataMining.getEvaluations().add(evaluation);
-				taskDataMiningRepository.update(taskDataMining);
-				
-				evaluationTest.getEvaluationsTask().add(evaluation);
-				evaluationTestDataMiningRepository.update(evaluationTest);
-				
-				System.out.println("Nova avaliação cadastrada!");
-			} else {
-				evaluationTaskDataMiningRepository.update(evaluation);
-				System.out.println("Avaliação atualizada!");
-			}
-			
-			
-			HashMap<String, String> resultMap = new HashMap<String, String>();
-			resultMap.put("frequentPatterns", gson.toJson(frequentPatterns));
-			resultMap.put("result", gson.toJson(resultDataMining));
-			resultMap.put("evalTask", gson.toJson(evaluation));
-			resultMap.put("task", gson.toJson(new TaskDataMiningVO(taskDataMining)));
-			
-			result.use(Results.json()).from(resultMap).serialize();
+			minSup = minSup > 0 ? minSup / 100 : 0;
+			resultEval = this.avaliarTarefa(idTeste, idEvaluationTest, idTarefa, minSup, minItens);
 		} catch (Exception e) {
 			e.printStackTrace();
 			ReturnVO returnVO = new ReturnVO(ReturnStatusEnum.ERRO, "erro");
 			validator.onErrorUse(Results.json()).from(gson.toJson(returnVO)).serialize();
 		}
+		result.use(Results.json()).from(gson.toJson(resultEval)).serialize();
+	}
+	
+	@Get("/testes/{idTeste}/avaliacao/{idEvaluationTest}/tarefas/{idTarefa}/avaliar")
+	@Logado
+	public void avaliar(Long idTeste, Long idEvaluationTest, Long idTarefa) {
+		Gson gson = new GsonBuilder()
+	        .setExclusionStrategies(TaskDataMiningVO.exclusionStrategy)
+	        .serializeSpecialFloatingPointValues()
+	        .create();
+		
+		ResultEvaluationDataMining resultEval = null;
+		try {
+			resultEval = this.avaliarTarefa(idTeste, idEvaluationTest, idTarefa, null, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			ReturnVO returnVO = new ReturnVO(ReturnStatusEnum.ERRO, "erro");
+			validator.onErrorUse(Results.json()).from(gson.toJson(returnVO)).serialize();
+		}
+		result.use(Results.json()).from(gson.toJson(resultEval)).serialize();
+	}
+		
+	private ResultEvaluationDataMining avaliarTarefa(Long idTeste, Long idEvaluationTest, Long idTarefa, Double minSup, Integer minItens) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
+		Long init = new Date().getTime();
+		ResultEvaluationDataMining result = new ResultEvaluationDataMining();
+		
+		//persist results
+		TaskDataMining taskDataMining = taskDataMiningRepository.find(idTarefa);
+		EvaluationTestDataMining evaluationTest = evaluationTestDataMiningRepository.find(idEvaluationTest);
+		
+		ResultDataMining resultDataMining = WebUsageMining.analyze(idTarefa, evaluationTest.getInitDate().getTime(), evaluationTest.getLastDate().getTime(), taskDataMiningRepository, actionDataMiningRepository);
+		EvaluationTaskDataMining evaluation = taskDataMining.getEvaluationFromEvalTest(idEvaluationTest);
+		boolean newEvaluation = evaluation == null ? true : false;
+		
+		if (evaluation == null) {
+			evaluation = new EvaluationTaskDataMining();
+			evaluation.setEvaluationTest(evaluationTest);
+			evaluation.setTaskDataMining(taskDataMining);
+		}
+		
+		evaluation.setEvalLastDate(new Date());
+		evaluation.setEvalCountSessions(resultDataMining.getCountSessions());
+		
+		if (evaluation.getEvalCountSessions() > 0) {
+			evaluation.setEvalMeanActions(resultDataMining.getActionsAverageOk());
+			evaluation.setEvalMeanTimes(resultDataMining.getTimesAverageOk());
+			evaluation.setEvalMeanCompletion(resultDataMining.getRateSuccess());
+			evaluation.setEvalMeanCorrectness(resultDataMining.getRateRequired());
+			
+			evaluation.setEvalZScoreActions(ConverterUtils.notNaN((resultDataMining.getMaxActionsOk() - resultDataMining.getMeanActionsOk()) / resultDataMining.getStdDevActionsOk()));
+			evaluation.setEvalZScoreTime(ConverterUtils.notNaN((resultDataMining.getMaxTimesOk() - resultDataMining.getMeanTimesOk()) / resultDataMining.getStdDevTimesOk()));
+			
+			evaluation.setEvalEffectiveness(ConverterUtils.notNaN((evaluation.getEvalMeanCompletion() * evaluation.getEvalMeanCorrectness()) / 100));
+			evaluation.setEvalEfficiency(ConverterUtils.notNaN(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime())));
+			
+			//System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreTime()));
+			//System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime()));
+			//System.out.println(evaluation.getEvalEffectiveness() / ((evaluation.getEvalZScoreActions() + evaluation.getEvalZScoreTime()) / 2));
+		} else {
+			evaluation = EvaluationTaskDataMiningVO.zeroEvaluation(evaluation);
+		}
+		
+		FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
+		List<FrequentSequentialPatternResultVO> frequentPatterns = null;
+		
+		double lastMinSup = minSup != null ? minSup : 0d;
+		int defaultMinItens = minItens != null ? minItens : 4;
+		
+		if (evaluation.getEvalCountSessions() > 1) {
+			if (minSup != null) {
+				frequentPatterns = fspm.analyze(resultDataMining, lastMinSup, null, defaultMinItens);
+			} else {
+				//automatic patterns: (100/80/60/40/20)
+				double[] minSups = new double[]{1.0, 0.8, 0.6, 0.4, 0.2};
+				for (int i = 0; i < minSups.length; i++) {
+					if (frequentPatterns == null || frequentPatterns.size() == 0) {
+						lastMinSup = minSups[i];
+						//if (!(resultDataMining.getUsersSequences().size() < 2 && lastMinSup == 1.0)) {
+						System.out.println("--INICIAR FSPM: " + lastMinSup);
+						frequentPatterns = fspm.analyze(resultDataMining, minSups[i], null, defaultMinItens);
+						//}
+					}
+				}
+			}
+		}
+		resultDataMining.setLastMinSup(lastMinSup);
+		resultDataMining.setLastMinItens(defaultMinItens);
+		
+		
+		
+		Long diffTime = new Date().getTime() - init;
+		if (evaluation.getMeanTimeLoading() != null) {
+			evaluation.setMeanTimeLoading((evaluation.getMeanTimeLoading() + diffTime) / 2);
+		} else {
+			evaluation.setMeanTimeLoading(diffTime);
+		}
+		
+		
+		if (newEvaluation) {
+			evaluationTaskDataMiningRepository.create(evaluation);
+			
+			taskDataMining.getEvaluations().add(evaluation);
+			taskDataMiningRepository.update(taskDataMining);
+			
+			evaluationTest.getEvaluationsTask().add(evaluation);
+			evaluationTestDataMiningRepository.update(evaluationTest);
+			
+			System.out.println("Nova avaliação cadastrada!");
+		} else {
+			evaluationTaskDataMiningRepository.update(evaluation);
+			System.out.println("Avaliação atualizada!");
+		}
+		
+		//sessions
+		//users
+		
+		result.setFrequentPatterns(frequentPatterns);
+		result.setEvalTask(evaluation);
+		result.setResult(resultDataMining);
+		result.setTask(new TaskDataMiningVO(taskDataMining));
+			
+		return result;
 	}
 	
 	@Post("/testes/avaliacao/tarefas/saveActionSituation")

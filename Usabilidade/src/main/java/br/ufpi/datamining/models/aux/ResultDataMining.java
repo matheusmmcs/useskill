@@ -3,6 +3,7 @@ package br.ufpi.datamining.models.aux;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class ResultDataMining {
 
@@ -263,4 +264,59 @@ public class ResultDataMining {
 		this.lastMinItens = lastMinItens;
 	}
 		
+	@Override
+	public String toString() {
+		String s = "---------- Result: ----------\n";
+		s += "actionsAverageOk: " + actionsAverageOk + ";\n";
+		s += "timesAverageOk: " + timesAverageOk + ";\n";
+		s += "countSessionsSuccess: " + countSessionsSuccess + ";\n";
+		s += "countSessionsError: " + countSessionsError + ";\n";
+		s += "countSessionsRepeat: " + countSessionsRepeat + ";\n";
+		s += "countSessionsThreshold: " + countSessionsThreshold + ";\n";
+		s += "countSessions: " + countSessions + ";\n";
+		s += "rateSuccess: " + rateSuccess + ";\n";
+		s += "rateRequired: " + rateRequired + ";\n";
+		
+		s += mapIntegerToString("actionsRequiredTask", actionsRequiredTask);
+		
+		s += "meanActionsOk: " + meanActionsOk + ";\n";
+		s += "meanTimesOk: " + meanTimesOk + ";\n";
+		s += "stdDevActionsOk: " + stdDevActionsOk + ";\n";
+		s += "stdDevTimesOk: " + stdDevTimesOk + ";\n";
+		s += "maxActionsOk: " + maxActionsOk + ";\n";
+		s += "maxTimesOk: " + maxTimesOk + ";\n";
+		s += "minActionsOk: " + minActionsOk + ";\n";
+		s += "minTimesOk: " + minTimesOk + ";\n";
+		s += "lastMinSup: " + lastMinSup + ";\n";
+		s += "lastMinItens: " + lastMinItens + ";\n";
+		
+		s += mapStringToString("pageViewActionIds", pageViewActionIds);
+		s += mapIntegerToString("pageViewActionCount", pageViewActionCount);
+		s += mapStringToString("usersSequences", usersSequences);
+		
+		s += "users.size: " + users.size() + ";\n";
+		s += "sessions.size: " + sessions.size() + ";\n";
+		
+		return s;
+	}
+	
+	private String mapIntegerToString(String mapName, HashMap<String, Integer> map) {
+		Set<String> keySet = map.keySet();
+		String s = mapName + ".size: " + keySet.size() + ";\n";
+		for (String k : keySet) {
+		//	s += mapName + "[" + k + "]: " + map.get(k) + ";\n";
+		}
+		s += "\n";
+		return s;
+	}
+	
+	private String mapStringToString(String mapName, HashMap<String, String> map) {
+		Set<String> keySet = map.keySet();
+		String s = mapName + ".size: " + keySet.size() + ";\n";
+		for (String k : keySet) {
+		//	s += mapName + "[" + k + "]: " + map.get(k) + ";\n";
+		}
+		s += "\n";
+		return s;
+	}
 }

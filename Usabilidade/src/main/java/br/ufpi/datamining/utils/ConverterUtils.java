@@ -19,4 +19,8 @@ public class ConverterUtils {
 		return bigDecimal;
 	}
 	
+	public static double notNaN(Double d) {
+		return d.equals(Double.NaN) ? 0d : d;
+	}
+	
 }

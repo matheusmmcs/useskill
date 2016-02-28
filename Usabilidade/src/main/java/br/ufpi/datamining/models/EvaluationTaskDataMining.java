@@ -162,4 +162,50 @@ public class EvaluationTaskDataMining implements Serializable {
 	public void setMeanTimeLoading(Long meanTimeLoading) {
 		this.meanTimeLoading = meanTimeLoading;
 	}
+	
+	public String toString() {
+		/*
+		private Long id;
+		private EvaluationTestDataMining evaluationTest;
+		private TaskDataMining taskDataMining;
+		
+		private Date evalLastDate;
+		private Double evalMeanActions;
+		private Double evalMeanTimes;
+		private Double evalMeanCompletion;
+		private Double evalMeanCorrectness;
+		private Double evalZScoreActions;
+		private Double evalZScoreTime;
+		private Double evalEfficiency;
+		private Double evalEffectiveness;
+		private Double evalEfficiencyNormalized;
+		private Double evalEffectivenessNormalized;
+		private Double evalFuzzyPriority;
+		private Integer evalCountSessions;
+		private Double evalCountSessionsNormalized;
+		
+		private Long meanTimeLoading;
+		 */
+		
+		String s = "--------- EvaluationTaskDataMining --------\n";
+		s += "evalLastDate: " + evalLastDate +";\n";
+		s += "evalMeanActions: " + evalMeanActions + ";\n";
+		s += "evalMeanTimes: " + evalMeanTimes + ";\n";
+		s += "evalMeanCompletion: " + evalMeanCompletion + ";\n";
+		s += "evalMeanCorrectness: " + evalMeanCorrectness + ";\n";
+		s += "evalZScoreActions: " + evalZScoreActions + ";\n";
+		s += "evalZScoreTime: " + evalZScoreTime + ";\n";
+		s += "evalEfficiency: " + evalEfficiency + ";\n";
+		s += "evalEffectiveness: " + evalEffectiveness + ";\n";
+		s += "evalEfficiencyNormalized: " + evalEfficiencyNormalized + ";\n";
+		s += "evalEffectivenessNormalized: " + evalEffectivenessNormalized + ";\n";
+		s += "evalFuzzyPriority: " + evalFuzzyPriority + ";\n";
+		s += "evalCountSessions: " + evalCountSessions + ";\n";
+		s += "evalCountSessionsNormalized: " + evalCountSessionsNormalized + ";\n";
+		s += "meanTimeLoading: " + meanTimeLoading + ";\n";
+		s += "\n";
+		
+		return s;
+		
+	}
 }

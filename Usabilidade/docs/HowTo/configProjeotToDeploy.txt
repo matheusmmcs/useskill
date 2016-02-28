@@ -1,0 +1,11 @@
+
+1 - Configurações necessárias para realizar deploy:
+
+- Duas persistence-unit:
+    default 	/src/main/resources/hibernate.properties 		-> dados de configurações, tarefas, testes, etc. da UseSkill
+    onthefly 	/src/main/resources/META-INF/persistence.xml 	-> dados capturados pela UseSkill Capture
+
+2 - Configurar app.js para rodar em produção:
+
+- Comentar .constant('env', 'dev') e descomentar .constant('env', 'prod');
+

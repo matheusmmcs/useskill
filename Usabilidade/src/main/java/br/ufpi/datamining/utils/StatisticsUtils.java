@@ -11,7 +11,11 @@ public class StatisticsUtils {
         for(double a : ds){
         	sum += a;
         }
-        return sum/ds.length;
+        if (ds.length > 0) {
+        	return sum/ds.length;
+        }else {
+        	return 0;
+        }
     }
     
     public static double getVarianceSample(double[] data){
@@ -20,7 +24,8 @@ public class StatisticsUtils {
         for(double a :data){
         	sumExp += a*a;
         }
-        return (sumExp-(data.length*(mean*mean)))/(data.length-1);
+        Double res = (sumExp-(data.length*(mean*mean)))/(data.length-1);
+        return res.equals(Double.NaN) ? 0d : res;
     }
 
     public static double getVariancePopulation(double[] data){
@@ -29,19 +34,20 @@ public class StatisticsUtils {
         for(double a :data){
         	sumExp += a*a;
         }
-        return (sumExp/data.length) - (mean*mean);
+        Double res = (sumExp/data.length) - (mean*mean);
+        return res.equals(Double.NaN) ? 0d : res;
     }
 
     public static double getStdDevPopulation(double[] data){
-    	StandardDeviation sSample = new StandardDeviation(true);
-    	StandardDeviation sPopul = new StandardDeviation(false);
-    	double s = Math.sqrt(getVariancePopulation(data));
+    	//StandardDeviation sSample = new StandardDeviation(true);
+    	//StandardDeviation sPopul = new StandardDeviation(false);
+    	Double s = Math.sqrt(getVariancePopulation(data));
     	
-    	System.out.println(sSample.evaluate(data));
-    	System.out.println(sPopul.evaluate(data));
+    	//System.out.println(sSample.evaluate(data));
+    	//System.out.println(sPopul.evaluate(data));
     	System.out.println(s);
     	
-    	return s;
+    	return s.equals(Double.NaN) ? 0d : s;
     }
     
     public static double getStdDevSample(double[] data){

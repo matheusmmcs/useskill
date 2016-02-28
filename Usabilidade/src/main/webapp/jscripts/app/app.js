@@ -21,7 +21,7 @@ angular.module('useskill',
     	apiUrl: '/Usabilidade'
     },
     prod: {
-    	apiUrl: ''
+    	apiUrl: '/useskill'
     }
 })
 		
@@ -755,9 +755,13 @@ angular.module('useskill',
 	var taskCtrl = this;
 	
 	taskCtrl.evalTestId = evalTestId;
-	var map = evaluate.data.map;
+	var map = evaluate.data.string;
+	map = JSON.parse( map );
+	
+	console.log(map);
+	
 	for (var i in map) {
-		taskCtrl[map[i][0]] = JSON.parse(map[i][1]);
+		taskCtrl[i] = map[i];
 	}
 	
 	console.log("init taskEvaluate: ", evaluate, evalTestId);

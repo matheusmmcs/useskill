@@ -246,13 +246,24 @@ public class DataMiningTestController extends BaseController {
 		
 		Date initialDate = new Date(initDate);
 		Date finalDate = new Date(endDate);
+		FieldSearch fieldSearch = new FieldSearch(field, field, null, null);
 		
-		List<CountActionsAux> counts = WebUsageMining.countActionsByRestrictions(idTeste, new FieldSearch(field, field, null, null), testeDataMiningRepository, actionDataMiningRepository, initialDate, finalDate);
+		List<CountActionsAux> counts = WebUsageMining.countActionsByRestrictions(idTeste, fieldSearch, testeDataMiningRepository, actionDataMiningRepository, initialDate, finalDate);
+		List<CountActionsAux> countsResult = new ArrayList<CountActionsAux>();
+		CountActionsAux empty = new  CountActionsAux("-", fieldSearch, 0l);
+		long count = 0l;
 		for (CountActionsAux c : counts) {
 			System.out.println(c.getDescription() + " -> " + c.getCount());
+			if (c.getDescription() == null || c.getDescription().trim().equals("")) {
+				count += c.getCount();
+			} else {
+				countsResult.add(c);
+			}
 		}
+		empty.setCount(count);
+		countsResult.add(empty);
 		
-		result.use(Results.json()).from(gson.toJson(counts)).serialize();
+		result.use(Results.json()).from(gson.toJson(countsResult)).serialize();
 	}
 	
 	@Get("/testes/{idTeste}/sessaoespecifica/{username}/local/{local}/init/{initDate}/end/{endDate}/limit/{limit}")

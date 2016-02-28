@@ -22,7 +22,7 @@ import br.ufpi.models.Action;
 	@NamedQuery(name = "ActionDataMining.findById", query = "SELECT a FROM ActionDataMining a WHERE a.id = :id")
 })
 @Entity  
-@Table(name="actions")  
+@Table(name="Actions")  
 public class ActionDataMining implements Serializable {
 
 	private static final long serialVersionUID = 1L;
