@@ -382,109 +382,126 @@
 		        				<a ng-click="goToGuideStep('1')" class="btn litle-margin-x pull-right">{{ 'backStep' | translate }}</a>
 		        			</h2>
 		        			<div class="usdm-box-body">
-					            
+		        				
 					            <usdm-session-info session="sessionSelected"
 					            	graphsession="graphsession"
 					            	get-classification-from-enum="getClassificationFromEnum(clas)">
 					            </usdm-session-info>
-					            
 					            <hr/>
 					            
-					            <h3 class="usdm-title-margin">Grafo das Ações Realizadas na Sessão:</h3>
-					            <div id="mynetworkSession" class="graph-actions"></div>
-				            	<div class="btn-group network-options">
-								    <button ng-click="zoomOutGraph(graphIdsEnum.GRAPH_SESSION)" class="btn"><i class="icon-zoom-in"/></button>
-								    <button ng-click="zoomInGraph(graphIdsEnum.GRAPH_SESSION)" class="btn"><i class="icon-zoom-out"/></button>
-								    <button ng-click="resetZoomGraph(graphIdsEnum.GRAPH_SESSION)" class="btn"><i class="icon-screenshot"/></button>
-								    
-								    <button ng-click="forwardStepGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-forward"/></button>
-								    <button ng-click="backwardStepGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-backward"/></button>
-								    <button ng-click="repeatStepsGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-repeat"/></button>
-								    <!--
-								    <span style="line-height: 24px; padding: 0 10px;" class="pull-right">
-								    	Momento: <b>{{ sessionSelected.actions[positionStepView[graphIdsEnum.GRAPH_SESSION]-1].time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</b>; 
-								    	Passo num: {{positionStepView[graphIdsEnum.GRAPH_SESSION]}}.
-								    </span>
-								    -->
-								 </div>
-								 
-								 <div ng-show="taskCtrl.actionViewSelected != null">
-									 <usdm-action-info action="taskCtrl.actionViewSelected"
-									 	momento="sessionSelected.actions[positionStepView[graphIdsEnum.GRAPH_SESSION]-1].time | date:'dd/MM/yyyy HH:mm:ss'"
-									 	situations-enum="situationsEnum"
-									 	special-actions-enum="specialActionsEnum"
-									 	situation-aux="situationAux"
-									 	situation-special-aux="specialSituationAux"
-									 	on-select-situation="selectSituationAction(id, sit)"
-									 	on-select-special-situation="selectSpecialSituationAction(id, sit)">
-									 </usdm-action-info>
-					            </div>
-
-								<hr/>
+					            <h3 class="usdm-title-margin">Modos de Visualização:</h3>
+		        				<div class="row-fluid btn-group usdm-btn-group">
+								  <button type="button" class="btn usdm-div4"
+								  	ng-class=" {'active' : advancedShowGraph == true } " ng-click="advancedShowGraph = advancedShowGraph ? false : true">
+								  	Ver Grafo da Sessão
+								  </button>
+								  <button type="button" class="btn usdm-div4"
+								  	ng-class=" {'active' : advancedShowListActions == true } " ng-click="advancedShowListActions = advancedShowListActions ? false : true">
+								  	Ver Ações da Sessão
+								  </button>
+								  <button type="button" class="btn usdm-div4"
+								  	ng-class=" {'active' : advancedShowRequiredActions == true } " ng-click="advancedShowRequiredActions = advancedShowRequiredActions ? false : true">
+								  	Ver Ações Obrigatórias
+								  </button>
+								</div>
 					            
-					            <h3 class="usdm-title-margin">Lista de Ações Realizadas:</h3>
-					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-								  <thead>
-								    <tr>
-								      <th ts-criteria="id">Id</th>
-								      <th ts-criteria="id">Ok</th>
-								      <th ts-criteria="id">Err</th>
-								      <th ts-criteria="time |parseInt" ts-default="ascending">Hora</th>
-								      <th ts-criteria="action">Acao</th>
-								      <th ts-criteria="element|lowercase">Elemento</th>
-								      <th ts-criteria="local|lowercase">Local</th>
-								    </tr>
-								  </thead>
-								  <tbody>
-								    <tr ng-click="setActionViewSelected(action,true)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in sessionSelected.actions" ts-repeat>
-								      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
-								      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.OK)">
-								      	<i ng-show="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-sign"></i>
-								      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-circle"></i>
-								      </td>
-								      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.ERROR)">
-								      	<i ng-show="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-sign"></i>
-								      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-circle"></i>
-								      </td>
-								      <td>{{action.time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</td>
-								      <td>{{action.action}}</td>
-								      <td title="{{action.element}}">{{action.element | cut:true:15:'&hellip;'}}</td>
-								      <td title="{{action.local}}">{{action.local | cut:true:15:'&hellip;'}}</td>
-								    </tr>
-								  </tbody>
-								</table>
-								<div class="table-labels">
-									<span class="title">{{ 'label' | translate }}:</span>
-									<span ng-repeat="label in situationsEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
-									<span class="label label-info">{{ 'required' | translate }}</span>
+					            <div ng-show="advancedShowGraph">
+						            <h3 class="usdm-title-margin">Grafo das Ações Realizadas na Sessão:</h3>
+						            <div id="mynetworkSession" class="graph-actions"></div>
+					            	<div class="btn-group network-options">
+									    <button ng-click="zoomOutGraph(graphIdsEnum.GRAPH_SESSION)" class="btn"><i class="icon-zoom-in"/></button>
+									    <button ng-click="zoomInGraph(graphIdsEnum.GRAPH_SESSION)" class="btn"><i class="icon-zoom-out"/></button>
+									    <button ng-click="resetZoomGraph(graphIdsEnum.GRAPH_SESSION)" class="btn"><i class="icon-screenshot"/></button>
+									    
+									    <button ng-click="forwardStepGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-forward"/></button>
+									    <button ng-click="backwardStepGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-backward"/></button>
+									    <button ng-click="repeatStepsGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-repeat"/></button>
+									    <span style="line-height: 24px; padding: 0 10px;" class="pull-right">
+									    	Ação Atual (Passo): {{positionStepView[graphIdsEnum.GRAPH_SESSION]}}
+									    </span>
+									 </div>
 								</div>
 								
-								<hr/>
+								<div ng-show="advancedShowGraph || advancedShowListActions">
+									<div ng-show="taskCtrl.actionViewSelected != null" class="usdm-title-margin">
+										 <usdm-action-info action="taskCtrl.actionViewSelected"
+										 	momento="sessionSelected.actions[positionStepView[graphIdsEnum.GRAPH_SESSION]-1].time | date:'dd/MM/yyyy HH:mm:ss'"
+										 	situations-enum="situationsEnum"
+										 	special-actions-enum="specialActionsEnum"
+										 	situation-aux="situationAux"
+										 	situation-special-aux="specialSituationAux"
+										 	on-select-situation="selectSituationAction(id, sit)"
+										 	on-select-special-situation="selectSpecialSituationAction(id, sit)">
+										 </usdm-action-info>
+						            </div>
+					            </div>
 								
-								<h3 class="usdm-title-margin">Lista de Ações Obrigatórias Realizadas:</h3>
-					            <dl class="dl-with-margin-bottom" ng-show="taskCtrl.actionViewSelected != null">
-					            	<dt>Identificadores das Ações Obrigatórias:</dt>
-					            	<dd ng-bind-html="sessionActionsReqStr | sanitize"></dd>
-					            </dl>
-					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-								  <thead>
-								    <tr>
-								      <th ts-criteria="id">Ident.</th>
-								      <th ts-criteria="id">Id Ação</th>
-								      <th ts-criteria="id">Descrição</th>
-								    </tr>
-								  </thead>
-								  <tbody>
-								    <tr ng-class="{ 'action-required': action.isFound == true }" ng-repeat="action in sessionActionsRequired" ts-repeat>
-								      <td class="text-center">{{action.iddb}}</td>
-								      <td class="text-center">{{action.identifier}}</td>
-								      <td>{{action.resume}}</td>
-								    </tr>
-								  </tbody>
-								</table>
-								<div class="table-labels">
-									<span class="title">{{ 'label' | translate }}:</span>
-									<span class="label label-info">Ações Obrigatórias Encontradas</span>
+								<div ng-show="advancedShowListActions">
+						            <h3 class="usdm-title-margin">Lista de Ações Realizadas:</h3>
+						            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+									  <thead>
+									    <tr>
+									      <th ts-criteria="id">Id</th>
+									      <th ts-criteria="id">Ok</th>
+									      <th ts-criteria="id">Err</th>
+									      <th ts-criteria="time |parseInt" ts-default="ascending">Hora</th>
+									      <th ts-criteria="action">Acao</th>
+									      <th ts-criteria="element|lowercase">Elemento</th>
+									      <th ts-criteria="local|lowercase">Local</th>
+									    </tr>
+									  </thead>
+									  <tbody>
+									    <tr ng-click="setActionViewSelected(action,true)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in sessionSelected.actions" ts-repeat>
+									      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
+									      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.OK)">
+									      	<i ng-show="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-sign"></i>
+									      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-circle"></i>
+									      </td>
+									      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.ERROR)">
+									      	<i ng-show="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-sign"></i>
+									      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-circle"></i>
+									      </td>
+									      <td>{{action.time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</td>
+									      <td>{{action.action}}</td>
+									      <td title="{{action.element}}">{{action.element | cut:true:15:'&hellip;'}}</td>
+									      <td title="{{action.local}}">{{action.local | cut:true:15:'&hellip;'}}</td>
+									    </tr>
+									  </tbody>
+									</table>
+									<div class="table-labels">
+										<span class="title">{{ 'label' | translate }}:</span>
+										<span ng-repeat="label in situationsEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
+										<span class="label label-info">{{ 'required' | translate }}</span>
+									</div>
+									<hr/>
+								</div>
+								
+								<div ng-show="advancedShowRequiredActions">
+									<h3 class="usdm-title-margin">Lista de Ações Obrigatórias Realizadas:</h3>
+						            <dl class="dl-with-margin-bottom" ng-show="taskCtrl.actionViewSelected != null">
+						            	<dt>Identificadores das Ações Obrigatórias:</dt>
+						            	<dd ng-bind-html="sessionActionsReqStr | sanitize"></dd>
+						            </dl>
+						            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+									  <thead>
+									    <tr>
+									      <th ts-criteria="id">Ident.</th>
+									      <th ts-criteria="id">Id Ação</th>
+									      <th ts-criteria="id">Descrição</th>
+									    </tr>
+									  </thead>
+									  <tbody>
+									    <tr ng-class="{ 'action-required': action.isFound == true }" ng-repeat="action in sessionActionsRequired" ts-repeat>
+									      <td class="text-center">{{action.iddb}}</td>
+									      <td class="text-center">{{action.identifier}}</td>
+									      <td>{{action.resume}}</td>
+									    </tr>
+									  </tbody>
+									</table>
+									<div class="table-labels">
+										<span class="title">{{ 'label' | translate }}:</span>
+										<span class="label label-info">Ações Obrigatórias Encontradas</span>
+									</div>
 								</div>
 								
 		        			</div>
