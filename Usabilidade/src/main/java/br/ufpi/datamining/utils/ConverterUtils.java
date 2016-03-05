@@ -20,7 +20,7 @@ public class ConverterUtils {
 	}
 	
 	public static double notNaN(Double d) {
-		return d.equals(Double.NaN) ? 0d : d;
+		return d.equals(Double.NaN) || Double.isInfinite(d) ? 0d : d;
 	}
 	
 }

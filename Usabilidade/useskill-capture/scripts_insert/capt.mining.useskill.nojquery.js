@@ -45,7 +45,7 @@ try{
 	var bajb_backdetect = {Version:'1.0.0',Description:'Back Button Detection',Browser:{IE:!!(window.attachEvent&&!window.opera),Safari:navigator.userAgent.indexOf('Apple')>-1,Opera:!!window.opera},FrameLoaded:0,FrameTry:0,FrameTimeout:null,OnBack:function(){console.log('Back Button Clicked')},BAJBFrame:function(){var BAJBOnBack=document.getElementById('BAJBOnBack');if(bajb_backdetect.FrameLoaded>1){if(bajb_backdetect.FrameLoaded==2){bajb_backdetect.OnBack();history.back()}}bajb_backdetect.FrameLoaded++;if(bajb_backdetect.FrameLoaded==1){if(bajb_backdetect.Browser.IE){bajb_backdetect.SetupFrames()}else{bajb_backdetect.FrameTimeout=setTimeout("bajb_backdetect.SetupFrames();",700)}}},SetupFrames:function(){clearTimeout(bajb_backdetect.FrameTimeout);var BBiFrame=document.getElementById('BAJBOnBack');var checkVar=BBiFrame.src.substr(-11,11);if(bajb_backdetect.FrameLoaded==1&&checkVar!="HistoryLoad"){BBiFrame.src="blank.html?HistoryLoad"}else{if(bajb_backdetect.FrameTry<2&&checkVar!="HistoryLoad"){bajb_backdetect.FrameTry++;bajb_backdetect.FrameTimeout=setTimeout("bajb_backdetect.SetupFrames();",700)}}},SafariHash:'false',Safari:function(){if(bajb_backdetect.SafariHash=='false'){if(window.location.hash=='#b'){bajb_backdetect.SafariHash='true'}else{window.location.hash='#b'}setTimeout("bajb_backdetect.Safari();",100)}else if(bajb_backdetect.SafariHash=='true'){if(window.location.hash==''){bajb_backdetect.SafariHash='back';bajb_backdetect.OnBack();history.back()}else{setTimeout("bajb_backdetect.Safari();",100)}}},Initialise:function(){if(bajb_backdetect.Browser.Safari){setTimeout("bajb_backdetect.Safari();",600)}else{document.write('<iframe src="blank.html" style="display:none;" id="BAJBOnBack" onunload="alert(\'de\')" onload="bajb_backdetect.BAJBFrame();"></iframe>')}}};
 
 
-	/*!ß
+	/*
 	 * Verificar alteracoes no hash da URL.
 	 */
 	(function() {
@@ -372,37 +372,49 @@ try{
 			document.addEventListener("submit", function(e){ insertNewAcao(e, actionCapt.BROWSER_FORM_SUBMIT);} , false);
 			
 			//capturar dados do jheat
+			function getValueInputMeta(elem) {
+				if (elem) {
+					if (elem.length) {
+						return elem[0].value;
+					} else {
+						return elem.value;
+					}
+				} else {
+					return null;
+				}
+			}
+			
 			function getJhmName(){
-				var $elem = document.getElementsByName('flowName');
-				if($elem.length > 0 && $elem.value != ''){
-					return $elem.value;
+				var val = getValueInputMeta(document.getElementsByName('flowName'));
+				if(val != null && val != ''){
+					return val;
 				}else{
 					return getRegexValue(/(reportName|flowName|className)\=([^\&|\#]*)/g, true);
 				}
 			}
 
 			function getSectionJhm(){
-				var $elem = document.getElementsByName('sectionName');
-				if($elem.length > 0 && $elem.value != ''){
-					return $elem.value;
+				var val = getValueInputMeta(document.getElementsByName('sectionName'));
+				if(val != null && val != ''){
+					return val;
 				}else{
-					return getRegexValue(/(sectionName)\=([^\&|\#]*)/g, false);
+					return getRegexValue(/(sectionName)\=([^\&|\#]*)/g, true);
 				}
 			}
 
 			function getActionJhm(){
-				var $elem = document.getElementsByName('action');
-				if($elem.length > 0 && $elem.value != ''){
-					return $elem.value;
+				var val = getValueInputMeta(document.getElementsByName('action'));
+				if(val != null && val != ''){
+					return val;
 				}else{
-					return getRegexValue(/(action)\=([^\&|\#]*)/g, false);
-				}		
+					return getRegexValue(/(action)\=([^\&|\#]*)/g, true);
+				}
 			}		
 					
-			function getStepJhm(){		
-				var $elem = document.getElementsByName('step');
-				if($elem.length > 0 && $elem.value != ''){
-					return $elem.value;
+			function getStepJhm(){	
+				var val = getValueInputMeta(document.getElementsByName('step'));
+				if(val != null && val != ''){
+					return val;
 				}else{
 					return '';
 				}

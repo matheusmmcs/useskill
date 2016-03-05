@@ -325,7 +325,20 @@ public class WebUsageMining {
 						userSectionActions = actionDataMiningRepository.getUserActions(username, initialAction.getsTime(), nextInitialAction.getsTime(), taskDataMining.getDisregardActions());
 					}
 				} else {
-					userSectionActions = actionsFromInitialActionControl.get(initialAction.getId());
+					List<ActionDataMining> allUserSectionActions = actionsFromInitialActionControl.get(initialAction.getId());
+					userSectionActions = new ArrayList<ActionDataMining>();
+					for (ActionDataMining adm : allUserSectionActions) {
+						boolean include = true;
+						for (ActionTypeDataMiningEnum atdme : taskDataMining.getDisregardActions()) {
+							if (adm.getsActionType().equals(atdme.getAction())) {
+								include = false;
+								break;
+							}
+						}
+						if (include) {
+							userSectionActions.add(adm);
+						}
+					}
 				}
 				
 				

@@ -62,7 +62,7 @@ public class FrequentSequentialPatternMining {
 		
 		// execute the algorithm with minsup = 50 %
 		SequentialPatterns patterns = algo.runAlgorithm(sequenceDatabase, minsup, null);  
-		algo.printStatistics(sequenceDatabase.size());
+		//algo.printStatistics(sequenceDatabase.size());
 		
 		System.out.println(" == PATTERNS ==");
 		List<FrequentSequentialPatternResultVO> retorno = new ArrayList<FrequentSequentialPatternResultVO>();

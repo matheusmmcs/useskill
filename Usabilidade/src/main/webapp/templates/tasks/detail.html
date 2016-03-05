@@ -69,6 +69,7 @@
 		    	</div>
 		    </div>
 	        <div class="span8">
+	        
 	        	<h2>
 		    		{{ 'datamining.tasks.actions.start' | translate}}
 		    		<a class="btn btn-primary pull-right" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/{{taskCtrl.task.id}}/acoes/add">{{ 'datamining.tasks.actions.add' | translate}}</a>
@@ -84,7 +85,8 @@
 	                    </tr>
 	                </thead>
 	                <tbody>
-                        <tr ng-repeat="action in taskCtrl.task.actionsInitial | orderBy:'id'" ng-model="action.popovercontent" popup-title="action.description" popup="taskCtrl.popup.options">
+                        <tr ng-repeat="action in taskCtrl.task.actionsInitial | orderBy:'id'" ng-model="action.popovercontent" 
+                        	popup-title="action.description" popup="taskCtrl.popup.options" ng-click="selectAction(action)">
                         	<td class="td-link centertd w15">
                             	{{action.id}}
                             </td>
@@ -119,7 +121,8 @@
 	                    </tr>
 	                </thead>
 	                <tbody>
-                        <tr ng-repeat="action in taskCtrl.task.actionsEnd | orderBy:'id'" ng-model="action.popovercontent" popup-title="action.description" popup="taskCtrl.popup.options">
+                        <tr ng-repeat="action in taskCtrl.task.actionsEnd | orderBy:'id'" ng-model="action.popovercontent" 
+                        	popup-title="action.description" popup="taskCtrl.popup.options"  ng-click="selectAction(action)">
                             <td class="td-link centertd w15">
                             	{{action.id}}
                             </td>
@@ -154,7 +157,8 @@
 	                    </tr>
 	                </thead>
 	                <tbody>
-                        <tr ng-repeat="action in taskCtrl.task.actionsRequired | orderBy:'id'" ng-model="action.popovercontent" popup-title="action.description" popup="taskCtrl.popup.options">
+                        <tr ng-repeat="action in taskCtrl.task.actionsRequired | orderBy:'id'" ng-model="action.popovercontent" 
+                        	popup-title="action.description" popup="taskCtrl.popup.options"  ng-click="selectAction(action)">
                             <td class="td-link centertd w15">
                             	{{action.id}}
                             </td>
@@ -172,7 +176,14 @@
                         </tr>
 	                </tbody>
 	            </table>
-		            
+		        
+		        <div ng-show="actionSelectedContent != null">
+		        	<hr/>
+		        	<div class="usdm-box">
+		        		<h3 class="usdm-box-header">{{ 'datamining.tasks.actions.selected' | translate}}</h3>
+	        			<div class="usdm-box-body" ng-bind-html="actionSelectedContent | sanitize"></div>
+		        	</div>
+	        	</div>
 		            
 	        </div>
 	        

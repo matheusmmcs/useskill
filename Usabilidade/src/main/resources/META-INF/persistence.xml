@@ -46,10 +46,9 @@
 			<property name="hibernate.format_sql" value="true" />
 	
 			<!-- Ambiente de Desenvolvimento -->
-<!-- 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/useskill_fuzzy?jdbcCompliantTruncation=false" /> -->
-<!-- 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/usabilidade_control_athena?jdbcCompliantTruncation=false" /> -->
-
 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/usabilidade_onthefly_linode?jdbcCompliantTruncation=false" />
+			
+<!-- 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/usabilidade_control_athena?jdbcCompliantTruncation=false" /> -->
 			<property name="hibernate.connection.username" value="root" />
 			<property name="hibernate.connection.password" value="" />
 			

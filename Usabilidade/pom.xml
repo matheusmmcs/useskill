@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com.ufpi.useskill</groupId>
-	<artifactId>Usabilidade</artifactId>
+	<artifactId>UseSkill</artifactId>
 	<packaging>war</packaging>
-	<version>1.2.2</version>
-	<name>Usabilidade</name>
+	<version>1.4.0</version>
+	<name>UseSkill</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

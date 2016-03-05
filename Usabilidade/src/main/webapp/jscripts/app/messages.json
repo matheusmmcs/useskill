@@ -37,6 +37,8 @@
 	"date.initial": "Data Inicial",
 	"date.end": "Data Final",
 	
+	"datamining.validate.default" : "Preencha os campos obrigatórios (*) para prosseguir.",
+	
 	"datamining.back" : "Voltar",
 	"datamining.cancel" : "Cancelar",
 	"datamining.new" : "Criar",
@@ -70,7 +72,7 @@
 	"datamining.pattern.effectiveness.desc" : "Eficácia (Média de Sessões)",
 	"datamining.pattern.efficiency.desc" : "Eficiência (Média de Sessões)",
 	"datamining.pattern.rateSuccess.desc" : "Completude (Média de Sessões)",
-	"datamining.pattern.rateRequired.desc" : "Corretude (Média de Sessões)",
+	"datamining.pattern.rateRequired.desc" : "Exatidão (Média de Sessões)",
 	
 	
 	
@@ -143,7 +145,7 @@
 	"datamining.tasks.evaluate.sessions.total" : "Sessões",
 	
 	"datamining.tasks.evaluate.rateSuccess" : "Completude",
-	"datamining.tasks.evaluate.rateRequired" : "Corretude",
+	"datamining.tasks.evaluate.rateRequired" : "Exatidão",
 	"datamining.tasks.evaluate.priority" : "Prioridade",
 	
 	
@@ -163,6 +165,20 @@
 	
 	"datamining.tasks.evaluate.graphs.history" : "Histórico da Taxa de Sucesso",
 	"datamining.tasks.evaluate.graphs.completude" : "Completude das Sessões",
+	
+	
+	"datamining.tasks.session.information" : "Informações da Sessão",
+	"datamining.tasks.completition" : "Completude",
+	"datamining.tasks.correctness" : "Exatidão",
+	"datamining.tasks.classification" : "Classificação",
+	"datamining.tasks.class" : "Class.",
+	"datamining.tasks.time" : "Tempo",
+	"datamining.tasks.sessionnum" : "Sessão Num.",
+	"datamining.tasks.effectiveness" : "Eficácia",
+	"datamining.tasks.efficiency" : "Eficiência",
+	"datamining.tasks.nodecount" : "Qtd. Nós",
+	"datamining.tasks.edgecount" : "Qtd. Arestas",
+	"datamining.tasks.actionscount" : "Qtd. Ações",
 	
 	
 	"datamining.tasks.title" : "Título",
@@ -189,9 +205,10 @@
 	"datamining.tasks.actions.element.xpath" : "Elemento (XPath)",
 	"datamining.tasks.actions.url" : "Local",
 	"datamining.tasks.actions.url.url" : "URL",
-	"datamining.tasks.actions.url.jhm" : "Metadado (JHM)",
-	"datamining.tasks.actions.url.step" : "Metadado (StepMethod JHM)",
+	"datamining.tasks.actions.url.jhm" : "Metadado (Tarefa)",
+	"datamining.tasks.actions.url.step" : "Metadado (Passo da Tarefa)",
 	"datamining.tasks.actions.description" : "Descrição",
+	"datamining.tasks.actions.selected" : "Informações da Ação Selecionada",
 	
 	"datamining.tasks.actions.field.add" : "Adicionar Restrição",
 	"datamining.tasks.actions.field" : "Campo",

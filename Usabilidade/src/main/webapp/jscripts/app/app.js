@@ -235,6 +235,42 @@ angular.module('useskill',
     };
     return responseInterceptor;
 }])
+.factory("ShowMessage", ['$rootScope', '$filter', function($rootScope, $filter){
+	var showMessage = {
+		clear: function () {
+			$rootScope.success = null;
+			$rootScope.errors = null;
+		},
+		success: function (msg) {
+			showMessage.clear();
+			if (msg) {
+				$rootScope.success = $filter('translate')(msg);
+			}
+		},
+		error: function (error) {
+			showMessage.clear();
+			if (error) {
+				var msgs = [];
+				msgs.push(error);
+				showMessage.errors(msgs);
+			}
+		},
+		errors: function (errors) {
+			showMessage.clear();
+			$rootScope.errors = [];
+			if (errors) {
+				for (var i in errors) {
+					var msg = errors[i];
+					console.log('error: ', msg, $filter('translate')(msg));
+					$rootScope.errors.push($filter('translate')(msg));
+				}
+			}
+			$rootScope.errors.concat(resp.errors);
+		}
+	};
+	
+	return showMessage;
+}])
 .factory("ServerAPI", ['$rootScope', '$q', '$http', 'env', 'config', 'cfpLoadingBar',
                 function($rootScope, $q, $http, env, config, cfpLoadingBar) {
 	
@@ -346,6 +382,49 @@ angular.module('useskill',
         
     };
 }])
+.factory("ValidateService", function(){
+	var validate = {
+		isNumeric: function(n) {
+			return !isNaN(parseFloat(n)) && isFinite(n);
+		},
+		task : function(task) {
+			if (task.title != null && task.title != "" &&
+				task.threshold != null && validate.isNumeric(task.threshold)) {
+				return true;
+			}
+			return false;
+		},
+		action: function(action) {
+			if (action != null &&
+				action.momentType != null && action.momentType != ""  &&
+				action.actionType != null && action.actionType != ""  &&
+				action.description != null && action.description != ""  &&
+				action.element != null && action.element != ""  &&
+				action.url != null && action.url != "") {
+				return true;
+			}
+			return false;
+			
+		}
+	};
+	return validate;
+})
+.factory("UtilsService", ['ValidateService', function(ValidateService){
+	var utils = {
+		formatDate : function(date) {
+			return moment(date, 'MMM DD, YYYY hh:mm:ss A').format('DD/MM/YYYY, HH:mm:ss');
+		},
+		datepickerToTimestamp: function(n) {
+			if (!ValidateService.isNumeric(n)) {
+				var time = moment(n, "DD-MM-YYYY HH:mm");
+				return time.valueOf();
+			} else {
+				return n;
+			}
+		}
+	};
+	return utils;
+}])
 
 //Enums
 
@@ -380,6 +459,7 @@ angular.module('useskill',
 	};
 })
 
+
 //Tests Controllers
 
 .controller('TestController', function(tests) {
@@ -390,7 +470,7 @@ angular.module('useskill',
 	var testCtrl = this;
 	testCtrl.test = JSON.parse(test.data.string);
 })
-.controller('TestTasksDatesViewController', function($filter, test, ServerAPI) {
+.controller('TestTasksDatesViewController', function($filter, test, ServerAPI, UtilsService) {
 	var testCtrl = this;
 	testCtrl.test = JSON.parse(test.data.string);
 	console.log(testCtrl.test);
@@ -402,18 +482,16 @@ angular.module('useskill',
 	testCtrl.minDate = new Date().getTime();
 	testCtrl.maxDate = new Date().getTime();
 	
-	testCtrl.formatDate = function(date) {
-		return moment(date, 'MMM DD, YYYY hh:mm:ss A').format('DD/MM/YYYY, HH:mm:ss');
-	}
+	testCtrl.formatDate = UtilsService.formatDate;
 	
 	testCtrl.createDates = function(){
-		testCtrl.minDate = typeof testCtrl.minDate === "object" ? testCtrl.minDate._i : testCtrl.minDate;
-		testCtrl.maxDate = typeof testCtrl.maxDate === "object" ? testCtrl.maxDate._i : testCtrl.maxDate;
+		var minDate = UtilsService.datepickerToTimestamp(testCtrl.minDate);
+		var maxDate = UtilsService.datepickerToTimestamp(testCtrl.maxDate);
 		
 		var newEval = angular.toJson({
 			idTeste: testCtrl.test.id, 
-			initDate: testCtrl.minDate, 
-			endDate: testCtrl.maxDate
+			initDate: minDate, 
+			endDate: maxDate
 		});
 		
 		ServerAPI.saveNewEvaluationTest(newEval).then(function(data) {
@@ -434,7 +512,7 @@ angular.module('useskill',
 	}
 	
 })
-.controller('TestTasksViewController', function(test, evalTest, ServerAPI, $route, $scope, $rootScope, $filter) {
+.controller('TestTasksViewController', function(test, evalTest, ServerAPI, $route, $scope, $rootScope, $filter, UtilsService) {
 	var testCtrl = this;
 	
 	testCtrl.test = JSON.parse(test.data.string);
@@ -448,20 +526,7 @@ angular.module('useskill',
 		});
 	});
 	
-	console.log(testCtrl);
-	
-	testCtrl.formatDate = function(date) {
-		return moment(date, 'MMM DD, YYYY hh:mm:ss A').format('DD/MM/YYYY, HH:mm:ss');
-	}
-	
-//	testCtrl.priority = function(){
-//		ServerAPI.priorityTest(testCtrl.test.id).success(function(data){
-//			$rootScope.mgsRealod = {
-//					success:$filter('translate')('datamining.tasks.priority.done')
-//			};
-//			$route.reload();
-//		});
-//	}
+	testCtrl.formatDate = UtilsService.formatDate;
 	
 	testCtrl.popup = {
 		  options: {
@@ -479,17 +544,18 @@ angular.module('useskill',
 		return $filter('number')(n, 2);
 	}
 	
+	//TODO: melhoria no método, renderizando um popup com html
 	function contentPopover(task){
 		var content = "";
 		task = task.actualEvaluation;
 		if (task) {
-			content = 'Data da Avaliação = '+task.evalLastDate+'<br/>';
+			content = 'Data da Avaliação = '+UtilsService.formatDate(task.evalLastDate)+'<br/>';
 			content += 'Média de Ações = '+reduceNumber(task.evalMeanActions)+' [z='+reduceNumber(task.evalZScoreActions)+']<br/>';
 			content += 'Média de Tempos = '+reduceNumber(task.evalMeanTimes)+', [z='+reduceNumber(task.evalZScoreTime)+']<br/>';
-			content += 'Completude = '+reduceNumber(task.evalMeanCompletion)+', Corretude = '+reduceNumber(task.evalMeanCorrectness)+'<br/>';
+			content += 'Completude = '+reduceNumber(task.evalMeanCompletion)+', Exatidão = '+reduceNumber(task.evalMeanCorrectness)+'<br/>';
 			
 			content += 'Sessões = '+reduceNumber(task.evalCountSessions)+', ['+reduceNumber(task.evalCountSessionsNormalized)+']<br/>';
-			//content += 'Eficácia = (Completude * Corretude)/100<br/>';
+			//content += 'Eficácia = (Completude * Exatidão)/100<br/>';
 			content += 'Eficácia = '+reduceNumber(task.evalEffectiveness)+', ['+reduceNumber(task.evalEffectivenessNormalized)+']<br/>';
 			//content += 'Eficiência = Eficácia / ((AçõesZscore + TemposZscore)/2)<br/>';
 			content += 'Eficiência = '+reduceNumber(task.evalEfficiency)+', ['+reduceNumber(task.evalEfficiencyNormalized)+']<br/>';
@@ -507,7 +573,7 @@ angular.module('useskill',
 		}
 	}
 })
-.controller('TestMostAccessController', function($scope, $filter, $timeout, test, MostAccessTypeEnum, ServerAPI) {
+.controller('TestMostAccessController', function($scope, $filter, $timeout, test, MostAccessTypeEnum, ServerAPI, UtilsService) {
 	var testCtrl = this;
 	testCtrl.actionTitle = $filter('translate')('datamining.testes.featuresmostaccessed.search');
 	testCtrl.test = JSON.parse(test.data.string);
@@ -522,12 +588,13 @@ angular.module('useskill',
 	
 	
 	testCtrl.mostaccess = function() {
-		testCtrl.minDate = typeof testCtrl.minDate === "object" ? testCtrl.minDate._i : testCtrl.minDate;
-		testCtrl.maxDate = typeof testCtrl.maxDate === "object" ? testCtrl.maxDate._i : testCtrl.maxDate;
+		
+		var minDate = UtilsService.datepickerToTimestamp(testCtrl.minDate);
+		var maxDate = UtilsService.datepickerToTimestamp(testCtrl.maxDate);
 		
 		if (testCtrl.datatype !== undefined) {
-			console.log(testCtrl.testId, testCtrl.datatype.value, testCtrl.minDate, testCtrl.maxDate);
-			ServerAPI.getTestMostAccess(testCtrl.testId, testCtrl.datatype.value, testCtrl.minDate, testCtrl.maxDate).then(function(data){
+			console.log(testCtrl.testId, testCtrl.datatype.value, new Date(minDate), new Date(maxDate));
+			ServerAPI.getTestMostAccess(testCtrl.testId, testCtrl.datatype.value, minDate, maxDate).then(function(data){
 				console.log(data.data);
 				testCtrl.actions = JSON.parse(data.data.string);
 				
@@ -567,7 +634,7 @@ angular.module('useskill',
 		            }
 		        };
 				
-				var MIN = 3, MAX = 15;
+				var MIN = 3, MAX = 25;
 				$scope.sizePie = 5;
 				$scope.canChange = true;
 				
@@ -594,7 +661,7 @@ angular.module('useskill',
 						//rerender
 						$timeout(function(){
 							$scope.pieApi.refresh();
-							$timeout(function(){ $scope.canChange = true; }, 200);
+							$timeout(function(){ $scope.canChange = true; }, 1000);
 						});
 					}
 				}
@@ -609,7 +676,7 @@ angular.module('useskill',
 	}
 	
 })
-.controller('TestSpecificSessionController', function($filter, test, MostAccessTypeEnum, ServerAPI) {
+.controller('TestSpecificSessionController', function($filter, test, MostAccessTypeEnum, ServerAPI, UtilsService) {
 	var testCtrl = this;
 	testCtrl.actionTitle = $filter('translate')('datamining.testes.specificsession.search');
 	testCtrl.test = JSON.parse(test.data.string);
@@ -620,11 +687,11 @@ angular.module('useskill',
 	
 	testCtrl.actions = [];
 	testCtrl.specificSession = function() {
-		testCtrl.minDate = typeof testCtrl.minDate === "object" ? testCtrl.minDate._i : testCtrl.minDate;
-		testCtrl.maxDate = typeof testCtrl.maxDate === "object" ? testCtrl.maxDate._i : testCtrl.maxDate;
+		var minDate = UtilsService.datepickerToTimestamp(testCtrl.minDate);
+		var maxDate = UtilsService.datepickerToTimestamp(testCtrl.maxDate);
 		
-		console.log(testCtrl.testId, testCtrl.username, testCtrl.minDate, testCtrl.maxDate, testCtrl.limit);
-		ServerAPI.getSpecificSession(testCtrl.testId, testCtrl.username, testCtrl.local, testCtrl.minDate, testCtrl.maxDate, testCtrl.limit).then(function(data){
+		console.log(testCtrl.testId, testCtrl.username, minDate, maxDate, testCtrl.limit);
+		ServerAPI.getSpecificSession(testCtrl.testId, testCtrl.username, testCtrl.local, minDate, maxDate, testCtrl.limit).then(function(data){
 			testCtrl.actions = JSON.parse(data.data.string);
 			console.log(testCtrl.actions);
 		}, function(data){
@@ -672,6 +739,10 @@ angular.module('useskill',
 		ServerAPI.deleteAction(action, list);
 	}
 	
+	$scope.selectAction = function(action) {
+		$scope.actionSelectedContent = contentPopover(action);
+	}
+	
 	//gambys para a apresentação
 	jQuery('.popover').remove();
 	
@@ -714,7 +785,7 @@ angular.module('useskill',
 		return content;
 	}
 })
-.controller('TaskSaveController', function($scope, test, ServerAPI, ActionTypeEnum) {
+.controller('TaskSaveController', function($scope, test, ServerAPI, ActionTypeEnum, ShowMessage, ValidateService) {
 	this.task = {};
 	this.test = test;
 	this.actionTypes = ActionTypeEnum.types;
@@ -733,10 +804,14 @@ angular.module('useskill',
 	
 	this.save = function() {
 		this.task.testDataMining = this.test;
-		var task = angular.toJson({
-			'task' : this.task
-		});
-		ServerAPI.saveTask(task);
+		if (ValidateService.task(this.task)) {
+			var task = angular.toJson({
+				'task' : this.task
+			});
+			ServerAPI.saveTask(task);
+		} else {
+			ShowMessage.error('datamining.validate.default');
+		}
 	};
 })
 .controller('TaskNewController', function($scope, test, $controller, $filter) {
@@ -794,7 +869,7 @@ angular.module('useskill',
 				name: 'actionsCount', 
 				title: $filter('translate')('datamining.tasks.evaluate.actions.count.title'),
 				desc: $filter('translate')('datamining.tasks.evaluate.actions.count.title'),
-				notAnOption: false
+				notAnOption: true
 			},{
 				name: 'actionsRequiredCount', 
 				title: $filter('translate')('datamining.tasks.evaluate.actions.required.count.title'),
@@ -817,7 +892,6 @@ angular.module('useskill',
 			'userSessions': modesArr[1],
 			'sessions': modesArr[2],
 			'actions': modesArr[3],
-			'actionsCount': modesArr[4],
 			'pattern': modesArr[7]
 	}
 	
@@ -930,7 +1004,7 @@ angular.module('useskill',
 		},
 		error : {
 			id: "ERROR",
-			desc: '',
+			desc: $filter('translate')('datamining.tasks.evaluate.error'),
 			val: 3,
 			classLabel: 'label-important'
 		}
@@ -1211,15 +1285,18 @@ angular.module('useskill',
 	 ];
 	
 	//success graph
+	console.log(taskCtrl.result);
 	$scope.graphSuccessLabels = [
 	                             $filter('translate')('datamining.tasks.evaluate.complete'), 
 	                             $filter('translate')('datamining.tasks.evaluate.restart'),
-	                             $filter('translate')('datamining.tasks.evaluate.threshold')];
+	                             $filter('translate')('datamining.tasks.evaluate.threshold'),
+	                             $filter('translate')('datamining.tasks.evaluate.error')];
     $scope.graphSuccessData = [
                                	taskCtrl.result.countSessionsSuccess, 
                                	taskCtrl.result.countSessionsRepeat,
-                               	taskCtrl.result.countSessionsThreshold];
-    $scope.graphSuccessColours = ["#46BFBD", "#FDB45C", "#F7464A"];
+                               	taskCtrl.result.countSessionsThreshold,
+                               	taskCtrl.result.countSessionsError];
+    $scope.graphSuccessColours = ["#46BFBD", "#FDB45C", "#F7464A", "#999"];
     $scope.graphSuccessType = 'Pie';
     $scope.graphSuccessToggle = function () {
     	$scope.graphSuccessType = $scope.graphSuccessType === 'Pie' ? 'PolarArea' : 'Pie';
@@ -1262,7 +1339,20 @@ angular.module('useskill',
     $scope.minSup = (taskCtrl.result.lastMinSup * 100);
     $scope.minItens = taskCtrl.result.lastMinItens;
     
-    $scope.factorScaleX = 3;
+    var DEFAULT_SCALE = 3;
+    $scope.factorScaleX = DEFAULT_SCALE;
+    
+    $scope.changeFactorScaleX = function() {
+    	if (!isNumeric($scope.factorScaleX)) {
+        	$scope.factorScaleX = DEFAULT_SCALE;
+        }
+    	$scope.renderGraph();
+    }
+    
+    function isNumeric (n) {
+    	return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+    
     $scope.graphTypeEnum = {
     	PATTERNS: {
     		id: 'patterns',
@@ -1307,6 +1397,8 @@ angular.module('useskill',
     	var edgesFrom = [], edgesTo = [];
   	  	resetSituationAux(node.id);
   	    resetSpecialSituationAux(node.id);
+  	    
+  	    /*
   	  	angular.forEach(node.edges, function(edge){
   	  		if (edge.from.id != node.id) {
   	  			edgesFrom.push(edge.from.id);
@@ -1317,14 +1409,15 @@ angular.module('useskill',
   	  			edgesTo.push(edge.to.id);
   	  		}
   	  	});
+  	  	*/
   	  
   	  	//taskCtrl[edgeSelectedName] = null;
   	  	taskCtrl[nodeSelectedName] = {
   	  		'id': node.id,
   	  		'name': node.options.label,
   	  		'value': node.options.value,
-			'edgesFrom': edgesFrom.join(", "),
-			'edgesTo': edgesTo.join(", "),
+			//'edgesFrom': edgesFrom.join(", "),
+			//'edgesTo': edgesTo.join(", "),
 			'sessions': node.options.sessions,
 			'patternsCount': node.options.countPatterns,
 			'action': node.options.action,
@@ -1406,8 +1499,6 @@ angular.module('useskill',
 		changeMode('actions');
 	}
     
-    $scope.changeGraphType(false);
-    
     /** STEPS ON GRAPH **/
     $scope.positionStepView = {};
     $scope.positionStepView[$scope.graphIdsEnum.GRAPH_SESSION] = 0;
@@ -1463,7 +1554,7 @@ angular.module('useskill',
     $scope.goToGuideStep = function(step, data){
     	$scope.step = step;
     	if (step == "1") {
-    		//ordenar prioridade: classificacao > corretude > completude > tempo > qtd.acoes
+    		//ordenar prioridade: classificacao > exatidão > completude > tempo > qtd.acoes
     		var sess = taskCtrl.result.sessions;
     		sess.sort(function(a, b) {
     		    return a.actions.length - b.actions.length; //menor
@@ -1489,40 +1580,43 @@ angular.module('useskill',
     		
     		//filter for required actions dont done
     		$scope.sessionActionsReqStr = taskCtrl.task.actionsRequiredOrder;
-    		var groupActionsReq = taskCtrl.task.actionsRequiredOrder.split(","),
-    			actionsRequiredSession = [],
-    			actionsFound = [];
-    		
-    		//identify actions req has been done
-    		for (var gar in groupActionsReq) {
-    			var strActionsReqId = groupActionsReq[gar],
-    				actionsReqId = strActionsReqId.replace(/\[|\]/g,"").split(";"),
-    				containsAnyActionGroup = false;
-    			
-    			for (var ari in actionsReqId) {
-    				var actionReqId = actionsReqId[ari];
-    				for (var t in taskCtrl.task.actionsRequired) {
-    					var action = taskCtrl.task.actionsRequired[t];
-    					if (action.id == actionReqId) {
-    						var actionRes = findActionResultFromActionSingleDataMining(action);
-    						actionRes.isFound = false;
-            				for (var a in data.actions) {
-            					if (data.actions[a].identifier == actionRes.identifier) {
-            						containsAnyActionGroup = true;
-            						actionRes.isFound = true;
-            						break;
-            					}
-            				}
-            				actionsFound.push(actionRes);
-    					}
-    				}
-    			}
-    			
-    			//mark only when hasnt any actionreq of group
-    			if (!containsAnyActionGroup) {
-    				$scope.sessionActionsReqStr = $scope.sessionActionsReqStr.replace(strActionsReqId, '<b style="color: #C80707">'+strActionsReqId+'</b>');
-    			}
+    		if (taskCtrl.task.actionsRequiredOrder) {
+    			var groupActionsReq = taskCtrl.task.actionsRequiredOrder.split(","),
+	    			actionsRequiredSession = [],
+	    			actionsFound = [];
+	    		
+	    		//identify actions req has been done
+	    		for (var gar in groupActionsReq) {
+	    			var strActionsReqId = groupActionsReq[gar],
+	    				actionsReqId = strActionsReqId.replace(/\[|\]/g,"").split(";"),
+	    				containsAnyActionGroup = false;
+	    			
+	    			for (var ari in actionsReqId) {
+	    				var actionReqId = actionsReqId[ari];
+	    				for (var t in taskCtrl.task.actionsRequired) {
+	    					var action = taskCtrl.task.actionsRequired[t];
+	    					if (action.id == actionReqId) {
+	    						var actionRes = findActionResultFromActionSingleDataMining(action);
+	    						actionRes.isFound = false;
+	            				for (var a in data.actions) {
+	            					if (data.actions[a].identifier == actionRes.identifier) {
+	            						containsAnyActionGroup = true;
+	            						actionRes.isFound = true;
+	            						break;
+	            					}
+	            				}
+	            				actionsFound.push(actionRes);
+	    					}
+	    				}
+	    			}
+	    			
+	    			//mark only when hasnt any actionreq of group
+	    			if (!containsAnyActionGroup) {
+	    				$scope.sessionActionsReqStr = $scope.sessionActionsReqStr.replace(strActionsReqId, '<b style="color: #C80707">'+strActionsReqId+'</b>');
+	    			}
+	    		}
     		}
+    		
     		$scope.sessionActionsRequired = actionsFound;
     		
     		$scope.renderGraphSession(data);
@@ -1658,6 +1752,10 @@ angular.module('useskill',
     	};
     }
     
+    //initialize
+    $timeout(function(){ 
+    	$scope.changeGraphType(false);
+    }, 500);
     
 })
 
@@ -1666,7 +1764,7 @@ angular.module('useskill',
 .controller('ActionViewController', function(action) {
 	//todo
 })
-.controller('ActionNewController', function(task, $filter, ServerAPI, ActionTypeEnum, MomentTypeEnum) {
+.controller('ActionNewController', function(task, $filter, ServerAPI, ActionTypeEnum, MomentTypeEnum, ValidateService, ShowMessage) {
 	var actionCtrl = this;
 	actionCtrl.action = {};
 	actionCtrl.types = ActionTypeEnum.types;
@@ -1683,11 +1781,15 @@ angular.module('useskill',
 		if(actionCtrl.action.momentType){
 			actionCtrl.action.momentType = actionCtrl.action.momentType.value;
 		}
-		console.log(actionCtrl.action);
-		var action = angular.toJson({
-			'actionJHeatVO' : actionCtrl.action
-		});
-		ServerAPI.saveAction(action);
+		
+		if (ValidateService.action(actionCtrl.action)) {
+			var action = angular.toJson({
+				'actionJHeatVO' : actionCtrl.action
+			});
+			ServerAPI.saveAction(action);
+		} else {
+			ShowMessage.error('datamining.validate.default');
+		}
 	};
 })
 .controller('ActionEditController', function(action, $filter, ServerAPI) {

@@ -189,6 +189,9 @@ public class DataMiningTaskController extends BaseController {
 		Long init = new Date().getTime();
 		ResultEvaluationDataMining result = new ResultEvaluationDataMining();
 		
+		System.out.println("-#-#-#-#-#-#-#-#-#-#-#-# INICIO DA AVALIACAO #-#-#-#-#-#-#-#-#-#-#-#-");
+		System.out.println("-#-# Tempo Inicial: "+init);
+		
 		//persist results
 		TaskDataMining taskDataMining = taskDataMiningRepository.find(idTarefa);
 		EvaluationTestDataMining evaluationTest = evaluationTestDataMiningRepository.find(idEvaluationTest);
@@ -196,6 +199,8 @@ public class DataMiningTaskController extends BaseController {
 		ResultDataMining resultDataMining = WebUsageMining.analyze(idTarefa, evaluationTest.getInitDate().getTime(), evaluationTest.getLastDate().getTime(), taskDataMiningRepository, actionDataMiningRepository);
 		EvaluationTaskDataMining evaluation = taskDataMining.getEvaluationFromEvalTest(idEvaluationTest);
 		boolean newEvaluation = evaluation == null ? true : false;
+		
+		System.out.println("-#-# Finalizou WebUsageMining - analise inicial: " + new Date().getTime() );
 		
 		if (evaluation == null) {
 			evaluation = new EvaluationTaskDataMining();
@@ -231,17 +236,19 @@ public class DataMiningTaskController extends BaseController {
 		double lastMinSup = minSup != null ? minSup : 0d;
 		int defaultMinItens = minItens != null ? minItens : 4;
 		
+		System.out.println("-#-# Inicio do FrequentSequentialPatternMining: " + new Date().getTime() );
+		
 		if (evaluation.getEvalCountSessions() > 1) {
 			if (minSup != null) {
 				frequentPatterns = fspm.analyze(resultDataMining, lastMinSup, null, defaultMinItens);
 			} else {
 				//automatic patterns: (100/80/60/40/20)
-				double[] minSups = new double[]{1.0, 0.8, 0.6, 0.4, 0.2};
+				double[] minSups = new double[]{1.0, 0.75, 0.5, 0.25};
 				for (int i = 0; i < minSups.length; i++) {
 					if (frequentPatterns == null || frequentPatterns.size() == 0) {
 						lastMinSup = minSups[i];
 						//if (!(resultDataMining.getUsersSequences().size() < 2 && lastMinSup == 1.0)) {
-						System.out.println("--INICIAR FSPM: " + lastMinSup);
+						System.out.println("-- INICIAR SESSÃO FSPM: " + lastMinSup);
 						frequentPatterns = fspm.analyze(resultDataMining, minSups[i], null, defaultMinItens);
 						//}
 					}
@@ -251,7 +258,7 @@ public class DataMiningTaskController extends BaseController {
 		resultDataMining.setLastMinSup(lastMinSup);
 		resultDataMining.setLastMinItens(defaultMinItens);
 		
-		
+		System.out.println("-#-# Fim do FrequentSequentialPatternMining: " + new Date().getTime() );
 		
 		Long diffTime = new Date().getTime() - init;
 		if (evaluation.getMeanTimeLoading() != null) {
@@ -278,6 +285,9 @@ public class DataMiningTaskController extends BaseController {
 		
 		//sessions
 		//users
+		
+		resultDataMining.setSessions(resultDataMining.getSessions());
+		
 		
 		result.setFrequentPatterns(frequentPatterns);
 		result.setEvalTask(evaluation);

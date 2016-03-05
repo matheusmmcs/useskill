@@ -54,6 +54,10 @@ public class SessionResultDataMining {
 		this.userRateRequired = userRateRequired;
 	}
 	
+	public SessionResultDataMining() {
+		super();
+	}
+
 	public String getId() {
 		return id;
 	}
