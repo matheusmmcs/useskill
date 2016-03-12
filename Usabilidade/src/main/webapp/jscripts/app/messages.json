@@ -132,9 +132,9 @@
 	
 	"datamining.tasks.evaluate.users.sessions.title" : "Utilizações dos usuários",
 	"datamining.tasks.evaluate.user" : "Usuário",
-	"datamining.tasks.evaluate.actions.ok.title" : "Métricas de Ações (Sessões Completas)",
+	"datamining.tasks.evaluate.actions.ok.title" : "Ações (Sessões Completas)",
 	"datamining.tasks.evaluate.actions" : "Méd. Ações",
-	"datamining.tasks.evaluate.time.ok.title" : "Métricas de Tempo (Sessões Completas)",
+	"datamining.tasks.evaluate.time.ok.title" : "Tempo (Sessões Completas)",
 	"datamining.tasks.evaluate.time" : "Méd. Tempo",
 	
 	"datamining.tasks.evaluate.complete" : "Completo",

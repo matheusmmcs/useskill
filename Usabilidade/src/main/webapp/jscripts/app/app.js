@@ -155,22 +155,28 @@ angular.module('useskill',
 		        },
 		        evalTestId: function ($route) {
 		        	return $route.current.params.evalTestId;
+		        },
+		        sessionFilterParam: function ($route) {
+		        	return $route.current.params.sessionFilter;
 		        }
 		    },
 		    data: {
 		        longLoading: true
 		    }
 	    })
-	    .when('/testes/:testId/avaliacao/:evalTestId/tarefas/:taskId/avaliar/minsup/:minSup/minitens/:minItens', {
+	    .when('/testes/:testId/avaliacao/:evalTestId/tarefas/:taskId/avaliar/sessoes/:sessionFilter/minsup/:minSup/minitens/:minItens', {
 	    	controller:'TaskEvaluateController as taskCtrl',
 	    	templateUrl:config[env].apiUrl+'/templates/tasks/evaluate.html',
 	    	resolve: {
 		        evaluate: function (ServerAPI, $route) {
 		        	return ServerAPI.evaluateTaskParams($route.current.params.testId, $route.current.params.evalTestId, $route.current.params.taskId,
-		        									$route.current.params.minSup, $route.current.params.minItens);
+		        							$route.current.params.sessionFilter, $route.current.params.minSup, $route.current.params.minItens);
 		        },
 		        evalTestId: function ($route) {
 		        	return $route.current.params.evalTestId;
+		        },
+		        sessionFilterParam: function ($route) {
+		        	return $route.current.params.sessionFilter;
 		        }
 		    },
 		    data: {
@@ -340,8 +346,8 @@ angular.module('useskill',
         evaluateTask: function(testId, evalTestId, taskId){
         	return doRequest('GET', '/datamining/testes/'+testId+'/avaliacao/'+evalTestId+'/tarefas/'+taskId+'/avaliar');
         },
-        evaluateTaskParams: function(testId, evalTestId, taskId, minSup, minItens){
-        	return doRequest('GET', '/datamining/testes/'+testId+'/avaliacao/'+evalTestId+'/tarefas/'+taskId+'/avaliar/minsup/'+minSup+'/minitens/'+minItens);
+        evaluateTaskParams: function(testId, evalTestId, taskId, sessionFilter, minSup, minItens){
+        	return doRequest('GET', '/datamining/testes/'+testId+'/avaliacao/'+evalTestId+'/tarefas/'+taskId+'/avaliar/sessoes/'+sessionFilter+'/minsup/'+minSup+'/minitens/'+minItens);
         },
         
         
@@ -826,7 +832,7 @@ angular.module('useskill',
 	taskCtrl.task = task;
 	taskCtrl.actionTitle = $filter('translate')('datamining.tasks.edit');
 })
-.controller('TaskEvaluateController', function($scope, evaluate, evalTestId, $filter, ServerAPI, $timeout, $sce) {
+.controller('TaskEvaluateController', function($scope, evaluate, evalTestId, sessionFilterParam, $filter, ServerAPI, $timeout, $sce) {
 	var taskCtrl = this;
 	
 	taskCtrl.evalTestId = evalTestId;
@@ -1230,7 +1236,7 @@ angular.module('useskill',
 	$scope.showFrequentPattern = function(pattern){
 		taskCtrl.frequentPatternActive = pattern;
 		changeMode('pattern');
-		$scope.renderGraph();
+		$scope.renderGraph(false);
 	}
 	
 	function changeMode(newMode){
@@ -1335,21 +1341,70 @@ angular.module('useskill',
     }
     
     /*************   GRAFO   *************/
+    //ALL(0), SUCCESS(1), WITH_PROBLEM(2), ERROR(3), REPEAT(4), THRESHOLD(5);
+    $scope.sessionClassificationFilterEnum = {
+    	ALL: {
+    		val: 0,
+    		desc: 'Todas as Sessões'
+    	},
+    	SUCCESS: {
+    		val: 1,
+    		desc: 'Sessões "Completas"'
+    	},
+    	WITH_PROBLEM: {
+    		val: 2,
+    		desc: 'Sessões "Problemáticas" (Erro, Limiar e Repetição)'
+    	},
+    	ERROR: {
+    		val: 3,
+    		desc: 'Sessões "Erro"'
+    	},
+    	REPEAT: {
+    		val: 4,
+    		desc: 'Sessões "Reinício"'
+    	},
+    	THRESHOLD: {
+    		val: 5,
+    		desc: 'Sessões "Limiar"'
+    	},
+    }
     
+    var sessionKeyByRequest = getEnumKeyFromValue(sessionFilterParam);
     $scope.minSup = (taskCtrl.result.lastMinSup * 100);
     $scope.minItens = taskCtrl.result.lastMinItens;
     
-    var DEFAULT_SCALE = 3;
-    $scope.factorScaleX = DEFAULT_SCALE;
-    
-    $scope.changeFactorScaleX = function() {
-    	if (!isNumeric($scope.factorScaleX)) {
-        	$scope.factorScaleX = DEFAULT_SCALE;
-        }
-    	$scope.renderGraph();
+    if (sessionKeyByRequest) {
+    	$scope.sessionFilter = sessionKeyByRequest;
+    } else {
+    	$scope.sessionFilter = 'ALL';
     }
     
-    function isNumeric (n) {
+    function getEnumKeyFromValue(val) {
+    	if (val) {
+    		var keys = Object.keys($scope.sessionClassificationFilterEnum);
+        	for (var k in keys) {
+        		if ($scope.sessionClassificationFilterEnum[keys[k]].val == val) {
+        			return keys[k]; 
+        		}
+        	}
+    	}
+    	return null;
+    }
+    
+    
+    $scope.factorScaleXAux = 5;
+    $scope.factorScaleXAuxMin = 0.01;
+    $scope.factorScaleXAuxMax = 10;
+    $scope.factorScaleXAuxStep = 0.05;
+    
+    $scope.factorScaleX = $scope.factorScaleXAux;
+    $scope.changeScaleX = function(graphName) {
+    	$scope.factorScaleX = $scope.factorScaleXAux;
+    	$scope.renderGraphByType(graphName, true);
+    }
+    
+    
+    function isNumeric(n) {
     	return !isNaN(parseFloat(n)) && isFinite(n);
     }
     
@@ -1372,14 +1427,28 @@ angular.module('useskill',
     	isPatternsActual = isPatterns;
     	$scope.renderGraph();
     }
-    $scope.renderGraphSession = function(session) {
-    	var graphData = generateGraphSession(taskCtrl.frequentPatterns, session);
-    	$scope[$scope.graphIdsEnum.GRAPH_SESSION] = drawGraph('mynetworkSession', graphData, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX);
-    	$scope.resetGraph($scope.graphIdsEnum.GRAPH_SESSION, "actionViewSelected", "edgeSelectedSession");
-    	verifyInitialZoom($scope[$scope.graphIdsEnum.GRAPH_SESSION]);
-    	$scope[$scope.graphIdsEnum.GRAPH_SESSION].positionStep = 0;
+    
+    $scope.renderGraphByType = function(graphname, preserveY) {
+    	if (graphname == $scope.graphIdsEnum.GRAPH_SESSION) {
+    		$scope.renderGraphSession($scope.sessionSelected, preserveY);
+    	} else if (graphname == $scope.graphIdsEnum.GRAPH_DEFAULT) {
+    		$scope.renderGraph(preserveY);
+    	}
     }
-    $scope.renderGraph = function() {
+    
+    $scope.renderGraphSession = function(session, preserveY) {
+    	var graphData = generateGraphSession(taskCtrl.frequentPatterns, session);
+    	var graphname = $scope.graphIdsEnum.GRAPH_SESSION;
+    	preserveY = getPreserveY(preserveY, graphname);
+    	
+    	$scope[graphname] = drawGraph('mynetworkSession', graphData, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX, preserveY);
+    	
+    	$scope.resetGraph(graphname, "actionViewSelected", "edgeSelectedSession");
+    	verifyInitialZoom($scope[graphname]);
+    	$scope[graphname].positionStep = 0;
+    }
+    
+    $scope.renderGraph = function(preserveY) {
     	if (isPatternsActual) {
     		$scope.graphType = $scope.graphTypeEnum.PATTERNS;
     	} else {
@@ -1387,10 +1456,17 @@ angular.module('useskill',
     	}
     	
     	var graphData = generateGraphFrequentPatterns($scope.graphType.id, taskCtrl.frequentPatterns, taskCtrl.result.sessions);
-    	$scope[$scope.graphIdsEnum.GRAPH_DEFAULT] = drawGraph('mynetwork', graphData, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX);
+    	preserveY = getPreserveY(preserveY, $scope.graphIdsEnum.GRAPH_DEFAULT);
+    	
+    	$scope[$scope.graphIdsEnum.GRAPH_DEFAULT] = drawGraph('mynetwork', graphData, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX, preserveY);
+    	
     	$scope.resetGraph($scope.graphIdsEnum.GRAPH_DEFAULT, "nodeSelected", "edgeSelected");
     	verifyInitialZoom($scope[$scope.graphIdsEnum.GRAPH_DEFAULT]);
     	$scope[$scope.graphIdsEnum.GRAPH_DEFAULT].positionStep = 0;
+    }
+    
+    function getPreserveY (preserveY, graphname) {
+    	return preserveY ? ($scope[graphname] ? $scope[graphname].preserveY : false) : false;
     }
     
     function selectNode(node, nodeSelectedName, edgeSelectedName) {
@@ -1398,7 +1474,6 @@ angular.module('useskill',
   	  	resetSituationAux(node.id);
   	    resetSpecialSituationAux(node.id);
   	    
-  	    /*
   	  	angular.forEach(node.edges, function(edge){
   	  		if (edge.from.id != node.id) {
   	  			edgesFrom.push(edge.from.id);
@@ -1409,15 +1484,13 @@ angular.module('useskill',
   	  			edgesTo.push(edge.to.id);
   	  		}
   	  	});
-  	  	*/
   	  
-  	  	//taskCtrl[edgeSelectedName] = null;
   	  	taskCtrl[nodeSelectedName] = {
   	  		'id': node.id,
   	  		'name': node.options.label,
   	  		'value': node.options.value,
-			//'edgesFrom': edgesFrom.join(", "),
-			//'edgesTo': edgesTo.join(", "),
+			'edgesFrom': edgesFrom.join(", "),
+			'edgesTo': edgesTo.join(", "),
 			'sessions': node.options.sessions,
 			'patternsCount': node.options.countPatterns,
 			'action': node.options.action,
@@ -1426,16 +1499,22 @@ angular.module('useskill',
     }
     
     $scope.resetGraph = function(graphName, nodeSelectedName, edgeSelectedName) {
-    	console.log($scope[graphName]);
     	$scope[graphName].on("selectNode", function (params) {
       	  	var node = $scope[graphName].body.nodes[params.nodes[0]];
+      	  	
+      	  	taskCtrl[nodeSelectedName] = null;
+      	  	taskCtrl[edgeSelectedName] = null;
+      	  	
       	  	selectNode(node, nodeSelectedName, edgeSelectedName);
 	  		$scope.$apply();
         });
     	$scope[graphName].on("selectEdge", function (params) {
     		var edge = $scope[graphName].body.edges[params.edges[0]];
-    		//taskCtrl[nodeSelectedName] = null;
-	  		taskCtrl[edgeSelectedName] = {
+
+    		taskCtrl[nodeSelectedName] = null;
+      	  	taskCtrl[edgeSelectedName] = null;
+    		
+    		taskCtrl[edgeSelectedName] = {
 	  			'fromId' : edge.fromId,
 	  			'toId' : edge.toId,
 	  			'value' : edge.options.value,
@@ -1445,15 +1524,25 @@ angular.module('useskill',
 	  		console.log(edge, taskCtrl[edgeSelectedName]);
     		$scope.$apply();
         });
-    	$scope[graphName].on("deselectNode", function () {
+    	$scope[graphName].on("deselectNode", function (evt) {
     		taskCtrl[nodeSelectedName] = null;
+    		//var nodeid = evt.previousSelection.nodes[0];
+    		//console.log(nodeid, $scope[graphName].body.nodes[nodeid].y);
     		$scope.$apply();
     	});
     	$scope[graphName].on("deselectEdge", function () {
     		taskCtrl[edgeSelectedName] = null;
     		$scope.$apply();
     	});
-    	
+    	$scope[graphName].on("dragEnd", function (params) {
+      	  	var node = $scope[graphName].body.nodes[params.nodes[0]];
+      	  	if (!$scope[graphName].preserveY) {
+      	  		$scope[graphName].preserveY = {};
+      	  	}
+      	  	if (node && node.id != undefined) {
+      	  		$scope[graphName].preserveY[node.id] = node.y;
+      	  	}
+    	});
     }
     
     var factorScale = 0.1;
@@ -1468,16 +1557,27 @@ angular.module('useskill',
             scale: newScale >= 0 ? newScale : 0
         });
     }
-    $scope.resetZoomGraph = function(graphName){
+    $scope.resetZoomGraph = function(graphName, zoomOptions){
+    	var zoom = zoomOptions ? zoomOptions : $scope[graphName].initialZoom;
+    	console.log($scope[graphName]);
     	$scope[graphName].moveTo({
     		position: $scope[graphName].initialPosition,
-    		scale: $scope[graphName].initialZoom
+    		scale: zoomOptions
     	});
     }
+    
+    $scope.focusNodePosition = function(graphName, nodepos){
+    	nodepos--;
+    	var idFirstNode = Object.keys($scope[graphName].body.nodes)[nodepos];
+    	$scope[graphName].focus(idFirstNode);
+    }
+    
     function verifyInitialZoom(graph){
     	graph.initialZoom = graph.initialZoom != null ? graph.initialZoom : graph.getScale();
     	graph.initialPosition = graph.initialPosition != null ? graph.initialPosition : graph.getViewPosition();
     }
+    
+    
     
     
     $scope.redrawAll = function() {
@@ -1619,8 +1719,13 @@ angular.module('useskill',
     		
     		$scope.sessionActionsRequired = actionsFound;
     		
-    		$scope.renderGraphSession(data);
+    		$scope.renderGraphSession(data, false);
     		$scope.repeatStepsGraph($scope.graphIdsEnum.GRAPH_SESSION, data);
+    		
+        	//adjust to focus initial node
+        	$timeout(function(){ 
+        		$scope.resetZoomGraph($scope.graphIdsEnum.GRAPH_SESSION, 0.5);
+            }, 50);
     	}
     }
     

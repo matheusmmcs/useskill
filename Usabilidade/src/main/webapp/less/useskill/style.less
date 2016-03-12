@@ -325,10 +325,16 @@ ul.horizontal{
 @usdm-color-yellow: 	rgb(255, 242, 209);
 @usdm-color-blue: 		rgb(215, 234, 251);
 
+@usdm-color-vivid-gray: 	#BDC3C7;
+@usdm-color-darken-gray: 	#A2A8AF;
 @usdm-color-vivid-blue: 	#3498DB;
+@usdm-color-darken-blue: 	#0D6094;
 @usdm-color-vivid-red: 		#E74C3C;
+@usdm-color-darken-red: 	#992116;
 @usdm-color-vivid-green: 	#2ECC71;
-@usdm-color-vivid-black: 	#222;
+@usdm-color-darken-green: 	#08803A;
+@usdm-color-vivid-black: 	#555;
+@usdm-color-darken-black: 	#222;
 
 @color-sessios-text: 	#324b6f;
 @usdm-info-box-radius:	5px;
@@ -413,9 +419,16 @@ ul.horizontal{
 			overflow: auto;
 			max-height: 450px;
 			width: 100%;
+			
 			&-x {
 				position: relative;
 				overflow-x: auto;
+				width: 100%;
+			}
+			&-large {
+				position: relative;
+				overflow: auto;
+				max-height: 600px;
 				width: 100%;
 			}
 		}
@@ -595,31 +608,46 @@ ul.horizontal{
 				
 				&-header {
 					width: 100%;
-				    background: #AEB3B9;
 				    text-align: center;
 				    color: white;
 				    font-size: 18px;
 				    font-weight: bold;
+				    border-top-left-radius: @usdm-info-box-radius;
+					border-top-right-radius: @usdm-info-box-radius;
+				    
+				    background: @usdm-color-darken-gray;
+				    border: 1px solid darken(@usdm-color-darken-gray, 10%);
 				    
 				    &-st {
 				    	&-error {
-				    		background: @usdm-color-vivid-red !important;
+				    		background: @usdm-color-darken-red !important;
+				    		border: 1px solid darken(@usdm-color-darken-red, 10%);
 				    	}
 				    	&-ok {
-				    		background: @usdm-color-vivid-green !important;
+				    		background: @usdm-color-darken-green !important;
+				    		border: 1px solid darken(@usdm-color-darken-green, 10%);
 				    	}
 				    }
 				    
 				    &-sp {
 				    	&-end, &-initial {
-				    		background: @usdm-color-vivid-black !important;
+				    		background: @usdm-color-darken-black !important;
+				    		border: 1px solid darken(@usdm-color-darken-black, 10%);
 				    	}
 				    	&-required {
-				    		background: @usdm-color-vivid-blue !important;
+				    		background: @usdm-color-darken-blue !important;
+				    		border: 1px solid darken(@usdm-color-darken-blue, 10%);
 				    	}
 				    }
 				    
 				}
+			}
+			
+			&-close {
+				cursor: pointer;
+			    position: absolute;
+			    right: 13px;
+			    top: 13px;
 			}
 			
 			&-label {
@@ -686,6 +714,19 @@ ul.horizontal{
 		&btn-group {
 			.btn {
 				outline: none;
+			}
+		}
+		&min-range {
+			&-icon-left {
+				margin: 2px 2px 0 5px;
+			}
+			&-icon-right {
+				margin: 2px 5px 0 2px;
+			}
+			&-input {
+				width: 100px;
+			    height: 24px;
+			    margin: 0;
 			}
 		}
 	}

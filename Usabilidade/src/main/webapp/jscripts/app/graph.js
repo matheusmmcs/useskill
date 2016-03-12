@@ -163,7 +163,7 @@ function generateGraphSession (frequentPatterns, session) {
 			node = getNodeUseSkill(idActionAtual, arrNodes);
 		
 		if (!node) {
-			arrNodes.push({
+			node = {
 				id : idActionAtual,
 				label : 'Action ' + idActionAtual,
 				seq: idSeq,
@@ -173,13 +173,14 @@ function generateGraphSession (frequentPatterns, session) {
 				scaling : {
 					customScalingFunction : customScalingFunctionUseSkill
 				}
-			});
+			};
+			arrNodes.push(node);
 			idSeq++;
 		} else {
 			node.value++;
 			node.countPatterns++;
-			maxVal = node.value > maxVal ? node.value : maxVal;
 		}
+		maxVal = node.value > maxVal ? node.value : maxVal;
 		
 		if (actionAnterior != null) {
 			var idActionAnterior = actionAnterior.identifier;
@@ -246,7 +247,7 @@ function generateGraphFrequentPatterns (type, frequentPatterns, sessions) {
 			var node = getNodeUseSkill(idItemAtual, arrNodes);
 
 			if (!node) {
-				arrNodes.push({
+				node = {
 					id : idItemAtual,
 					label : 'Action ' + idItemAtual,
 					seq: idSeq,
@@ -256,13 +257,14 @@ function generateGraphFrequentPatterns (type, frequentPatterns, sessions) {
 					scaling : {
 						customScalingFunction : customScalingFunctionUseSkill
 					}
-				});
+				};
+				arrNodes.push(node);
 				idSeq++;
 			} else {
 				node.value++;
 				node.countPatterns++;
-				maxVal = node.value > maxVal ? node.value : maxVal;
 			}
+			maxVal = node.value > maxVal ? node.value : maxVal;
 
 			if (itemAnterior != null) {
 				var idItemAnterior = itemAnterior.idAction;
@@ -335,21 +337,38 @@ function generateGraphFrequentPatterns (type, frequentPatterns, sessions) {
 	};
 }
 
-function drawGraph(idContainer, graphData, sessions, actionsSituation, situationsEnum, factorScaleX){
+function drawGraph(idContainer, graphData, sessions, actionsSituation, situationsEnum, factorScaleX, preserveY){
 	var arrNodes = graphData.arrNodes, 
 		arrEdges = graphData.arrEdges,
-		maxVal = graphData.maxVal;
+		maxVal = graphData.maxVal,
+		actualNodesPosY = {};
 	
 	factorScaleX = factorScaleX || 3;
 	  
 	  //colorir grafo e organizar
-	  var posX = 0, scaleX = (50 + factorScaleX * maxVal);
+	  maxVal = maxVal < 7 ? 7 : maxVal;
+	  maxVal = maxVal > 50 ? 50 : maxVal;
+	  
+	  var posX = 0, scaleX = (50 + factorScaleX * maxVal), newPosY = 0;
+		
 	  arrNodes.sort(function(a, b) {
 		    return a.seq - b.seq;
 	  });
 	  for (var n in arrNodes) {
 		  arrNodes[n].x = posX * scaleX;
-		  arrNodes[n].y = getRandomIntUseSkill(0, 2 * scaleX);
+		  newPosY = getRandomIntUseSkill(0, 2 * scaleX);
+		  
+		  if (preserveY) {
+			  for (var oid in preserveY) {
+				  if (oid == arrNodes[n].id) {
+					  newPosY = preserveY[oid];
+					  break;
+				  }
+			  }
+		  }
+		  
+		  arrNodes[n].y = newPosY;
+		  actualNodesPosY[arrNodes[n].id] = newPosY;
 		  posX++;
 	  }
 	  
@@ -414,6 +433,7 @@ function drawGraph(idContainer, graphData, sessions, actionsSituation, situation
 	  }
       
       refreshGraph(network, actionsSituation, situationsEnum);
+      network.preserveY = actualNodesPosY;
       
       return network;
 }

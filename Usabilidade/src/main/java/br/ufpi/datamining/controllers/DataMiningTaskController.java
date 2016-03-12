@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Get;
@@ -34,6 +35,7 @@ import br.ufpi.datamining.models.aux.ResultDataMining;
 import br.ufpi.datamining.models.aux.ResultEvaluationDataMining;
 import br.ufpi.datamining.models.enums.MomentTypeActionDataMiningEnum;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
+import br.ufpi.datamining.models.enums.SessionClassificationDataMiningFilterEnum;
 import br.ufpi.datamining.models.vo.EvaluationTaskDataMiningVO;
 import br.ufpi.datamining.models.vo.FrequentSequentialPatternResultVO;
 import br.ufpi.datamining.models.vo.ReturnVO;
@@ -146,9 +148,9 @@ public class DataMiningTaskController extends BaseController {
 		}
 	}
 	
-	@Get("/testes/{idTeste}/avaliacao/{idEvaluationTest}/tarefas/{idTarefa}/avaliar/minsup/{minSup}/minitens/{minItens}")
+	@Get("/testes/{idTeste}/avaliacao/{idEvaluationTest}/tarefas/{idTarefa}/avaliar/sessoes/{sessionFilter}/minsup/{minSup}/minitens/{minItens}")
 	@Logado
-	public void avaliarParams(Long idTeste, Long idEvaluationTest, Long idTarefa, Double minSup, Integer minItens) {
+	public void avaliarParams(Long idTeste, Long idEvaluationTest, Long idTarefa, Integer sessionFilter, Double minSup, Integer minItens) {
 		Gson gson = new GsonBuilder()
 	        .setExclusionStrategies(TaskDataMiningVO.exclusionStrategy)
 	        .serializeSpecialFloatingPointValues()
@@ -157,7 +159,7 @@ public class DataMiningTaskController extends BaseController {
 		ResultEvaluationDataMining resultEval = null;
 		try {
 			minSup = minSup > 0 ? minSup / 100 : 0;
-			resultEval = this.avaliarTarefa(idTeste, idEvaluationTest, idTarefa, minSup, minItens);
+			resultEval = this.avaliarTarefa(idTeste, idEvaluationTest, idTarefa, minSup, minItens, sessionFilter);
 		} catch (Exception e) {
 			e.printStackTrace();
 			ReturnVO returnVO = new ReturnVO(ReturnStatusEnum.ERRO, "erro");
@@ -176,7 +178,7 @@ public class DataMiningTaskController extends BaseController {
 		
 		ResultEvaluationDataMining resultEval = null;
 		try {
-			resultEval = this.avaliarTarefa(idTeste, idEvaluationTest, idTarefa, null, null);
+			resultEval = this.avaliarTarefa(idTeste, idEvaluationTest, idTarefa, null, null, SessionClassificationDataMiningFilterEnum.ALL.getValue());
 		} catch (Exception e) {
 			e.printStackTrace();
 			ReturnVO returnVO = new ReturnVO(ReturnStatusEnum.ERRO, "erro");
@@ -185,18 +187,25 @@ public class DataMiningTaskController extends BaseController {
 		result.use(Results.json()).from(gson.toJson(resultEval)).serialize();
 	}
 		
-	private ResultEvaluationDataMining avaliarTarefa(Long idTeste, Long idEvaluationTest, Long idTarefa, Double minSup, Integer minItens) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
+	private ResultEvaluationDataMining avaliarTarefa(Long idTeste, Long idEvaluationTest, Long idTarefa, Double minSup, Integer minItens, Integer classificationFilterValue) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
 		Long init = new Date().getTime();
 		ResultEvaluationDataMining result = new ResultEvaluationDataMining();
 		
 		System.out.println("-#-#-#-#-#-#-#-#-#-#-#-# INICIO DA AVALIACAO #-#-#-#-#-#-#-#-#-#-#-#-");
 		System.out.println("-#-# Tempo Inicial: "+init);
 		
+		//FSPM
+		SessionClassificationDataMiningFilterEnum classificationFilter = SessionClassificationDataMiningFilterEnum.getByValue(classificationFilterValue);
+		if (classificationFilter == null) {
+			classificationFilter = SessionClassificationDataMiningFilterEnum.ALL;
+		}
+		
+		
 		//persist results
 		TaskDataMining taskDataMining = taskDataMiningRepository.find(idTarefa);
 		EvaluationTestDataMining evaluationTest = evaluationTestDataMiningRepository.find(idEvaluationTest);
 		
-		ResultDataMining resultDataMining = WebUsageMining.analyze(idTarefa, evaluationTest.getInitDate().getTime(), evaluationTest.getLastDate().getTime(), taskDataMiningRepository, actionDataMiningRepository);
+		ResultDataMining resultDataMining = WebUsageMining.analyze(idTarefa, evaluationTest.getInitDate().getTime(), evaluationTest.getLastDate().getTime(), classificationFilter, taskDataMiningRepository, actionDataMiningRepository);
 		EvaluationTaskDataMining evaluation = taskDataMining.getEvaluationFromEvalTest(idEvaluationTest);
 		boolean newEvaluation = evaluation == null ? true : false;
 		
@@ -234,13 +243,15 @@ public class DataMiningTaskController extends BaseController {
 		List<FrequentSequentialPatternResultVO> frequentPatterns = null;
 		
 		double lastMinSup = minSup != null ? minSup : 0d;
-		int defaultMinItens = minItens != null ? minItens : 4;
+		int defaultMinItens = minItens != null ? minItens : 5;
 		
 		System.out.println("-#-# Inicio do FrequentSequentialPatternMining: " + new Date().getTime() );
+		Map<String, String> usersSequences = resultDataMining.getUsersSequences();
+		
 		
 		if (evaluation.getEvalCountSessions() > 1) {
 			if (minSup != null) {
-				frequentPatterns = fspm.analyze(resultDataMining, lastMinSup, null, defaultMinItens);
+				frequentPatterns = fspm.analyze(usersSequences, lastMinSup, null, defaultMinItens);
 			} else {
 				//automatic patterns: (100/80/60/40/20)
 				double[] minSups = new double[]{1.0, 0.75, 0.5, 0.25};
@@ -249,7 +260,7 @@ public class DataMiningTaskController extends BaseController {
 						lastMinSup = minSups[i];
 						//if (!(resultDataMining.getUsersSequences().size() < 2 && lastMinSup == 1.0)) {
 						System.out.println("-- INICIAR SESSÃO FSPM: " + lastMinSup);
-						frequentPatterns = fspm.analyze(resultDataMining, minSups[i], null, defaultMinItens);
+						frequentPatterns = fspm.analyze(usersSequences, minSups[i], null, defaultMinItens);
 						//}
 					}
 				}

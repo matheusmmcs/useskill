@@ -34,6 +34,7 @@ import br.ufpi.datamining.models.aux.SessionResultDataMining;
 import br.ufpi.datamining.models.aux.UserResultDataMining;
 import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
+import br.ufpi.datamining.models.enums.SessionClassificationDataMiningFilterEnum;
 import br.ufpi.datamining.models.vo.FrequentSequentialPatternResultVO;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
@@ -130,10 +131,10 @@ public class WebUsageMining {
 		ActionDataMiningRepository actionDataMiningRepository = new ActionDataMiningRepository(entityManager);
 		
 		// 31 (1440990000000) / 15 (1439607600000) / 05 (1438743600000) / 01 (1438398000000)
-		ResultDataMining resultDataMining = analyze(14l, 1438398000000l, 1438743600000l, taskDataMiningRepository, actionDataMiningRepository);
+		ResultDataMining resultDataMining = analyze(14l, 1438398000000l, 1438743600000l, SessionClassificationDataMiningFilterEnum.ALL, taskDataMiningRepository, actionDataMiningRepository);
 		
 		FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
-		List<FrequentSequentialPatternResultVO> frequentPatterns = fspm.analyze(resultDataMining, 1.0, null, 7);
+		List<FrequentSequentialPatternResultVO> frequentPatterns = fspm.analyze(resultDataMining.getUsersSequences(), 1.0, null, 7);
 		
 		
 		System.out.println(frequentPatterns.size());
@@ -172,7 +173,7 @@ public class WebUsageMining {
 		//System.out.println(resultDataMining.getSessions().size());
 	}
 	
-	public static ResultDataMining analyze(Long taskId, Long initDate, Long endDate, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
+	public static ResultDataMining analyze(Long taskId, Long initDate, Long endDate, SessionClassificationDataMiningFilterEnum classificationFilter, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
 		
 		boolean DEBUG = true;//false;
 		TaskDataMining taskDataMining = taskDataMiningRepository.find(taskId);
@@ -357,6 +358,8 @@ public class WebUsageMining {
 				
 				//iterar acoes do usuario na sessao
 				ActionDataMining action = null;
+				String userSequenceSection = "";
+				
 				for(int j = 0; j < sectionSize; j++){
 					
 					if(okThreshold){
@@ -374,7 +377,7 @@ public class WebUsageMining {
 						}
 						pageViewActionDataMining.setIdentifier(pvaKey);
 						
-						userSequence += pvaKey + " -1 ";
+						userSequenceSection += pvaKey + " -1 ";
 						
 						//verificar se ação é "required"
 						if(actionsRequiredTask.get(pvaUnique) != null){
@@ -427,10 +430,10 @@ public class WebUsageMining {
 				
 				//
 				if (countActions == 0) {
-					userSequence += "0 -1 ";
+					userSequenceSection += "0 -1 ";
 				}
 				
-				userSequence += "-2\n";
+				userSequenceSection += "-2\n";
 				
 				if(action == null){
 					if(DEBUG){
@@ -467,6 +470,13 @@ public class WebUsageMining {
 				//statistics
 				if(classification.equals(SessionClassificationDataMiningEnum.ERROR)){
 					counterro++;
+					
+					//FSPM
+					if (classificationFilter.equals(SessionClassificationDataMiningFilterEnum.ALL) ||
+							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.WITH_PROBLEM) ||
+							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.ERROR)) {
+						userSequence += userSequenceSection;
+					}
 				}else if(classification.equals(SessionClassificationDataMiningEnum.SUCCESS)){
 					countok++;
 					countUserActionsSessionsOk += countActions;
@@ -478,13 +488,33 @@ public class WebUsageMining {
 					//statistics
 					actionsOkSize.add((double) countActions);
 					timesOkSize.add((double) sessionTime);
+					
+					//FSPM
+					if (classificationFilter.equals(SessionClassificationDataMiningFilterEnum.ALL) ||
+							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.SUCCESS)) {
+						userSequence += userSequenceSection;
+					}
 				}else if(classification.equals(SessionClassificationDataMiningEnum.REPEAT)){
 					countinit++;
+					
+					//FSPM
+					if (classificationFilter.equals(SessionClassificationDataMiningFilterEnum.ALL) ||
+							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.WITH_PROBLEM) ||
+							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.REPEAT)) {
+						userSequence += userSequenceSection;
+					}
 				}else if(classification.equals(SessionClassificationDataMiningEnum.THRESHOLD)){
 					countthreshold++;
+					
+					//FSPM
+					if (classificationFilter.equals(SessionClassificationDataMiningFilterEnum.ALL) ||
+							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.WITH_PROBLEM) ||
+							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.THRESHOLD)) {
+						userSequence += userSequenceSection;
+					}
 				}
-				
 			}
+			
 			
 			usersSequences.put(username, userSequence);
 			

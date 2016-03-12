@@ -114,9 +114,16 @@
 			            	</dt>
 			            </dl>
 			            <dl>
+			            	<dt>
+			            		<span>Sessões Mineradas:</span>
+			            		<select class="u-width-100" ng-model="sessionFilter" ng-options="key as filtro.desc for (key , filtro) in sessionClassificationFilterEnum"></select>
+			            		<div class="clear-both"></div>
+			            	</dt>
+			            </dl>
+			            <dl>
 			            	<dd>
 			            		<a class="btn btn-primary u-width-full" 
-			            			ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/avaliacao/{{taskCtrl.evalTestId}}/tarefas/{{taskCtrl.task.id}}/avaliar/minsup/{{ minSup }}/minitens/{{ minItens }}">
+			            			ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/avaliacao/{{taskCtrl.evalTestId}}/tarefas/{{taskCtrl.task.id}}/avaliar/sessoes/{{ sessionClassificationFilterEnum[sessionFilter].val }}/minsup/{{ minSup }}/minitens/{{ minItens }}">
 			            			<span class="icon-white icon-repeat"></span>
 			            			Minerar
 			            		</a>
@@ -162,22 +169,6 @@
 		    </div>
 	        <div class="span8">
 	        
-	        	<!--
-       			<div class="row-fluid" ng-show="sendDataChange">
-	            	<div class="alert alert-info">
-	            		<button type="button" class="close" ng-click="resetSendDataChange">&times;</button>
-					  	<div class="usdm-refresh-link">
-					  		<strong>Observação!</strong>
-				  			<span>Dados de ações obrigatórias foram modificados.</span> 
-					  		<a class="btn btn-primary" ng-click="saveChangeSituations()">
-					  			<i class="icon-white icon-repeat"></i>
-					  			Clique aqui para salvar!
-					  		</a>
-						</div>
-					</div>
-				</div>
-				-->
-	        
 	        	<div class="row-fluid">
 	        		<div class="span4">
 	        			<a class="usdm-clickable-box text-center" ng-class="{ 'usdm-clickable-box--active': isShowContentGraph() }" ng-click="showContentGraph()">
@@ -202,27 +193,37 @@
 	        		<div ng-show="isShowContentGraph()">
 		        		<div class="usdm-box">
 		        			<h2 class="usdm-box-header">
-		        				Visualizar Grafo
+		        				Visualizar Grafo de Padrões
 		        			</h2>
 		        			<div class="usdm-box-body">
-		        				<dl>
-					            	<dt class="ng-binding">Configurações do Grafo:</dt>
-					            	<dd class="ng-binding">
-					            		Quantidade de nós: <b>{{ graph.body.nodeIndices.length }}</b>.<br/>
-			            				Quantidade de arestas: <b>{{ graph.body.edgeIndices.length }}</b>.<br/>
-			            				Tipo do Grafo: <b>{{ graphType.desc }}</b>.<br/>
-			            				<span>Alterar Tipo do Grafo:</span> 
-			        					<a class="btn ng-binding" ng-class="{ 'btn-primary' : graphType.id == 'sessions' }" ng-click="changeGraphType(false)">{{ graphTypeEnum.SESSIONS.desc }}</a>
-			        					<a class="btn ng-binding" ng-class="{ 'btn-primary' : graphType.id == 'patterns' }" ng-click="changeGraphType(true)">{{ graphTypeEnum.PATTERNS.desc }}</a>
-			        					<br/>
-			        					Distância entre nós do Grafo (X): <input style="margin: 5px;" type="text" class="span1" placeholder="Distância entre nós (X)" ng-model="factorScaleX" ng-blur="changeFactorScaleX()" type="number" />
-					            	</dd>
-					            </dl>
+		        			
+					            <h3 class="usdm-title-margin">Configurações do Grafo:</h3>
+		        				<div class="row-fluid btn-group usdm-btn-group" ng-init="advancedShowGraph = true">
+								  <button type="button" class="btn usdm-div6"
+								  	ng-class=" {'active' : graphType.id == 'sessions' } " ng-click="changeGraphType(false)">
+								  	Baseado nas {{ graphTypeEnum.SESSIONS.desc }}
+								  </button>
+								  <button type="button" class="btn usdm-div6"
+								  	ng-class=" {'active' : graphType.id == 'patterns' } " ng-click="changeGraphType(true)">
+								  	Baseado nos {{ graphTypeEnum.PATTERNS.desc }}
+								  </button>
+								</div>
+								
 		        				<div id="mynetwork" class="graph-actions"></div>
 		        				<div class="btn-group network-options">
 								    <button ng-click="zoomOutGraph(graphIdsEnum.GRAPH_DEFAULT)" class="btn"><i class="icon-zoom-in"/></button>
 								    <button ng-click="zoomInGraph(graphIdsEnum.GRAPH_DEFAULT)" class="btn"><i class="icon-zoom-out"/></button>
 								    <button ng-click="resetZoomGraph(graphIdsEnum.GRAPH_DEFAULT)" class="btn"><i class="icon-screenshot"/></button>
+								    
+								    <i class="usdm-min-range-icon-left icon-resize-small"/>
+								    <input class="usdm-min-range-input" type="range" min="0.01" max="20" step="0.05"
+										ng-model="factorScaleXAux" ng-change="changeScaleX(graphIdsEnum.GRAPH_DEFAULT)" />
+								    <i class="usdm-min-range-icon-right icon-resize-full" />
+								    
+								    <!--
+								    <button ng-click="subScaleX(graphIdsEnum.GRAPH_DEFAULT)" class="btn"><i class="icon-resize-small"/></button>
+								    <button ng-click="addScaleX(graphIdsEnum.GRAPH_DEFAULT)" class="btn"><i class="icon-resize-full"/></button>
+								     -->
 								 </div>
 		        			</div>
 		        		</div>
@@ -251,33 +252,35 @@
 				            				Arestas Para: <b>{{ taskCtrl.nodeSelected.edgesTo }}</b>;<br/>
 				            				Arestas De: <b>{{ taskCtrl.nodeSelected.edgesFrom }}</b>;<br/>
 				            				Padrões Presentes: <b>{{ taskCtrl.nodeSelected.patternsCount }} de {{ taskCtrl.frequentPatterns.length }} ({{ ((taskCtrl.nodeSelected.patternsCount / taskCtrl.frequentPatterns.length) * 100) | number:2 }} %)</b>;<br/>
-				            				Quantidade de Sessões: <b>{{ taskCtrl.nodeSelected.sessions.length }} ({{ ((taskCtrl.nodeSelected.sessions.length / taskCtrl.result.sessions.length) * 100) | number:2 }} %)</b>.<br/>
+				            				Quantidade de Sessões: <b>{{ taskCtrl.nodeSelected.sessions.length }} de {{ taskCtrl.result.sessions.length }} ({{ ((taskCtrl.nodeSelected.sessions.length / taskCtrl.result.sessions.length) * 100) | number:2 }} %)</b>.<br/>
 						            	</dd>
 						            </dl>
 						            
 						            <h3 class="table-title">Sessões que contém este nó:</h3>
-						            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-							  			<thead>
-							  				<th ts-criteria="id|lowercase">Id</th>
-							  				<th ts-criteria="qdtActions|parseInt">{{ 'datamining.tasks.actionscount' | translate }}</th>
-							  				<th ts-criteria="time|parseInt">{{ 'datamining.tasks.time' | translate }}</th>
-							  				<th ts-criteria="success|parseFloat">{{ 'datamining.tasks.completition' | translate }}</th>
-							  				<th ts-criteria="required|parseFloat">{{ 'datamining.tasks.correctness' | translate }}</th>
-							  				<th ts-criteria="effectiveness|parseFloat">{{ 'datamining.tasks.effectiveness' | translate }}</th>
-							  				<th ts-criteria="efficiency|parseFloat">{{ 'datamining.tasks.efficiency' | translate }}</th>
-							  			</thead>
-							            <tbody>
-										    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.nodeSelected.sessions" ts-repeat>
-										      <td><a ng-click="showActionsSessionFromGraph(session)">{{session.id}}</a></td>
-										      <td>{{session.qdtActions}}</td>
-										      <td>{{session.time | msConverter}}</td>
-										      <td>{{session.success | number:2}}</td>
-										      <td>{{session.required | number:2}}</td>
-										      <td>{{session.effectiveness | number:2}}</td>
-										      <td>{{session.efficiency | number:2}}</td>
-										    </tr>
-										</tbody>
-									</table>
+						            <div class="usdm-withscroll">
+							            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  			<thead>
+								  				<th ts-criteria="id|lowercase">Id</th>
+								  				<th ts-criteria="qdtActions|parseInt">{{ 'datamining.tasks.actionscount' | translate }}</th>
+								  				<th ts-criteria="time|parseInt">{{ 'datamining.tasks.time' | translate }}</th>
+								  				<th ts-criteria="success|parseFloat">{{ 'datamining.tasks.completition' | translate }}</th>
+								  				<th ts-criteria="required|parseFloat">{{ 'datamining.tasks.correctness' | translate }}</th>
+								  				<th ts-criteria="effectiveness|parseFloat">{{ 'datamining.tasks.effectiveness' | translate }}</th>
+								  				<th ts-criteria="efficiency|parseFloat">{{ 'datamining.tasks.efficiency' | translate }}</th>
+								  			</thead>
+								            <tbody>
+											    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.nodeSelected.sessions" ts-repeat>
+											      <td><a ng-click="showActionsSessionFromGraph(session)">{{session.id}}</a></td>
+											      <td>{{session.qdtActions}}</td>
+											      <td>{{session.time | msConverter}}</td>
+											      <td>{{session.success | number:2}}</td>
+											      <td>{{session.required | number:2}}</td>
+											      <td>{{session.effectiveness | number:2}}</td>
+											      <td>{{session.efficiency | number:2}}</td>
+											    </tr>
+											</tbody>
+										</table>
+									</div>
 									<div class="table-labels">
 										<span class="title">{{ 'label' | translate }}:</span>
 										<span ng-repeat="label in classificationEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
@@ -298,28 +301,30 @@
 						            	</dd>
 						            </dl>
 						            <h3 class="table-title">Sessões que contém esta aresta:</h3>
-						            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-							  			<thead>
-							  				<th ts-criteria="id|lowercase">Id</th>
-							  				<th ts-criteria="qdtActions|parseInt">{{ 'datamining.tasks.actionscount' | translate }}</th>
-							  				<th ts-criteria="time|parseInt">{{ 'datamining.tasks.time' | translate }}</th>
-							  				<th ts-criteria="success|parseFloat">{{ 'datamining.tasks.completition' | translate }}</th>
-							  				<th ts-criteria="required|parseFloat">{{ 'datamining.tasks.correctness' | translate }}</th>
-							  				<th ts-criteria="effectiveness|parseFloat">{{ 'datamining.tasks.effectiveness' | translate }}</th>
-							  				<th ts-criteria="efficiency|parseFloat">{{ 'datamining.tasks.efficiency' | translate }}</th>
-							  			</thead>
-							            <tbody>
-										    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.edgeSelected.sessions" ts-repeat>
-										      <td><a ng-click="showActionsSessionFromGraph(session)">{{session.id}}</a></td>
-										      <td>{{session.qdtActions}}</td>
-										      <td>{{session.time | msConverter}}</td>
-										      <td>{{session.success | number:2}}</td>
-										      <td>{{session.required | number:2}}</td>
-										      <td>{{session.effectiveness | number:2}}</td>
-										      <td>{{session.efficiency | number:2}}</td>
-										    </tr>
-										</tbody>
-									</table>
+						            <div class="usdm-withscroll">
+							            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  			<thead>
+								  				<th ts-criteria="id|lowercase">Id</th>
+								  				<th ts-criteria="qdtActions|parseInt">{{ 'datamining.tasks.actionscount' | translate }}</th>
+								  				<th ts-criteria="time|parseInt">{{ 'datamining.tasks.time' | translate }}</th>
+								  				<th ts-criteria="success|parseFloat">{{ 'datamining.tasks.completition' | translate }}</th>
+								  				<th ts-criteria="required|parseFloat">{{ 'datamining.tasks.correctness' | translate }}</th>
+								  				<th ts-criteria="effectiveness|parseFloat">{{ 'datamining.tasks.effectiveness' | translate }}</th>
+								  				<th ts-criteria="efficiency|parseFloat">{{ 'datamining.tasks.efficiency' | translate }}</th>
+								  			</thead>
+								            <tbody>
+											    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.edgeSelected.sessions" ts-repeat>
+											      <td><a ng-click="showActionsSessionFromGraph(session)">{{session.id}}</a></td>
+											      <td>{{session.qdtActions}}</td>
+											      <td>{{session.time | msConverter}}</td>
+											      <td>{{session.success | number:2}}</td>
+											      <td>{{session.required | number:2}}</td>
+											      <td>{{session.effectiveness | number:2}}</td>
+											      <td>{{session.efficiency | number:2}}</td>
+											    </tr>
+											</tbody>
+										</table>
+									</div>
 									<div class="table-labels">
 										<span class="title">{{ 'label' | translate }}:</span>
 										<span ng-repeat="label in classificationEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
@@ -341,30 +346,32 @@
 		        				1 - Visualizar Sessões:
 		        			</h2>
 		        			<div class="usdm-box-body">
-		        				<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-								  <thead>
-								    <tr>
-								    	<th ts-criteria="order|parseInt" ts-default="ascending">Prior.</th>
-								      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
-								      <th ts-criteria="actions|parseInt">Acoes</th>
-								      <th ts-criteria="time|parseInt">Tempo</th>
-								      <th ts-criteria="userRateSuccess|parseFloat">Complet.</th>
-								      <th ts-criteria="userRateRequired*100|parseFloat">Corret.</th>
-								      <th ts-criteria="classification|lowercase">Classific.</th>
-								    </tr>
-								  </thead>
-								  <tbody>
-								    <tr class="session-{{session.classification}}" ng-repeat="session in sessionsGuide" ts-repeat>
-								      <td class="text-center">{{session.order}}</td>
-								      <td><a ng-click="showActionsSessionGuide(session)">{{session.id}}</a></td>
-								      <td>{{session.actions.length | number:2}}</td>
-								      <td>{{session.time | msConverter}}</td>
-								      <td>{{session.userRateSuccess | number:2}} %</td>
-								      <td>{{session.userRateRequired | number:2}} %</td>
-								      <td>{{getClassificationFromEnum(session.classification).desc}}</td>
-								    </tr>
-								  </tbody>
-								</table>
+		        				<div class="usdm-withscroll-large">
+			        				<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+									  <thead>
+									    <tr>
+									      <th ts-criteria="order|parseInt" ts-default="ascending">Prior.</th>
+									      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
+									      <th ts-criteria="actions.length|parseInt">Acoes</th>
+									      <th ts-criteria="time|parseInt">Tempo</th>
+									      <th ts-criteria="userRateSuccess|parseFloat">Complet.</th>
+									      <th ts-criteria="userRateRequired*100|parseFloat">Corret.</th>
+									      <th ts-criteria="classification|lowercase">Classific.</th>
+									    </tr>
+									  </thead>
+									  <tbody>
+									    <tr class="session-{{session.classification}}" ng-repeat="session in sessionsGuide" ts-repeat>
+									      <td class="text-center">{{session.order}}</td>
+									      <td><a ng-click="showActionsSessionGuide(session)">{{session.id}}</a></td>
+									      <td>{{session.actions.length | number:2}}</td>
+									      <td>{{session.time | msConverter}}</td>
+									      <td>{{session.userRateSuccess | number:2}} %</td>
+									      <td>{{session.userRateRequired | number:2}} %</td>
+									      <td>{{getClassificationFromEnum(session.classification).desc}}</td>
+									    </tr>
+									  </tbody>
+									</table>
+								</div>
 								<div class="table-labels">
 									<span class="title">{{ 'label' | translate }}:</span>
 									<span ng-repeat="label in classificationEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
@@ -390,18 +397,18 @@
 					            <hr/>
 					            
 					            <h3 class="usdm-title-margin">Modos de Visualização:</h3>
-		        				<div class="row-fluid btn-group usdm-btn-group">
+		        				<div class="row-fluid btn-group usdm-btn-group" ng-init="advancedShowGraph = true">
 								  <button type="button" class="btn usdm-div4"
 								  	ng-class=" {'active' : advancedShowGraph == true } " ng-click="advancedShowGraph = advancedShowGraph ? false : true">
-								  	Ver Grafo da Sessão
+								  	Grafo da Sessão
 								  </button>
 								  <button type="button" class="btn usdm-div4"
 								  	ng-class=" {'active' : advancedShowListActions == true } " ng-click="advancedShowListActions = advancedShowListActions ? false : true">
-								  	Ver Ações da Sessão
+								  	Lista de Ações da Sessão
 								  </button>
 								  <button type="button" class="btn usdm-div4"
 								  	ng-class=" {'active' : advancedShowRequiredActions == true } " ng-click="advancedShowRequiredActions = advancedShowRequiredActions ? false : true">
-								  	Ver Ações Obrigatórias
+								  	Lista de Ações Obrigatórias
 								  </button>
 								</div>
 					            
@@ -412,7 +419,13 @@
 									    <button ng-click="zoomOutGraph(graphIdsEnum.GRAPH_SESSION)" class="btn"><i class="icon-zoom-in"/></button>
 									    <button ng-click="zoomInGraph(graphIdsEnum.GRAPH_SESSION)" class="btn"><i class="icon-zoom-out"/></button>
 									    <button ng-click="resetZoomGraph(graphIdsEnum.GRAPH_SESSION)" class="btn"><i class="icon-screenshot"/></button>
-									    
+
+										<i class="usdm-min-range-icon-left icon-resize-small"/>
+									    <input class="usdm-min-range-input" type="range" min="0.01" max="20" step="0.05"
+											ng-model="factorScaleXAux" ng-change="changeScaleX(graphIdsEnum.GRAPH_SESSION)" />
+									    <i class="usdm-min-range-icon-right icon-resize-full" />
+
+								    
 									    <button ng-click="forwardStepGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-forward"/></button>
 									    <button ng-click="backwardStepGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-backward"/></button>
 									    <button ng-click="repeatStepsGraph(graphIdsEnum.GRAPH_SESSION, sessionSelected)" class="btn pull-right"><i class="icon-repeat"/></button>
@@ -438,36 +451,38 @@
 								
 								<div ng-show="advancedShowListActions">
 						            <h3 class="usdm-title-margin">Lista de Ações Realizadas:</h3>
-						            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-									  <thead>
-									    <tr>
-									      <th ts-criteria="id">Id</th>
-									      <th ts-criteria="id">Ok</th>
-									      <th ts-criteria="id">Err</th>
-									      <th ts-criteria="time |parseInt" ts-default="ascending">Hora</th>
-									      <th ts-criteria="action">Acao</th>
-									      <th ts-criteria="element|lowercase">Elemento</th>
-									      <th ts-criteria="local|lowercase">Local</th>
-									    </tr>
-									  </thead>
-									  <tbody>
-									    <tr ng-click="setActionViewSelected(action,true)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in sessionSelected.actions" ts-repeat>
-									      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
-									      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.OK)">
-									      	<i ng-show="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-sign"></i>
-									      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-circle"></i>
-									      </td>
-									      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.ERROR)">
-									      	<i ng-show="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-sign"></i>
-									      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-circle"></i>
-									      </td>
-									      <td>{{action.time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</td>
-									      <td>{{action.action}}</td>
-									      <td title="{{action.element}}">{{action.element | cut:true:15:'&hellip;'}}</td>
-									      <td title="{{action.local}}">{{action.local | cut:true:15:'&hellip;'}}</td>
-									    </tr>
-									  </tbody>
-									</table>
+						            <div class="usdm-withscroll-large">
+							            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+										  <thead>
+										    <tr>
+										      <th ts-criteria="id">Id</th>
+										      <th ts-criteria="id">Ok</th>
+										      <th ts-criteria="id">Err</th>
+										      <th ts-criteria="time |parseInt" ts-default="ascending">Hora</th>
+										      <th ts-criteria="action">Acao</th>
+										      <th ts-criteria="element|lowercase">Elemento</th>
+										      <th ts-criteria="local|lowercase">Local</th>
+										    </tr>
+										  </thead>
+										  <tbody>
+										    <tr ng-click="setActionViewSelected(action,true)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in sessionSelected.actions" ts-repeat>
+										      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
+										      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.OK)">
+										      	<i ng-show="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-sign"></i>
+										      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-circle"></i>
+										      </td>
+										      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.ERROR)">
+										      	<i ng-show="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-sign"></i>
+										      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-circle"></i>
+										      </td>
+										      <td>{{action.time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</td>
+										      <td>{{action.action}}</td>
+										      <td title="{{action.element}}">{{action.element | cut:true:15:'&hellip;'}}</td>
+										      <td title="{{action.local}}">{{action.local | cut:true:15:'&hellip;'}}</td>
+										    </tr>
+										  </tbody>
+										</table>
+									</div>
 									<div class="table-labels">
 										<span class="title">{{ 'label' | translate }}:</span>
 										<span ng-repeat="label in situationsEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
@@ -479,25 +494,35 @@
 								<div ng-show="advancedShowRequiredActions">
 									<h3 class="usdm-title-margin">Lista de Ações Obrigatórias Realizadas:</h3>
 						            <dl class="dl-with-margin-bottom" ng-show="taskCtrl.actionViewSelected != null">
-						            	<dt>Identificadores das Ações Obrigatórias:</dt>
+						            	<dt>
+						            		{{ 'datamining.tasks.correctness' | translate }}:
+						            	</dt>
+						            	<dd>
+						            		{{ sessionSelected.userRateRequired | number:2}}%
+						            	</dd>
+						            	<dt>
+						            		Identificadores das Ações Obrigatórias:
+						            	</dt>
 						            	<dd ng-bind-html="sessionActionsReqStr | sanitize"></dd>
 						            </dl>
-						            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-									  <thead>
-									    <tr>
-									      <th ts-criteria="id">Ident.</th>
-									      <th ts-criteria="id">Id Ação</th>
-									      <th ts-criteria="id">Descrição</th>
-									    </tr>
-									  </thead>
-									  <tbody>
-									    <tr ng-class="{ 'action-required': action.isFound == true }" ng-repeat="action in sessionActionsRequired" ts-repeat>
-									      <td class="text-center">{{action.iddb}}</td>
-									      <td class="text-center">{{action.identifier}}</td>
-									      <td>{{action.resume}}</td>
-									    </tr>
-									  </tbody>
-									</table>
+						            <div class="usdm-withscroll-large">
+							            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+										  <thead>
+										    <tr>
+										      <th ts-criteria="id">Ident.</th>
+										      <th ts-criteria="id">Id Ação</th>
+										      <th ts-criteria="id">Descrição</th>
+										    </tr>
+										  </thead>
+										  <tbody>
+										    <tr ng-class="{ 'action-required': action.isFound == true }" ng-repeat="action in sessionActionsRequired" ts-repeat>
+										      <td class="text-center">{{action.iddb}}</td>
+										      <td class="text-center">{{action.identifier}}</td>
+										      <td>{{action.resume}}</td>
+										    </tr>
+										  </tbody>
+										</table>
+									</div>
 									<div class="table-labels">
 										<span class="title">{{ 'label' | translate }}:</span>
 										<span class="label label-info">Ações Obrigatórias Encontradas</span>
@@ -594,55 +619,59 @@
 				    		<select ng-model="taskCtrl.mode" ng-options="m as m.desc for m in taskCtrl.modesArr | filter:{ notAnOption : false }" class="pull-right"></select>
 			            </h2>
 			            <div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'users'">
-				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-							  <thead>
-							    <tr>
-							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
-							      <th ts-criteria="actionsAverageOk|parseFloat">{{ 'datamining.tasks.evaluate.actions' | translate }}</th>
-							      <th ts-criteria="timesAverageOk|parseFloat">{{ 'datamining.tasks.evaluate.time' | translate }}</th>
-							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateSuccess' | translate }}</th>
-							      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateRequired' | translate }}</th>
-							      <th ts-criteria="countSessionsSuccess+countSessionsRepeat+countSessionsThreshold|parseInt">{{ 'datamining.tasks.evaluate.sessions.total' | translate }}</th>
-							    </tr>
-							  </thead>
-							  <tbody>
-							    <tr ng-repeat="user in taskCtrl.result.users" ts-repeat>
-							      <td><a ng-click="showUserSessions(user)">{{user.username}}</a></td>
-							      
-							      <td>{{user.actionsAverageOk | number:2}}</td>
-							      <td>{{user.timesAverageOk | msConverter}}</td>
-							      <td>{{user.rateSuccess | number:2}} %</td>
-							      <td>{{user.userRateRequired | number:2}} %</td>
-							      <td title="{{ 'datamining.tasks.evaluate.complete' | translate }} = {{user.countSessionsSuccess}} | {{ 'datamining.tasks.evaluate.restart' | translate }} = {{user.countSessionsRepeat}} | {{ 'datamining.tasks.evaluate.threshold' | translate }} = {{user.countSessionsThreshold}}">
-							      	{{user.countSessionsSuccess + user.countSessionsRepeat + user.countSessionsThreshold}}
-							      </td>
-							    </tr>
-							  </tbody>
-							</table>
+			            	<div class="usdm-withscroll-large">
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
+								      <th ts-criteria="actionsAverageOk|parseFloat">{{ 'datamining.tasks.evaluate.actions' | translate }}</th>
+								      <th ts-criteria="timesAverageOk|parseFloat">{{ 'datamining.tasks.evaluate.time' | translate }}</th>
+								      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateSuccess' | translate }}</th>
+								      <th ts-criteria="rateSuccess|parseFloat">{{ 'datamining.tasks.evaluate.rateRequired' | translate }}</th>
+								      <th ts-criteria="countSessionsSuccess+countSessionsRepeat+countSessionsThreshold|parseInt">{{ 'datamining.tasks.evaluate.sessions.total' | translate }}</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr ng-repeat="user in taskCtrl.result.users" ts-repeat>
+								      <td><a ng-click="showUserSessions(user)">{{user.username}}</a></td>
+								      
+								      <td>{{user.actionsAverageOk | number:2}}</td>
+								      <td>{{user.timesAverageOk | msConverter}}</td>
+								      <td>{{user.rateSuccess | number:2}} %</td>
+								      <td>{{user.userRateRequired | number:2}} %</td>
+								      <td title="{{ 'datamining.tasks.evaluate.complete' | translate }} = {{user.countSessionsSuccess}} | {{ 'datamining.tasks.evaluate.restart' | translate }} = {{user.countSessionsRepeat}} | {{ 'datamining.tasks.evaluate.threshold' | translate }} = {{user.countSessionsThreshold}}">
+								      	{{user.countSessionsSuccess + user.countSessionsRepeat + user.countSessionsThreshold}}
+								      </td>
+								    </tr>
+								  </tbody>
+								</table>
+							</div>
 						</div>
 						<div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'userSessions'">
-				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-							  <thead>
-							    <tr>
-							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
-							      <th ts-criteria="actions|parseInt">{{ 'datamining.tasks.actions' | translate }}</th>
-							      <th ts-criteria="time|parseInt">{{ 'datamining.tasks.time' | translate }}</th>
-							      <th ts-criteria="userRateSuccess|parseFloat">{{ 'datamining.tasks.completition' | translate }}</th>
-							      <th ts-criteria="userRateRequired*100|parseFloat">{{ 'datamining.tasks.correctness' | translate }}</th>
-							      <th ts-criteria="classification|lowercase">{{ 'datamining.tasks.class' | translate }}</th>
-							    </tr>
-							  </thead>
-							  <tbody>
-							    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.userSessions" ts-repeat>
-							      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
-							      <td>{{session.actions.length | number:2}}</td>
-							      <td>{{session.time | msConverter}}</td>
-							      <td>{{session.userRateSuccess | number:2}} %</td>
-							      <td>{{session.userRateRequired | number:2}} %</td>
-							      <td>{{getClassificationFromEnum(session.classification).desc}}</td>
-							    </tr>
-							  </tbody>
-							</table>
+							<div class="usdm-withscroll-large">
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
+								      <th ts-criteria="actions.length|parseInt">{{ 'datamining.tasks.actions' | translate }}</th>
+								      <th ts-criteria="time|parseInt">{{ 'datamining.tasks.time' | translate }}</th>
+								      <th ts-criteria="userRateSuccess|parseFloat">{{ 'datamining.tasks.completition' | translate }}</th>
+								      <th ts-criteria="userRateRequired*100|parseFloat">{{ 'datamining.tasks.correctness' | translate }}</th>
+								      <th ts-criteria="classification|lowercase">{{ 'datamining.tasks.class' | translate }}</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.userSessions" ts-repeat>
+								      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
+								      <td>{{session.actions.length | number:2}}</td>
+								      <td>{{session.time | msConverter}}</td>
+								      <td>{{session.userRateSuccess | number:2}} %</td>
+								      <td>{{session.userRateRequired | number:2}} %</td>
+								      <td>{{getClassificationFromEnum(session.classification).desc}}</td>
+								    </tr>
+								  </tbody>
+								</table>
+							</div>
 							<div class="table-labels">
 								<span class="title">{{ 'label' | translate }}:</span>
 								<span ng-repeat="label in classificationEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
@@ -650,28 +679,30 @@
 			            </div>
 			            
 			            <div class="usdm-box-body" ng-show="taskCtrl.mode.name == 'sessions'">
-				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-							  <thead>
-							    <tr>
-							      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
-							      <th ts-criteria="actions|parseInt">{{ 'datamining.tasks.actions' | translate }}</th>
-							      <th ts-criteria="time|parseInt">{{ 'datamining.tasks.time' | translate }}</th>
-							      <th ts-criteria="userRateSuccess|parseFloat">{{ 'datamining.tasks.completition' | translate }}</th>
-							      <th ts-criteria="userRateRequired*100|parseFloat">{{ 'datamining.tasks.correctness' | translate }}</th>
-							      <th ts-criteria="classification|lowercase">{{ 'datamining.tasks.class' | translate }}</th>
-							    </tr>
-							  </thead>
-							  <tbody>
-							    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.result.sessions" ts-repeat>
-							      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
-							      <td>{{session.actions.length | number:2}}</td>
-							      <td>{{session.time | msConverter}}</td>
-							      <td>{{session.userRateSuccess | number:2}} %</td>
-							      <td>{{session.userRateRequired | number:2}} %</td>
-							      <td>{{getClassificationFromEnum(session.classification).desc}}</td>
-							    </tr>
-							  </tbody>
-							</table>
+			            	<div class="usdm-withscroll-large">
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
+								      <th ts-criteria="actions.length|parseInt">{{ 'datamining.tasks.actions' | translate }}</th>
+								      <th ts-criteria="time|parseInt">{{ 'datamining.tasks.time' | translate }}</th>
+								      <th ts-criteria="userRateSuccess|parseFloat">{{ 'datamining.tasks.completition' | translate }}</th>
+								      <th ts-criteria="userRateRequired*100|parseFloat">{{ 'datamining.tasks.correctness' | translate }}</th>
+								      <th ts-criteria="classification|lowercase">{{ 'datamining.tasks.class' | translate }}</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr class="session-{{session.classification}}" ng-repeat="session in taskCtrl.result.sessions" ts-repeat>
+								      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
+								      <td>{{session.actions.length | number:2}}</td>
+								      <td>{{session.time | msConverter}}</td>
+								      <td>{{session.userRateSuccess | number:2}} %</td>
+								      <td>{{session.userRateRequired | number:2}} %</td>
+								      <td>{{getClassificationFromEnum(session.classification).desc}}</td>
+								    </tr>
+								  </tbody>
+								</table>
+							</div>
 							<div class="table-labels">
 								<span class="title">{{ 'label' | translate }}:</span>
 								<span ng-repeat="label in classificationEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
@@ -694,37 +725,39 @@
 								 	on-select-special-situation="selectSpecialSituationAction(id, sit)">
 								 </usdm-action-info>
 							</div>
-				            
-				            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
-							  <thead>
-							    <tr>
-							      <th ts-criteria="id">Id</th>
-							      <th ts-criteria="id">Ok</th>
-							      <th ts-criteria="id">Err</th>
-							      <th ts-criteria="time |parseInt" ts-default="ascending">Hora</th>
-							      <th ts-criteria="action">Acao</th>
-							      <th ts-criteria="element|lowercase">Elemento</th>
-							      <th ts-criteria="local|lowercase">Local</th>
-							    </tr>
-							  </thead>
-							  <tbody>
-							    <tr ng-click="setActionViewSelected(action)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in taskCtrl.userSession.actions" ts-repeat>
-							      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
-							      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.OK)">
-							      	<i ng-show="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-sign"></i>
-							      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-circle"></i>
-							      </td>
-							      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.ERROR)">
-							      	<i ng-show="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-sign"></i>
-							      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-circle"></i>
-							      </td>
-							      <td>{{action.time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</td>
-							      <td>{{action.action}}</td>
-							      <td title="{{action.element}}">{{action.element | cut:true:15:'&hellip;'}}</td>
-							      <td title="{{action.local}}">{{action.local | cut:true:15:'&hellip;'}}</td>
-							    </tr>
-							  </tbody>
-							</table>
+							
+				            <div class="usdm-withscroll-large">
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								      <th ts-criteria="id">Id</th>
+								      <th ts-criteria="id">Ok</th>
+								      <th ts-criteria="id">Err</th>
+								      <th ts-criteria="time |parseInt" ts-default="ascending">Hora</th>
+								      <th ts-criteria="action">Acao</th>
+								      <th ts-criteria="element|lowercase">Elemento</th>
+								      <th ts-criteria="local|lowercase">Local</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr ng-click="setActionViewSelected(action)" ng-class="{ 'action-required': action.required == true }" class="action-situation-{{idSituationAction(action.identifier)}}" ng-repeat="action in taskCtrl.userSession.actions" ts-repeat>
+								      <td color-action color-action-elem="action" color-ctrl="taskCtrl" title="Count = {{taskCtrl.result.pageViewActionCount[action.identifier]}}">{{action.identifier}}</td>
+								      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.OK)">
+								      	<i ng-show="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-sign"></i>
+								      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.OK)" class="icon-ok-circle"></i>
+								      </td>
+								      <td class="text-center" ng-click="setSituationAction(action.identifier, situationsEnum.ERROR)">
+								      	<i ng-show="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-sign"></i>
+								      	<i ng-hide="isSituationAction(action.identifier, situationsEnum.ERROR)" class="icon-remove-circle"></i>
+								      </td>
+								      <td>{{action.time | date:"dd/MM/yyyy ' ' HH:mm:ss"}}</td>
+								      <td>{{action.action}}</td>
+								      <td title="{{action.element}}">{{action.element | cut:true:15:'&hellip;'}}</td>
+								      <td title="{{action.local}}">{{action.local | cut:true:15:'&hellip;'}}</td>
+								    </tr>
+								  </tbody>
+								</table>
+							</div>
 							<div class="table-labels">
 								<span class="title">{{ 'label' | translate }}:</span>
 								<span ng-repeat="label in situationsEnum" ng-if="label.desc" class="label {{label.classLabel}}">{{label.desc}}</span>
@@ -890,7 +923,7 @@
 								  <thead>
 								    <tr>
 								      <th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
-								      <th ts-criteria="actions|parseInt">{{ 'datamining.tasks.actions' | translate }}</th>
+								      <th ts-criteria="actions.length|parseInt">{{ 'datamining.tasks.actions' | translate }}</th>
 								      <th ts-criteria="time|parseInt">{{ 'datamining.tasks.time' | translate }}</th>
 								      <th ts-criteria="userRateSuccess|parseFloat">{{ 'datamining.tasks.completition' | translate }}</th>
 								      <th ts-criteria="userRateRequired*100|parseFloat">{{ 'datamining.tasks.correctness' | translate }}</th>
