@@ -386,6 +386,13 @@ public class DataMiningTestController extends BaseController {
 		result.use(Results.json()).from(json).serialize();
 	}
 	
+	@Get("/testes/errorgenerator")
+	@Logado
+	public void errorgenerator() {
+		Integer x = null;
+		x.byteValue();
+	}
+	
 	@Get("/testes/control/{idTeste}/taskupdate")
 	@Logado
 	public void updateTaskControl(Long idTeste) {

@@ -195,7 +195,10 @@ angular.module('useskill',
 		    }
 	    })
 	    
-	    
+	    .when('/error', {
+	        templateUrl: config[env].apiUrl+'/templates/error.html',
+	        controller: 'ErrorController'
+	    })
 	    .otherwise({
 	    	redirectTo:'/'
 	    });
@@ -235,6 +238,7 @@ angular.module('useskill',
         },
         responseError: function(error) {
         	console.log('FALHOU!', error);
+        	$location.url('/error');
         	//$location.path(config[env].apiUrl+"/");
         	$rootScope.errors = [error.status+' - '+error.statusText];
         }
@@ -299,7 +303,6 @@ angular.module('useskill',
 			deferred.resolve(response);
 		}, function errorCallback(response) {
 			console.log('request error: ', response);
-			
 			deferred.reject(response);
 		}).finally(function(){
 			$rootScope.onRequest = false;
@@ -467,7 +470,11 @@ angular.module('useskill',
 
 
 //Tests Controllers
-
+.controller('ErrorController', function($scope, cfpLoadingBar, config, env) {
+	console.log('error controller');
+	$scope.urlapp = config[env].apiUrl;
+	cfpLoadingBar.complete();
+})
 .controller('TestController', function(tests) {
 	var testCtrl = this;
 	testCtrl.tests = JSON.parse(tests.data.string);
