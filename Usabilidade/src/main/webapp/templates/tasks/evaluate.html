@@ -76,12 +76,30 @@
 		            
 		            <div class="usdm-box-body">
 			            <dl>
-			            	<dt>{{ 'datamining.tasks.title' | translate}}:</dt>
+			            	<dt>{{ 'datamining.tasks.title' | translate}}:
+			            		<a class="btn btn-primary pull-right" ng-href="#/informacoes" target="blank">
+				            		<i class="icon-question-sign icon-white"></i>
+				            		{{ 'datamining.questions' | translate}}
+				            	</a>
+			            	</dt>
 			            	<dd>{{taskCtrl.task.title}}</dd>
 			            </dl>
 			            <dl>
 			            	<dt>{{ 'datamining.tasks.threshold' | translate}}:</dt>
 			            	<dd>{{taskCtrl.task.threshold}} {{ 'minutes' | translate}}</dd>
+			            </dl>
+			            <dl>
+			            	<dt>Datas da Avaliação:</dt>
+			            	<dd>
+			            		<span class="usdm-split-text">
+			            			<span class="pull-left">{{ 'date.initial' | translate }}:</span>
+			            			<span>{{ taskCtrl.formatDate(taskCtrl.evalTestDateInit) }}</span>
+			            		</span>
+			            		<span class="usdm-split-text">
+			            			<span class="pull-left">{{ 'date.end' | translate }}:</span>
+			            			<span>{{ taskCtrl.formatDate(taskCtrl.evalTestDateEnd) }}</span>
+			            		</span>
+			            	</dd>
 			            </dl>
 			            <dl>
 			            	<dt>Visualizar Detalhes da Tarefa:</dt>
@@ -90,6 +108,33 @@
 			            			<span class="icon-list-alt"></span>
 			            			Abrir Tarefa
 			            		</a>
+			            	</dd>
+			            </dl>
+		            </div>
+		            
+		            
+		            <h3 class="usdm-box-header">
+			    		{{ 'datamining.tasks.evaluate.graphs.completude' | translate}}
+		            </h3>  
+					  
+					<canvas id="base" class="chart-base" chart-type="graphSuccessType" data="graphSuccessData" 
+						labels="graphSuccessLabels" legend="true" click="graphSuccessToggle" colours="graphSuccessColours"></canvas>
+		              	
+					<hr/>
+					
+					<div class="usdm-box-body">
+			            <dl>
+			            	<dt>{{ 'datamining.tasks.evaluate.actions.ok.title' | translate}}:</dt>
+			            	<dd>
+			            		{{ 'qtd' | translate }}: <span class="text-green">{{taskCtrl.result.minActionsOk | number:0}}</span> {{ 'to' | translate }} <span class="text-red">{{taskCtrl.result.maxActionsOk | number:0}}</span> {{ 'actions' | translate }}. <br/>
+			            		{{ 'mean' | translate }}: <b>{{taskCtrl.result.meanActionsOk | number:2}}</b> | {{ 'stdv' | translate }}: <b>{{taskCtrl.result.stdDevActionsOk | number:2}} </b> {{ 'actions' | translate }}.
+			            	</dd>
+			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.tasks.evaluate.time.ok.title' | translate}}:</dt>
+			            	<dd>
+			            		{{ 'qtd' | translate }}: <span class="text-green">{{taskCtrl.result.minTimesOk | msConverter}}</span> {{ 'to' | translate }} <span class="text-red">{{taskCtrl.result.maxTimesOk | msConverter}}</span>. <br/>
+			            		{{ 'mean' | translate }}: <b>{{taskCtrl.result.meanTimesOk | msConverter}}</b> | {{ 'stdv' | translate }}: <b>{{taskCtrl.result.stdDevTimesOk | msConverter}}.</b>
 			            	</dd>
 			            </dl>
 		            </div>
@@ -132,31 +177,6 @@
 			            </dl>
 		            </div>
 		            
-		            <h3 class="usdm-box-header">
-			    		{{ 'datamining.tasks.evaluate.graphs.completude' | translate}}
-		            </h3>  
-					  
-					<canvas id="base" class="chart-base" chart-type="graphSuccessType" data="graphSuccessData" 
-						labels="graphSuccessLabels" legend="true" click="graphSuccessToggle" colours="graphSuccessColours"></canvas>
-		              	
-					<br/>
-					
-					<div class="usdm-box-body">
-			            <dl>
-			            	<dt>{{ 'datamining.tasks.evaluate.actions.ok.title' | translate}}:</dt>
-			            	<dd>
-			            		{{ 'qtd' | translate }}: <span class="text-green">{{taskCtrl.result.minActionsOk | number:0}}</span> {{ 'to' | translate }} <span class="text-red">{{taskCtrl.result.maxActionsOk | number:0}}</span> {{ 'actions' | translate }}. <br/>
-			            		{{ 'mean' | translate }}: <b>{{taskCtrl.result.meanActionsOk | number:2}}</b> | {{ 'stdv' | translate }}: <b>{{taskCtrl.result.stdDevActionsOk | number:2}} </b> {{ 'actions' | translate }}.
-			            	</dd>
-			            </dl>
-			            <dl>
-			            	<dt>{{ 'datamining.tasks.evaluate.time.ok.title' | translate}}:</dt>
-			            	<dd>
-			            		{{ 'qtd' | translate }}: <span class="text-green">{{taskCtrl.result.minTimesOk | msConverter}}</span> {{ 'to' | translate }} <span class="text-red">{{taskCtrl.result.maxTimesOk | msConverter}}</span>. <br/>
-			            		{{ 'mean' | translate }}: <b>{{taskCtrl.result.meanTimesOk | msConverter}}</b> | {{ 'stdv' | translate }}: <b>{{taskCtrl.result.stdDevTimesOk | msConverter}}.</b>
-			            	</dd>
-			            </dl>
-		            </div>
 					
 <!-- 					<h3 class="usdm-box-header"> -->
 <!-- 			    		{{ 'datamining.tasks.evaluate.graphs.history' | translate}} -->
@@ -197,7 +217,7 @@
 		        			</h2>
 		        			<div class="usdm-box-body">
 		        			
-					            <h3 class="usdm-title-margin">Configurações do Grafo:</h3>
+					            <h3 class="usdm-title-margin">Configurações do Grafo: ({{sessionClassificationFilterEnum[sessionKeyByRequest].desc}})</h3>
 		        				<div class="row-fluid btn-group usdm-btn-group" ng-init="advancedShowGraph = true">
 								  <button type="button" class="btn usdm-div6"
 								  	ng-class=" {'active' : graphType.id == 'sessions' } " ng-click="changeGraphType(false)">

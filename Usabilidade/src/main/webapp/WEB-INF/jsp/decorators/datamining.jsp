@@ -22,6 +22,14 @@
 	<script src="${pageContext.request.contextPath}/jscripts/libs/less-1.3.0.min.js"></script>
 	<script src="${pageContext.request.contextPath}/jscripts/libs/modernizr-2.5.3.js"></script>
 	
+	<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	<script type="text/x-mathjax-config">
+	  	MathJax.Hub.Config({
+  			TeX: { equationNumbers: { autoNumber: "AMS" } },
+			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+		});
+	</script>
+
 	<decorator:head />
 </head>
 <body ng-app="useskill">
@@ -62,7 +70,7 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-translate-loader-url.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-tablesort.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-chart/angular-chart.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/ui-bootstrap/ui-bootstrap-tpls-0.13.0.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/ui-bootstrap/ui-bootstrap-tpls-0.14.0.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/moment.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/datepicker/angular-datepicker.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/angular/angular-moment.js"></script>

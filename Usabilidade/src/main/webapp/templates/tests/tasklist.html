@@ -1,5 +1,4 @@
 <div class="container-padding-left">
-	
 		<ul class="breadcrumb">
 			<li>
 				<a ng-href="/"> 
@@ -60,13 +59,6 @@
 			            	<dt>{{ 'datamining.testes.url' | translate}}:</dt>
 			            	<dd>{{ testCtrl.test.urlSystem}}</dd>
 			            </dl>
-			            <dl>
-			            	<dt>{{ 'datamining.priority' | translate}}:</dt>
-			            	<dd>
-			            		<a disabled="disabled" class="btn btn-primary pull-right" ng-click="testCtrl.priority()" title="{{ 'datamining.priority' | translate}}"><span class="icon-white icon-tasks"></span> {{ 'datamining.priority' | translate}}</a>
-			            		<div class="clear-both"></div>
-							</dd>
-			            </dl>
 			            
 		            </div>
 		    	</div>
@@ -74,6 +66,10 @@
 	        <div class="span8">
 	            <h2>
 	            	{{ 'datamining.testes.evaluations.task' | translate}}
+	            	<a class="btn btn-primary pull-right" ng-href="#/informacoes" target="blank">
+	            		<i class="icon-question-sign icon-white"></i>
+	            		{{ 'datamining.questions' | translate}}
+	            	</a>
 	            </h2>
 	            <h4 class="usdm-mintitle">
 	            	({{ 'between' | translate }} <u>{{ testCtrl.formatDate(testCtrl.evalTest.initDate) }}</u> {{ 'and' | translate }}  <u>{{ testCtrl.formatDate(testCtrl.evalTest.lastDate) }}</u>)

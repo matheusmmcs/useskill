@@ -12,8 +12,8 @@ angular.module('useskill',
 		 'nvd3'
 		 ])
 
-.constant('env', 'dev')
-//.constant('env', 'prod')
+//.constant('env', 'dev')
+.constant('env', 'prod')
 		
 .constant('config', {
     appVersion: 0.1,
@@ -164,7 +164,7 @@ angular.module('useskill',
 		        longLoading: true
 		    }
 	    })
-	    .when('/testes/:testId/avaliacao/:evalTestId/tarefas/:taskId/avaliar/sessoes/:sessionFilter/minsup/:minSup/minitens/:minItens', {
+	    .when('/testes/:testId/avaliacao/:evalTestId/tarefas/:taskId/avaliar/sessoes/:sessionFilter/minsup/:minSup/minitens/:minItens/', {
 	    	controller:'TaskEvaluateController as taskCtrl',
 	    	templateUrl:config[env].apiUrl+'/templates/tasks/evaluate.html',
 	    	resolve: {
@@ -199,6 +199,13 @@ angular.module('useskill',
 	        templateUrl: config[env].apiUrl+'/templates/error.html',
 	        controller: 'ErrorController'
 	    })
+	    
+	    .when('/informacoes', {
+	        templateUrl: config[env].apiUrl+'/templates/informations.html',
+	        controller: 'InformationsController'
+	    })
+	    
+	    
 	    .otherwise({
 	    	redirectTo:'/'
 	    });
@@ -318,9 +325,6 @@ angular.module('useskill',
         getTest: function(testId){
             return doRequest('GET', '/datamining/testes/'+testId);
         },
-        priorityTest: function(testId){
-            return doRequest('GET', '/datamining/testes/'+testId+'/priorizar');
-        },
         saveTest: function(test){
         	return doRequest('POST', '/datamining/testes/salvar', test);
         },
@@ -423,6 +427,9 @@ angular.module('useskill',
 		formatDate : function(date) {
 			return moment(date, 'MMM DD, YYYY hh:mm:ss A').format('DD/MM/YYYY, HH:mm:ss');
 		},
+		momentTimestamp : function(date) {
+			return moment(date, 'MMM DD, YYYY hh:mm:ss A').valueOf();
+		},
 		datepickerToTimestamp: function(n) {
 			if (!ValidateService.isNumeric(n)) {
 				var time = moment(n, "DD-MM-YYYY HH:mm");
@@ -469,12 +476,17 @@ angular.module('useskill',
 })
 
 
-//Tests Controllers
 .controller('ErrorController', function($scope, cfpLoadingBar, config, env) {
 	console.log('error controller');
 	$scope.urlapp = config[env].apiUrl;
 	cfpLoadingBar.complete();
 })
+.controller('InformationsController', function($scope) {
+	console.log('info controller');
+})
+
+//Tests Controllers
+
 .controller('TestController', function(tests) {
 	var testCtrl = this;
 	testCtrl.tests = JSON.parse(tests.data.string);
@@ -496,6 +508,13 @@ angular.module('useskill',
 	testCtrl.maxDate = new Date().getTime();
 	
 	testCtrl.formatDate = UtilsService.formatDate;
+	testCtrl.momentTimestamp = UtilsService.momentTimestamp;
+	
+	for (var e in testCtrl.test.evaluations) {
+		var eval = testCtrl.test.evaluations[e];
+		eval.initTimestamp = testCtrl.momentTimestamp(eval.initDate);
+		eval.lastTimestamp = testCtrl.momentTimestamp(eval.lastDate);
+	}
 	
 	testCtrl.createDates = function(){
 		var minDate = UtilsService.datepickerToTimestamp(testCtrl.minDate);
@@ -839,9 +858,10 @@ angular.module('useskill',
 	taskCtrl.task = task;
 	taskCtrl.actionTitle = $filter('translate')('datamining.tasks.edit');
 })
-.controller('TaskEvaluateController', function($scope, evaluate, evalTestId, sessionFilterParam, $filter, ServerAPI, $timeout, $sce) {
+.controller('TaskEvaluateController', function($scope, evaluate, evalTestId, sessionFilterParam, $filter, ServerAPI, $timeout, $sce, UtilsService) {
 	var taskCtrl = this;
 	
+	taskCtrl.formatDate = UtilsService.formatDate;
 	taskCtrl.evalTestId = evalTestId;
 	var map = evaluate.data.string;
 	map = JSON.parse( map );
@@ -1376,15 +1396,14 @@ angular.module('useskill',
     	},
     }
     
-    var sessionKeyByRequest = getEnumKeyFromValue(sessionFilterParam);
+    $scope.sessionKeyByRequest = getEnumKeyFromValue(sessionFilterParam);
     $scope.minSup = (taskCtrl.result.lastMinSup * 100);
     $scope.minItens = taskCtrl.result.lastMinItens;
     
-    if (sessionKeyByRequest) {
-    	$scope.sessionFilter = sessionKeyByRequest;
-    } else {
-    	$scope.sessionFilter = 'ALL';
+    if (!$scope.sessionKeyByRequest) {
+    	$scope.sessionKeyByRequest = 'ALL';
     }
+    $scope.sessionFilter = $scope.sessionKeyByRequest;
     
     function getEnumKeyFromValue(val) {
     	if (val) {
@@ -1508,17 +1527,12 @@ angular.module('useskill',
     $scope.resetGraph = function(graphName, nodeSelectedName, edgeSelectedName) {
     	$scope[graphName].on("selectNode", function (params) {
       	  	var node = $scope[graphName].body.nodes[params.nodes[0]];
-      	  	
-      	  	taskCtrl[nodeSelectedName] = null;
-      	  	taskCtrl[edgeSelectedName] = null;
-      	  	
-      	  	selectNode(node, nodeSelectedName, edgeSelectedName);
-	  		$scope.$apply();
+      	  	selectNodeGraph(node, nodeSelectedName, edgeSelectedName);
         });
     	$scope[graphName].on("selectEdge", function (params) {
     		var edge = $scope[graphName].body.edges[params.edges[0]];
 
-    		taskCtrl[nodeSelectedName] = null;
+    		//taskCtrl[nodeSelectedName] = null;
       	  	taskCtrl[edgeSelectedName] = null;
     		
     		taskCtrl[edgeSelectedName] = {
@@ -1541,6 +1555,10 @@ angular.module('useskill',
     		taskCtrl[edgeSelectedName] = null;
     		$scope.$apply();
     	});
+    	$scope[graphName].on("dragStart", function (params) {
+      	  	//var node = $scope[graphName].body.nodes[params.nodes[0]];
+      	  	//selectNodeGraph(node, nodeSelectedName, edgeSelectedName);
+    	});
     	$scope[graphName].on("dragEnd", function (params) {
       	  	var node = $scope[graphName].body.nodes[params.nodes[0]];
       	  	if (!$scope[graphName].preserveY) {
@@ -1549,7 +1567,16 @@ angular.module('useskill',
       	  	if (node && node.id != undefined) {
       	  		$scope[graphName].preserveY[node.id] = node.y;
       	  	}
+      	  selectNodeGraph(node, nodeSelectedName, edgeSelectedName);
     	});
+    }
+    
+    function selectNodeGraph(node, nodeSelectedName, edgeSelectedName) {
+    	taskCtrl[nodeSelectedName] = null;
+  	  	taskCtrl[edgeSelectedName] = null;
+  	  	
+  	  	selectNode(node, nodeSelectedName, edgeSelectedName);
+  		$scope.$apply();
     }
     
     var factorScale = 0.1;
@@ -2178,7 +2205,6 @@ angular.module('useskill',
 		    	var loading = false;
 		    	
 		    	function initLongLoading() {
-		    		console.log('initLongLoading');
 		    		loading = true;
 		    		v = 0;
 		    		endFunc = false;
@@ -2188,7 +2214,6 @@ angular.module('useskill',
 		    	}
 		    	
 		    	function endLongLoading() {
-		    		console.log('endLongLoading');
 		    		loading = false;
 		    		v = 0;
 		    		endFunc = true;
@@ -2206,7 +2231,6 @@ angular.module('useskill',
 		    	
 		    	$rootScope.$on('cfpLoadingBar:loading', function(){
 		    		var x = jQuery('.loader__img');
-		    		console.log(loading, x.length);
 		    		if (loading && x.length) {
 		    			x.hide();
 		    		} else {

@@ -298,12 +298,14 @@ public class DataMiningTaskController extends BaseController {
 		//users
 		
 		resultDataMining.setSessions(resultDataMining.getSessions());
-		
+		EvaluationTestDataMining evaluationTestDataMining = evaluationTestDataMiningRepository.find(idEvaluationTest);
 		
 		result.setFrequentPatterns(frequentPatterns);
 		result.setEvalTask(evaluation);
 		result.setResult(resultDataMining);
 		result.setTask(new TaskDataMiningVO(taskDataMining));
+		result.setEvalTestDateEnd(evaluationTestDataMining.getLastDate());
+		result.setEvalTestDateInit(evaluationTestDataMining.getInitDate());
 			
 		return result;
 	}

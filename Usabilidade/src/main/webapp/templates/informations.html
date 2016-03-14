@@ -1,0 +1,113 @@
+<div class="row">
+    <div class="span12">
+        <div class="usdm-box usdm-error-page">
+            <h2 class="usdm-box-header" style="text-align: center;">
+                Conceitos Importantes da UseSkill
+            </h2>
+            <div class="usdm-box-body">
+            
+            	<div class="usdm-info-utils">   
+                    <h3 class="usdm-info-utils-title">Tarefas, Sessões e Ações</h3>
+                    <span class="usdm-info-utils-body">
+	                    A <b>Tarefa</b></b> é a representação de uma funcionalidade do sistema. Na sua definição há Ações Iniciais, Ações Finais e Ações Obrigatórias. A realização de uma tarefa por parte do usuário é denominada Sessão. Uma tarefa pode ter diversas Sessões de diversos usuários.
+	                    <br/><br/>
+	                    A <b>Sessão</b> é a realização de uma tarefa por um usuáio. Ela é composta por um conjunto de ações realizadas pelo usuário ao utilizar o sistema. 
+	                    <br/><br/>
+	                    As <b>Ações Iniciais</b> reprentam onde a funcionalidade começa, e servem para identificar Sessões de usuários que utilizaram a funcionalidade.
+	                    <br/><br/>
+	                    As <b>Ações Finais</b> identificam onde os usuários devem chegar para que seja tratado como "concluiu a utilização da funcionalidade". Elas servem para verificar quantos e quais usuários começaram a utilizar determinada funcionalidade e conseguiram concluí-la.
+	                    <br/><br/>
+	                    As <b>Ações Obrigatórias</b> são as ações que os usuários devem realizar ao utilizar determinada funcionalidade. Elas servem para calcular a Exatidão, Eficácia e Eficiência de cada Sessão, usuário e tarefa.
+                    </span>
+                </div>
+            
+                <div class="usdm-info-utils">   
+                    <h3 class="usdm-info-utils-title">Completude</h3>
+                    <span class="usdm-info-utils-body">
+                    A Completude para cada usuário em determinada tarefa é representada por \eqref{eq:compu}:
+                    
+                    \begin{equation}
+                        Comp_u = \frac{s_{c}}{s}
+                        \label{eq:compu}
+                    \end{equation}
+                    
+                    $ Comp_u $ representa a completude das Sessões de um usuário para determinada tarefa, $ s_c $ representa a quantidade de Sessões completas por ele e $ s $ a quantidade de Sessões realizadas pelo usuário.
+                    </span>
+                </div>
+                
+                <div class="usdm-info-utils">   
+                    <h3 class="usdm-info-utils-title">Exatidão</h3>
+                    <span class="usdm-info-utils-body">
+                        A Exatidão de cada sessão de uma tarefa, foi definida a Fórmula \eqref{form:exatidao}:
+                        
+                        \begin{equation}
+                            \label{form:exatidao}
+                            Exat_s = \frac{a_{io}}{a_o}
+                        \end{equation}
+                        
+                        $ Exat_s $ representa a exatidão de cada Sessão, $ a_{io} $ a quantidade de ações obrigatórias realizadas na Sessão e $ a_o $ a quantidade de ações obrigatórias da tarefa.
+                    </span>
+                </div>
+            
+                <div class="usdm-info-utils">   
+                    <h3 class="usdm-info-utils-title">Eficácia</h3>
+                    <span class="usdm-info-utils-body">
+                        Eficácia é calculada com base na Exatidão e Completude com a qual os usuários atingem determinados objetivos.<br/>
+                        
+                        <br/><b>Por Sessão:</b><br/>
+                        Para cada Sessão, a Eficácia ($ Efica_s $)  é calculada segundo a Fórmula \eqref{form:eficacia-sessao}:
+                        
+                        \begin{equation}\label{form:eficacia-sessao}
+                            Efica_s = \frac{Comp_u * Exat_s}{100}
+                        \end{equation}
+
+                        <br/><b>Por Usuário:</b><br/>
+                        O cálculo da Eficácia de cada usuário ($ Efica_u $) leva em consideração a taxa de Completude e a média da Exatidão de suas Sessões, representado na Fórmula \eqref{form:eficacia-usuario}, em que $ n $ representa as Sessões dos usuários:
+                        
+                        \begin{equation}\label{form:eficacia-usuario}
+                            Efica_u = \frac{Comp_u * (\sum_{s = 1}^{n}{Exat_s})}{100}
+                        \end{equation}
+                        
+                        <br/><b>Por Tarefa:</b><br/>
+                        Para cada tarefa, a Eficácia ($ Efica_t $) é a média da Completude dos usuários e a média de Exatidão de todas as Sessões, segundo a Fórmula \eqref{form:eficacia-tarefa}, em que $ m $ são os usuários que realizaram a tarefa e $ w $ todas as Sessões da tarefa:
+                        
+                        \begin{equation}\label{form:eficacia-tarefa}
+                            Efica_t = \frac{(\sum_{u = 1}^{m}{Comp_u}) * (\sum_{s = 1}^{w}{Exat_s})}{100}
+                        \end{equation}
+                        
+                    </span>
+                </div>
+                
+                <div class="usdm-info-utils">   
+                    <h3 class="usdm-info-utils-title">Eficiência</h3>
+                    <span>
+                        Ecifiência é a relação entre a Eficácia com a qual os usuários atingem determinados objetivos e os recursos gastos para alcançá-los.<br/>
+                        
+                        <br/><b>Por Sessão:</b><br/>
+                        A Eficiência de uma Sessão é baseada na Eficácia e na quantidade de Ações e Tempo despendido na Sessão, como pode ser visto na Fórmula \eqref{form:eficiencia-sessao}:
+                         
+                        \begin{equation}\label{form:eficiencia-sessao}
+                            Efici_s = \frac{Efica_s}{(Ações_s + Tempo_s)/2}
+                        \end{equation}
+                        
+                        <br/><b>Por Usuário:</b><br/>
+                        Para o cálculo da Eficiência de cada usuário, é observado a Eficácia desse usuário ($ Efica_u $) e a média de Ações e de Tempo das Sessões dele nessa tarefa, conforme a Fórmula \eqref{form:eficiencia-usuario}:
+                        
+                        \begin{equation}\label{form:eficiencia-usuario}
+							Efici_u = \frac{Efica_u}{((\sum_{s = 1}^{a}{Ações_s}) + (\sum_{s = 1}^{t}{Tempo_s}))/2}
+						\end{equation}
+						
+						<br/><b>Por Tarefa:</b><br/>
+						A Eficiência de uma tarefa é baseada na Eficácia da tarefa ($ Efica_t $) e a média de Ações e de Tempo das Sessões dessa tarefa, segundo a  Fórmula \eqref{form:eficiencia-tarefa}
+                        
+                        \begin{equation}\label{form:eficiencia-tarefa}
+							Efici_t = \frac{Efica_t}{((\sum_{s = 1}^{a}{Ações_s}) + (\sum_{s = 1}^{t}{Tempo_s}))/2}
+						\end{equation}
+						
+                    </span>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>

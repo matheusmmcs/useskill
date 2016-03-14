@@ -39,6 +39,7 @@
 	
 	"datamining.validate.default" : "Preencha os campos obrigatórios (*) para prosseguir.",
 	
+	"datamining.questions" : "Dúvidas",
 	"datamining.back" : "Voltar",
 	"datamining.cancel" : "Cancelar",
 	"datamining.new" : "Criar",
