@@ -23,12 +23,14 @@ public class EvaluationTestDataMiningVO {
 	private Date initDate;
 	private Date lastDate;
 	private List<EvaluationTaskDataMiningVO> evaluationsTask;
+	private Boolean isHidden;
 	
 	public EvaluationTestDataMiningVO(EvaluationTestDataMining eval) {
 		this.id = eval.getId();
 		this.test = eval.getTest();
 		this.initDate = eval.getInitDate();
 		this.lastDate = eval.getLastDate();
+		this.isHidden = eval.getIsHidden();
 		
 		List<EvaluationTaskDataMiningVO> evalTasksVO = new ArrayList<EvaluationTaskDataMiningVO>();
 		List<EvaluationTaskDataMining> evalTasks = eval.getEvaluationsTask();
@@ -69,6 +71,14 @@ public class EvaluationTestDataMiningVO {
 	}
 	public void setEvaluationsTask(List<EvaluationTaskDataMiningVO> evaluationsTask) {
 		this.evaluationsTask = evaluationsTask;
+	}
+
+	public Boolean getIsHidden() {
+		return isHidden;
+	}
+
+	public void setIsHidden(Boolean isHidden) {
+		this.isHidden = isHidden;
 	}
 	
 	

@@ -336,6 +336,38 @@ public class DataMiningTestController extends BaseController {
 		}
 	}
 	
+	@Get("/testes/{idTeste}/avaliacao/{idEvalTest}/alterarativo")
+	@Logado
+	public void changeActivateEvaluation(Long idTeste, Long idEvalTest) {
+		Gson gson = new GsonBuilder()
+			.setExclusionStrategies(EvaluationTestDataMiningVO.exclusionStrategy)
+	        .serializeNulls()
+	        .create();
+		
+		EvaluationTestDataMining evaluationTestDataMining = evaluationTestDataMiningRepository.find(idEvalTest);
+		validateComponente.validarEquals(evaluationTestDataMining.getTest().getId(), idTeste, "datamining.accessdenied");
+		
+		Boolean isHidden = evaluationTestDataMining.getIsHidden();
+		if (isHidden == null || isHidden != true) {
+			evaluationTestDataMining.setIsHidden(true);
+		} else {
+			evaluationTestDataMining.setIsHidden(false);
+		}
+		
+		evaluationTestDataMiningRepository.update(evaluationTestDataMining);
+		
+		ReturnVO returnvo;
+		
+		if(!validator.hasErrors()){
+			result.use(Results.json()).from(gson.toJson(new EvaluationTestDataMiningVO(evaluationTestDataMining))).serialize();
+		} else {
+			returnvo = new ReturnVO(ReturnStatusEnum.ERRO, "erro");
+			returnvo.setErrorsMessage(validator.getErrors());
+			
+			validator.onErrorUse(Results.json()).from(gson.toJson(returnvo)).serialize();
+		}
+	}
+	
 //	private boolean testePertenceUsuarioLogado(Long idTeste) {
 //		validateComponente.validarId(idTeste);
 //		TestDataMining teste = testeDataMiningRepository.getTestPertencente(usuarioLogado.getUsuario().getId(), idTeste);

@@ -16,6 +16,13 @@
 	"true": "Sim",
 	"false": "Não",
 	
+	"active": "Ativo",
+	"activate": "Ativar",
+	"inactivate": "Desativar",
+	"showall": "Mostrar Todos",
+	"showall.windows": "Mostrar Todas Janelas Temporais",
+	"hideinactive": "Ocultar Inativos",
+	
 	"backStep" : "Voltar",
 	"nextStep" : "Avançar",
 	"label" : "Legenda",

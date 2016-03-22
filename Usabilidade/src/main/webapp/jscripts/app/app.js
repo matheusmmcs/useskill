@@ -12,8 +12,8 @@ angular.module('useskill',
 		 'nvd3'
 		 ])
 
-//.constant('env', 'dev')
-.constant('env', 'prod')
+.constant('env', 'dev')
+//.constant('env', 'prod')
 		
 .constant('config', {
     appVersion: 0.1,
@@ -342,6 +342,9 @@ angular.module('useskill',
         getEvaluationTest: function(testId, evalId) {
         	return doRequest('GET', '/datamining/testes/'+testId+'/avaliacao/'+evalId);
         },
+        changeActivateEvaluationTest: function(testId, evalId) {
+        	return doRequest('GET', '/datamining/testes/'+testId+'/avaliacao/'+evalId+'/alterarativo');
+        },
         
         
         getTask: function(testId, taskId) {
@@ -481,8 +484,9 @@ angular.module('useskill',
 	$scope.urlapp = config[env].apiUrl;
 	cfpLoadingBar.complete();
 })
-.controller('InformationsController', function($scope) {
+.controller('InformationsController', function($scope, config, env) {
 	console.log('info controller');
+	$scope.urlapp = config[env].apiUrl;
 })
 
 //Tests Controllers
@@ -503,6 +507,7 @@ angular.module('useskill',
 	
 	testCtrl.showTasks = false;
 	testCtrl.showEvaluations = false;
+	testCtrl.showHidden = false;
 	
 	testCtrl.minDate = new Date().getTime();
 	testCtrl.maxDate = new Date().getTime();
@@ -538,6 +543,16 @@ angular.module('useskill',
 		ServerAPI.updateTaskControl(testCtrl.test.id).then(function(data){
 			console.log(data);
 			testCtrl.test = JSON.parse(data.data.string);
+		}, function(data) {
+			console.log(data);
+		});
+	}
+	
+	testCtrl.toogleHidden = function(eval){
+		ServerAPI.changeActivateEvaluationTest(testCtrl.test.id, eval.id).then(function(data){
+			var newEval = JSON.parse(data.data.string);
+			console.log(newEval);
+			eval.isHidden = newEval.isHidden;
 		}, function(data) {
 			console.log(data);
 		});
@@ -1497,31 +1512,33 @@ angular.module('useskill',
     
     function selectNode(node, nodeSelectedName, edgeSelectedName) {
     	var edgesFrom = [], edgesTo = [];
-  	  	resetSituationAux(node.id);
-  	    resetSpecialSituationAux(node.id);
-  	    
-  	  	angular.forEach(node.edges, function(edge){
-  	  		if (edge.from.id != node.id) {
-  	  			edgesFrom.push(edge.from.id);
-  	  		} else if (edge.to.id != node.id) {
-  	  			edgesTo.push(edge.to.id);
-  	  		} else {
-  	  			edgesFrom.push(edge.from.id);
-  	  			edgesTo.push(edge.to.id);
-  	  		}
-  	  	});
-  	  
-  	  	taskCtrl[nodeSelectedName] = {
-  	  		'id': node.id,
-  	  		'name': node.options.label,
-  	  		'value': node.options.value,
-			'edgesFrom': edgesFrom.join(", "),
-			'edgesTo': edgesTo.join(", "),
-			'sessions': node.options.sessions,
-			'patternsCount': node.options.countPatterns,
-			'action': node.options.action,
-			'positionStep': null
-  	  	}
+    	if (node != undefined) {
+    		resetSituationAux(node.id);
+      	    resetSpecialSituationAux(node.id);
+      	    
+      	  	angular.forEach(node.edges, function(edge){
+      	  		if (edge.from.id != node.id) {
+      	  			edgesFrom.push(edge.from.id);
+      	  		} else if (edge.to.id != node.id) {
+      	  			edgesTo.push(edge.to.id);
+      	  		} else {
+      	  			edgesFrom.push(edge.from.id);
+      	  			edgesTo.push(edge.to.id);
+      	  		}
+      	  	});
+      	  
+      	  	taskCtrl[nodeSelectedName] = {
+      	  		'id': node.id,
+      	  		'name': node.options.label,
+      	  		'value': node.options.value,
+    			'edgesFrom': edgesFrom.join(", "),
+    			'edgesTo': edgesTo.join(", "),
+    			'sessions': node.options.sessions,
+    			'patternsCount': node.options.countPatterns,
+    			'action': node.options.action,
+    			'positionStep': null
+      	  	}
+    	}
     }
     
     $scope.resetGraph = function(graphName, nodeSelectedName, edgeSelectedName) {

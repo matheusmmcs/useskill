@@ -754,19 +754,48 @@ ul.horizontal{
 		}
 		
 		&info-utils {
-			padding: 10px;
+			//padding: 10px;
+			padding: 10px 0;
 			margin: 10px 0;
 			background: #F5F5F5;
 			border: 1px solid #E3E3E3;
 			
 			&-title {
 				border-bottom: 1px solid #EEE;
-				padding: 2px 0;
+				//padding: 2px 0;
+				padding: 10px 10px 0;
 				margin-bottom: 8px;
 			}
 			
 			&-body {
 				text-align: justify;
+			}
+			
+			&-info1, &-info2, &-info3, &-info4, &-info5 {
+				width: 100%;
+				margin: 0 auto;
+				background-repeat: no-repeat;
+			}
+			
+			&-info1{
+				height: 300px;
+				background-image: url("../../img/info/info1.png");
+			}
+			&-info2{
+				height: 130px;
+				background-image: url("../../img/info/info2.png");
+			}
+			&-info3{
+				height: 130px;
+				background-image: url("../../img/info/info3.png");
+			}
+			&-info4{
+				height: 460px;
+				background-image: url("../../img/info/info4.png");
+			}
+			&-info5{
+				height: 460px;
+				background-image: url("../../img/info/info5.png");
 			}
 		}
 	}
@@ -952,6 +981,9 @@ input[type=number].number-disable::-webkit-outer-spin-button {
 .u-width-100 {
 	width: 100% !important;
     box-sizing: border-box !important;
+}
+.u-margin-right-btn {
+	margin-right: 10px;
 }
 .u-margin-0 {
 	margin: 0 !important;

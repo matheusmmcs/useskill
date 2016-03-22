@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  
   <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
     <class>br.ufpi.models.Action</class>
     <class>br.ufpi.models.Alternativa</class>
@@ -45,19 +46,18 @@
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="true" />
 	
-			<!-- Ambiente de Desenvolvimento -->
-<!-- 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/usabilidade_onthefly_linode?jdbcCompliantTruncation=false" /> -->
+			<!-- LOCAL: Ambiente de Desenvolvimento -->
 <!-- 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/usabilidade_control_athena?jdbcCompliantTruncation=false" /> -->
-
-<!-- 			<property name="hibernate.connection.username" value="root" /> -->
-<!-- 			<property name="hibernate.connection.password" value="" /> -->
-			
-			
-			<!-- Ambiente de Produção -->
-<!-- 			<property name="hibernate.connection.url" value="jdbc:mysql://200.137.162.128:3306/useskill_datamining?jdbcCompliantTruncation=false" /> -->
-			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/useskill_datamining?jdbcCompliantTruncation=false" />
+			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/usabilidade_onthefly_linode?jdbcCompliantTruncation=false" />
 			<property name="hibernate.connection.username" value="root" />
-			<property name="hibernate.connection.password" value="server123456" />
+			<property name="hibernate.connection.password" value="" />
+			
+			
+			<!-- SERVER EASII: Ambiente de Produção -->
+<!--			<property name="hibernate.connection.url" value="jdbc:mysql://200.137.162.128:3306/useskill_datamining?jdbcCompliantTruncation=false" /> -->
+<!-- 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/useskill_datamining?jdbcCompliantTruncation=false" /> -->
+<!-- 			<property name="hibernate.connection.username" value="root" /> -->
+<!-- 			<property name="hibernate.connection.password" value="server123456" /> -->
 			
 		</properties>
 	

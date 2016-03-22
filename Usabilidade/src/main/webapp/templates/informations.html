@@ -4,11 +4,17 @@
             <h2 class="usdm-box-header" style="text-align: center;">
                 Conceitos Importantes da UseSkill
             </h2>
+            
             <div class="usdm-box-body">
             
             	<div class="usdm-info-utils">   
                     <h3 class="usdm-info-utils-title">Tarefas, Sessões e Ações</h3>
                     <span class="usdm-info-utils-body">
+                    
+                    	<div class="usdm-info-utils-info1" style="height: 300px;
+						background-image: url("{{urlapp}}/img/info/info1.png");"></div>
+						
+                    	<!--
 	                    A <b>Tarefa</b></b> é a representação de uma funcionalidade do sistema. Na sua definição há Ações Iniciais, Ações Finais e Ações Obrigatórias. A realização de uma tarefa por parte do usuário é denominada Sessão. Uma tarefa pode ter diversas Sessões de diversos usuários.
 	                    <br/><br/>
 	                    A <b>Sessão</b> é a realização de uma tarefa por um usuáio. Ela é composta por um conjunto de ações realizadas pelo usuário ao utilizar o sistema. 
@@ -18,26 +24,38 @@
 	                    As <b>Ações Finais</b> identificam onde os usuários devem chegar para que seja tratado como "concluiu a utilização da funcionalidade". Elas servem para verificar quantos e quais usuários começaram a utilizar determinada funcionalidade e conseguiram concluí-la.
 	                    <br/><br/>
 	                    As <b>Ações Obrigatórias</b> são as ações que os usuários devem realizar ao utilizar determinada funcionalidade. Elas servem para calcular a Exatidão, Eficácia e Eficiência de cada Sessão, usuário e tarefa.
+	                     -->
                     </span>
                 </div>
             
                 <div class="usdm-info-utils">   
                     <h3 class="usdm-info-utils-title">Completude</h3>
                     <span class="usdm-info-utils-body">
-                    A Completude para cada usuário em determinada tarefa é representada por \eqref{eq:compu}:
-                    
-                    \begin{equation}
-                        Comp_u = \frac{s_{c}}{s}
-                        \label{eq:compu}
-                    \end{equation}
-                    
-                    $ Comp_u $ representa a completude das Sessões de um usuário para determinada tarefa, $ s_c $ representa a quantidade de Sessões completas por ele e $ s $ a quantidade de Sessões realizadas pelo usuário.
+	                    
+	                    <div class="usdm-info-utils-info2" style="height: 130px;
+						background-image: url("{{urlapp}}/img/info/info2.png");"></div>
+						
+	                    <!--
+	                    A Completude para cada usuário em determinada tarefa é representada por \eqref{eq:compu}:
+	                    
+	                    \begin{equation}
+	                        Comp_u = \frac{s_{c}}{s}
+	                        \label{eq:compu}
+	                    \end{equation}
+	                    
+	                    $ Comp_u $ representa a completude das Sessões de um usuário para determinada tarefa, $ s_c $ representa a quantidade de Sessões completas por ele e $ s $ a quantidade de Sessões realizadas pelo usuário.
+	                    -->
                     </span>
                 </div>
                 
                 <div class="usdm-info-utils">   
                     <h3 class="usdm-info-utils-title">Exatidão</h3>
                     <span class="usdm-info-utils-body">
+                    
+                    	<div class="usdm-info-utils-info3" style="height: 130px;
+						background-image: url("{{urlapp}}/img/info/info3.png");"></div>
+						
+                    	<!--
                         A Exatidão de cada sessão de uma tarefa, foi definida a Fórmula \eqref{form:exatidao}:
                         
                         \begin{equation}
@@ -46,12 +64,18 @@
                         \end{equation}
                         
                         $ Exat_s $ representa a exatidão de cada Sessão, $ a_{io} $ a quantidade de ações obrigatórias realizadas na Sessão e $ a_o $ a quantidade de ações obrigatórias da tarefa.
+                        -->
                     </span>
                 </div>
             
                 <div class="usdm-info-utils">   
                     <h3 class="usdm-info-utils-title">Eficácia</h3>
                     <span class="usdm-info-utils-body">
+                    
+                    	<div class="usdm-info-utils-info4" style="height: 460px;
+						background-image: url("{{urlapp}}/img/info/info4.png");"></div>
+						
+                    	<!--
                         Eficácia é calculada com base na Exatidão e Completude com a qual os usuários atingem determinados objetivos.<br/>
                         
                         <br/><b>Por Sessão:</b><br/>
@@ -74,13 +98,18 @@
                         \begin{equation}\label{form:eficacia-tarefa}
                             Efica_t = \frac{(\sum_{u = 1}^{m}{Comp_u}) * (\sum_{s = 1}^{w}{Exat_s})}{100}
                         \end{equation}
-                        
+                        -->
                     </span>
                 </div>
                 
                 <div class="usdm-info-utils">   
                     <h3 class="usdm-info-utils-title">Eficiência</h3>
-                    <span>
+                    <span class="usdm-info-utils-body">
+                    
+                    	<div class="usdm-info-utils-info5" style="height: 460px;
+						background-image: url("{{urlapp}}/img/info/info5.png");"></div>
+                    	
+                     	<!--
                         Ecifiência é a relação entre a Eficácia com a qual os usuários atingem determinados objetivos e os recursos gastos para alcançá-los.<br/>
                         
                         <br/><b>Por Sessão:</b><br/>
@@ -103,7 +132,7 @@
                         \begin{equation}\label{form:eficiencia-tarefa}
 							Efici_t = \frac{Efica_t}{((\sum_{s = 1}^{a}{Ações_s}) + (\sum_{s = 1}^{t}{Tempo_s}))/2}
 						\end{equation}
-						
+						-->
                     </span>
                 </div>
                 

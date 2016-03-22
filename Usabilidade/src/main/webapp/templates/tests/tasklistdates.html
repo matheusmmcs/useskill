@@ -120,22 +120,39 @@
 						
 		        		<h2>
 			            	{{ 'datamining.testes.evaluations.availables' | translate}}
+			            	<button ng-click="testCtrl.showHidden = !testCtrl.showHidden" class="btn pull-right">
+			            		<span ng-show="testCtrl.showHidden">{{ 'hideinactive' | translate }}</span>
+			            		<span ng-hide="testCtrl.showHidden">{{ 'showall.windows' | translate }}</span>
+							</button>
 			            </h2>
 			            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" style="background-color: white" ts-wrapper>
 			                <thead>
 			                    <tr>
 			                        <th ts-criteria="initTimestamp" ts-default="descending">{{ 'date.initial' | translate }}</th>
 			                        <th ts-criteria="lastTimestamp">{{ 'date.end' | translate }}</th>
+			                        <th>{{ 'active' | translate }}</th>
 			                        <th>{{ 'datamining.options' | translate }}</th>
 			                    </tr>
 			                </thead>
 			                <tbody>
-		                        <tr ng-repeat="eval in testCtrl.test.evaluations | orderBy:'count'" ts-repeat>
+		                        <tr ng-show="testCtrl.showHidden || (!testCtrl.showHidden && !eval.isHidden)" ng-repeat="eval in testCtrl.test.evaluations | orderBy:'count'" ts-repeat>
 		                        	<td>
 		                        		{{ testCtrl.formatDate(eval.initDate) }}
 		                        	</td>
 		                            <td>
 		                            	{{ testCtrl.formatDate(eval.lastDate) }}
+									</td>
+									<td>
+		                            	<a class="btn pull-right" ng-click="testCtrl.toogleHidden(eval)">
+		                            		<span ng-show="eval.isHidden">
+		                            			<span class="icon-eye-open"></span>
+		                            			<span>{{ 'activate' | translate }}</span>
+		                            		</span>
+		                            		<span ng-hide="eval.isHidden">
+		                            			<span class="icon-eye-close"></span>
+		                            			<span>{{ 'inactivate' | translate }}</span>
+		                            		</span>
+		                            	</a>
 									</td>
 		                            <td>
 		                            	<a class="btn btn-primary pull-right" ng-href="#/testes/{{testCtrl.test.id}}/avaliar/{{ eval.id }}">

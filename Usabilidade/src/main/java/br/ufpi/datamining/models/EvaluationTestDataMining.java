@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -32,6 +33,7 @@ public class EvaluationTestDataMining implements Serializable {
 	private Date initDate;
 	private Date lastDate;
 	private List<EvaluationTaskDataMining> evaluationsTask;
+	private Boolean isHidden = false;
 	
 	@Id  
 	@GeneratedValue
@@ -73,6 +75,14 @@ public class EvaluationTestDataMining implements Serializable {
 	}
 	public void setEvaluationsTask(List<EvaluationTaskDataMining> evaluationsTask) {
 		this.evaluationsTask = evaluationsTask;
+	}
+	
+	@Column(nullable = false)
+	public Boolean getIsHidden() {
+		return isHidden;
+	}
+	public void setIsHidden(Boolean isHidden) {
+		this.isHidden = isHidden;
 	}
 
 }
