@@ -106,6 +106,7 @@ public class Fuzzy {
 	/* FUZZY CMEANS - RESULTADOS DAS SESSÕES */
 	
 	public static void executeFuzzySystemWithFCMSession(List<SessionResultDataMining> sessions, boolean ignoreZero, boolean debug) {
+		/*
 		FIS fis = createMembershipFunctionsWithFCMSession(sessions, ignoreZero, FCL_ATC_CMEANS);
 		
 		for(SessionResultDataMining s : sessions){
@@ -116,12 +117,10 @@ public class Fuzzy {
 				}
 			}
 			
-			/* Set inputs [Importance x Coupling x Complexity] of the class */
 			fis.setVariable("actions", s.getActionsNormalized());
 			fis.setVariable("times", s.getTimeNormalized());
 			fis.setVariable("completeness", s.getUserRateSuccess());
 			
-			/* Evaluate */
 	        fis.evaluate();
 	        double defuzzifiedValue = fis.getVariable("priority").getLatestDefuzzifiedValue();
 	        s.setFuzzyPriority(defuzzifiedValue);
@@ -129,13 +128,14 @@ public class Fuzzy {
 	        System.out.println(s.getUsername() + " -> (" + s.getActionsNormalized() + ", " + s.getTimeNormalized() + ", " + s.getUserRateSuccess() + ") = " + s.getFuzzyPriority());
 		}
 		
-		/* Just for debug: Show chart*/ 
 		if(debug){
 			 JFuzzyChart.get().chart(fis);
 		}
+		*/
 	}
 	
 	public static FIS createMembershipFunctionsWithFCMSession(List<SessionResultDataMining> sessions, boolean ignoreZero, String fclPath){
+		/*
 		//Fuzzy CMeans
 		ArrayList<Point> actionsPoints = new ArrayList<Point>(), 
 				timePoints = new ArrayList<Point>(), 
@@ -153,7 +153,6 @@ public class Fuzzy {
 			completedPoints.add(new Point(globalCount++, s.getUserRateSuccess(), 1.0));
 		}
 		
-		/* Execute FCM Algorithm: actions variable */
 		FuzzyCMeansAlgorithm cMeans = new FuzzyCMeansAlgorithm(3, 2.0, actionsPoints, 0.01, null);
 		MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
 		//MembershipFunctionPieceWiseLinear[] actionsMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
@@ -164,10 +163,8 @@ public class Fuzzy {
 		cMeans = new FuzzyCMeansAlgorithm(3, 2.0, completedPoints, 0.01, null);
 		MembershipFunctionPieceWiseLinear[] completedMembershipFunctions = createMembershipFunctions(cMeans.executeFCM(), cMeans.getCentroids());
 		
-		/* Load from 'FCL' file */
 		FIS fis = FIS.load(fclPath, true);
 		
-		/* Update membership functions */
 		fis.getFunctionBlock("fuzzyCMeans").getVariable("actions").add("Low", actionsMembershipFunctions[0]);
 		fis.getFunctionBlock("fuzzyCMeans").getVariable("actions").add("Moderate", actionsMembershipFunctions[1]);
 		fis.getFunctionBlock("fuzzyCMeans").getVariable("actions").add("High", actionsMembershipFunctions[2]);
@@ -181,6 +178,9 @@ public class Fuzzy {
 		fis.getFunctionBlock("fuzzyCMeans").getVariable("completeness").add("High", completedMembershipFunctions[2]);
 		
 		return fis;
+		*/
+		
+		return null;
 	}
 	
 	/* FUZZY CMEANS - RESULTADOS DOS USUÁRIOS */

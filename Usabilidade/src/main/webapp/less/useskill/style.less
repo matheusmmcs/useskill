@@ -776,26 +776,92 @@ ul.horizontal{
 				margin: 0 auto;
 				background-repeat: no-repeat;
 			}
+		}
+		
+		&progressbar {
+			position: relative;
+			margin: 30px 0 15px;
+			padding-bottom: 30px;
+			border-bottom: 1px solid #becde2;
 			
-			&-info1{
-				height: 300px;
-				background-image: url("../../img/info/info1.png");
+			overflow: hidden;
+			/*CSS counters to number the steps*/
+			counter-reset: step;
+			
+			li {
+				list-style-type: none;
+				color: @color-principal;
+				text-transform: uppercase;
+				font-size: 13px;
+				width: 33.33%;
+				float: left;
+				position: relative;
+				text-align: center;
+				font-weight: bold;
+				
+				&:before {
+					content: "Etapa " counter(step);
+					counter-increment: step;
+					width: 90px;
+					line-height: 40px;
+					display: block;
+					font-size: 14px;
+					color: @color-principal;
+					background: white;
+					border-radius: 3px;
+					margin: 0 auto 10px auto;
+					position: relative;
+					z-index: 3;
+					cursor: pointer;
+					text-transform: none;
+				}
+				
+				&:after {
+					content: '';
+					width: 100%;
+					height: 2px;
+					background: white;
+					position: absolute;
+					left: -50%;
+					top: 19px;
+					z-index: 2;
+				}
+				
+				&:first-child:after {
+					/*connector not needed before the first step*/
+					content: none; 
+				}
+				
+				&.active:before,  &.active:after{
+					background: @color-principal;
+					color: white;
+				}
 			}
-			&-info2{
-				height: 130px;
-				background-image: url("../../img/info/info2.png");
+			
+			&-header {
+				background: @color-principal;
+			    color: white;
+			    border: 1px solid #becde2;
+			    text-align: center;
+			    margin: 10px 0 15px;
+			    padding: 5px;
+			    font-size: 24px;
+			    border-radius: 3px;
 			}
-			&-info3{
-				height: 130px;
-				background-image: url("../../img/info/info3.png");
-			}
-			&-info4{
-				height: 460px;
-				background-image: url("../../img/info/info4.png");
-			}
-			&-info5{
-				height: 460px;
-				background-image: url("../../img/info/info5.png");
+		}
+		
+		&btn-info {
+			float: right;
+			margin-top: 5px;
+			margin-right: 5px;
+		}
+		
+		&info{
+			&-panel {
+				margin-top: -15px;
+			} 
+			&-text {
+				margin: 10px auto 0;
 			}
 		}
 	}
@@ -988,6 +1054,9 @@ input[type=number].number-disable::-webkit-outer-spin-button {
 .u-margin-0 {
 	margin: 0 !important;
 }
+.u-margin-top-back-5 {
+	margin-top: -5px;
+}
 select, textarea, input {
 	&.u-input-border-box{
 		padding: 14px 7px;
@@ -1017,3 +1086,23 @@ select, textarea, input {
     text-align: left;
     background: transparent;
 }
+
+.u-justify {
+    width: 100%;
+    
+    p {
+	    margin: 0 auto;
+	    max-width: 98%;
+	    list-style: none; // disc outside none;
+	    text-align: justify;
+	    display: list-item;
+	    
+	    &:after {
+		  content: "";
+		  display: inline-block;
+		  width: 100%;
+		}
+	}
+}
+
+

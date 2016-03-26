@@ -15,6 +15,7 @@
 	"and": "e",
 	"true": "Sim",
 	"false": "Não",
+	"info": "Informações",
 	
 	"active": "Ativo",
 	"activate": "Ativar",
@@ -61,7 +62,7 @@
 	"datamining.areyousure.cancel" : "Cancelar",
 	"datamining.accessdenied" : "Ação não permitida para o usuário!",
 	
-	"datamining" : "Mineração de Dados",
+	"datamining.redo" : "Re-minerar Dados",
 	"datamining.mining.minsupport" : "Suporte Mínimo",
 	"datamining.mining.maxpattern" : "Tamanho Máx. Padrões",
 	"datamining.mining.minpattern" : "Tamanho Min. Padrões",
@@ -228,5 +229,25 @@
 	
 	"datamining.tasks.actions.edit.success" : "Ação alterada com sucesso!",
 	"datamining.tasks.actions.new.success" : "Ação cadastrada com sucesso!",
-	"datamining.tasks.actions.edits.success" : "Ações alteradas com sucesso!"
+	"datamining.tasks.actions.edits.success" : "Ações alteradas com sucesso!",
+	
+	"datamining.clustering.number.minclusters" : "Número Mínimo de Clusters",
+	"datamining.clustering.threshold.distancecenters" : "Limiar de Distância entre Centróides",
+	
+	"dataminint.eval.graph" : "Grafo de Padrões",
+	"dataminint.eval.guide" : "Análise Guiada",
+	"dataminint.eval.advanded" : "Análise Avançada",
+	
+	"dataminint.step" : "Etapa",
+	"dataminint.steps.evaluation" : "Etapas da Avaliação",
+	"dataminint.step.classifying" : "Classificar Ações",
+	"dataminint.step.clustering" : "Clusterizar",
+	"dataminint.step.comparing" : "Comparar",
+	
+	"dataminint.step.classifying.info" : "<p>Nesta etapa devem ser avaliados os grafos de padrões sequenciais e as sessões dos usuários. Ela visa identificar ações obrigatórias, iniciais ou finais, além de ações corretas e incorretas. É possível durante esse processo também identificar indícios de problemas de usabilidade.<br/></p> <p>Durante essa etapa é possível visualizar o 'Grafo de Padrões', realizar 'Análise Guiada' e 'Análise Avançada': <br/><br/> O <b>'Grafo de Padrões'</b> possui a sequência de padrões mais comum dentre as sessões mineradas.<br/> A <b>'Análise Guiada'</b> apresenta a lista com todas as sessões, permitindo avaliar o grafo de cada sessão, além de verificar quais ações obrigatórias foram realizadas.<br/> A <b>'Análise Avançada'</b> permite agrupar as sessões por usuários, visualizar as ações obrigatórias mais realizadas, além dos resultados dos algoritmos de mineração.<br/></p>",
+	"dataminint.step.clustering.info": "<p>Nesta etapa devem ser agrupadas e classificada como boas sessões, as que possuírem as utilizações corretas. O algoritmo de clusterização considera a eficácia e a eficiência, então a definição de ações obrigatórias na Etapa 1 é crucial para um bom resultado na Etapa 2.<br/></p>",
+	"dataminint.step.comparing.info": "",
+	
+	"dataminint.step.general.info": "<p>Clique em 'Avançar' ou 'Voltar' para navegar entre as Etapas. Se preferir, clique na Etapa desejada para ir direto a ela.<br/></p>"
+	
 }

@@ -35,8 +35,8 @@ public class FrequentSequentialPatternMining {
 		String patterns = "";
 		for (String key : keySet) {
 			System.out.println("----------");
-			System.out.println(key);
-			System.out.println(usersSequences.get(key));
+			//System.out.println(key);
+			//System.out.println(usersSequences.get(key));
 			patterns += usersSequences.get(key);
 		}
 		

@@ -80,36 +80,17 @@
 	                    <tr>
 	                        <th ts-criteria="title|lowercase">{{ 'datamining.tasks.title' | translate }}</th>
 					      	<th ts-criteria="actualEvaluation.evalCountSessions|parseFloat">Sess.</th>
-					      	
-<!-- 					      	<th ts-criteria="evalMeanCompletion|parseFloat">Compl.</th> -->
-<!-- 					      	<th ts-criteria="evalMeanCorrectness|parseFloat">Corr.</th> -->
-<!-- 					      	<th ts-criteria="evalMeanActions|parseFloat">Ações</th> -->
-<!-- 					      	<th ts-criteria="evalMeanTimes|parseFloat">Tempo</th> -->
-
 					      	<th ts-criteria="actualEvaluation.evalEffectiveness|parseFloat">Eficá.</th>
 					      	<th ts-criteria="actualEvaluation.evalEfficiency|parseFloat">Efici.</th>
-					      	
-<!-- 					      	<th ts-criteria="evalFuzzyPriority|parseFloat" ts-default="descending">Priori.</th> -->
-					      	
 					      	<th>{{ 'datamining.options' | translate }}</th>
 	                    </tr>
 	                </thead>
 	                <tbody>
                         <tr ng-repeat="task in testCtrl.test.tasks | orderBy:'id'" ts-repeat ng-model="task.popovercontent" popup-title="task.title" popup="testCtrl.popup.options">
                             <td class="td-link"><a ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}">{{task.title}}</a></td>
-                            
                             <td>{{ task.actualEvaluation.evalCountSessions }}</td>
-                            
-<!--                             <td>{{ task.evalMeanCompletion | number:2}} %</td> -->
-<!--                             <td>{{ task.evalMeanCorrectness | number:2}} %</td> -->
-<!--                             <td>{{ task.evalMeanActions | number:2}}</td> -->
-<!--                             <td>{{ task.evalMeanTimes | msConverter}}</td> -->
-                            
                             <td>{{ task.actualEvaluation.evalEffectiveness | number:2}}</td>
                             <td>{{ task.actualEvaluation.evalEfficiency | number:2}}</td>
-                            
-<!--                             <td>{{ task.evalFuzzyPriority | number:2}}</td> -->
-                            
                             <td>
                             	<a class="btn btn-primary pull-right" ng-click="setLongLoaderTime(task.actualEvaluation.meanTimeLoading)" ng-href="#/testes/{{testCtrl.test.id}}/avaliacao/{{testCtrl.evalTest.id}}/tarefas/{{task.id}}/avaliar" title="{{ 'datamining.evaluate' | translate}}">{{ 'datamining.evaluate' | translate }}</a>
 							</td>

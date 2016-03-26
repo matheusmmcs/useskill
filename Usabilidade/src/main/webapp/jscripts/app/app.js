@@ -379,6 +379,11 @@ angular.module('useskill',
         	return promise;
         },
         
+        //CLUSTERS
+        clusterSessions: function(testId, evalTestId, taskId, numClusters, thresholdClusters) {
+        	return doRequest('GET', '/datamining/testes/'+testId+'/avaliacao/'+evalTestId+'/tarefas/'+taskId+'/clusterizar/numclusters/'+numClusters+'/threshold/'+thresholdClusters);
+        },
+        
         //CONTROL
         getTestsControl: function(){
         	return doRequest('GET', '/datamining/testes/control');
@@ -875,6 +880,7 @@ angular.module('useskill',
 })
 .controller('TaskEvaluateController', function($scope, evaluate, evalTestId, sessionFilterParam, $filter, ServerAPI, $timeout, $sce, UtilsService) {
 	var taskCtrl = this;
+	$scope.stepEval = 1;
 	
 	taskCtrl.formatDate = UtilsService.formatDate;
 	taskCtrl.evalTestId = evalTestId;
@@ -1908,6 +1914,153 @@ angular.module('useskill',
     	};
     }
     
+    // ETAPA 2 - CLUSTERING
+    //$scope.stepEval = 2;
+    
+    taskCtrl.minclusters = 4;
+    taskCtrl.distancecenters = 10;
+    taskCtrl.lastClustering = null;
+    
+    $scope.clusterOptions = {
+        chart: {
+            type: 'scatterChart',
+            height: 450,
+            color: d3.scale.category10().range(),
+            scatter: {
+                onlyCircles: false
+            },
+            showDistX: true,
+            showDistY: true,
+            tooltipContent: function(key) {
+                return '<h3>' + key + '</h3>';
+            },
+            duration: 350,
+            xAxis: {
+                axisLabel: 'X Axis',
+                tickFormat: function(d){
+                    return d3.format('.02f')(d);
+                }
+            },
+            yAxis: {
+                axisLabel: 'Y Axis',
+                tickFormat: function(d){
+                    return d3.format('.02f')(d);
+                },
+                axisLabelDistance: 30
+            },
+            zoom: {
+                enabled: true,
+                scaleExtent: [1, 10],
+                useFixedDomain: true,
+                useNiceScale: false,
+                horizontalOff: false,
+                verticalOff: false,
+                unzoomEventType: 'dblclick.zoom'
+            }
+        }
+    };
+	
+	//$scope.clusterData = generateData(4,40);
+	//console.log('clusterData', $scope.clusterData);
+	var initialClusterData = [{ values: [] }];
+	$scope.clusterData = initialClusterData;
+    
+    taskCtrl.clustering = function() {
+    	
+    	//parametriza: qtd inicial de clusters / limiar da distância / coeficiente minimo
+    	ServerAPI.clusterSessions(
+    			Number.parseInt(taskCtrl.task.testDataMining.id), 
+    			Number.parseInt(taskCtrl.evalTestId), 
+    			Number.parseInt(taskCtrl.task.id),
+    			taskCtrl.minclusters, 
+    			taskCtrl.distancecenters
+    	).then(function(data) {
+			console.log(data);
+			var clustering = JSON.parse(data.data.string);
+			console.log(clustering);
+			
+			//recebe quem é "oráculo" e quem não é
+			var graphData = [],
+				groupBest = {
+	                key: 'Sessões Referência',
+	                values: [],
+	                color: '#1f77b4'
+	            },
+	            groupOthers = {
+	                key: 'Demais Sessões',
+	                values: [],
+	                color: '#ff7f0e'
+	            };
+			
+			for (var c in clustering.clusters) {
+				var cluster = clustering.clusters[c];
+				
+				for (var p in cluster.points) {
+					var point = cluster.points[p];
+					var pointChart = {
+						x: point.x,
+	                    y: point.y,
+	                    size: 100,
+	                    shape: 'circle'
+					};
+					
+					if (cluster.isBest) {
+						groupBest.values.push(pointChart);
+					} else {
+						groupOthers.values.push(pointChart);
+					}
+				}
+			}
+			
+			graphData.push(groupBest);
+			graphData.push(groupOthers);
+			
+			$scope.clusterData = graphData;
+			
+			//others
+			/*
+			//others
+			//$scope.pieData = testCtrl.actions.slice(0,size);
+			var sum = 0;
+			angular.forEach(testCtrl.actions.slice(size), function(elem){
+				sum += elem.count;
+			});
+			$scope.pieData.push({
+				description: $filter('translate')('others...'), 
+				count: sum
+			});
+			*/
+			
+			//rerender
+			$timeout(function(){
+				$scope.clusterApi.refresh();
+				//$timeout(function(){ $scope.canChange = true; }, 1000);
+			});
+			
+			//$scope.renderPieMost($scope.sizePie);
+			
+			
+			//apresenta em um gráfico e uma lista
+			
+			//usuário pode identificar quem é "oráculo" e quem não é
+			
+			taskCtrl.lastClustering = clustering;
+		}, function(data) {
+			console.log(data);
+		});
+    }
+    
+    // ETAPA 3 - FSPM
+    taskCtrl.comparing = function() {
+    	//envia os dados necessários apenas para executar algoritmo FSPM
+    	
+    	//apresenta mais dois grafos
+    	
+    	//listas com ações "estranhas"
+    }
+    
+    
+    
     //initialize
     $timeout(function(){ 
     	$scope.changeGraphType(false);
@@ -1981,6 +2134,18 @@ angular.module('useskill',
     	getClassificationFromEnum: '&getClassificationFromEnum'
     },
     templateUrl: config[env].apiUrl+'/templates/directives/usdm-session-info.html'
+  };
+})
+.directive('usdmProgressHeader', function(config, env) {
+  return {
+    restrict: 'E',
+    scope: {
+    	title: '=title',
+    	stepNumber: '=stepNumber',
+    	showInfo: '=showInfo',
+    	info: '=info'
+    },
+    templateUrl: config[env].apiUrl+'/templates/directives/usdm-progress-header.html'
   };
 })
 .directive('confirmClick', ['$q', 'dialogModal', '$filter', function($q, dialogModal, $filter) {

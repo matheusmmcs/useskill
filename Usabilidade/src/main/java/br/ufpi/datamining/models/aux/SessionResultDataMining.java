@@ -17,14 +17,8 @@ public class SessionResultDataMining {
 	private List<PageViewActionDataMining> actions;
 	private HashMap<String, Integer> actionsRequiredSession;
 	
-	private Double actionsNormalized;
-	private Double timeNormalized;
-	private Double fuzzyPriority;
-	private Double userRateSuccess;
 	private Double userRateRequired;
-	
-	private Double zScoreActions;
-	private Double zScoreTimes;
+	private Integer idCluster;
 	
 	private Double effectiveness;
 	private Double efficiency;
@@ -99,38 +93,6 @@ public class SessionResultDataMining {
 		this.username = username;
 	}
 
-	public Double getFuzzyPriority() {
-		return fuzzyPriority;
-	}
-
-	public void setFuzzyPriority(Double fuzzyPriority) {
-		this.fuzzyPriority = fuzzyPriority;
-	}
-	
-	public Double getUserRateSuccess() {
-		return userRateSuccess;
-	}
-
-	public void setUserRateSuccess(Double userRateSuccess) {
-		this.userRateSuccess = userRateSuccess;
-	}
-
-	public Double getActionsNormalized() {
-		return actionsNormalized;
-	}
-
-	public void setActionsNormalized(Double actionsNormalized) {
-		this.actionsNormalized = actionsNormalized;
-	}
-
-	public Double getTimeNormalized() {
-		return timeNormalized;
-	}
-
-	public void setTimeNormalized(Double timeNormalized) {
-		this.timeNormalized = timeNormalized;
-	}
-
 	public HashMap<String, Integer> getActionsRequiredSession() {
 		return actionsRequiredSession;
 	}
@@ -191,28 +153,20 @@ public class SessionResultDataMining {
 		this.efficiencyNormalized = efficiencyNormalized;
 	}
 
-	public Double getzScoreActions() {
-		return zScoreActions;
-	}
-
-	public void setzScoreActions(Double zScoreActions) {
-		this.zScoreActions = zScoreActions;
-	}
-
-	public Double getzScoreTimes() {
-		return zScoreTimes;
-	}
-
-	public void setzScoreTimes(Double zScoreTimes) {
-		this.zScoreTimes = zScoreTimes;
-	}
-
 	public String getSessionNumber() {
 		return sessionNumber;
 	}
 
 	public void setSessionNumber(String sessionNumber) {
 		this.sessionNumber = sessionNumber;
+	}
+
+	public Integer getIdCluster() {
+		return idCluster;
+	}
+
+	public void setIdCluster(Integer idCluster) {
+		this.idCluster = idCluster;
 	}
 		
 }

@@ -253,7 +253,8 @@ public class WebUsageMining {
 		int countoktotal = 0, counterrototal = 0, countinittotal = 0, countthresholdtotal = 0, countTaskSessions = 0;
 		double countTaskActionsSessionsOk = 0, countTaskTimesSessionsOk = 0,
 				maxTimeAverageOk = 0, maxActionsAverageOk = 0,
-				maxActionOk = 0, maxTimeOk = 0;
+				maxActionOk = 0, maxTimeOk = 0,
+				minActionOk = Double.MAX_VALUE, minTimeOk = Double.MAX_VALUE;
 		
 		//Statistics Analysis
 		List<Double> actionsSize = new ArrayList<Double>(),
@@ -485,6 +486,9 @@ public class WebUsageMining {
 					maxTimeOk = maxTimeOk < sessionTime ? sessionTime : maxTimeOk;
 					maxActionOk = maxActionOk < countActions ? countActions : maxActionOk;
 					
+					minTimeOk = minTimeOk > sessionTime ? sessionTime : minTimeOk;
+					minActionOk = minActionOk > countActions ? countActions : minActionOk;
+					
 					//statistics
 					actionsOkSize.add((double) countActions);
 					timesOkSize.add((double) sessionTime);
@@ -589,6 +593,8 @@ public class WebUsageMining {
 		System.out.println("stdDevTimesOk: " + stdDevTimesOk);
 		
 		
+		
+		
 		double minEffectiveness = Double.MAX_VALUE;
 		double minEfficiency = Double.MAX_VALUE;
 		double maxEffectiveness = Double.MIN_VALUE;
@@ -604,26 +610,74 @@ public class WebUsageMining {
 		if(initialActionOfsectionsFromUser.size() > 0){
 			//#4.1 - Cálculo da Eficácia e Eficiência
 			
-			//permitir que seja possível normalizar os dados das sessões
-			HashMap<String, Double> userRateSuccess = new HashMap<String, Double>();
+			//cálculo da eficácia e eficiência
+			for(SessionResultDataMining s : sessionsResult){
+				s.setEffectiveness(ConverterUtils.notNaN(UsabilityUtils.calcEffectiveness(s.getUserRateRequired())));
+				//Double time = new Double(s.getTime()/1000);
+				s.setEfficiency(ConverterUtils.notNaN(UsabilityUtils.calcEfficiency(s.getEffectiveness(), (double) s.getActions().size(), minActionOk, (double) s.getTime(), minTimeOk)));
+				
+				//no caso de sessões que ultrapassam o limiar, valores extrapolam limites
+				if (s.getEfficiency() < 0) {
+					s.setEfficiency(0d);
+				} else if (s.getEfficiency() > 100) {
+					s.setEfficiency(100d);
+				}
+				
+				minEffectiveness = minEffectiveness > s.getEffectiveness() ? s.getEffectiveness() : minEffectiveness;
+				minEfficiency = minEfficiency > s.getEfficiency() ? s.getEfficiency() : minEfficiency;
+				maxEffectiveness = maxEffectiveness < s.getEffectiveness() ? s.getEffectiveness() : maxEffectiveness;
+				maxEfficiency = maxEfficiency < s.getEfficiency() ? s.getEfficiency() : maxEfficiency;
+			}
+			//normaliza
+			for(SessionResultDataMining s : sessionsResult){
+				s.setEffectivenessNormalized( ConverterUtils.notNaN((s.getEffectiveness() - minEffectiveness) / (maxEffectiveness - minEffectiveness)) );
+				s.setEfficiencyNormalized( ConverterUtils.notNaN((s.getEfficiency() - minEfficiency) / (maxEfficiency - minEfficiency)) );
+				
+				if(s.getEffectiveness().equals(Double.NaN)){
+					s.setEffectiveness(0d);
+				}
+				if(s.getEfficiency().equals(Double.NaN)){
+					s.setEfficiency(0d);
+				}
+				if(s.getEffectivenessNormalized().equals(Double.NaN)){
+					s.setEffectivenessNormalized(0d);
+				}
+				if(s.getEfficiencyNormalized().equals(Double.NaN)){
+					s.setEfficiencyNormalized(0d);
+				}
+			}
+			
+			
 			for(UserResultDataMining u : usersResult){
 				u.setMaxActionsAverageOk(maxActionsAverageOk);
 				u.setMaxTimeAverageOk(maxTimeAverageOk);
-				userRateSuccess.put(u.getUsername(), u.getUncompleteNormalized());
-				
-				//Proposta de Zscore, eficácia e eficiência
 				u.setzScoreActions(ConverterUtils.notNaN((u.getActionsAverageOk() - meanActionsOk)/stdDevActionsOk));
 				u.setzScoreTimes(ConverterUtils.notNaN((u.getTimesAverageOk() - meanTimesOk)/stdDevTimesOk));
-				u.setEffectiveness(ConverterUtils.notNaN(UsabilityUtils.calcEffectiveness(u.getRateSuccess(), u.getUserRateRequired())));
-				//u.setEfficiency(UsabilityUtils.calcEfficiency(u.getEffectiveness(), u.getzScoreActions(), u.getzScoreTimes()));
-				u.setEfficiency(ConverterUtils.notNaN(UsabilityUtils.calcEfficiency(u.getEffectiveness(), u.getActionsAverageOk(), (u.getTimesAverageOk()/1000))));
+				
+				//cálculo da eficácia e eficiência
+				double userEffectiveness = 0d, userEfficiency = 0d;
+				int countSessions = 0;
+				for(SessionResultDataMining s : sessionsResult){
+					if (u.getUsername().equals(s.getUsername())) {
+						countSessions++;
+						userEffectiveness += s.getEffectiveness();
+						userEfficiency += s.getEfficiency();
+					}
+				}
+				
+				if (countSessions > 0) {
+					u.setEffectiveness(userEffectiveness/countSessions);
+					u.setEfficiency(userEfficiency/countSessions);
+				} else {
+					u.setEffectiveness(0d);
+					u.setEfficiency(0d);
+				}
 				
 				minEffectivenessUser = minEffectivenessUser > u.getEffectiveness() ? u.getEffectiveness() : minEffectivenessUser;
 				minEfficiencyUser = minEfficiencyUser > u.getEfficiency() ? u.getEfficiency() : minEfficiencyUser;
 				maxEffectivenessUser = maxEffectivenessUser < u.getEffectiveness() ? u.getEffectiveness() : maxEffectivenessUser;
 				maxEfficiencyUser = maxEfficiencyUser < u.getEfficiency() ? u.getEfficiency() : maxEfficiencyUser;
 			}
-			
 			//normaliza os dados dos usuários
 			for(UserResultDataMining u : usersResult){
 				u.setEffectivenessNormalized( (u.getEffectiveness() - minEffectivenessUser) / (maxEffectivenessUser - minEffectivenessUser));
@@ -643,44 +697,8 @@ public class WebUsageMining {
 				}
 			}
 			
-			for(SessionResultDataMining s : sessionsResult){
-				s.setUserRateSuccess(ConverterUtils.notNaN(100 - (userRateSuccess.get(s.getUsername()) * 100)));
-				s.setActionsNormalized(ConverterUtils.notNaN(s.getActions().size()/maxActionOk));
-				s.setTimeNormalized(ConverterUtils.notNaN(s.getTime()/maxTimeOk));
-				
-				//Proposta de Zscore, eficácia e eficiência
-				
-				s.setzScoreActions(ConverterUtils.notNaN((s.getActions().size() - meanActionsOk)/stdDevActionsOk));
-				s.setzScoreTimes(ConverterUtils.notNaN((s.getTime() - meanTimesOk)/stdDevTimesOk));
-				
-				s.setEffectiveness(UsabilityUtils.calcEffectiveness(s.getUserRateSuccess(), s.getUserRateRequired()));
-				//s.setEfficiency(UsabilityUtils.calcEfficiency(s.getEffectiveness(), s.getzScoreActions(), s.getzScoreTimes()));
-				Double time = new Double(s.getTime()/1000);
-				s.setEfficiency(UsabilityUtils.calcEfficiency(s.getEffectiveness(), (double) s.getActions().size(), time));
-				
-				minEffectiveness = minEffectiveness > s.getEffectiveness() ? s.getEffectiveness() : minEffectiveness;
-				minEfficiency = minEfficiency > s.getEfficiency() ? s.getEfficiency() : minEfficiency;
-				maxEffectiveness = maxEffectiveness < s.getEffectiveness() ? s.getEffectiveness() : maxEffectiveness;
-				maxEfficiency = maxEfficiency < s.getEfficiency() ? s.getEfficiency() : maxEfficiency;
-			}
+			//verificar taxa de sucesso por sessão
 			
-			for(SessionResultDataMining s : sessionsResult){
-				s.setEffectivenessNormalized( ConverterUtils.notNaN((s.getEffectiveness() - minEffectiveness) / (maxEffectiveness - minEffectiveness)) );
-				s.setEfficiencyNormalized( ConverterUtils.notNaN((s.getEfficiency() - minEfficiency) / (maxEfficiency - minEfficiency)) );
-				
-				if(s.getEffectiveness().equals(Double.NaN)){
-					s.setEffectiveness(0d);
-				}
-				if(s.getEfficiency().equals(Double.NaN)){
-					s.setEfficiency(0d);
-				}
-				if(s.getEffectivenessNormalized().equals(Double.NaN)){
-					s.setEffectivenessNormalized(0d);
-				}
-				if(s.getEfficiencyNormalized().equals(Double.NaN)){
-					s.setEfficiencyNormalized(0d);
-				}
-			}
 			
 			
 			/* Fuzzy CMeans */

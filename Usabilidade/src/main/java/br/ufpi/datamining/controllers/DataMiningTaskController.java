@@ -1,10 +1,8 @@
 package br.ufpi.datamining.controllers;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +22,8 @@ import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
 import br.ufpi.datamining.analisys.FrequentSequentialPatternMining;
 import br.ufpi.datamining.analisys.WebUsageMining;
+import br.ufpi.datamining.analisys.kmeans.KMeansUtils;
+import br.ufpi.datamining.analisys.kmeans.ResultKMeans;
 import br.ufpi.datamining.models.ActionSingleDataMining;
 import br.ufpi.datamining.models.EvaluationTaskDataMining;
 import br.ufpi.datamining.models.EvaluationTestDataMining;
@@ -33,6 +33,7 @@ import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.aux.ActionSituationAux;
 import br.ufpi.datamining.models.aux.ResultDataMining;
 import br.ufpi.datamining.models.aux.ResultEvaluationDataMining;
+import br.ufpi.datamining.models.aux.SessionResultDataMining;
 import br.ufpi.datamining.models.enums.MomentTypeActionDataMiningEnum;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningFilterEnum;
@@ -148,6 +149,31 @@ public class DataMiningTaskController extends BaseController {
 		}
 	}
 	
+	
+	@Get("/testes/{idTeste}/avaliacao/{idEvaluationTest}/tarefas/{idTarefa}/clusterizar/numclusters/{numClusters}/threshold/{thresholdClusters}")
+	@Logado
+	public void clusterizar(Long idTeste, Long idEvaluationTest, Long idTarefa, int numClusters, double thresholdClusters) {
+		Gson gson = new GsonBuilder()
+	        .serializeSpecialFloatingPointValues()
+	        .create();
+		
+		try {
+			//get sessions to clustering
+			EvaluationTestDataMining evaluationTest = evaluationTestDataMiningRepository.find(idEvaluationTest);
+			ResultDataMining resultDataMining = WebUsageMining.analyze(idTarefa, evaluationTest.getInitDate().getTime(), evaluationTest.getLastDate().getTime(), SessionClassificationDataMiningFilterEnum.ALL, taskDataMiningRepository, actionDataMiningRepository);
+			
+			List<SessionResultDataMining> sessions = resultDataMining.getSessions();
+			ResultKMeans resultKMeans = KMeansUtils.kmeansFindBestUsers(KMeansUtils.convertSessionsToPoints(sessions), numClusters, thresholdClusters);
+			result.use(Results.json()).from(gson.toJson(resultKMeans)).serialize();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			ReturnVO returnVO = new ReturnVO(ReturnStatusEnum.ERRO, "erro");
+			validator.onErrorUse(Results.json()).from(gson.toJson(returnVO)).serialize();
+		}
+	}
+	
+	
 	@Get("/testes/{idTeste}/avaliacao/{idEvaluationTest}/tarefas/{idTarefa}/avaliar/sessoes/{sessionFilter}/minsup/{minSup}/minitens/{minItens}")
 	@Logado
 	public void avaliarParams(Long idTeste, Long idEvaluationTest, Long idTarefa, Integer sessionFilter, Double minSup, Integer minItens) {
@@ -239,13 +265,14 @@ public class DataMiningTaskController extends BaseController {
 			evaluation = EvaluationTaskDataMiningVO.zeroEvaluation(evaluation);
 		}
 		
+		
+    	
+    	System.out.println("-#-# Inicio do FrequentSequentialPatternMining: " + new Date().getTime() );
 		FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
 		List<FrequentSequentialPatternResultVO> frequentPatterns = null;
 		
 		double lastMinSup = minSup != null ? minSup : 0d;
 		int defaultMinItens = minItens != null ? minItens : 5;
-		
-		System.out.println("-#-# Inicio do FrequentSequentialPatternMining: " + new Date().getTime() );
 		Map<String, String> usersSequences = resultDataMining.getUsersSequences();
 		
 		

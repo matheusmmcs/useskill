@@ -1,0 +1,20 @@
+<h2 class="usdm-progressbar-header">
+	{{ 'dataminint.step' | translate }} {{ stepNumber }} - {{ title }}
+	<a class="btn btn-primary usdm-btn-info" title="{{ 'info' | translate }}" ng-click="showInfo = !showInfo">
+		<i class="icon-info-sign icon-white"></i>
+	</a>
+</h2>
+
+<div ng-hide="showInfo" class="row-fluid usdm-info-panel">
+	<div class="usdm-box">
+		<h3 class="usdm-box-header text-center">
+			{{ 'info' | translate }}
+			<button type="button" class="close" ng-click="showInfo = !showInfo">&times;</button>
+		</h3>
+		<div class="usdm-box-body u-justify usdm-info-text">
+			<div ng-bind-html="info | sanitize"></div>
+			<hr/>
+			<div ng-bind-html="'dataminint.step.general.info' | translate | sanitize"></div>
+		</div>
+	</div>
+</div>

@@ -1,10 +1,20 @@
 package br.ufpi.datamining.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 
 public class StatisticsUtils {
+	
+	public static double normalize(double val, double max) {
+		return val / max;
+	}
+	
+	public static double normalize(double val, double max, double min) {
+		return (val - min) / (max - min);
+	}
 
     public static double getMean(double[] ds){
         double sum = 0.0;
@@ -61,5 +71,13 @@ public class StatisticsUtils {
        }else{
           return data[data.length / 2];
        }
+    }
+    
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }

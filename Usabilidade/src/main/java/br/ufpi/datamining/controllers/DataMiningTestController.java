@@ -103,57 +103,6 @@ public class DataMiningTestController extends BaseController {
 		result.use(Results.json()).from(json).serialize();
 	}
 	
-	@Get("/testes/{idTeste}/priorizar/init/{init}/end/{end}")
-	@Logado
-	public void priorizar(Long idTeste, Date init, Date end) {
-		Gson gson = new GsonBuilder()
-	        .setExclusionStrategies(TestDataMiningVO.exclusionStrategy)
-	        .serializeNulls()
-	        .create();
-		
-		TestDataMining testPertencente = testeDataMiningRepository.getTestPertencente(usuarioLogado.getUsuario().getId(), idTeste);
-		validateComponente.validarNotNull(testPertencente, "datamining.accessdenied");
-		validator.onErrorRedirectTo(this).list();
-		
-		//calcula eficácia e eficiência das tarefas
-		List<TaskDataMining> tasks = testPertencente.getTasks();
-		Double maxEffectiveness = 0d, maxEfficiency = 0d, maxSessions = 0d;
-		for(TaskDataMining t : tasks){
-			EvaluationTaskDataMining e = t.getEvaluationBetweenDates(init, end);
-			if(e != null && e.getEvalMeanCompletion() != null && e.getEvalMeanCorrectness() != null && e.getEvalMeanTimes() != null && e.getEvalMeanActions() != null ){
-				e.setEvalEffectiveness(UsabilityUtils.calcEffectiveness(e.getEvalMeanCompletion(), e.getEvalMeanCorrectness()));
-				e.setEvalEfficiency(UsabilityUtils.calcEfficiency(e.getEvalEffectiveness(), e.getEvalZScoreActions(), e.getEvalZScoreTime()));
-				
-				maxEffectiveness = maxEffectiveness < e.getEvalEffectiveness() ? e.getEvalEffectiveness() : maxEffectiveness;
-				maxEfficiency = maxEfficiency < e.getEvalEfficiency() ? e.getEvalEfficiency() : maxEfficiency;
-				maxSessions = maxSessions < e.getEvalCountSessions() ? e.getEvalCountSessions() : maxSessions;
-			}
-		}
-		
-		//normaliza
-		for(TaskDataMining t : tasks){
-			EvaluationTaskDataMining e = t.getEvaluationBetweenDates(init, end);
-			if(e != null && e.getEvalMeanCompletion() != null && e.getEvalMeanCorrectness() != null && e.getEvalMeanTimes() != null && e.getEvalMeanActions() != null ){
-				e.setEvalEffectivenessNormalized(e.getEvalEffectiveness()/maxEffectiveness);
-				e.setEvalEfficiencyNormalized(e.getEvalEfficiency()/maxEfficiency);
-				e.setEvalCountSessionsNormalized(e.getEvalCountSessions()/maxSessions);
-			}
-		}
-		
-		//Fuzzy para calcular priorização
-		Fuzzy.executeFuzzySystemWithFCMTasks(tasks, init, end, true);
-		
-		//salvar novos indices
-		for(TaskDataMining t : tasks){
-			EvaluationTaskDataMining e = t.getEvaluationBetweenDates(init, end);
-			if(e.getEvalMeanCompletion() != null && e.getEvalMeanCorrectness() != null && e.getEvalMeanTimes() != null && e.getEvalMeanActions() != null ){
-				evaluationTaskDataMiningRepository.update(e);
-			}
-		}
-		
-		result.use(Results.json()).from(gson.toJson(new TestDataMiningVO(testPertencente))).serialize();
-	}
-	
 	@Get("/testes/{idTeste}")
 	@Logado
 	public void view(Long idTeste) {
