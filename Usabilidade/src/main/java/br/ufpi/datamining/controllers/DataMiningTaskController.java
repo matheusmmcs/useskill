@@ -3,6 +3,7 @@ package br.ufpi.datamining.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,9 @@ import br.ufpi.datamining.models.FieldSearchTupleDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.aux.ActionSituationAux;
+import br.ufpi.datamining.models.aux.ComparePatternsAux;
+import br.ufpi.datamining.models.aux.FSPMResultAux;
+import br.ufpi.datamining.models.aux.ResultComparePatterns;
 import br.ufpi.datamining.models.aux.ResultDataMining;
 import br.ufpi.datamining.models.aux.ResultEvaluationDataMining;
 import br.ufpi.datamining.models.aux.SessionResultDataMining;
@@ -51,6 +55,9 @@ import br.ufpi.datamining.repositories.TestDataMiningRepository;
 import br.ufpi.datamining.utils.ConverterUtils;
 import br.ufpi.datamining.utils.GsonExclusionStrategy;
 import br.ufpi.models.Usuario;
+import ca.pfv.spmf.algorithms.sequentialpatterns.BIDE_and_prefixspan.SequentialPattern;
+import ca.pfv.spmf.input.sequence_database_list_integers.SequenceDatabase;
+import ca.pfv.spmf.patterns.itemset_list_integers_without_support.Itemset;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -149,6 +156,77 @@ public class DataMiningTaskController extends BaseController {
 		}
 	}
 	
+	@Post("/testes/tarefas/compararpadroes")
+	@Consumes("application/json")
+	public void compararPadroes(ComparePatternsAux padroes) {
+		Gson gson = new GsonBuilder()
+	        .setExclusionStrategies(TaskDataMiningVO.exclusionStrategy)
+	        .serializeSpecialFloatingPointValues()
+	        .create();
+		
+		try {
+			FSPMResultAux resultFSPMBest = minerarFSPM(padroes.getPatternsBest(), null, padroes.getMinItens());
+			FSPMResultAux resultFSPMOthers = minerarFSPM(padroes.getPatternsOthers(), null, padroes.getMinItens());
+			
+			ResultComparePatterns resultCompare = new ResultComparePatterns(resultFSPMBest, resultFSPMOthers);
+			result.use(Results.json()).from(gson.toJson(resultCompare)).serialize();
+		} catch (IOException e) {
+			e.printStackTrace();
+			ReturnVO returnVO = new ReturnVO(ReturnStatusEnum.ERRO, "erro");
+			validator.onErrorUse(Results.json()).from(gson.toJson(returnVO)).serialize();
+		}
+	}
+	
+	private FSPMResultAux minerarFSPM(String pattern, Double minSup, Integer minItens) throws IOException {
+		FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
+		List<FrequentSequentialPatternResultVO> frequentPatternReturn = new ArrayList<FrequentSequentialPatternResultVO>();
+		
+		double lastMinSup = minSup != null ? minSup : 0d;
+		int defaultMinItens = minItens != null ? minItens : 5;
+		
+		
+		boolean isUniqueSession = false;
+		
+		if (pattern != null) {
+			int diffChars = pattern.length() - pattern.replace("-2", "").length();
+			if (diffChars <= 2) {
+				isUniqueSession = true;
+			}
+			
+			if (isUniqueSession) {
+				SequenceDatabase sequenceDatabase = new SequenceDatabase();
+				sequenceDatabase.loadFromString(pattern, "\n");
+				
+				List<List<Integer>> list = sequenceDatabase.getSequences().get(0).getItemsets();
+				Itemset itemSet = new Itemset(0);
+				for (List<Integer> li : list) {
+					for (Integer i : li) {
+						itemSet.addItem(i);
+					}
+				}
+				
+				SequentialPattern seqPattern = new SequentialPattern(itemSet, sequenceDatabase.getSequenceIDs());
+				frequentPatternReturn.add(new FrequentSequentialPatternResultVO(seqPattern));
+			} else {
+				if (minSup != null) {
+					frequentPatternReturn = fspm.analyze(pattern, lastMinSup, null, defaultMinItens);
+				} else {
+					//automatic patterns: (100/80/60/40/20)
+					double[] minSups = new double[]{1.0, 0.8, 0.6, 0.4};
+					for (int i = 0; i < minSups.length; i++) {
+						if (frequentPatternReturn == null || frequentPatternReturn.size() == 0) {
+							lastMinSup = minSups[i];
+							System.out.println("-- INICIAR SESSÃO FSPM: " + lastMinSup);
+							frequentPatternReturn = fspm.analyze(pattern, minSups[i], null, defaultMinItens);
+						}
+					}
+				}
+			}
+		} 
+		
+		return new FSPMResultAux(lastMinSup, defaultMinItens, isUniqueSession, frequentPatternReturn);
+	}
+	
 	
 	@Get("/testes/{idTeste}/avaliacao/{idEvaluationTest}/tarefas/{idTarefa}/clusterizar/numclusters/{numClusters}/threshold/{thresholdClusters}")
 	@Logado
@@ -172,7 +250,6 @@ public class DataMiningTaskController extends BaseController {
 			validator.onErrorUse(Results.json()).from(gson.toJson(returnVO)).serialize();
 		}
 	}
-	
 	
 	@Get("/testes/{idTeste}/avaliacao/{idEvaluationTest}/tarefas/{idTarefa}/avaliar/sessoes/{sessionFilter}/minsup/{minSup}/minitens/{minItens}")
 	@Logado

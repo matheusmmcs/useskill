@@ -1046,7 +1046,78 @@
 	        				Clusterizar Sessões
 	        			</h2>
 	        			<div class="usdm-box-body">
+	        				<dl>
+				            	<dt>Quantidade de Clusters:</dt>
+				            	<dd>
+				            		{{ taskCtrl.lastClustering.numClusters }}
+				            	</dd>
+				            </dl>
+				            <dl>
+				            	<dt>Distância Euclidiana entre "melhores" Clusters:</dt>
+				            	<dd>
+				            		{{ taskCtrl.lastClustering.distanceThreshold }}
+				            	</dd>
+				            </dl>
+				            <dl>
+				            	<dt>Grupo "Referência":</dt>
+				            	<dd>
+				            		{{ taskCtrl.lastClustering.sessionsBest.length }}
+				            	</dd>
+				            </dl>
+				            <dl>
+				            	<dt>Grupo "Demais Sessões":</dt>
+				            	<dd>
+				            		{{ taskCtrl.lastClustering.sessionsOthers.length }}
+				            	</dd>
+				            </dl>
+				            
+				            <!-- Chart -->
 	        				<nvd3 options="clusterOptions" data="clusterData" api="clusterApi"></nvd3>
+	        				
+	        				<!-- Table -->
+	        				<div class="usdm-withscroll-large">
+					            <table cellpadding="0" cellspacing="0" border="0" class="table table-bordered dinamic-table" ts-wrapper>
+								  <thead>
+								    <tr>
+								   		<th ts-criteria="point.isBest|lowercase" ts-default="descending">Grupo</th>
+								      	<th ts-criteria="username|lowercase">{{ 'datamining.tasks.evaluate.user' | translate }}</th>
+								      	<th ts-criteria="actions.length|parseInt">{{ 'datamining.tasks.actions' | translate }}</th>
+								      	<th ts-criteria="time|parseInt">{{ 'datamining.tasks.time' | translate }}</th>
+								      	<th ts-criteria="effectiveness|parseFloat">{{ 'datamining.tasks.effectiveness' | translate }}</th>
+								      	<th ts-criteria="efficiency|parseFloat">{{ 'datamining.tasks.efficiency' | translate }}</th>
+								      	<th ts-criteria="classification|lowercase">{{ 'datamining.tasks.class' | translate }}</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr ng-class="{ 'session-best-true' : session.point.isBest, 'session-best-false' : !session.point.isBest }" ng-repeat="session in taskCtrl.lastClustering.sessions" ts-repeat>
+								      
+								      <!--
+								      <td>{{session.point.isBest}}</td>
+								      <td class="text-center" ng-click="setSituationAction(action.id, situationsEnum.OK)">
+							      		<i ng-show="isSituationAction(action.id, situationsEnum.OK)" class="icon-ok-sign"></i>
+							      		<i ng-hide="isSituationAction(action.id, situationsEnum.OK)" class="icon-ok-circle"></i>
+							      	  </td>
+							      	  -->
+							      	  <td class="text-center" ng-click="taskCtrl.changePointGroup(session)">
+							      		<i ng-show="session.point.isBest" class="icon-ok-sign"></i>
+							      		<i ng-hide="session.point.isBest" class="icon-ok-circle"></i>
+							      	  </td>
+								      <td><a ng-click="showActionsSession(session)">{{session.id}}</a></td>
+								      <td>{{session.actions.length | number:2}}</td>
+								      <td>{{session.time | msConverter}}</td>
+								      <td>{{session.effectiveness | number:2}} %</td>
+								      <td>{{session.efficiency | number:2}} %</td>
+								      <td>{{getClassificationFromEnum(session.classification).desc}}</td>
+								    </tr>
+								  </tbody>
+								</table>
+							</div>
+							<div class="table-labels">
+								<span class="title">{{ 'label' | translate }}:</span>
+								<span class="label label-info">{{ 'dataminint.step.clustering.best' | translate }}</span>
+								<span class="label label-warning">{{ 'dataminint.step.clustering.others' | translate }}</span>
+							</div>
+							
 	        			</div>
 	        		</div>
 	        		
@@ -1061,6 +1132,21 @@
 					 	info="'dataminint.step.comparing.info' | translate">
 					 </usdm-progress-header>
 	        	
+	        		<div class="usdm-box">
+	        			<h2 class="usdm-box-header">
+	        				Comparar Grupos de Sessões
+	        			</h2>
+	        			<div class="usdm-box-body">
+				            <form name="myForm" class="usdm-clickable-box-form-lite form-layout">
+								<fieldset>
+									<hr/>
+						        	<div class="form-actions">
+						            	<button ng-click="taskCtrl.comparing()"  class="btn btn-primary pull-right submit">Comparar Grupos de Sessões</button>
+						        	</div>
+								</fieldset>
+							</form>
+	        			</div>
+	        		</div>
 
         		</div>
 	        	

@@ -384,6 +384,12 @@ angular.module('useskill',
         	return doRequest('GET', '/datamining/testes/'+testId+'/avaliacao/'+evalTestId+'/tarefas/'+taskId+'/clusterizar/numclusters/'+numClusters+'/threshold/'+thresholdClusters);
         },
         
+        //COMPARE PATTERNS
+        comparePatterns: function(patternData) {
+        	return doRequest('POST', '/datamining/testes/tarefas/compararpadroes', patternData);
+        },
+        
+        
         //CONTROL
         getTestsControl: function(){
         	return doRequest('GET', '/datamining/testes/control');
@@ -1151,6 +1157,15 @@ angular.module('useskill',
 				if (session.actions[a].identifier == actionId) {
 					return session.actions[a];
 				}
+			}
+		}
+		return null;
+	}
+	$scope.getSessionFromId = function(sessionId) {
+		for (var s in taskCtrl.result.sessions) {
+			var session = taskCtrl.result.sessions[s];
+			if (session.id == sessionId) {
+				return session;
 			}
 		}
 		return null;
@@ -1924,25 +1939,26 @@ angular.module('useskill',
     $scope.clusterOptions = {
         chart: {
             type: 'scatterChart',
-            height: 450,
+            height: 350,
             color: d3.scale.category10().range(),
             scatter: {
                 onlyCircles: false
             },
             showDistX: true,
             showDistY: true,
-            tooltipContent: function(key) {
+            tooltipContent: function(key, a, b) {
+            	console.log(key, a, b);
                 return '<h3>' + key + '</h3>';
             },
             duration: 350,
             xAxis: {
-                axisLabel: 'X Axis',
+                axisLabel: $filter('translate')('datamining.tasks.effectiveness'),
                 tickFormat: function(d){
                     return d3.format('.02f')(d);
                 }
             },
             yAxis: {
-                axisLabel: 'Y Axis',
+                axisLabel: $filter('translate')('datamining.tasks.efficiency'),
                 tickFormat: function(d){
                     return d3.format('.02f')(d);
                 },
@@ -1956,7 +1972,9 @@ angular.module('useskill',
                 horizontalOff: false,
                 verticalOff: false,
                 unzoomEventType: 'dblclick.zoom'
-            }
+            },
+            forceY: [0,100],
+            forceX: [0,100]
         }
     };
 	
@@ -1964,10 +1982,68 @@ angular.module('useskill',
 	//console.log('clusterData', $scope.clusterData);
 	var initialClusterData = [{ values: [] }];
 	$scope.clusterData = initialClusterData;
+	
+	function arrayUnique(array) {
+	    var a = array.concat();
+	    for(var i=0; i<a.length; ++i) {
+	        for(var j=i+1; j<a.length; ++j) {
+	            if(a[i] === a[j])
+	                a.splice(j--, 1);
+	        }
+	    }
+	    return a;
+	}
+	
+	function getSessionsFromPointsGroup(pointsGroup) {
+		var sessionsResult = [];
+		for (var v in pointsGroup.values) {
+			var point = pointsGroup.values[v];
+			var session = $scope.getSessionFromId(point.id);
+			if (session != null) {
+				session.point = point;
+				sessionsResult.push(session);
+			}
+		}
+		return sessionsResult;
+	}
+	
+	var lastGroupBest = null, lastGroupOthers = null;
+	taskCtrl.changePointGroup = function(session) {
+		console.log(session);
+		console.log($scope.clusterData);
+		
+		if (lastGroupBest != null && lastGroupOthers != null) {
+			var isBest = session.point.isBest;
+			session.point.isBest = !isBest;
+			if (isBest) {
+				for (var v in lastGroupBest.values) {
+					if (lastGroupBest.values[v].id == session.id) {
+						lastGroupBest.values.splice(v, 1);
+						break;
+					}
+				}
+				lastGroupOthers.values.push(session.point);
+			} else {
+				for (var v in lastGroupOthers.values) {
+					if (lastGroupOthers.values[v].id == session.id) {
+						lastGroupOthers.values.splice(v, 1);
+						break;
+					}
+				}
+				lastGroupBest.values.push(session.point);
+			}
+		}
+		refreshSessionsDataPoints();
+	}
+	
+	function refreshSessionsDataPoints() {
+		taskCtrl.lastClustering.sessionsBest = getSessionsFromPointsGroup(lastGroupBest);
+		taskCtrl.lastClustering.sessionsOthers = getSessionsFromPointsGroup(lastGroupOthers);
+		taskCtrl.lastClustering.sessions = arrayUnique(taskCtrl.lastClustering.sessionsBest.concat(taskCtrl.lastClustering.sessionsOthers));
+	}
     
     taskCtrl.clustering = function() {
-    	
-    	//parametriza: qtd inicial de clusters / limiar da distância / coeficiente minimo
+
     	ServerAPI.clusterSessions(
     			Number.parseInt(taskCtrl.task.testDataMining.id), 
     			Number.parseInt(taskCtrl.evalTestId), 
@@ -1975,19 +2051,20 @@ angular.module('useskill',
     			taskCtrl.minclusters, 
     			taskCtrl.distancecenters
     	).then(function(data) {
-			console.log(data);
 			var clustering = JSON.parse(data.data.string);
 			console.log(clustering);
 			
 			//recebe quem é "oráculo" e quem não é
 			var graphData = [],
 				groupBest = {
-	                key: 'Sessões Referência',
+					isBest: true,
+	                key: $filter('translate')('dataminint.step.clustering.best'),
 	                values: [],
 	                color: '#1f77b4'
 	            },
 	            groupOthers = {
-	                key: 'Demais Sessões',
+					isBest: false,
+	                key: $filter('translate')('dataminint.step.clustering.others'),
 	                values: [],
 	                color: '#ff7f0e'
 	            };
@@ -1998,6 +2075,7 @@ angular.module('useskill',
 				for (var p in cluster.points) {
 					var point = cluster.points[p];
 					var pointChart = {
+						id: point.id,
 						x: point.x,
 	                    y: point.y,
 	                    size: 100,
@@ -2005,58 +2083,91 @@ angular.module('useskill',
 					};
 					
 					if (cluster.isBest) {
+						pointChart.isBest = true;
 						groupBest.values.push(pointChart);
 					} else {
+						pointChart.isBest = false;
 						groupOthers.values.push(pointChart);
 					}
 				}
 			}
 			
-			graphData.push(groupBest);
-			graphData.push(groupOthers);
+			lastGroupBest = groupBest;
+			lastGroupOthers = groupOthers;
+			
+			graphData.push(lastGroupBest);
+			graphData.push(lastGroupOthers);
 			
 			$scope.clusterData = graphData;
 			
-			//others
-			/*
-			//others
-			//$scope.pieData = testCtrl.actions.slice(0,size);
-			var sum = 0;
-			angular.forEach(testCtrl.actions.slice(size), function(elem){
-				sum += elem.count;
-			});
-			$scope.pieData.push({
-				description: $filter('translate')('others...'), 
-				count: sum
-			});
-			*/
-			
+			taskCtrl.lastClustering = clustering;
+			refreshSessionsDataPoints();
+				
 			//rerender
 			$timeout(function(){
 				$scope.clusterApi.refresh();
 				//$timeout(function(){ $scope.canChange = true; }, 1000);
 			});
 			
-			//$scope.renderPieMost($scope.sizePie);
-			
-			
-			//apresenta em um gráfico e uma lista
-			
-			//usuário pode identificar quem é "oráculo" e quem não é
-			
-			taskCtrl.lastClustering = clustering;
 		}, function(data) {
 			console.log(data);
 		});
     }
     
     // ETAPA 3 - FSPM
+    function generateFSPM(group) {
+    	var strResult = "";
+    	for (var v in group.values) {
+    		var strSession = "";
+    		var session = $scope.getSessionFromId(group.values[v].id);
+			if (session != null) {
+				for (var a in session.actions) {
+					var action = session.actions[a];
+					strSession += action.identifier + " -1 ";
+				}
+				strSession += "-2\n";
+			}
+			strResult += strSession;
+    	}
+    	return strResult;
+    }
+    
     taskCtrl.comparing = function() {
+    	
     	//envia os dados necessários apenas para executar algoritmo FSPM
     	
     	//apresenta mais dois grafos
     	
     	//listas com ações "estranhas"
+    	
+    	console.log("----- comparing -----");
+    	console.log(taskCtrl.result.sessions);
+    	console.log(lastGroupBest);
+    	console.log(lastGroupOthers);
+    	
+    	var obj = {
+    		'patternsBest' : 	generateFSPM(lastGroupBest),
+    		'patternsOthers' : 	generateFSPM(lastGroupOthers),
+    		'testId' : 			Number.parseInt(taskCtrl.task.testDataMining.id), 
+    		'evalTestId' : 		Number.parseInt(taskCtrl.evalTestId), 
+    		'taskId' : 			Number.parseInt(taskCtrl.task.id),
+//    		'minSup' : 			75,
+    		'minItens' : 		4
+    	};
+    	
+    	var patterns = angular.toJson({
+			'padroes' : obj
+		});
+    	
+    	console.log(patterns);
+    	
+    	ServerAPI.comparePatterns(patterns).then(function(data) {
+			console.log(data);
+			console.log(JSON.parse(data.data.string));
+		}, function(data) {
+			console.log(data);
+		});
+    	
     }
     
     

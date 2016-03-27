@@ -324,6 +324,7 @@ ul.horizontal{
 @usdm-color-red: 		rgb(255, 209, 209);
 @usdm-color-yellow: 	rgb(255, 242, 209);
 @usdm-color-blue: 		rgb(215, 234, 251);
+@usdm-color-orange: 	rgb(255, 221, 191);
 
 @usdm-color-vivid-gray: 	#BDC3C7;
 @usdm-color-darken-gray: 	#A2A8AF;
@@ -780,9 +781,9 @@ ul.horizontal{
 		
 		&progressbar {
 			position: relative;
-			margin: 30px 0 15px;
+			margin: 30px 0 10px;
 			padding-bottom: 30px;
-			border-bottom: 1px solid #becde2;
+			//border-bottom: 1px solid #becde2;
 			
 			overflow: hidden;
 			/*CSS counters to number the steps*/
@@ -999,6 +1000,17 @@ input[type=number].number-disable::-webkit-outer-spin-button {
 	&-REPEAT td {
 		background: @usdm-color-yellow !important;
 		color: @color-sessios-text;
+	}
+	
+	&-best {
+		&-true {
+			background: @usdm-color-blue !important;
+			color: @color-sessios-text;
+		}
+		&-false {
+			background: @usdm-color-orange !important;
+			color: @color-sessios-text;
+		}
 	}
 }
 

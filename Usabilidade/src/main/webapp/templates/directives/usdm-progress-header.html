@@ -1,11 +1,11 @@
-<h2 class="usdm-progressbar-header">
+<h2 class="usdm-progressbar-header" ng-init="showInfo=false">
 	{{ 'dataminint.step' | translate }} {{ stepNumber }} - {{ title }}
 	<a class="btn btn-primary usdm-btn-info" title="{{ 'info' | translate }}" ng-click="showInfo = !showInfo">
 		<i class="icon-info-sign icon-white"></i>
 	</a>
 </h2>
 
-<div ng-hide="showInfo" class="row-fluid usdm-info-panel">
+<div ng-show="showInfo" class="row-fluid usdm-info-panel">
 	<div class="usdm-box">
 		<h3 class="usdm-box-header text-center">
 			{{ 'info' | translate }}
