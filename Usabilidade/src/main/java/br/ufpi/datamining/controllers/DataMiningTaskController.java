@@ -165,8 +165,8 @@ public class DataMiningTaskController extends BaseController {
 	        .create();
 		
 		try {
-			FSPMResultAux resultFSPMBest = minerarFSPM(padroes.getPatternsBest(), null, padroes.getMinItens());
-			FSPMResultAux resultFSPMOthers = minerarFSPM(padroes.getPatternsOthers(), null, padroes.getMinItens());
+			FSPMResultAux resultFSPMBest = minerarFSPM(padroes.getPatternsBest(), padroes.getMinSupBest(), padroes.getMinItensBest());
+			FSPMResultAux resultFSPMOthers = minerarFSPM(padroes.getPatternsOthers(), padroes.getMinSupOthers(), padroes.getMinItensOthers());
 			
 			ResultComparePatterns resultCompare = new ResultComparePatterns(resultFSPMBest, resultFSPMOthers);
 			result.use(Results.json()).from(gson.toJson(resultCompare)).serialize();

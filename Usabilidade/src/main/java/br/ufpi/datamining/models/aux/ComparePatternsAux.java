@@ -8,25 +8,63 @@ public class ComparePatternsAux {
 	private Long evalTestId;
 	private Long taskId;
 	
-	private Double minSup; 
-	private Integer minItens;
+	private Double minSupBest; 
+	private Integer minItensBest;
+
+	private Double minSupOthers; 
+	private Integer minItensOthers;	
 	
 	public ComparePatternsAux() {
 		super();
 	}
 	
 	public ComparePatternsAux(String patternsBest, String patternsOthers, Long testId, 
-								Long evalTestId, Long taskId, Double minSup, Integer minItens) {
+								Long evalTestId, Long taskId, Double minSupBest, Integer minItensBest,
+								Double minSupOthers, Integer minItensOthers) {
 		super();
 		this.patternsBest = patternsBest;
 		this.patternsOthers = patternsOthers;
 		this.testId = testId;
 		this.evalTestId = evalTestId;
 		this.taskId = taskId;
-		this.minSup = minSup;
-		this.minItens = minItens;
+		this.minSupBest = minSupBest;
+		this.minItensBest = minItensBest;
+		this.minSupOthers = minSupOthers;
+		this.minItensOthers = minItensOthers;
 	}
 	
+	public Double getMinSupBest() {
+		return minSupBest;
+	}
+
+	public void setMinSupBest(Double minSupBest) {
+		this.minSupBest = minSupBest;
+	}
+
+	public Integer getMinItensBest() {
+		return minItensBest;
+	}
+
+	public void setMinItensBest(Integer minItensBest) {
+		this.minItensBest = minItensBest;
+	}
+
+	public Double getMinSupOthers() {
+		return minSupOthers;
+	}
+
+	public void setMinSupOthers(Double minSupOthers) {
+		this.minSupOthers = minSupOthers;
+	}
+
+	public Integer getMinItensOthers() {
+		return minItensOthers;
+	}
+
+	public void setMinItensOthers(Integer minItensOthers) {
+		this.minItensOthers = minItensOthers;
+	}
+
 	public String getPatternsBest() {
 		return patternsBest;
 	}
@@ -64,21 +102,6 @@ public class ComparePatternsAux {
 		this.taskId = taskId;
 	}
 
-	public Double getMinSup() {
-		return minSup;
-	}
-
-	public void setMinSup(Double minSup) {
-		this.minSup = minSup;
-	}
-
-	public Integer getMinItens() {
-		return minItens;
-	}
-
-	public void setMinItens(Integer minItens) {
-		this.minItens = minItens;
-	}
 	
 	
 }

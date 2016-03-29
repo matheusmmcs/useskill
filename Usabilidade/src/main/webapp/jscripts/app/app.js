@@ -886,7 +886,6 @@ angular.module('useskill',
 })
 .controller('TaskEvaluateController', function($scope, evaluate, evalTestId, sessionFilterParam, $filter, ServerAPI, $timeout, $sce, UtilsService) {
 	var taskCtrl = this;
-	$scope.stepEval = 1;
 	
 	taskCtrl.formatDate = UtilsService.formatDate;
 	taskCtrl.evalTestId = evalTestId;
@@ -988,57 +987,63 @@ angular.module('useskill',
 	}
 	
 	//adjust frequentPatterns
-	angular.forEach(taskCtrl.frequentPatterns, function(fp, keyFp){
-		fp.key = keyFp;
-		fp.itemsetsFormatted = [];
-		fp.sessionsFormatted = [];
-		fp.effectivenessMean = 0;
-		fp.efficiencyMean = 0;
-		fp.successMean = 0;
-		fp.requiredMean = 0;
-		fp.usersSessions = {};
-		
-		angular.forEach(fp.itemsets, function(itset, keyItset){
-			angular.forEach(itset.items, function(item){
-				//update action referente to frequentpatterns and itemsets
-				var action = {
-					idAction: item,
-					desc: taskCtrl.result.pageViewActionIds[item],
-					count: taskCtrl.result.pageViewActionCount[item],
-					itemset: keyItset
-				};
-				//actionsArr
-				fp.itemsetsFormatted.push(action);
+	function adjustFrequentPatterns(patterns) {
+		angular.forEach(patterns, function(fp, keyFp){
+			fp.key = keyFp;
+			fp.itemsetsFormatted = [];
+			fp.sessionsFormatted = [];
+			fp.effectivenessMean = 0;
+			fp.efficiencyMean = 0;
+			fp.successMean = 0;
+			fp.requiredMean = 0;
+			fp.usersSessions = {};
+			
+			angular.forEach(fp.itemsets, function(itset, keyItset){
+				angular.forEach(itset.items, function(item){
+					//update action referente to frequentpatterns and itemsets
+					var action = {
+						idAction: item,
+						desc: taskCtrl.result.pageViewActionIds[item],
+						count: taskCtrl.result.pageViewActionCount[item],
+						itemset: keyItset
+					};
+					//actionsArr
+					fp.itemsetsFormatted.push(action);
+				});
 			});
-		});
-		
-		angular.forEach(fp.sequencesIds, function(seq){
-			var sess = taskCtrl.result.sessions[seq];
-			fp.sessionsFormatted.push(sess);
 			
-			fp.effectivenessMean += (sess.effectivenessNormalized * 100);
-			fp.efficiencyMean += (sess.efficiencyNormalized * 100);
-			fp.successMean += sess.userRateSuccess;
-			fp.requiredMean += sess.userRateRequired;
+			angular.forEach(fp.sequencesIds, function(seq){
+				var sess = taskCtrl.result.sessions[seq];
+				fp.sessionsFormatted.push(sess);
+				
+				fp.effectivenessMean += (sess.effectivenessNormalized * 100);
+				fp.efficiencyMean += (sess.efficiencyNormalized * 100);
+				fp.successMean += sess.userRateSuccess;
+				fp.requiredMean += sess.userRateRequired;
+				
+				if (fp.usersSessions[sess.username] === undefined) {
+					fp.usersSessions[sess.username] = {
+						count: 0,
+						sessions: []
+					};
+				}
+				fp.usersSessions[sess.username].count++;
+				fp.usersSessions[sess.username].sessions.push(sess.id);
+			});
 			
-			if (fp.usersSessions[sess.username] === undefined) {
-				fp.usersSessions[sess.username] = {
-					count: 0,
-					sessions: []
-				};
-			}
-			fp.usersSessions[sess.username].count++;
-			fp.usersSessions[sess.username].sessions.push(sess.id);
+			var seqIds = fp.sequencesIds != null ? fp.sequencesIds.length : 1;
+			fp.effectivenessMean = fp.effectivenessMean / seqIds;
+			fp.efficiencyMean = fp.efficiencyMean / seqIds;
+			fp.successMean = fp.successMean / seqIds;
+			fp.requiredMean = fp.requiredMean / seqIds;
+			fp.itemsetsFormattedText = fp.itemsetsFormatted.map(function(elem){
+			    return elem.idAction;
+			}).join(", ");
 		});
-		
-		fp.effectivenessMean = fp.effectivenessMean / fp.sequencesIds.length;
-		fp.efficiencyMean = fp.efficiencyMean / fp.sequencesIds.length;
-		fp.successMean = fp.successMean / fp.sequencesIds.length;
-		fp.requiredMean = fp.requiredMean / fp.sequencesIds.length;
-		fp.itemsetsFormattedText = fp.itemsetsFormatted.map(function(elem){
-		    return elem.idAction;
-		}).join(", ");
-	});
+	}
+	
+	adjustFrequentPatterns(taskCtrl.frequentPatterns);
+	
 	
 	
 	/************ Classifications ************/
@@ -1383,6 +1388,9 @@ angular.module('useskill',
     $scope.showContentGraph = function() {
     	$scope.redraw($scope.graphIdsEnum.GRAPH_DEFAULT);
     	$scope.contentShow = contentShowEnum.GRAPH;
+    	//adjust to focus initial node
+    	console.log('showContentGraph');
+    	$scope.resetZoomGraphType($scope.graphIdsEnum.GRAPH_DEFAULT);
     }
     $scope.showContentGuide = function() {
     	if (!$scope.step) {
@@ -1401,6 +1409,12 @@ angular.module('useskill',
     }
     $scope.isShowContentAdvanced = function() {
     	return $scope.contentShow === contentShowEnum.ADVANCED;
+    }
+    $scope.resetZoomGraphType = function(typeGraph) {
+    	//$scope.graphIdsEnum.GRAPH_DEFAULT
+    	$timeout(function(){ 
+    		$scope.resetZoomGraph(typeGraph, 0.5);
+        }, 50);
     }
     
     /*************   GRAFO   *************/
@@ -1930,7 +1944,6 @@ angular.module('useskill',
     }
     
     // ETAPA 2 - CLUSTERING
-    //$scope.stepEval = 2;
     
     taskCtrl.minclusters = 4;
     taskCtrl.distancecenters = 10;
@@ -2041,9 +2054,15 @@ angular.module('useskill',
 		taskCtrl.lastClustering.sessionsOthers = getSessionsFromPointsGroup(lastGroupOthers);
 		taskCtrl.lastClustering.sessions = arrayUnique(taskCtrl.lastClustering.sessionsBest.concat(taskCtrl.lastClustering.sessionsOthers));
 	}
+	
+	$scope.showActionsSessionCluster = function(session){
+		$scope.showContentAdvanced();
+		taskCtrl.userSession = session;
+		changeMode('actions');
+		$scope.stepEval = 1;
+	}
     
     taskCtrl.clustering = function() {
-
     	ServerAPI.clusterSessions(
     			Number.parseInt(taskCtrl.task.testDataMining.id), 
     			Number.parseInt(taskCtrl.evalTestId), 
@@ -2132,13 +2151,97 @@ angular.module('useskill',
     	return strResult;
     }
     
+    function getActionsFromSessionsPoint(group) {
+    	var result = [], resultMap = {};
+    	for (var v in group.values) {
+    		var session = $scope.getSessionFromId(group.values[v].id);
+			if (session != null) {
+				for (var a in session.actions) {
+					var action = session.actions[a];
+					if (!resultMap[action.identifier]) {
+						resultMap[action.identifier] = action;
+						result.push(action);
+					}
+				}
+			}
+    	}
+    	return result;
+    }
+    
+    function getMapActionsPattern(frequentPattern) {
+    	var mapActions = [];
+		for (var p in frequentPattern) {
+			var pattern = frequentPattern[p];
+			for (var i in pattern.itemsetsFormatted) {
+				var item = pattern.itemsetsFormatted[i];
+				mapActions[item.idAction] = {
+					id: item.idAction,
+					count: item.count
+				};
+			}
+		}
+		return mapActions;
+    }
+    
+    function filterActionsGroup(arrayActions1, arrayActions2) {
+    	var result = [];
+    	var arrayActions = arrayActions1.filter(function(obj) {
+		    return !arrayActions2.some(function(obj2) {
+		        return obj.identifier == obj2.identifier;
+		    });
+		});
+		for (var a in arrayActions) {
+			var action = arrayActions[a];
+			result.push(action);
+		}
+		return result;
+    }
+    
+    taskCtrl.minSupBest = 0.75;
+    taskCtrl.minItensBest = 4;
+    taskCtrl.minSupOthers = 0.4;
+    taskCtrl.minItensOthers = 4;
+    
+    taskCtrl.lastPatternsResult = null;
+    
+    $scope.typePatternsResultSelected = {};
+    $scope.typePatternsResultArrayEnum = {
+    	REQUIRED: {
+    		id: 1,
+    		desc: '"Obrigatórias"',
+    		info: 'Ações dos Padrões Frequentes de Sessões Referência'
+    	},
+    	PROBLEM: {
+    		id: 2,
+    		desc: '"Problemáticas"',
+    		info: 'Ações das Padrões Frequentes de Demais Sessões que não estão nos Padrões Frequentes de Sessões Referência'
+    	},
+    	CORRECT: {
+    		id: 3,
+    		desc: '"Corretas"',
+    		info: 'Ações das Sessões Referência'
+    	},
+    	ALERT: {
+    		id: 4,
+    		desc: '"Alertas"',
+    		info: 'Ações das Demais Sessões que não estão Sessões Referência'
+    	}
+    };
+    
+    $scope.changeTypePatternsResultSelected = function(type) {
+    	$scope.typePatternsResultSelected = type;
+    	$scope.actionViewPatternResult = null;
+    }
+    
+    $scope.actionViewPatternResult = null;
+    $scope.setActionViewPatternResult = function(action) {
+    	$scope.actionViewPatternResult = action;
+		$scope.actionViewPatternResult.positionStep = null;
+		resetSituationAux(action.identifier);
+  	    resetSpecialSituationAux(action.identifier);
+    }
+    
     taskCtrl.comparing = function() {
-    	
-    	//envia os dados necessários apenas para executar algoritmo FSPM
-    	
-    	//apresenta mais dois grafos
-    	
-    	//listas com ações "estranhas"
     	
     	console.log("----- comparing -----");
     	console.log(taskCtrl.result.sessions);
@@ -2151,7 +2254,10 @@ angular.module('useskill',
     		'testId' : 			Number.parseInt(taskCtrl.task.testDataMining.id), 
     		'evalTestId' : 		Number.parseInt(taskCtrl.evalTestId), 
     		'taskId' : 			Number.parseInt(taskCtrl.task.id),
-//    		'minSup' : 			75,
+    		'minSupBest' : 		taskCtrl.minSupBest,
+    		'minItensBest' : 	taskCtrl.minItensBest,
+    		'minSupOthers' : 	taskCtrl.minSupOthers,
+    		'minItensOthers' : 	taskCtrl.minItensOthers,
     		'minItens' : 		4
     	};
     	
@@ -2159,23 +2265,101 @@ angular.module('useskill',
 			'padroes' : obj
 		});
     	
-    	console.log(patterns);
-    	
     	ServerAPI.comparePatterns(patterns).then(function(data) {
 			console.log(data);
-			console.log(JSON.parse(data.data.string));
+			
+			var patternsResult = JSON.parse(data.data.string);
+			adjustFrequentPatterns(patternsResult.resultFSPMBest.frequentPatterns);
+			adjustFrequentPatterns(patternsResult.resultFSPMOthers.frequentPatterns);
+			
+			patternsResult.mapActionsBest = getMapActionsPattern(patternsResult.resultFSPMBest.frequentPatterns);
+			patternsResult.mapActionsOthers = getMapActionsPattern(patternsResult.resultFSPMOthers.frequentPatterns);
+			
+
+			//generate arrays
+			patternsResult.arrayActionsBest = [];
+			for (var actId in patternsResult.mapActionsBest) {
+				var action = $scope.getActionInfoFromId(actId);
+				patternsResult.arrayActionsBest.push(action);
+			}
+			patternsResult.arrayActionsOthers = [];
+			for (var actId in patternsResult.mapActionsOthers) {
+				var action = $scope.getActionInfoFromId(actId);
+				patternsResult.arrayActionsOthers.push(action);
+			}
+			
+			//filtrar acoes problematicas
+			patternsResult.arrayActionsOthers = patternsResult.arrayActionsOthers.filter(function(obj) {
+				return obj != null;
+			});
+			patternsResult.arrayActionsBest = patternsResult.arrayActionsBest.filter(function(obj) {
+				return obj != null;
+			});
+			
+			
+			//3.1 - FSPM G1 = "obrigatória";
+			patternsResult.arrayActionsRequired = [];
+			for (var a in patternsResult.arrayActionsBest) {
+				var action = patternsResult.arrayActionsBest[a];
+				patternsResult.arrayActionsRequired.push(action);
+			}
+			
+			//3.2 - FSPM G2 que não está no FSPM G1 = "problemática";
+			patternsResult.arrayActionsProblems = filterActionsGroup(patternsResult.arrayActionsOthers, 
+																		patternsResult.arrayActionsBest);
+			
+			//3.3 - Ações do G1 não contidas no FSPM G1 = "corretas" 
+			var arrayActionsGroupBest = getActionsFromSessionsPoint(lastGroupBest);
+			patternsResult.arrayActionsGroupBest = filterActionsGroup(arrayActionsGroupBest, 
+																		patternsResult.arrayActionsBest);
+			
+			//3.4 - Ações do G2 não continas no G1 = "alerta";
+			var arrayActionsGroupOthers = getActionsFromSessionsPoint(lastGroupOthers);
+			patternsResult.arrayActionsGroupOthers = filterActionsGroup(arrayActionsGroupOthers, 
+																		arrayActionsGroupBest);
+			
+			
+			$scope.typePatternsResultArrayEnum.REQUIRED.val = patternsResult.arrayActionsRequired;
+			$scope.typePatternsResultArrayEnum.PROBLEM.val = patternsResult.arrayActionsProblems;
+			$scope.typePatternsResultArrayEnum.CORRECT.val = patternsResult.arrayActionsGroupBest;
+			$scope.typePatternsResultArrayEnum.ALERT.val = patternsResult.arrayActionsGroupOthers;
+
+			console.log(patternsResult);
+			
+			$scope.changeTypePatternsResultSelected($scope.typePatternsResultArrayEnum.PROBLEM);
+			taskCtrl.lastPatternsResult = patternsResult;
+			
 		}, function(data) {
 			console.log(data);
 		});
     	
     }
     
-    
-    
     //initialize
     $timeout(function(){ 
     	$scope.changeGraphType(false);
     }, 500);
+    $scope.initialGraphFSPM = true;
+    $scope.showInitialGraphFSPM = function() {
+    	if ($scope.initialGraphFSPM) {
+    		$scope.initialGraphFSPM = false;
+    		$scope.resetZoomGraphType($scope.graphIdsEnum.GRAPH_DEFAULT);
+    	}
+    }
+    
+    $scope.stepEval = 1;
+    $scope.stepEvalBack = function() {
+    	$scope.stepEval = $scope.stepEval > 1 ? $scope.stepEval-1 : $scope.stepEval;
+    }
+    $scope.stepEvalNext = function() {
+    	$scope.stepEval = $scope.stepEval < 4 ? $scope.stepEval+1 : $scope.stepEval;
+    }
+    $scope.changeStepEval = function(newVal) {
+    	$scope.stepEval = newVal;
+    	if (newVal == 2) {
+    		$scope.showInitialGraphFSPM();
+    	}
+    }
     
 })
 
