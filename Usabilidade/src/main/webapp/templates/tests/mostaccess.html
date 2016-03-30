@@ -22,14 +22,7 @@
 			<li class="active">{{ 'datamining.testes.featuresmostaccessed' | translate}}</li>
 		</ul>
 		
-		<div ng-show="success" class="alert alert-success">
-			{{ success }}<br />
-		</div>
-		<div ng-show="errors" class="alert alert-error">
-			<span ng-repeat="error in errors">
-				{{ error }}<br />
-			</span>
-		</div>
+		<usdm-messages-alert></usdm-messages-alert>
 	    
 		<div class="row show-grid">
 			<div class="span4">

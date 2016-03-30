@@ -211,6 +211,14 @@ angular.module('useskill',
 	    });
 	
 }])
+.run(function($rootScope) {
+	$rootScope.clearErrors = function() {
+		$rootScope.errors = null;
+	}
+	$rootScope.clearSuccess = function() {
+		$rootScope.success = null;
+	}
+})
 .factory('HttpInterceptor', ['$q', '$rootScope', '$filter', '$location', 'env', 'config', '$timeout',
                      function($q, $rootScope, $filter, $location, env, config, $timeout) {
 	var responseInterceptor = {
@@ -631,7 +639,7 @@ angular.module('useskill',
 		}
 	}
 })
-.controller('TestMostAccessController', function($scope, $filter, $timeout, test, MostAccessTypeEnum, ServerAPI, UtilsService) {
+.controller('TestMostAccessController', function($scope, $rootScope, $filter, $timeout, test, MostAccessTypeEnum, ServerAPI, UtilsService) {
 	var testCtrl = this;
 	testCtrl.actionTitle = $filter('translate')('datamining.testes.featuresmostaccessed.search');
 	testCtrl.test = JSON.parse(test.data.string);
@@ -730,6 +738,10 @@ angular.module('useskill',
 			}, function(data){
 				console.log(data);
 			});
+		} else {
+			$rootScope.errors = [];
+    		$rootScope.errors.push('Selecione o tipo de "Campo Base da Busca" antes de avançar!');
+    		return;
 		}
 	}
 	
@@ -884,7 +896,7 @@ angular.module('useskill',
 	taskCtrl.task = task;
 	taskCtrl.actionTitle = $filter('translate')('datamining.tasks.edit');
 })
-.controller('TaskEvaluateController', function($scope, evaluate, evalTestId, sessionFilterParam, $filter, ServerAPI, $timeout, $sce, UtilsService) {
+.controller('TaskEvaluateController', function($scope, $rootScope, evaluate, evalTestId, sessionFilterParam, $filter, ServerAPI, $timeout, $sce, UtilsService) {
 	var taskCtrl = this;
 	
 	taskCtrl.formatDate = UtilsService.formatDate;
@@ -1104,7 +1116,7 @@ angular.module('useskill',
     	},
     	DEFAULT: {
     		id: 'default',
-    		desc: 'Sem Situação Definida',
+    		desc: 'Situação Indefinida',
     		classLabel: ''
     	}
     }
@@ -1174,6 +1186,22 @@ angular.module('useskill',
 			}
 		}
 		return null;
+	}
+	$scope.getSessionFromActionId = function(actionId) {
+		var sessions = [];
+		var sessionsMap = {};
+		for (var s in taskCtrl.result.sessions) {
+			var session = taskCtrl.result.sessions[s];
+			for (var a in session.actions) {
+				if (session.actions[a].identifier == actionId) {
+					sessionsMap[session.id] = session;
+				}
+			}
+		}
+		for (var s in sessionsMap) {
+			sessions.push(sessionsMap[s]);
+		}
+		return sessions;
 	}
 	
 	//acoes especiais (inicial/final/obrigatória):
@@ -1959,9 +1987,10 @@ angular.module('useskill',
             },
             showDistX: true,
             showDistY: true,
-            tooltipContent: function(key, a, b) {
-            	console.log(key, a, b);
-                return '<h3>' + key + '</h3>';
+            tooltip: {
+            	contentGenerator: function(obj) {
+            		return '<h3> Sessão <span style="color: ' + obj.point.color + ';">' + obj.point.id + '</span></h3><hr style="margin: 2px 0"/><h5 style="text-align: center;">Eficácia: ' + obj.point.x + '; Eficiência: ' + obj.point.y + ';</h5>';
+            	}
             },
             duration: 350,
             xAxis: {
@@ -1974,8 +2003,8 @@ angular.module('useskill',
                 axisLabel: $filter('translate')('datamining.tasks.efficiency'),
                 tickFormat: function(d){
                     return d3.format('.02f')(d);
-                },
-                axisLabelDistance: 30
+                }
+                //axisLabelDistance: 30
             },
             zoom: {
                 enabled: true,
@@ -2059,7 +2088,7 @@ angular.module('useskill',
 		$scope.showContentAdvanced();
 		taskCtrl.userSession = session;
 		changeMode('actions');
-		$scope.stepEval = 1;
+		$scope.stepEval = 2;
 	}
     
     taskCtrl.clustering = function() {
@@ -2239,9 +2268,21 @@ angular.module('useskill',
 		$scope.actionViewPatternResult.positionStep = null;
 		resetSituationAux(action.identifier);
   	    resetSpecialSituationAux(action.identifier);
+  	    $scope.setSessionsActionPatternResult(action.identifier);
+    }
+    
+    $scope.sessionsActionPatternResult = null;
+    $scope.setSessionsActionPatternResult = function(actionId) {
+    	$scope.sessionsActionPatternResult = $scope.getSessionFromActionId(actionId);
     }
     
     taskCtrl.comparing = function() {
+    	
+    	if (taskCtrl.lastClustering == null) {
+    		$rootScope.errors = [];
+    		$rootScope.errors.push('Realize a Etapa 3 (Clusterizar Sessões) antes de prosseguir!');
+    		return;
+    	}
     	
     	console.log("----- comparing -----");
     	console.log(taskCtrl.result.sessions);
@@ -2438,9 +2479,17 @@ angular.module('useskill',
     	title: '=title',
     	stepNumber: '=stepNumber',
     	showInfo: '=showInfo',
-    	info: '=info'
+    	info: '=info',
+    	stepEvalBack: '&onStepEvalBack',
+    	stepEvalNext: '&onStepEvalNext'
     },
     templateUrl: config[env].apiUrl+'/templates/directives/usdm-progress-header.html'
+  };
+})
+.directive('usdmMessagesAlert', function(config, env) {
+  return {
+    restrict: 'E',
+    templateUrl: config[env].apiUrl+'/templates/directives/usdm-messages-alert.html'
   };
 })
 .directive('confirmClick', ['$q', 'dialogModal', '$filter', function($q, dialogModal, $filter) {

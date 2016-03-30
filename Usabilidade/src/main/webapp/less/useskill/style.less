@@ -839,6 +839,10 @@ ul.horizontal{
 				}
 			}
 			
+			&-btn {
+				margin: 4px;
+			}
+			
 			&-header {
 				background: @color-principal;
 			    color: white;
@@ -848,13 +852,20 @@ ul.horizontal{
 			    padding: 5px;
 			    font-size: 24px;
 			    border-radius: 3px;
+			    
+			    &-principal {
+			    	border-top: 1px solid #becde2;
+			    	text-align: center;
+			    	
+			    	a {
+			    		margin-top: 4px;
+			    	}
+			    }
 			}
 		}
 		
 		&btn-info {
-			float: right;
-			margin-top: 5px;
-			margin-right: 5px;
+			margin-top: -5px;
 		}
 		
 		&info{
@@ -1124,12 +1135,11 @@ select, textarea, input {
 	//border: 1px solid darken(@usdm-color-darken-gray, 10%);
 }
 
-.u-border-left-padding {
-	
+.u-without-margin-left {
+	margin-left: 0 !important; 
 }
 .u-clear-fix {
 	clear: both;
     overflow: auto;
     zoom: 1;
 }
-

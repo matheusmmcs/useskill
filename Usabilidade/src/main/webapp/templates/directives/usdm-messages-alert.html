@@ -1,0 +1,10 @@
+<div ng-show="success" class="alert alert-success">
+	<button type="button" class="close" ng-click="clearSuccess()">&times;</button>
+	{{ success }}<br />
+</div>
+<div ng-show="errors" class="alert alert-error">
+	<button type="button" class="close" ng-click="clearErrors()">&times;</button>
+	<span ng-repeat="error in errors">
+		{{ error }}<br />
+	</span>
+</div>
