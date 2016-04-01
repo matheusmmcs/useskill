@@ -38,6 +38,7 @@ import br.ufpi.datamining.models.aux.ResultComparePatterns;
 import br.ufpi.datamining.models.aux.ResultDataMining;
 import br.ufpi.datamining.models.aux.ResultEvaluationDataMining;
 import br.ufpi.datamining.models.aux.SessionResultDataMining;
+import br.ufpi.datamining.models.aux.UserResultDataMining;
 import br.ufpi.datamining.models.enums.MomentTypeActionDataMiningEnum;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningFilterEnum;
@@ -323,17 +324,28 @@ public class DataMiningTaskController extends BaseController {
 		evaluation.setEvalLastDate(new Date());
 		evaluation.setEvalCountSessions(resultDataMining.getCountSessions());
 		
+		
+		
 		if (evaluation.getEvalCountSessions() > 0) {
 			evaluation.setEvalMeanActions(resultDataMining.getActionsAverageOk());
 			evaluation.setEvalMeanTimes(resultDataMining.getTimesAverageOk());
 			evaluation.setEvalMeanCompletion(resultDataMining.getRateSuccess());
 			evaluation.setEvalMeanCorrectness(resultDataMining.getRateRequired());
 			
+			double userEffectiveness = 0d, userEfficiency = 0d;
+			for (UserResultDataMining u : resultDataMining.getUsers()) {
+				userEffectiveness += u.getEffectiveness();
+				userEfficiency += u.getEfficiency();
+			}
+			
+			evaluation.setEvalEffectiveness(ConverterUtils.notNaN(userEffectiveness / resultDataMining.getUsers().size()));
+			evaluation.setEvalEfficiency(ConverterUtils.notNaN(userEfficiency / resultDataMining.getUsers().size()));
+			
+			//evaluation.setEvalEffectiveness(ConverterUtils.notNaN((evaluation.getEvalMeanCompletion() * evaluation.getEvalMeanCorrectness()) / 100));
+			//evaluation.setEvalEfficiency(ConverterUtils.notNaN(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime())));
+			
 			evaluation.setEvalZScoreActions(ConverterUtils.notNaN((resultDataMining.getMaxActionsOk() - resultDataMining.getMeanActionsOk()) / resultDataMining.getStdDevActionsOk()));
 			evaluation.setEvalZScoreTime(ConverterUtils.notNaN((resultDataMining.getMaxTimesOk() - resultDataMining.getMeanTimesOk()) / resultDataMining.getStdDevTimesOk()));
-			
-			evaluation.setEvalEffectiveness(ConverterUtils.notNaN((evaluation.getEvalMeanCompletion() * evaluation.getEvalMeanCorrectness()) / 100));
-			evaluation.setEvalEfficiency(ConverterUtils.notNaN(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime())));
 			
 			//System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreTime()));
 			//System.out.println(evaluation.getEvalEffectiveness() / (evaluation.getEvalZScoreActions() * evaluation.getEvalZScoreTime()));

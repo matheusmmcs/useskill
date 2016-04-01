@@ -246,6 +246,7 @@
 	"dataminint.step.classifying" : "Classificar Ações",
 	"dataminint.step.clustering" : "Clusterizar",
 	"dataminint.step.comparing" : "Comparar",
+	"dataminint.step.verify" : "Verificar Ações",
 	
 	"dataminint.step.clustering.best" : "Sessões Referência",
 	"dataminint.step.clustering.others" : "Demais Sessões",
@@ -254,6 +255,7 @@
 	"dataminint.step.classifying.info" : "<p>Nesta etapa devem ser avaliados os grafos de padrões sequenciais e as sessões dos usuários. Ela visa identificar ações obrigatórias, iniciais ou finais, além de ações corretas e incorretas. É possível durante esse processo também identificar indícios de problemas de usabilidade.<br/></p> <p>Durante essa etapa é possível visualizar o 'Grafo de Padrões', realizar 'Análise Guiada' e 'Análise Avançada': <br/><br/> O <b>'Grafo de Padrões'</b> possui a sequência de padrões mais comum dentre as sessões mineradas.<br/> A <b>'Análise Guiada'</b> apresenta a lista com todas as sessões, permitindo avaliar o grafo de cada sessão, além de verificar quais ações obrigatórias foram realizadas.<br/> A <b>'Análise Avançada'</b> permite agrupar as sessões por usuários, visualizar as ações obrigatórias mais realizadas, além dos resultados dos algoritmos de mineração.<br/></p>",
 	"dataminint.step.clustering.info": "<p>Nesta etapa devem ser agrupadas e classificada como boas sessões, as que possuírem as utilizações corretas. O algoritmo de clusterização considera a eficácia e a eficiência, então a definição de ações obrigatórias na Etapa 1 é crucial para um bom resultado na Etapa 2.<br/></p>",
 	"dataminint.step.comparing.info": "",
+	"dataminint.step.verify.info" : "",
 	
 	"dataminint.step.general.info": "<p>Clique em 'Avançar' ou 'Voltar' para navegar entre as Etapas. Se preferir, clique na Etapa desejada para ir direto a ela.<br/></p>"
 	

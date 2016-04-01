@@ -1114,6 +1114,12 @@ angular.module('useskill',
     		group: 'red',
     		classLabel: 'label-important'
     	},
+    	ALERT: {
+    		id: 'alert',
+    		desc: 'Alerta',
+    		group: 'yellow',
+    		classLabel: 'label-warning'
+    	},
     	DEFAULT: {
     		id: 'default',
     		desc: 'Situação Indefinida',
@@ -1139,12 +1145,19 @@ angular.module('useskill',
 				}else {
 					taskCtrl.actionsSituation[actionId] = situation;
 				}
-				$scope.sendDataChange = true;
+				//$scope.sendDataChange = true;
 				taskCtrl.actionsSituationChanged[actionId] = taskCtrl.actionsSituation[actionId];
 				break;
 			}
 		}
 		resetSituationAux(actionId);
+	}
+	$scope.isSituationActionOrUndefined = function(actionId, situation) {
+		var sit = taskCtrl.actionsSituation[actionId];
+		if (sit == undefined || $scope.isSituationAction(actionId, situation)) {
+			return true;
+		}
+		return false;
 	}
 	$scope.isSituationAction = function(actionId, situation) {
 		var sit = taskCtrl.actionsSituation[actionId];
@@ -1281,6 +1294,13 @@ angular.module('useskill',
 				break;
 			}
 		}
+	}
+	$scope.isSpecialSituationActionOrUndefined = function(actionId, situation) {
+		var sit = taskCtrl.actionsSpecialSituation[actionId];
+		if (sit == undefined || $scope.isSpecialSituationAction(actionId, situation)) {
+			return true;
+		}
+		return false;
 	}
 	$scope.isSpecialSituationAction = function(actionId, situation) {
 		var sit = taskCtrl.actionsSpecialSituation[actionId];
@@ -1891,14 +1911,14 @@ angular.module('useskill',
     	return countUserSessions;
     }
     
-    $scope.showActionsSessionGuide = function(session){
-    	if (session) {
-    		$scope.goToGuideStep("1.1", session);
-    	} else {
-    		alert("Selecione uma sessão e tente novamente...");
-    		$scope.goToGuideStep("1");
-    	}
-    }
+//    $scope.showActionsSessionGuide = function(session){
+//    	if (session) {
+//    		$scope.goToGuideStep("1.1", session);
+//    	} else {
+//    		alert("Selecione uma sessão e tente novamente...");
+//    		$scope.goToGuideStep("1");
+//    	}
+//    }
     
     $scope.saveChangeSituations = function(){
     	//taskCtrl.actionsSituationChanged
@@ -1946,7 +1966,7 @@ angular.module('useskill',
 				taskCtrl.actionsSpecialSituationChanged = {};
 				$scope.sendDataChange = false;
 				$scope.alertChangeTask = true;
-				$scope.success = $filter('translate')(result.message);
+				$rootScope.success = $filter('translate')(result.message);
 			}
 		}, function(data) {
 			console.log(data);
@@ -1974,7 +1994,7 @@ angular.module('useskill',
     // ETAPA 2 - CLUSTERING
     
     taskCtrl.minclusters = 4;
-    taskCtrl.distancecenters = 10;
+    taskCtrl.distancecenters = 20;
     taskCtrl.lastClustering = null;
     
     $scope.clusterOptions = {
@@ -1989,7 +2009,7 @@ angular.module('useskill',
             showDistY: true,
             tooltip: {
             	contentGenerator: function(obj) {
-            		return '<h3> Sessão <span style="color: ' + obj.point.color + ';">' + obj.point.id + '</span></h3><hr style="margin: 2px 0"/><h5 style="text-align: center;">Eficácia: ' + obj.point.x + '; Eficiência: ' + obj.point.y + ';</h5>';
+            		return '<h3><span style="color: ' + obj.point.color + ';">' + obj.point.id + '</span></h3><hr style="margin: 2px 0"/><h5 style="text-align: center;">Eficácia: ' + obj.point.x + '; Eficiência: ' + obj.point.y + ';</h5>';
             	}
             },
             duration: 350,
@@ -2084,10 +2104,11 @@ angular.module('useskill',
 		taskCtrl.lastClustering.sessions = arrayUnique(taskCtrl.lastClustering.sessionsBest.concat(taskCtrl.lastClustering.sessionsOthers));
 	}
 	
-	$scope.showActionsSessionCluster = function(session){
-		$scope.showContentAdvanced();
-		taskCtrl.userSession = session;
-		changeMode('actions');
+	$scope.showActionsSessionGuide = function(session){
+		//$scope.showContentAdvanced();
+		session = $scope.getSessionFromId(session.id);
+		$scope.goToGuideStep("1.1", session)
+		$scope.showContentGuide();
 		$scope.stepEval = 2;
 	}
     
@@ -2130,6 +2151,16 @@ angular.module('useskill',
 	                    shape: 'circle'
 					};
 					
+					//atualizar dados locais de eficacia e eficiencia
+					for (var s in taskCtrl.result.sessions) {
+						var session = taskCtrl.result.sessions[s];
+						if (session.id == point.id) {
+							taskCtrl.result.sessions[s].effectiveness = point.x;
+							taskCtrl.result.sessions[s].efficiency = point.y;
+							break;
+						}
+					}
+					
 					if (cluster.isBest) {
 						pointChart.isBest = true;
 						groupBest.values.push(pointChart);
@@ -2150,6 +2181,8 @@ angular.module('useskill',
 			
 			taskCtrl.lastClustering = clustering;
 			refreshSessionsDataPoints();
+			
+			
 				
 			//rerender
 			$timeout(function(){
@@ -2224,6 +2257,38 @@ angular.module('useskill',
 			result.push(action);
 		}
 		return result;
+    }
+    
+    function changeSituationFromType(type, actionId) {
+    	if (type == $scope.typePatternsResultArrayEnum.REQUIRED) {
+    		$scope.setSpecialSituationAction(actionId, $scope.specialActionsEnum.REQUIRED)
+    	} else if (type == $scope.typePatternsResultArrayEnum.PROBLEM) {
+    		$scope.setSituationAction(actionId, $scope.situationsEnum.ERROR);
+    	} else if (type == $scope.typePatternsResultArrayEnum.CORRECT) {
+    		$scope.setSituationAction(actionId, $scope.situationsEnum.OK);
+    	} else if (type == $scope.typePatternsResultArrayEnum.ALERT) {
+    		$scope.setSituationAction(actionId, $scope.situationsEnum.ALERT);
+    	}
+    }
+    
+    taskCtrl.changeAll = function() {
+    	var actions = $scope.typePatternsResultSelected.val;
+    	for (var a in actions) {
+    		var action = actions[a];
+    		changeSituationFromType($scope.typePatternsResultSelected, action.identifier);
+    	}
+    }
+    
+    taskCtrl.changeNormal = function() {
+    	var actions = $scope.typePatternsResultSelected.val;
+    	for (var a in actions) {
+    		var action = actions[a];
+    		if ($scope.isSituationActionOrUndefined(action.identifier, $scope.situationsEnum.DEFAULT) &&
+    			$scope.isSpecialSituationActionOrUndefined(action.identifier, $scope.specialActionsEnum.DEFAULT)
+    			) {
+    			changeSituationFromType($scope.typePatternsResultSelected, action.identifier);
+    		}
+    	}
     }
     
     taskCtrl.minSupBest = 0.75;
@@ -2336,6 +2401,8 @@ angular.module('useskill',
 			patternsResult.arrayActionsBest = patternsResult.arrayActionsBest.filter(function(obj) {
 				return obj != null;
 			});
+			var arrayActionsGroupBest = getActionsFromSessionsPoint(lastGroupBest);
+			var arrayActionsGroupOthers = getActionsFromSessionsPoint(lastGroupOthers);
 			
 			
 			//3.1 - FSPM G1 = "obrigatória";
@@ -2348,14 +2415,14 @@ angular.module('useskill',
 			//3.2 - FSPM G2 que não está no FSPM G1 = "problemática";
 			patternsResult.arrayActionsProblems = filterActionsGroup(patternsResult.arrayActionsOthers, 
 																		patternsResult.arrayActionsBest);
+			patternsResult.arrayActionsProblems = filterActionsGroup(patternsResult.arrayActionsProblems, 
+																		arrayActionsGroupBest);
 			
 			//3.3 - Ações do G1 não contidas no FSPM G1 = "corretas" 
-			var arrayActionsGroupBest = getActionsFromSessionsPoint(lastGroupBest);
 			patternsResult.arrayActionsGroupBest = filterActionsGroup(arrayActionsGroupBest, 
 																		patternsResult.arrayActionsBest);
 			
 			//3.4 - Ações do G2 não continas no G1 = "alerta";
-			var arrayActionsGroupOthers = getActionsFromSessionsPoint(lastGroupOthers);
 			patternsResult.arrayActionsGroupOthers = filterActionsGroup(arrayActionsGroupOthers, 
 																		arrayActionsGroupBest);
 			
@@ -2389,11 +2456,12 @@ angular.module('useskill',
     }
     
     $scope.stepEval = 1;
+    $scope.stepMaxEval = 5; //diretiva; evaluate; less;
     $scope.stepEvalBack = function() {
     	$scope.stepEval = $scope.stepEval > 1 ? $scope.stepEval-1 : $scope.stepEval;
     }
     $scope.stepEvalNext = function() {
-    	$scope.stepEval = $scope.stepEval < 4 ? $scope.stepEval+1 : $scope.stepEval;
+    	$scope.stepEval = $scope.stepEval < $scope.stepMaxEval ? $scope.stepEval+1 : $scope.stepEval;
     }
     $scope.changeStepEval = function(newVal) {
     	$scope.stepEval = newVal;
@@ -2490,6 +2558,17 @@ angular.module('useskill',
   return {
     restrict: 'E',
     templateUrl: config[env].apiUrl+'/templates/directives/usdm-messages-alert.html'
+  };
+})
+.directive('usdmFilterTable', function(config, env) {
+  return {
+    restrict: 'E',
+    transclude: true,
+    scope: {
+    	placeholderModel: '=usdmPlaceholder',
+    	searchModel: '=usdmSearchModel'
+    },
+    templateUrl: config[env].apiUrl+'/templates/directives/usdm-filter-table.html'
   };
 })
 .directive('confirmClick', ['$q', 'dialogModal', '$filter', function($q, dialogModal, $filter) {

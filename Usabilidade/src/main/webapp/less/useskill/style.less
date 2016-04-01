@@ -316,6 +316,7 @@ ul.horizontal{
 
 /* DATA MINING */
 
+@qtd-progress-bar: 			5;
 @color-principal:			#426392;
 @color-principal-hover:		#264879;
 @color-principal-active:	#0C2F61;
@@ -325,6 +326,8 @@ ul.horizontal{
 @usdm-color-yellow: 	rgb(255, 242, 209);
 @usdm-color-blue: 		rgb(215, 234, 251);
 @usdm-color-orange: 	rgb(255, 221, 191);
+@usdm-color-purple: 	rgb(255, 241, 222); //yellow-alert
+
 
 @usdm-color-vivid-gray: 	#BDC3C7;
 @usdm-color-darken-gray: 	#A2A8AF;
@@ -336,6 +339,8 @@ ul.horizontal{
 @usdm-color-darken-green: 	#08803A;
 @usdm-color-vivid-black: 	#555;
 @usdm-color-darken-black: 	#222;
+@usdm-color-vivid-yellow: 	#F89406;
+@usdm-color-darken-yellow: 	#E58804;
 
 @color-sessios-text: 	#324b6f;
 @usdm-info-box-radius:	5px;
@@ -574,6 +579,9 @@ ul.horizontal{
 				&-SUCCESS {
 					background: @usdm-color-green !important;
 				}
+				&-ALERT {
+					background: @usdm-color-purple !important;
+				}
 				&-ERROR {
 					background: @usdm-color-red !important;
 				}
@@ -627,6 +635,10 @@ ul.horizontal{
 				    	&-ok {
 				    		background: @usdm-color-darken-green !important;
 				    		border: 1px solid darken(@usdm-color-darken-green, 10%);
+				    	}
+				    	&-alert {
+				    		background: @usdm-color-darken-yellow !important;
+				    		border: 1px solid darken(@usdm-color-darken-yellow, 10%);
 				    	}
 				    }
 				    
@@ -794,7 +806,8 @@ ul.horizontal{
 				color: @color-principal;
 				text-transform: uppercase;
 				font-size: 13px;
-				width: 25%;
+				//width: (100/@qtd-progress-bar)%;
+				width: 20%;
 				float: left;
 				position: relative;
 				text-align: center;
@@ -1012,6 +1025,10 @@ input[type=number].number-disable::-webkit-outer-spin-button {
 		background: @usdm-color-yellow !important;
 		color: @color-sessios-text;
 	}
+	&-ALERT td {
+		background: @usdm-color-purple !important;
+		color: @color-sessios-text;
+	}
 	
 	&-best {
 		&-true {
@@ -1037,7 +1054,10 @@ input[type=number].number-disable::-webkit-outer-spin-button {
 	&-error td {
 		background: @usdm-color-red !important;
 	}
-	&-ok, &-error, &- {
+	&-alert td {
+		background: @usdm-color-purple !important;
+	}
+	&-ok, &-error, &-alert, &- {
 		cursor: pointer;
 	}
 }
@@ -1142,4 +1162,12 @@ select, textarea, input {
 	clear: both;
     overflow: auto;
     zoom: 1;
+}
+
+
+//overrides
+.useskill-datamining {
+	.input-prepend .add-on, .input-prepend .btn {
+	    margin-right: -4px;
+	}
 }

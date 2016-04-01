@@ -1,8 +1,8 @@
-<div ng-show="success" class="alert alert-success">
+<div ng-show="success != null" class="alert alert-success">
 	<button type="button" class="close" ng-click="clearSuccess()">&times;</button>
 	{{ success }}<br />
 </div>
-<div ng-show="errors" class="alert alert-error">
+<div ng-show="errors != null" class="alert alert-error">
 	<button type="button" class="close" ng-click="clearErrors()">&times;</button>
 	<span ng-repeat="error in errors">
 		{{ error }}<br />

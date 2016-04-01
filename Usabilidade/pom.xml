@@ -5,7 +5,7 @@
 	<groupId>br.com.ufpi.useskill</groupId>
 	<artifactId>UseSkill</artifactId>
 	<packaging>war</packaging>
-	<version>1.5.2</version>
+	<version>1.5.3</version>
 	<name>UseSkill</name>
 
 	<properties>
