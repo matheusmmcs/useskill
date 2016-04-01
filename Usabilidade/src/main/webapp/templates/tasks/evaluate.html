@@ -413,6 +413,8 @@
 		        				<h3 class="usdm-title-margin">
 		        					Tabela de Sessões ({{ sessionsGuide.length }}):
 		        				</h3>
+		        				
+		        				<usdm-filter-table usdm-placeholder="Filtro" usdm-search-model="searchTableAdvancedSessions"></usdm-filter-table>
 		        				<div class="usdm-withscroll-large">
 			        				<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 									  <thead>
@@ -427,7 +429,7 @@
 									    </tr>
 									  </thead>
 									  <tbody>
-									    <tr class="session-{{session.classification}}" ng-repeat="session in sessionsGuide" ts-repeat>
+									    <tr class="session-{{session.classification}}" ng-repeat="session in sessionsGuide | filter:searchTableAdvancedSessions" ts-repeat>
 									      <td class="text-center">{{session.order}}</td>
 									      <td><a ng-click="showActionsSessionGuide(session)">{{session.id}}</a></td>
 									      <td>{{session.actions.length | number:2}}</td>

@@ -68,11 +68,11 @@
 			            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" style="background-color: white" ts-wrapper>
 			                <thead>
 			                    <tr>
-			                        <th ts-criteria="title|lowercase">{{ 'datamining.tasks.title' | translate }}</th>
+			                        <th ts-criteria="title|lowercase" ts-default="ascending">{{ 'datamining.tasks.title' | translate }}</th>
 			                    </tr>
 			                </thead>
 			                <tbody>
-		                        <tr ng-repeat="task in testCtrl.test.tasks | orderBy:'id'">
+		                        <tr ng-repeat="task in testCtrl.test.tasks | orderBy:'title'">
 		                            <td class="td-link"><a ng-href="#/testes/{{testCtrl.test.id}}/tarefas/{{task.id}}">{{task.title}}</a></td>
 		                        </tr>
 			                </tbody>

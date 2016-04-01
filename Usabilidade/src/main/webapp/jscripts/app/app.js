@@ -459,6 +459,18 @@ angular.module('useskill',
 			} else {
 				return n;
 			}
+		},
+		trim: function (str) {
+			if (str) {
+				str = str.replace(/^\s+/, '');
+			    for (var i = str.length - 1; i >= 0; i--) {
+			        if (/\S/.test(str.charAt(i))) {
+			            str = str.substring(0, i + 1);
+			            break;
+			        }
+			    }
+			}
+		    return str;
 		}
 	};
 	return utils;
@@ -2477,7 +2489,7 @@ angular.module('useskill',
 .controller('ActionViewController', function(action) {
 	//todo
 })
-.controller('ActionNewController', function(task, $filter, ServerAPI, ActionTypeEnum, MomentTypeEnum, ValidateService, ShowMessage) {
+.controller('ActionNewController', function(task, $filter, ServerAPI, ActionTypeEnum, MomentTypeEnum, ValidateService, ShowMessage, UtilsService) {
 	var actionCtrl = this;
 	actionCtrl.action = {};
 	actionCtrl.types = ActionTypeEnum.types;
@@ -2494,6 +2506,12 @@ angular.module('useskill',
 		if(actionCtrl.action.momentType){
 			actionCtrl.action.momentType = actionCtrl.action.momentType.value;
 		}
+		
+		//trim values
+		actionCtrl.action.element = UtilsService.trim(actionCtrl.action.element);
+		actionCtrl.action.url = UtilsService.trim(actionCtrl.action.url);
+		actionCtrl.action.jhm = UtilsService.trim(actionCtrl.action.jhm);
+		actionCtrl.action.step = UtilsService.trim(actionCtrl.action.step);
 		
 		if (ValidateService.action(actionCtrl.action)) {
 			var action = angular.toJson({
