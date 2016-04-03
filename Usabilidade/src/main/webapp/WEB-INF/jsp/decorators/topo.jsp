@@ -56,7 +56,7 @@
 							</a>
 						</li>
 						<li>
-							<a id="topmenu5" href="${pageContext.request.contextPath}/datamining/">
+							<a id="topmenu5" href="${pageContext.request.contextPath}/datamining">
 								<fmt:message key="datamining" />
 							</a>
 						</li>

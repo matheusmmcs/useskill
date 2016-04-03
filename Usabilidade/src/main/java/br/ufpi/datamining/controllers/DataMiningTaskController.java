@@ -3,7 +3,6 @@ package br.ufpi.datamining.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,18 +53,13 @@ import br.ufpi.datamining.repositories.FieldSearchTupleDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
 import br.ufpi.datamining.repositories.TestDataMiningRepository;
 import br.ufpi.datamining.utils.ConverterUtils;
-import br.ufpi.datamining.utils.GsonExclusionStrategy;
-import br.ufpi.models.Usuario;
 import ca.pfv.spmf.algorithms.sequentialpatterns.BIDE_and_prefixspan.SequentialPattern;
 import ca.pfv.spmf.input.sequence_database_list_integers.SequenceDatabase;
 import ca.pfv.spmf.patterns.itemset_list_integers_without_support.Itemset;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 
 @Path(value = "datamining")
 @Resource
@@ -78,6 +72,8 @@ public class DataMiningTaskController extends BaseController {
 	private final EvaluationTaskDataMiningRepository evaluationTaskDataMiningRepository;
 	private final EvaluationTestDataMiningRepository evaluationTestDataMiningRepository;
 	private final FieldSearchTupleDataMiningRepository fieldSearchTupleDataMiningRepository;
+	
+	private final Long TIMEOUT_SECONDS = 90l;
 	
 	private final Localization localization;
 	
@@ -210,15 +206,16 @@ public class DataMiningTaskController extends BaseController {
 				frequentPatternReturn.add(new FrequentSequentialPatternResultVO(seqPattern));
 			} else {
 				if (minSup != null) {
-					frequentPatternReturn = fspm.analyze(pattern, lastMinSup, null, defaultMinItens);
-				} else {
+					frequentPatternReturn = fspm.analyze(pattern, lastMinSup, null, defaultMinItens, TIMEOUT_SECONDS);
+				} 
+				if (minSup == null || frequentPatternReturn.size() == 0) {
 					//automatic patterns: (100/80/60/40/20)
 					double[] minSups = new double[]{1.0, 0.8, 0.6, 0.4};
 					for (int i = 0; i < minSups.length; i++) {
 						if (frequentPatternReturn == null || frequentPatternReturn.size() == 0) {
 							lastMinSup = minSups[i];
 							System.out.println("-- INICIAR SESSÃO FSPM: " + lastMinSup);
-							frequentPatternReturn = fspm.analyze(pattern, minSups[i], null, defaultMinItens);
+							frequentPatternReturn = fspm.analyze(pattern, minSups[i], null, defaultMinItens, TIMEOUT_SECONDS);
 						}
 					}
 				}
@@ -367,8 +364,9 @@ public class DataMiningTaskController extends BaseController {
 		
 		if (evaluation.getEvalCountSessions() > 1) {
 			if (minSup != null) {
-				frequentPatterns = fspm.analyze(usersSequences, lastMinSup, null, defaultMinItens);
-			} else {
+				frequentPatterns = fspm.analyze(usersSequences, lastMinSup, null, defaultMinItens, TIMEOUT_SECONDS);
+			} 
+			if (minSup == null || frequentPatterns.size() == 0) {
 				//automatic patterns: (100/80/60/40/20)
 				double[] minSups = new double[]{1.0, 0.75, 0.5, 0.25};
 				for (int i = 0; i < minSups.length; i++) {
@@ -376,7 +374,7 @@ public class DataMiningTaskController extends BaseController {
 						lastMinSup = minSups[i];
 						//if (!(resultDataMining.getUsersSequences().size() < 2 && lastMinSup == 1.0)) {
 						System.out.println("-- INICIAR SESSÃO FSPM: " + lastMinSup);
-						frequentPatterns = fspm.analyze(usersSequences, minSups[i], null, defaultMinItens);
+						frequentPatterns = fspm.analyze(usersSequences, minSups[i], null, defaultMinItens, TIMEOUT_SECONDS);
 						//}
 					}
 				}

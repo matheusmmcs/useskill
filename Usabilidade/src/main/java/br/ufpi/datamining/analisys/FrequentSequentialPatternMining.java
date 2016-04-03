@@ -2,9 +2,15 @@ package br.ufpi.datamining.analisys;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import br.ufpi.datamining.models.vo.FrequentSequentialPatternResultVO;
 import ca.pfv.spmf.algorithms.sequentialpatterns.BIDE_and_prefixspan.AlgoPrefixSpan;
@@ -25,12 +31,12 @@ public class FrequentSequentialPatternMining {
 		teste += "1 -1 3 -1 2 -1 4 -1 5 -1 7 -1 6 -1 4 -1 5 -1 6 -1 7 -1 4 -1 31 -1 32 -1 5 -1 6 -1 7 -1 8 -1 10 -1 11 -1 12 -1 25 -1 26 -1 27 -1 28 -1 29 -1 30 -1 -2";
 		
 		FrequentSequentialPatternMining f = new FrequentSequentialPatternMining();
-		f.analyze(teste, .5, null, null);
+		f.analyze(teste, .5, null, null, 30l);
 	}
 	
 	
 
-	public List<FrequentSequentialPatternResultVO> analyze(Map<String, String> usersSequences, double minsup, Integer maxPatternLength, Integer minPatternLength) throws IOException {
+	public List<FrequentSequentialPatternResultVO> analyze(final Map<String, String> usersSequences, final double minsup, final Integer maxPatternLength, final Integer minPatternLength, final Long timeoutSeconds) throws IOException {
 		Set<String> keySet = usersSequences.keySet();
 		String patterns = "";
 		for (String key : keySet) {
@@ -41,43 +47,53 @@ public class FrequentSequentialPatternMining {
 		}
 		
 		System.out.println(patterns);
-		return analyze(patterns, minsup, maxPatternLength, minPatternLength);
+		return analyze(patterns, minsup, maxPatternLength, minPatternLength, timeoutSeconds);
 	}
 	
-	public List<FrequentSequentialPatternResultVO> analyze(String sessions, double minsup, Integer maxPatternLength, Integer minPatternLength) throws IOException {
-		// Load a sequence database
-		SequenceDatabase sequenceDatabase = new SequenceDatabase(); 
+	public List<FrequentSequentialPatternResultVO> analyze(final String sessions, final double minsup, final Integer maxPatternLength, final Integer minPatternLength, final Long timeoutSeconds) throws IOException {
+		final List<FrequentSequentialPatternResultVO> retorno = new ArrayList<FrequentSequentialPatternResultVO>();
 		
-		// From String
-		sequenceDatabase.loadFromString(sessions, "\n");
-		
-		// print the database to console
-		sequenceDatabase.print();
-		
-		// Create an instance of the algorithm 
-		AlgoPrefixSpan algo = new AlgoPrefixSpan();
-		if (maxPatternLength != null) {
-			algo.setMaximumPatternLength(maxPatternLength);
-		}		
-		
-		// execute the algorithm with minsup = 50 %
-		SequentialPatterns patterns = algo.runAlgorithm(sequenceDatabase, minsup, null);  
-		//algo.printStatistics(sequenceDatabase.size());
-		
-		System.out.println(" == PATTERNS ==");
-		List<FrequentSequentialPatternResultVO> retorno = new ArrayList<FrequentSequentialPatternResultVO>();
-		for(List<SequentialPattern> level : patterns.levels) {
-			for(SequentialPattern pattern : level){
-				if (minPatternLength != null) {
-					if (pattern.size() >= minPatternLength) {
-						retorno.add(new FrequentSequentialPatternResultVO(pattern));
-						System.out.println(pattern + " support : " + pattern.getAbsoluteSupport());
-					}
-				} else {
-					retorno.add(new FrequentSequentialPatternResultVO(pattern));
-					System.out.println(pattern + " support : " + pattern.getAbsoluteSupport());
-				}
-			}
+		try {
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+	    	Set<Callable<String>> callables = new HashSet<Callable<String>>();
+	    	callables.add(new Callable<String>() {
+	    	    public String call() throws Exception {
+	    	    	// Load a sequence database
+	    			SequenceDatabase sequenceDatabase = new SequenceDatabase(); 
+	    			// From String
+	    			sequenceDatabase.loadFromString(sessions, "\n");
+	    			// print the database to console
+	    			sequenceDatabase.print();
+	    			// Create an instance of the algorithm 
+	    			AlgoPrefixSpan algo = new AlgoPrefixSpan();
+	    			if (maxPatternLength != null) {
+	    				algo.setMaximumPatternLength(maxPatternLength);
+	    			}
+	    			// execute the algorithm with minsup = 50 %
+	    			SequentialPatterns patterns = algo.runAlgorithm(sequenceDatabase, minsup, null);  
+	    			//algo.printStatistics(sequenceDatabase.size());
+	    			System.out.println(" == PATTERNS ==");
+	    			
+	    			for(List<SequentialPattern> level : patterns.levels) {
+	    				for(SequentialPattern pattern : level){
+	    					if (minPatternLength != null) {
+	    						if (pattern.size() >= minPatternLength) {
+	    							retorno.add(new FrequentSequentialPatternResultVO(pattern));
+	    							System.out.println(pattern + " support : " + pattern.getAbsoluteSupport());
+	    						}
+	    					} else {
+	    						retorno.add(new FrequentSequentialPatternResultVO(pattern));
+	    						System.out.println(pattern + " support : " + pattern.getAbsoluteSupport());
+	    					}
+	    				}
+	    			}
+	    	        return "true";
+	    	    }
+	    	});
+			List<Future<String>> invokeAll = executor.invokeAll(callables, timeoutSeconds, TimeUnit.SECONDS);
+			executor.shutdown();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 		
 		return retorno;

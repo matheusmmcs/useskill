@@ -37,8 +37,8 @@
 	"sTime":"Hora",
 	"sActionType":"Ação",
 	"sTag":"Tag",
-	"sJhm":"Jhm",
-	"sStepJhm":"StepJhm",
+	"sJhm":"MetaDado (Funcionalidade)",
+	"sStepJhm":"MetaDado (Passo da Funcionalidade)",
 	"sXPath":"XPath",
 	
 	
@@ -46,6 +46,7 @@
 	"date.end": "Data Final",
 	
 	"datamining.validate.default" : "Preencha os campos obrigatórios (*) para prosseguir.",
+	
 	
 	"datamining.questions" : "Dúvidas",
 	"datamining.back" : "Voltar",
@@ -98,23 +99,23 @@
 	"datamining.testes.control.ligation" : "Teste Controlado",
 	"datamining.testes.control.select" : "Selecionar Teste (UseSkill Control)",
 	"datamining.testes.control.select.none" : "Sem Testes da UseSkill Control",
-	"datamining.testes.control.tasks.atualize" : "Atualizar Tarefas",
+	"datamining.testes.control.tasks.atualize" : "Atualizar Funcionalidades",
 	
 	"datamining.testes.title" : "Título",
 	"datamining.testes.abbrev" : "Abreviação do Cliente",
 	"datamining.testes.url" : "Url do Sistema",
 	
 	"datamining.testes.analyzes" : "Analisar Dados do Teste",
-	"datamining.testes.tasks" : "Tarefas do Teste",
-	"datamining.testes.tasks.crud" : "Gestão das Tarefas do Teste",
+	"datamining.testes.tasks" : "Funcionalidades do Teste",
+	"datamining.testes.tasks.crud" : "Gestão das Funcionalidades do Teste",
 	
-	"datamining.testes.evaluation" : "Análise de Tarefas",
-	"datamining.testes.evaluations" : "Analisar Tarefas (Janelas Temporais)",
+	"datamining.testes.evaluation" : "Análise de Funcionalidades",
+	"datamining.testes.evaluations" : "Analisar Funcionalidades (Janelas Temporais)",
 	"datamining.testes.evaluations.availables" : "Janelas Temporais Disponíveis",
-	"datamining.testes.evaluations.newdates" : "Criar Janela Temporal para Avaliar Tarefas",
+	"datamining.testes.evaluations.newdates" : "Criar Janela Temporal para Avaliar Funcionalidades",
 	"datamining.testes.evaluations.newdates.alreadyexists" : "Janela Temporal informada já está disponível!",
-	"datamining.testes.evaluations.task" : "Análise de Tarefas",
-	"datamining.testes.evaluations.none" : "Não há avaliações anteriores para essa tarefa e essa janela temporal.",
+	"datamining.testes.evaluations.task" : "Análise de Funcionalidades",
+	"datamining.testes.evaluations.none" : "Não há avaliações anteriores para essa funcionalidade e essa janela temporal.",
 	
 	"datamining.testes.featuresmostaccessed" : "Funcionalidades Mais Utilizadas",
 	"datamining.testes.featuresmostaccessed.list" : "Lista das Funcionalidades",
@@ -129,15 +130,17 @@
 	"datamining.testes.edit.success" : "Teste alterado com sucesso!",
 	"datamining.testes.new.success" : "Teste cadastrado com sucesso!",
 	
-	"datamining.task" : "Tarefa",
-	"datamining.tasks" : "Tarefas",
-	"datamining.tasks.list" : "Minhas Tarefas",
-	"datamining.tasks.new" : "Criar Tarefa",
-	"datamining.tasks.delete" : "Excluir Tarefa",
-	"datamining.tasks.edit" : "Editar Tarefa",
-	"datamining.tasks.details" : "Detalhes da Tarefa",
-	"datamining.tasks.evaluate" : "Avaliar Tarefa",
+	"datamining.task" : "Funcionalidade",
+	"datamining.tasks" : "Funcionalidades",
+	"datamining.task.open" : "Abrir Funcionalidade",
+	"datamining.tasks.list" : "Minhas Funcionalidades",
+	"datamining.tasks.new" : "Criar Funcionalidade",
+	"datamining.tasks.delete" : "Excluir Funcionalidade",
+	"datamining.tasks.edit" : "Editar Funcionalidade",
+	"datamining.tasks.details" : "Detalhes da Funcionalidade",
+	"datamining.tasks.evaluate" : "Avaliar Funcionalidade",
 	"datamining.tasks.priority.done" : "Priorização Concluída!",
+	"datamining.tasks.viewdetails" : "Visualizar Detalhes da Funcionalidade",
 	
 	"datamining.tasks.evaluate.users.sessions.title" : "Utilizações dos usuários",
 	"datamining.tasks.evaluate.user" : "Usuário",
@@ -216,8 +219,8 @@
 	"datamining.tasks.actions.element.xpath" : "Elemento (XPath)",
 	"datamining.tasks.actions.url" : "Local",
 	"datamining.tasks.actions.url.url" : "URL",
-	"datamining.tasks.actions.url.jhm" : "Metadado (Tarefa)",
-	"datamining.tasks.actions.url.step" : "Metadado (Passo da Tarefa)",
+	"datamining.tasks.actions.url.jhm" : "Metadado (Funcionalidade)",
+	"datamining.tasks.actions.url.step" : "Metadado (Passo da Funcionalidade)",
 	"datamining.tasks.actions.description" : "Descrição",
 	"datamining.tasks.actions.selected" : "Informações da Ação Selecionada",
 	
@@ -226,8 +229,8 @@
 	"datamining.tasks.actions.value" : "Valor",
 	"datamining.tasks.actions.fieldtype" : "Tipo do Campo",
 	
-	"datamining.tasks.edit.success" : "Tarefa alterada com sucesso!",
-	"datamining.tasks.new.success" : "Tarefa cadastrada com sucesso!",
+	"datamining.tasks.edit.success" : "Funcionalidade alterada com sucesso!",
+	"datamining.tasks.new.success" : "Funcionalidade cadastrada com sucesso!",
 	
 	"datamining.tasks.actions.edit.success" : "Ação alterada com sucesso!",
 	"datamining.tasks.actions.new.success" : "Ação cadastrada com sucesso!",
@@ -242,7 +245,7 @@
 	
 	"dataminint.step" : "Etapa",
 	"dataminint.steps.evaluation" : "Etapas da Avaliação",
-	"dataminint.step.details" : "Detalhes da Tarefa",
+	"dataminint.step.details" : "Detalhes da Funcionalidade",
 	"dataminint.step.classifying" : "Classificar Ações",
 	"dataminint.step.clustering" : "Clusterizar",
 	"dataminint.step.comparing" : "Comparar",
@@ -251,7 +254,7 @@
 	"dataminint.step.clustering.best" : "Sessões Referência",
 	"dataminint.step.clustering.others" : "Demais Sessões",
 	
-	"dataminint.step.details.info" : "<p>Informações sobre a Tarefa, além de um gráfico sobre a Completude das Sessões da Tarefa.<br/></p>",
+	"dataminint.step.details.info" : "<p>Informações sobre a Funcionalidade, além de um gráfico sobre a Completude das Sessões da Funcionalidade.<br/></p>",
 	"dataminint.step.classifying.info" : "<p>Nesta etapa devem ser avaliados os grafos de padrões sequenciais e as sessões dos usuários. Ela visa identificar ações obrigatórias, iniciais ou finais, além de ações corretas e incorretas. É possível durante esse processo também identificar indícios de problemas de usabilidade.<br/></p> <p>Durante essa etapa é possível visualizar o 'Grafo de Padrões', realizar 'Análise Guiada' e 'Análise Avançada': <br/><br/> O <b>'Grafo de Padrões'</b> possui a sequência de padrões mais comum dentre as sessões mineradas.<br/> A <b>'Análise Guiada'</b> apresenta a lista com todas as sessões, permitindo avaliar o grafo de cada sessão, além de verificar quais ações obrigatórias foram realizadas.<br/> A <b>'Análise Avançada'</b> permite agrupar as sessões por usuários, visualizar as ações obrigatórias mais realizadas, além dos resultados dos algoritmos de mineração.<br/></p>",
 	"dataminint.step.clustering.info": "<p>Nesta etapa devem ser agrupadas e classificada como boas sessões, as que possuírem as utilizações corretas. O algoritmo de clusterização considera a eficácia e a eficiência, então a definição de ações obrigatórias na Etapa 1 é crucial para um bom resultado na Etapa 2.<br/></p>",
 	"dataminint.step.comparing.info": "",

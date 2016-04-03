@@ -134,7 +134,7 @@ public class WebUsageMining {
 		ResultDataMining resultDataMining = analyze(14l, 1438398000000l, 1438743600000l, SessionClassificationDataMiningFilterEnum.ALL, taskDataMiningRepository, actionDataMiningRepository);
 		
 		FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
-		List<FrequentSequentialPatternResultVO> frequentPatterns = fspm.analyze(resultDataMining.getUsersSequences(), 1.0, null, 7);
+		List<FrequentSequentialPatternResultVO> frequentPatterns = fspm.analyze(resultDataMining.getUsersSequences(), 1.0, null, 7, 120l);
 		
 		
 		System.out.println(frequentPatterns.size());

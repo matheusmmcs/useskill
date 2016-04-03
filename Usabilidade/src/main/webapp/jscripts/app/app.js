@@ -12,8 +12,8 @@ angular.module('useskill',
 		 'nvd3'
 		 ])
 
-.constant('env', 'dev')
-//.constant('env', 'prod')
+//.constant('env', 'dev')
+.constant('env', 'prod')
 		
 .constant('config', {
     appVersion: 0.1,
@@ -495,7 +495,7 @@ angular.module('useskill',
 	return {
 		moments : [
 	 	    {name:'Início', value:'START'},
-	 	    {name:'Obrigatória (durante a tarefa)', value:'REQUIRED'},
+	 	    {name:'Obrigatória (durante a funcionalidade)', value:'REQUIRED'},
 	 	    {name:'Fim', value:'END'}
 	 	]
 	};
@@ -503,8 +503,8 @@ angular.module('useskill',
 .factory("MostAccessTypeEnum", function(){
 	return {
 		datatypes : [
-	 	    {name:'JHM', value:'sJhm'},
-	 	    {name:'URL', value:'sUrl'}
+	 	    {name:'MetaDados', value:'sJhm', isIgnoreURL: true},
+	 	    {name:'URL', value:'sUrl', isIgnoreURL: false}
 	 	]
 	};
 })
@@ -663,6 +663,17 @@ angular.module('useskill',
 	testCtrl.actions = null;
 	testCtrl.datatypes = MostAccessTypeEnum.datatypes;
 	
+	//definir tipo inicial
+	for (var d in MostAccessTypeEnum.datatypes) {
+		var datatype =  MostAccessTypeEnum.datatypes[d],
+			isIgnoreURL = datatype.isIgnoreURL;
+		if (testCtrl.test.isIgnoreURL && isIgnoreURL) {
+			testCtrl.datatype = datatype;
+		} else if (!testCtrl.test.isIgnoreURL && !isIgnoreURL) {
+			testCtrl.datatype = datatype;
+		}
+	}
+	
 	
 	
 	testCtrl.mostaccess = function() {
@@ -680,6 +691,15 @@ angular.module('useskill',
 				testCtrl.actions.sort(function(a, b) {
 				    return b.count - a.count;
 				});
+				
+				var idx = 0;
+				for (var a in testCtrl.actions) {
+					idx++;
+					testCtrl.actions[a].pos = idx;
+					if (testCtrl.actions[a].description == '-') {
+						testCtrl.actions[a].description = 'Início (-)'
+					}
+				}
 				
 				$scope.pieOptions = {
 		            chart: {
@@ -713,7 +733,7 @@ angular.module('useskill',
 		        };
 				
 				var MIN = 3, MAX = 25;
-				$scope.sizePie = 5;
+				$scope.sizePie = 10;
 				$scope.canChange = true;
 				
 				$scope.renderPieMost = function(size) {
@@ -739,7 +759,7 @@ angular.module('useskill',
 						//rerender
 						$timeout(function(){
 							$scope.pieApi.refresh();
-							$timeout(function(){ $scope.canChange = true; }, 1000);
+							$timeout(function(){ $scope.canChange = true; }, 1500);
 						});
 					}
 				}
@@ -2039,7 +2059,7 @@ angular.module('useskill',
                 //axisLabelDistance: 30
             },
             zoom: {
-                enabled: true,
+                enabled: false,
                 scaleExtent: [1, 10],
                 useFixedDomain: true,
                 useNiceScale: false,
@@ -2199,6 +2219,13 @@ angular.module('useskill',
 			//rerender
 			$timeout(function(){
 				$scope.clusterApi.refresh();
+				
+				/*
+				$scope.$on('tooltipShow.directive', function(event){
+	                console.log('scope.tooltipShow', event);
+	            });
+	            */
+				
 				//$timeout(function(){ $scope.canChange = true; }, 1000);
 			});
 			

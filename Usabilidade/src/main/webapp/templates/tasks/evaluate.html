@@ -17,7 +17,7 @@
 	  			<span>Definir o novo "Agrupamento de Ações Obrigatórias":</span> 
 		  		<a class="btn" ng-click="resetAlertChangeTask()" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/{{taskCtrl.task.id}}" target="_blank">
            			<span class="icon-list-alt"></span>
-           			Abrir Tarefa
+           			{{ 'datamining.task.open' | translate }}
            		</a>
 		  		<button type="button" class="close" ng-click="resetAlertChangeTask()">&times;</button>
 			</div>
@@ -133,11 +133,11 @@
 							            	</dd>
 							            </dl>
 							            <dl>
-							            	<dt>Visualizar Detalhes da Tarefa:</dt>
+							            	<dt>{{ 'datamining.tasks.viewdetails' | translate }}:</dt>
 							            	<dd>
 												<a class="btn u-width-full" ng-href="#/testes/{{taskCtrl.task.testDataMining.id}}/tarefas/{{taskCtrl.task.id}}" target="_blank">
 							            			<span class="icon-list-alt"></span>
-							            			Abrir Tarefa
+							            			{{ 'datamining.task.open' | translate }}
 							            		</a>
 							            	</dd>
 							            </dl>
@@ -289,13 +289,13 @@
 		        		<div id="mynetwork-info" class="usdm-box" ng-show="taskCtrl.nodeSelected != null || taskCtrl.edgeSelected != null">
 	       					<div ng-show="taskCtrl.nodeSelected != null">
 	       						<h2 class="usdm-box-header">
-			        				Nó Selecionado
+			        				Ação Selecionada
 			        			</h2>
 			        			<div class="usdm-box-body">
 			        				
 			        				<div class="row-fluid">
 										<div class="span6">
-											<h3 class="table-title">Informações do Nó:</h3>
+											<h3 class="table-title">Informações da Ação:</h3>
 											
 											<usdm-action-info action="taskCtrl.nodeSelected"
 											 	situations-enum="situationsEnum"
@@ -320,7 +320,7 @@
 								            </dl>
 										</div>
 										<div class="span6">
-											<h3 class="table-title">Sessões ({{ taskCtrl.nodeSelected.sessions.length }}) que contém este Nó:</h3>
+											<h3 class="table-title">Sessões ({{ taskCtrl.nodeSelected.sessions.length }}) que contém esta Ação:</h3>
 								            <div class="usdm-withscroll">
 									            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered dinamic-table" ts-wrapper>
 										  			<thead>
