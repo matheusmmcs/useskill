@@ -56,7 +56,16 @@
 		<param-value>messages</param-value>
 	</context-param>
 	
-<session-config>
-		<session-timeout>1200</session-timeout>
+	<error-page>
+    	<error-code>404</error-code>
+    	<location>/WEB-INF/jsp/error/error404.jsp</location>
+	</error-page>
+	<error-page>
+    	<error-code>500</error-code>
+    	<location>/WEB-INF/jsp/error/error404.jsp</location>
+	</error-page>
+	
+	<session-config>
+		<session-timeout>120</session-timeout>
 	</session-config>
 </web-app>
