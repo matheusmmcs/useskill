@@ -28,38 +28,25 @@
 		</div>
 	</div>
 	<div class="row-fluid">
-		<div class="usdm-info-box-div3">
-			<div class="usdm-info-box-label">{{ 'datamining.tasks.completition' | translate }}:</div>
-			<div class="usdm-info-box-span">
-			{{ sessionInfo.userRateSuccess | number:2}}%</div>
-		</div>
-		<div class="usdm-info-box-div3">
-			<div class="usdm-info-box-label">{{ 'datamining.tasks.correctness' | translate }}:</div>
-			<div class="usdm-info-box-span">
-			{{ sessionInfo.userRateRequired | number:2}}%</div>
-		</div>
-		<div class="usdm-info-box-div3">
+		<div ng-class="{ 'usdm-info-box-div3' : (graphsession != null), 'usdm-info-box-div6' : (graphsession == null) }">
 			<div class="usdm-info-box-label">{{ 'datamining.tasks.effectiveness' | translate }}:</div>
 			<div class="usdm-info-box-span">
 			{{ sessionInfo.effectiveness | number:2}}%</div>
 		</div>
-		<div class="usdm-info-box-div3">
+		<div ng-class="{ 'usdm-info-box-div3' : (graphsession != null), 'usdm-info-box-div6' : (graphsession == null) }">
 			<div class="usdm-info-box-label">{{ 'datamining.tasks.efficiency' | translate }}:</div>
 			<div class="usdm-info-box-span">
 			{{ sessionInfo.efficiency | number:2}}</div>
 		</div>
-	</div>
-	<div class="row-fluid" ng-show="graphsession != null">
-		<div class="usdm-info-box-div6">
+		<div class="usdm-info-box-div3" ng-show="graphsession != null">
 			<div class="usdm-info-box-label">{{ 'datamining.tasks.nodecount' | translate }}:</div>
 			<div class="usdm-info-box-span">
 			{{ graphsession.body.nodeIndices.length }}</div>
 		</div>
-		<div class="usdm-info-box-div6">
+		<div class="usdm-info-box-div3" ng-show="graphsession != null">
 			<div class="usdm-info-box-label">{{ 'datamining.tasks.edgecount' | translate }}:</div>
 			<div class="usdm-info-box-span">
 			{{ graphsession.body.edgeIndices.length }}</div>
 		</div>
-		
 	</div>
 </div>

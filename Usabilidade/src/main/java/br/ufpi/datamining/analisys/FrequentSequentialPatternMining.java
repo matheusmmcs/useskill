@@ -39,14 +39,15 @@ public class FrequentSequentialPatternMining {
 	public List<FrequentSequentialPatternResultVO> analyze(final Map<String, String> usersSequences, final double minsup, final Integer maxPatternLength, final Integer minPatternLength, final Long timeoutSeconds) throws IOException {
 		Set<String> keySet = usersSequences.keySet();
 		String patterns = "";
+		int countPatterns = 0;
+		
 		for (String key : keySet) {
-			//System.out.println("----------");
-			//System.out.println(key);
-			//System.out.println(usersSequences.get(key));
 			patterns += usersSequences.get(key);
+			countPatterns++;
 		}
 		
-		System.out.println(patterns);
+		System.out.println("Qtd. Padrões Iniciais: " + countPatterns);
+		
 		return analyze(patterns, minsup, maxPatternLength, minPatternLength, timeoutSeconds);
 	}
 	
@@ -62,8 +63,10 @@ public class FrequentSequentialPatternMining {
 	    			SequenceDatabase sequenceDatabase = new SequenceDatabase(); 
 	    			// From String
 	    			sequenceDatabase.loadFromString(sessions, "\n");
+	    			
 	    			// print the database to console
-	    			sequenceDatabase.print();
+	    			//sequenceDatabase.print();
+	    			
 	    			// Create an instance of the algorithm 
 	    			AlgoPrefixSpan algo = new AlgoPrefixSpan();
 	    			if (maxPatternLength != null) {
@@ -72,14 +75,15 @@ public class FrequentSequentialPatternMining {
 	    			// execute the algorithm with minsup = 50 %
 	    			SequentialPatterns patterns = algo.runAlgorithm(sequenceDatabase, minsup, null);  
 	    			//algo.printStatistics(sequenceDatabase.size());
-	    			System.out.println(" == PATTERNS ==");
+
+	    			//System.out.println(" == PATTERNS ==");
 	    			
 	    			for(List<SequentialPattern> level : patterns.levels) {
 	    				for(SequentialPattern pattern : level){
 	    					if (minPatternLength != null) {
 	    						if (pattern.size() >= minPatternLength) {
 	    							retorno.add(new FrequentSequentialPatternResultVO(pattern));
-	    							System.out.println(pattern + " support : " + pattern.getAbsoluteSupport());
+	    							//System.out.println(pattern + " support : " + pattern.getAbsoluteSupport());
 	    						}
 	    					} else {
 	    						retorno.add(new FrequentSequentialPatternResultVO(pattern));
@@ -93,8 +97,22 @@ public class FrequentSequentialPatternMining {
 			List<Future<String>> invokeAll = executor.invokeAll(callables, timeoutSeconds, TimeUnit.SECONDS);
 			executor.shutdown();
 		} catch (InterruptedException e) {
+			System.out.println("Interrupção de Threads após limite de " + timeoutSeconds + " segundos.");
 			e.printStackTrace();
 		}
+		
+		/*
+		ExecutorService taskExecutor = Executors.newFixedThreadPool(4);
+		while(...) {
+		  taskExecutor.execute(new MyTask());
+		}
+		taskExecutor.shutdown();
+		try {
+		  taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		} catch (InterruptedException e) {
+		  ...
+		}
+		*/
 		
 		return retorno;
 	}

@@ -41,7 +41,7 @@
 					<c:when test="${usuarioLogado.usuario!=null}">
 						<!--  se logado -->
 						<li>
-							<a id="topmenu0" href="${pageContext.request.contextPath}/" data-topmenu="4">
+							<a id="topmenu0" href="${pageContext.request.contextPath}/inicio" data-topmenu="4">
 								<fmt:message key="inicio" />
 							</a>
 						</li>
@@ -52,12 +52,12 @@
 						</li>
 						<li>
 							<a id="topmenu4" href="${pageContext.request.contextPath}/usuario">
-								<fmt:message key="testes.formais" />
+								<fmt:message key="us.chooser.control" />
 							</a>
 						</li>
 						<li>
 							<a id="topmenu5" href="${pageContext.request.contextPath}/datamining">
-								<fmt:message key="datamining" />
+								<fmt:message key="us.chooser.onthefly" />
 							</a>
 						</li>
 					</c:when>

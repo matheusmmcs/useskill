@@ -175,7 +175,7 @@ public class WebUsageMining {
 	
 	public static ResultDataMining analyze(Long taskId, Long initDate, Long endDate, SessionClassificationDataMiningFilterEnum classificationFilter, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
 		
-		boolean DEBUG = true;//false;
+		boolean DEBUG = false;//false;
 		TaskDataMining taskDataMining = taskDataMiningRepository.find(taskId);
 		
 		//#0 - pegar as configurações da tarefa
@@ -240,9 +240,11 @@ public class WebUsageMining {
 		}
 		
 
-		System.out.println(initialActionOfsectionsFromUser.size());
-		for(String u : initialActionOfsectionsFromUser.keySet()){
-			System.out.println(u + " -> " + initialActionOfsectionsFromUser.get(u).size());
+		if (DEBUG) {
+			System.out.println(initialActionOfsectionsFromUser.size());
+			for(String u : initialActionOfsectionsFromUser.keySet()){
+				System.out.println(u + " -> " + initialActionOfsectionsFromUser.get(u).size());
+			}
 		}
 		
 		
@@ -533,9 +535,11 @@ public class WebUsageMining {
 			countTaskActionsSessionsOk += countUserActionsSessionsOk;
 			
 			//resultados por usuario
-			System.out.println("countUserActionsSessionsOk: " + countUserActionsSessionsOk);
-			System.out.println("countUserTimesSessionsOk: " + countUserTimesSessionsOk);
-			System.out.println("countok: " + countok);
+			if (DEBUG) {
+				System.out.println("countUserActionsSessionsOk: " + countUserActionsSessionsOk);
+				System.out.println("countUserTimesSessionsOk: " + countUserTimesSessionsOk);
+				System.out.println("countok: " + countok);
+			}
 			
 			Double actionsAverageOk = countok > 0 ? (countUserActionsSessionsOk / countok) : 0;
 			Double timesAverageOk = countok > 0 ? (countUserTimesSessionsOk / countok) : 0;
@@ -549,26 +553,29 @@ public class WebUsageMining {
 			
 			usersResult.add(new UserResultDataMining(username, actionsAverageOk, timesAverageOk, countok, counterro, countinit, countthreshold, 0d, required, sessionsResultIds));
 			
-			System.out.println("actionsAverageOk: " + actionsAverageOk);
-			System.out.println("timesAverageOk: " + timesAverageOk);
-			System.out.println("required: " + required);
-			
-			System.out.println(username + " [ok=" + countok + ", init=" + countinit + ", erro=" + counterro + "]");
+			if (DEBUG) {
+				System.out.println("actionsAverageOk: " + actionsAverageOk);
+				System.out.println("timesAverageOk: " + timesAverageOk);
+				System.out.println("required: " + required);
+				System.out.println(username + " [ok=" + countok + ", init=" + countinit + ", erro=" + counterro + "]");
+			}
 		}
 		
-		
-		System.out.println("########### RETA FINAL ###########");
+		if (DEBUG) {
+			System.out.println("########### RETA FINAL ###########");
+		}
 		
 		Double actionsTaskAverageOk = (countTaskActionsSessionsOk / countoktotal);
 		Double timesTaskAverageOk = (countTaskTimesSessionsOk / countoktotal);
 		actionsTaskAverageOk = actionsTaskAverageOk.equals(Double.NaN) ? 0d : actionsTaskAverageOk;
 		timesTaskAverageOk = timesTaskAverageOk.equals(Double.NaN) ? 0d : timesTaskAverageOk;
 		
-		System.out.println("countTaskActionsSessionsOk: " + countTaskActionsSessionsOk);
-		System.out.println("countoktotal: " + countoktotal);
-		System.out.println("countTaskTimesSessionsOk: " + countTaskTimesSessionsOk);
-		System.out.println("countoktotal: " + countoktotal);
-		
+		if (DEBUG) {
+			System.out.println("countTaskActionsSessionsOk: " + countTaskActionsSessionsOk);
+			System.out.println("countoktotal: " + countoktotal);
+			System.out.println("countTaskTimesSessionsOk: " + countTaskTimesSessionsOk);
+			System.out.println("countoktotal: " + countoktotal);
+		}
 		
 		//#4 - Fuzzy tempo e ações nas -> 
 		
@@ -583,17 +590,16 @@ public class WebUsageMining {
 		double stdDevActionsOk = StatisticsUtils.getStdDevPopulation(convertDouble(actionsOkSize));
 		double stdDevTimesOk = StatisticsUtils.getStdDevPopulation(convertDouble(timesOkSize));
 		
-		System.out.println("actionsOkSize: " + actionsOkSize);
-		System.out.println("meanActionsOk: " + meanActionsOk);
-		System.out.println("timesOkSize: " + timesOkSize);
-		System.out.println("meanTimesOk: " + meanTimesOk);
-		System.out.println("actionsOkSize: " + actionsOkSize);
-		System.out.println("stdDevActionsOk: " + stdDevActionsOk);
-		System.out.println("timesOkSize: " + timesOkSize);
-		System.out.println("stdDevTimesOk: " + stdDevTimesOk);
-		
-		
-		
+		if (DEBUG) {
+			System.out.println("actionsOkSize: " + actionsOkSize);
+			System.out.println("meanActionsOk: " + meanActionsOk);
+			System.out.println("timesOkSize: " + timesOkSize);
+			System.out.println("meanTimesOk: " + meanTimesOk);
+			System.out.println("actionsOkSize: " + actionsOkSize);
+			System.out.println("stdDevActionsOk: " + stdDevActionsOk);
+			System.out.println("timesOkSize: " + timesOkSize);
+			System.out.println("stdDevTimesOk: " + stdDevTimesOk);
+		}
 		
 		double minEffectiveness = Double.MAX_VALUE;
 		double minEfficiency = Double.MAX_VALUE;
@@ -735,10 +741,11 @@ public class WebUsageMining {
 		//required
 		Double required = countActionsRequiredTask > 0 ? countActionsRequiredTask / countTaskSessions : 0;
 		
-		System.out.println("########### RESULT: ###########");
-		
-		System.out.println("countActionsRequiredTask: " + countActionsRequiredTask);
-		System.out.println("countTaskSessions: " + countTaskSessions);
+		if (DEBUG) {
+			System.out.println("########### RESULT: ###########");
+			System.out.println("countActionsRequiredTask: " + countActionsRequiredTask);
+			System.out.println("countTaskSessions: " + countTaskSessions);
+		}
 		
 		result.setUsersSequences(usersSequences);
 		result.setActionsRequiredTask(actionsRequiredTask);
@@ -762,21 +769,22 @@ public class WebUsageMining {
 			generateResultWithoutSessions(result);
 		}
 		
-		System.out.println("result.getRateRequired(): " + result.getRateRequired());
-		System.out.println("result.getMeanActionsOk(): " + result.getMeanActionsOk());
-		System.out.println("result.getMeanTimesOk(): " + result.getMeanTimesOk());
-		System.out.println("result.getStdDevActionsOk(): " + result.getStdDevActionsOk());
-		System.out.println("result.getStdDevTimesOk(): " + result.getStdDevTimesOk());
-		System.out.println("result.getMinActionsOk(): " + result.getMinActionsOk());
-		System.out.println("result.getMinTimesOkk(): " + result.getMinTimesOk());
-		System.out.println("result.getMaxActionsOk(): " + result.getMaxActionsOk());
-		System.out.println("result.getMaxTimesOk(): " + result.getMaxTimesOk());
-		
-		
-		System.out.println("MaxActions = "+result.getMaxActionsOk()+" ;MaxTime = "+result.getMaxTimesOk());
-		System.out.println("Actions = " + (result.getMaxActionsOk() - result.getMeanActionsOk()) / result.getStdDevActionsOk());
-		System.out.println("Times = " + (result.getMaxTimesOk() - result.getMeanTimesOk()) / result.getStdDevTimesOk());
-		
+		if (DEBUG) {
+			System.out.println("result.getRateRequired(): " + result.getRateRequired());
+			System.out.println("result.getMeanActionsOk(): " + result.getMeanActionsOk());
+			System.out.println("result.getMeanTimesOk(): " + result.getMeanTimesOk());
+			System.out.println("result.getStdDevActionsOk(): " + result.getStdDevActionsOk());
+			System.out.println("result.getStdDevTimesOk(): " + result.getStdDevTimesOk());
+			System.out.println("result.getMinActionsOk(): " + result.getMinActionsOk());
+			System.out.println("result.getMinTimesOkk(): " + result.getMinTimesOk());
+			System.out.println("result.getMaxActionsOk(): " + result.getMaxActionsOk());
+			System.out.println("result.getMaxTimesOk(): " + result.getMaxTimesOk());
+			
+			
+			System.out.println("MaxActions = "+result.getMaxActionsOk()+" ;MaxTime = "+result.getMaxTimesOk());
+			System.out.println("Actions = " + (result.getMaxActionsOk() - result.getMeanActionsOk()) / result.getStdDevActionsOk());
+			System.out.println("Times = " + (result.getMaxTimesOk() - result.getMeanTimesOk()) / result.getStdDevTimesOk());
+		}
 		return result;
 	}
 	

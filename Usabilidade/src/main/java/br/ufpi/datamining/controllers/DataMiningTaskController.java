@@ -373,8 +373,12 @@ public class DataMiningTaskController extends BaseController {
 					if (frequentPatterns == null || frequentPatterns.size() == 0) {
 						lastMinSup = minSups[i];
 						//if (!(resultDataMining.getUsersSequences().size() < 2 && lastMinSup == 1.0)) {
-						System.out.println("-- INICIAR SESSÃO FSPM: " + lastMinSup);
+						
+						System.out.println("-- INICIAR SESSÃO FSPM ->  minsup: " + lastMinSup + " , minItens: " + defaultMinItens + " (inicio: " + new Date().getTime() + ")");
+						System.out.println("Ações distintas: " + resultDataMining.getPageViewActionCount().keySet().size());
 						frequentPatterns = fspm.analyze(usersSequences, minSups[i], null, defaultMinItens, TIMEOUT_SECONDS);
+						System.out.println("-- FIM SESSÃO FSPM ->  minsup: " + lastMinSup + " , minItens: " + defaultMinItens + " (fim: " + new Date().getTime() + ")");
+						
 						//}
 					}
 				}

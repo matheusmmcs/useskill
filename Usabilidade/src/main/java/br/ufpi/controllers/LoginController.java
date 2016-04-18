@@ -65,7 +65,7 @@ public class LoginController extends BaseController {
 		if (usuario != null) {
 			if (usuario.isEmailConfirmado()) {
 				usuarioLogado.setUsuario(usuario);
-				result.redirectTo(this).logado();
+				result.redirectTo(this).inicio();
 			} else {
 				result.forwardTo(this).reenviaEmailConfirmacao(
 						usuario.getEmail());
@@ -81,10 +81,22 @@ public class LoginController extends BaseController {
 		}
 	}
 	
+	@Get({ "/" })
+	public void index() {
+		if (usuarioLogado.getUsuario() != null) {
+			result.redirectTo(this).inicio();
+		}
+	}
+	
 	@Get({ "/usuario" })
 	@Logado
 	public void logado() {
 		result.forwardTo(this).logado(1);
+	}
+	
+	@Get({ "/inicio" })
+	@Logado
+	public void inicio() {
 	}
 	
 	/**
