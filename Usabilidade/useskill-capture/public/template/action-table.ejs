@@ -29,6 +29,7 @@ function timeConverter(t){
       <th>USER</th>
       <th>ROLE</th>
       <th>JHM</th>
+      <th>CLIENT</th>
       <th>VERSION</th>
     </tr>
   </thead>
@@ -54,6 +55,7 @@ function timeConverter(t){
             <%  if(action.sSectionJhm){ %><%= action.sSectionJhm %><% } %>
         </td>
         <td><%= action.sClient+ "[" + action.sVersion + "]" %></td>
+        <td><%= action.sClient %></td>
       </tr>
       <% }); %>
     </tbody>

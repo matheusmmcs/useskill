@@ -5,27 +5,35 @@
     <form id="searchForm" role="form" type="GET" action="<%= subdomain %>/actions">
       <div class="row">
         <h3>Order Filter</h3>
-        <div class="form-group col-xs-4">
+        <div class="form-group col-xs-2">
           <label for="orderParam">Param</label>
           <select name="orderParam" id="orderParam" class="form-control">
             <% var fullOptions = false; %>
             <% include /../public/template/options-select-type-action.ejs %>
           </select>
         </div>
-        <div class="form-group col-xs-3">
+        <div class="form-group col-xs-2">
+          <label for="clientParam">Client</label>
+          <input type="text" class="form-control" id="clientParam" name="clientParam" /ß>
+        </div>
+        <div class="form-group col-xs-2">
           <label for="orderValue">Order</label>
           <select name="orderValue" id="orderValue" class="form-control">
             <option value="DESC">DESC</option>
             <option value="ASC">ASC</option>
           </select>
         </div>
-        <div class="form-group col-xs-3">
+        <div class="form-group col-xs-2">
           <label for="limit">Limit</label>
           <input type="text" value="10" class="form-control" id="limit" name="limit" placeholder="Limit">
         </div>
         <div class="form-group col-xs-2">
+          <label for="passwordParam">Password</label>
+          <input type="password" class="form-control" id="passwordParam" name="passwordParam" /ß>
+        </div>
+        <div class="form-group col-xs-2">
           <label class="display-block" for="">Action</label>
-          <button type="submit" class="btn btn-primary">Search</button>
+          <button type="submit" id="search" class="btn btn-primary">Search</button>
         </div>
       </div>
       <div class="row">
@@ -73,6 +81,9 @@
           $(document).on('submit', '#searchForm', function(e) {
             e.preventDefault();
             e.stopPropagation();
+            
+            var $search = $('#search');
+            $search.html('Waiting...').prop("disabled", true);
 
             var data = $(this).serialize();
             $.ajax({
@@ -82,6 +93,7 @@
               complete: function(data) {
                 var html = new EJS({url: '<%= subdomain %>/template/action-table.ejs'}).render(data.responseJSON);
                 $('#actionTable').html(html);
+                $search.html('Search').prop("disabled", false);
               },
               error: function(err) {
                 console.log(err);

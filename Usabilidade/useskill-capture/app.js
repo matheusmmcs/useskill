@@ -6,6 +6,7 @@ var express = require('express')
   , path    = require('path')
   , db      = require('./models');
 
+//subdomain = '' //localhost
 subdomain = '/useskill-capture'
 
 console.log('node app is now running with subdomain: '+subdomain);
