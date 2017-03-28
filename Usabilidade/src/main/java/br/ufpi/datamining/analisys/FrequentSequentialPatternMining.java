@@ -96,6 +96,11 @@ public class FrequentSequentialPatternMining {
 	    	});
 			List<Future<String>> invokeAll = executor.invokeAll(callables, timeoutSeconds, TimeUnit.SECONDS);
 			executor.shutdown();
+			try {
+				executor.awaitTermination(timeoutSeconds, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				System.err.println("Ultrapassou "+ timeoutSeconds +" segundos no awaitTermination");
+			}
 		} catch (InterruptedException e) {
 			System.out.println("Interrupção de Threads após limite de " + timeoutSeconds + " segundos.");
 			e.printStackTrace();

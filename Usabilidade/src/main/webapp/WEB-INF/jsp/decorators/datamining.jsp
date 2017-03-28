@@ -10,7 +10,7 @@
 	<title><decorator:title default="UseSkill" /></title>
 	<link href="${pageContext.request.contextPath}/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
-	<link rel="stylesheet/less" href="${pageContext.request.contextPath}/less/style.less" />
+	<link rel="stylesheet/less" href="${pageContext.request.contextPath}/less/style2.less" />
 	<link href="${pageContext.request.contextPath}/jscripts/libs/vis/vis.min.css" rel="stylesheet" type="text/css" />
 	<link href="${pageContext.request.contextPath}/css/tablesort.css" rel="stylesheet" type="text/css" />
 	<link href="${pageContext.request.contextPath}/jscripts/libs/angular/angular-chart/angular-chart.css" rel="stylesheet" type="text/css" />

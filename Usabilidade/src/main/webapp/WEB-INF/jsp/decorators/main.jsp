@@ -12,7 +12,7 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/jscripts/libs/jquery.js"></script>
 
 
-	<link rel="stylesheet/less" href="${pageContext.request.contextPath}/less/style.less" />
+	<link rel="stylesheet/less" href="${pageContext.request.contextPath}/less/style2.less" />
 	<script src="${pageContext.request.contextPath}/jscripts/libs/less-1.3.0.min.js"></script>
 	<script src="${pageContext.request.contextPath}/jscripts/libs/modernizr-2.5.3.js"></script>
 	<link href="${pageContext.request.contextPath}/plugin/vis/vis.css" rel="stylesheet" type="text/css" />
