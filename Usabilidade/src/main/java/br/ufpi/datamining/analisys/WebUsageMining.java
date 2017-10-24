@@ -2,15 +2,30 @@ package br.ufpi.datamining.analisys;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
+
+import org.apache.bcel.generic.IFGE;
+import org.jgrapht.alg.CycleDetector;
+import org.jgrapht.alg.cycle.HawickJamesSimpleCycles;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.DirectedPseudograph;
+import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -48,6 +63,7 @@ import br.ufpi.models.Action;
 import br.ufpi.models.Fluxo;
 import br.ufpi.models.Tarefa;
 import br.ufpi.util.ApplicationPath;
+import br.ufpi.util.UsabilitySmellDetector;
 
 
 /*
@@ -123,7 +139,7 @@ public class WebUsageMining {
 	//- criar plugin para facilitar na identificação do XPath, Jhm, Step e Url (depois tornar dinâmico);
 	//- criar gráficos de pizza, apresentando os resultados dos usuários e das sessões.
 	
-	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException, IOException {
+	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException, IOException, ParseException {
 		EntityManager entityManager = EntityManagerUtil.getEntityManager();
 		EntityManager entityDafaultManager = EntityDefaultManagerUtil.getEntityManager();
 		
@@ -131,17 +147,81 @@ public class WebUsageMining {
 		ActionDataMiningRepository actionDataMiningRepository = new ActionDataMiningRepository(entityManager);
 		
 		// 31 (1440990000000) / 15 (1439607600000) / 05 (1438743600000) / 01 (1438398000000)
-		ResultDataMining resultDataMining = analyze(14l, 1438398000000l, 1438743600000l, SessionClassificationDataMiningFilterEnum.ALL, taskDataMiningRepository, actionDataMiningRepository);
+		//iHealth IPMT | Marcar Consulta | 07/03/2016 (1457319600000) - 21/03/2016 (1458529200000)
+		ResultDataMining resultDataMining = analyze(2l, 1457319600000l, new SimpleDateFormat("dd/MM/yyyy").parse("21/03/2016").getTime(),
+				SessionClassificationDataMiningFilterEnum.SUCCESS_ERROR_REPEAT, taskDataMiningRepository, actionDataMiningRepository);
 		
-		FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
-		List<FrequentSequentialPatternResultVO> frequentPatterns = fspm.analyze(resultDataMining.getUsersSequences(), 1.0, null, 7, 120l);
+//		System.out.println("Detectando sessões custosas...");
+//		new UsabilitySmellDetector().detectLaboriousSessions(resultDataMining.getSessions(), UsabilitySmellDetector.NUMBER_DEFAULT, UsabilitySmellDetector.NUMBER_DEFAULT);
+//		System.out.println("Detecção finalizada");
+		
+//		System.out.println("Detectando sessões cíclicas...");
+//		new UsabilitySmellDetector().detectCyclicSessions(resultDataMining.getSessions(), UsabilitySmellDetector.RATE_DEFAULT);
+//		System.out.println("Detecção finalizada");
+		
+//		System.out.println("Gerando gráfico de ciclos...");
+//		new UsabilitySmellDetector().generateTaskCyclicChart(resultDataMining.getSessions());
+//		System.out.println("Geração finalizada");
+		
+//		System.out.println("Detectado sessões com muitas camadas...");
+//		new UsabilitySmellDetector().detectTooManyLayers(resultDataMining.getSessions(), UsabilitySmellDetector.NUMBER_DEFAULT);
+//		System.out.println("Detecção finalizada");
+		
+//		List<ActionDataMining> listActionsBetweenDates = WebUsageMining.listActionsBetweenDates(
+//				3l, taskDataMiningRepository, actionDataMiningRepository,
+//				new SimpleDateFormat("dd/MM/yyyy").parse("7/03/2016"),
+//				new SimpleDateFormat("dd/MM/yyyy").parse("21/03/2016"), null);
+//		
+//		System.out.println("Detectando ações...");
+//		new UsabilitySmellDetector().detectLonelyActions(listActionsBetweenDates,
+//				UsabilitySmellDetector.RATE_DEFAULT, UsabilitySmellDetector.NUMBER_DEFAULT);
+//		System.out.println("Terminou");
+		
+//		System.out.println("Detectando tentatvas de tooltip...");
+//		new UsabilitySmellDetector().detectUndescriptiveElement(listActionsBetweenDates, 2000);
+//		System.out.println("Terminou");
+		
+		System.out.println("Detectado Missing Feedback...");
+		new UsabilitySmellDetector().detectMissingFeedback(resultDataMining.getSessions(), 1, 5);
+		System.out.println("Detecção finalizada!");
+		
+//		List<ActionDataMining> lista = new ArrayList<ActionDataMining>();
+//		
+//		for (int i = 0; i < 10; i++) {
+//			ActionDataMining action = new ActionDataMining();
+//			action.setsXPath("abc");
+//			action.setsUrl("www");
+//			action.setsTime(0l);
+//			lista.add(action);
+//		}
+//		
+//		lista.get(4).setsUrl("ww1");
+//		lista.get(4).setsXPath("123");
+//		lista.get(2).setsUrl("ww1");
+//		lista.get(6).setsUrl("ww2");
+//		lista.get(6).setsXPath("xyz");
+//		lista.get(3).setsUrl("ww2");
+//		lista.get(5).setsXPath("123");
+//		lista.get(8).setsXPath("xyz");
+//		
+//		for (ActionDataMining action : lista) {			
+//			System.out.println(action.toString());
+//		}
+
+//		System.out.println("Deu certo");
+//		new UsabilitySmellDetector().detectLonelyActions(listActionsBetweenDates, 0.8f, 5);
+//		System.out.println("Terminou");
+		
+		//		FrequentSequentialPatternMining fspm = new FrequentSequentialPatternMining();
+//		List<FrequentSequentialPatternResultVO> frequentPatterns = fspm.analyze(resultDataMining.getUsersSequences(), 1.0, null, 7, 120l);
+		
+//		System.out.println(frequentPatterns.size());
+		
+//		Gson gson = new GsonBuilder().create();
+//		System.out.println(gson.toJson(frequentPatterns));
+//		System.out.println(gson.toJson(resultDataMining.getSessions().get(0)));
 		
 		
-		System.out.println(frequentPatterns.size());
-		
-		Gson gson = new GsonBuilder().create();
-		System.out.println(gson.toJson(frequentPatterns));
-		System.out.println(gson.toJson(resultDataMining.getSessions()));
 		
 		//Maximizar o support
 		//Maiores sequencias
@@ -188,7 +268,6 @@ public class WebUsageMining {
 		for(ActionSingleDataMining actionSingle : taskDataMining.getActionsInitial()){
 			actionsInitial.add(actionSingle.toActionDataMining());
 		}
-		
 		
 		//#1 - pegar todas as interações que possuem esses pontos de incio e agrupar por usuarios todas as interações;
 		HashMap<String, List<ActionDataMining>> initialActionOfsectionsFromUser = new HashMap<String, List<ActionDataMining>>();
@@ -246,7 +325,6 @@ public class WebUsageMining {
 				System.out.println(u + " -> " + initialActionOfsectionsFromUser.get(u).size());
 			}
 		}
-		
 		
 		//#2 - para cada sessão dos usuarios, buscar as acoes (filtradas, se necessário) realizadas
 		//#3 - montar o resultdatamining
@@ -477,6 +555,7 @@ public class WebUsageMining {
 					//FSPM
 					if (classificationFilter.equals(SessionClassificationDataMiningFilterEnum.ALL) ||
 							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.WITH_PROBLEM) ||
+							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.SUCCESS_ERROR_REPEAT) ||
 							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.ERROR)) {
 						userSequence += userSequenceSection;
 					}
@@ -497,6 +576,7 @@ public class WebUsageMining {
 					
 					//FSPM
 					if (classificationFilter.equals(SessionClassificationDataMiningFilterEnum.ALL) ||
+							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.SUCCESS_ERROR_REPEAT) ||
 							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.SUCCESS)) {
 						userSequence += userSequenceSection;
 					}
@@ -506,6 +586,7 @@ public class WebUsageMining {
 					//FSPM
 					if (classificationFilter.equals(SessionClassificationDataMiningFilterEnum.ALL) ||
 							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.WITH_PROBLEM) ||
+							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.SUCCESS_ERROR_REPEAT) ||
 							classificationFilter.equals(SessionClassificationDataMiningFilterEnum.REPEAT)) {
 						userSequence += userSequenceSection;
 					}
@@ -610,7 +691,6 @@ public class WebUsageMining {
 		double minEfficiencyUser = Double.MAX_VALUE;
 		double maxEffectivenessUser = Double.MIN_VALUE;
 		double maxEfficiencyUser = Double.MIN_VALUE;
-		
 		
 		//se houver sessoes inicias por usuarios
 		if(initialActionOfsectionsFromUser.size() > 0){
@@ -785,6 +865,7 @@ public class WebUsageMining {
 			System.out.println("Actions = " + (result.getMaxActionsOk() - result.getMeanActionsOk()) / result.getStdDevActionsOk());
 			System.out.println("Times = " + (result.getMaxTimesOk() - result.getMeanTimesOk()) / result.getStdDevTimesOk());
 		}
+		
 		return result;
 	}
 	

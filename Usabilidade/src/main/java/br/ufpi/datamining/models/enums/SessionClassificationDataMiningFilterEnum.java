@@ -2,7 +2,7 @@ package br.ufpi.datamining.models.enums;
 
 public enum SessionClassificationDataMiningFilterEnum {
 	
-	ALL(0), SUCCESS(1), WITH_PROBLEM(2), ERROR(3), REPEAT(4), THRESHOLD(5);
+	ALL(0), SUCCESS(1), WITH_PROBLEM(2), ERROR(3), REPEAT(4), THRESHOLD(5), SUCCESS_ERROR_REPEAT(6);
 	
 	private Integer value;
 	
