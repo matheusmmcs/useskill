@@ -1,0 +1,126 @@
+<div class="container-padding-left">
+	
+		<ul class="breadcrumb">
+			<li>
+				<a ng-href="/"> 
+					{{ 'inicio' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li>
+				<a ng-href="#/testes/"> 
+					{{ 'datamining' | translate}} - {{ 'datamining.testes.list' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li>
+				<a ng-href="#/testes/{{smellsDetectionCtrl.test.id}}"> 
+					{{ 'datamining.testes.details' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li class="active">{{ 'datamining.smells.testes.detection' | translate}}</li>
+		</ul>
+		
+		<usdm-messages-alert></usdm-messages-alert>
+	    
+		<div class="row show-grid">
+		    <div class="span4">
+		    	<div class="usdm-box">
+		    		<h2 class="usdm-box-header">
+			    		{{ 'datamining.testes.details' | translate}}
+		            </h2>
+		            
+		            <div class="usdm-box-body">
+			            <dl>
+			            	<dt>{{ 'datamining.testes.title' | translate}}:</dt>
+			            	<dd>
+			            		{{smellsDetectionCtrl.test.title}}
+			            		<a class="btn pull-right" ng-href="#/testes/editar/{{smellsDetectionCtrl.test.id}}" title="{{ 'datamining.edit' | translate}}"><span class="icon-edit"></span> {{ 'datamining.edit' | translate }}</a>
+			            		<div class="clear-both"></div>
+			            	</dd>
+			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.testes.abbrev' | translate}}:</dt>
+			            	<dd>{{smellsDetectionCtrl.test.clientAbbreviation}}</dd>
+			            </dl>
+			            <dl>
+			            	<dt>{{ 'datamining.testes.url' | translate}}:</dt>
+			            	<dd>{{smellsDetectionCtrl.test.urlSystem}}</dd>
+			            </dl>
+			            
+		            </div>
+		    	</div>
+		    </div>
+	        <div class="span8">
+	        	
+	            <div class="usdm-clickable-box">
+	            	<h2 class="usdm-title-collapse">
+	            		{{ 'datamining.smells.testes.detection.form.title' | translate}}
+	            	</h2>
+	            	<div class="usdm-clickable-box-content usdm-animate-show-hide">
+		        		<form name="myForm" class="usdm-clickable-box-form-lite form-layout">
+							<fieldset>
+								<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white">
+					                <thead>
+					                    <tr>
+					                        <th width="60%">{{'datamining.smells.testes.smellname' | translate}}</th>
+					                        <th width="15%">{{'datamining.smells.testes.evaluate' | translate}}</th>
+					                        <th width="25%">{{'datamining.smells.testes.config' | translate}}</th>
+					                    </tr>
+					                </thead>
+					                <tbody>
+				                        <tr ng-repeat="smell in smellsDetectionCtrl.smells | orderBy:'value'">
+				                            <td>{{smell.name}}</td>
+				                            <td class="text-center"><input type="checkbox" checked="checked" name="selectedSmells[]" value="{{smell.value}}" ng-click="smellsDetectionCtrl.toggleSelection(smell.value)"></td>
+				                            <td class="text-center"><a class="btn btn-primary" ng-href="#/testes/{{smellsDetectionCtrl.test.id}}/smells/config/{{smell.value}}"><span class="icon-white icon-cog"></span> {{'datamining.smells.testes.config' | translate}}</a></td>
+				                        </tr>
+					                </tbody>
+					            </table>
+					            <hr>
+					            <h3>{{ 'datamining.smells.testes.detection.form.taskdefinition' | translate}}</h3>
+					            <br>
+					            <table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white">
+					                <thead>
+					                    <tr>
+					                        <th width="85%">{{'datamining.testes.title' | translate}}</th>
+					                        <th width="15%">{{'datamining.smells.testes.evaluate' | translate}}</th>
+					                    </tr>
+					                </thead>
+					                <tbody>
+				                        <tr ng-repeat="task in smellsDetectionCtrl.test.tasks | orderBy:'id'">
+				                            <td>{{task.title}}</td>
+				                            <td class="text-center"><input type="checkbox" checked="checked" name="selectedTasks[]" value="{{task.id}}" ng-click="smellsDetectionCtrl.toggleTaskSelection(task.id)"></td>
+				                        </tr>
+					                </tbody>
+					            </table>
+					            <hr>
+					            <h3>{{ 'datamining.smells.testes.timewindow' | translate}}</h3>
+					            <br>
+					            <div class="row-fluid">
+									<div class="control-group span6">
+						            	<label class="control-label" for="pickerMinSelector">{{ 'date.initial' | translate}}:*</label>
+						            	<div class="controls">
+						                	<input class="span12" type="datetime" placeholder="{{ 'date.initial' | translate}}" date-time ng-model="smellsDetectionCtrl.minDate" id="pickerMinSelector" date-change="smellsDetectionCtrl.changeMinMax" max-date="smellsDetectionCtrl.maxDate" view="date" format="DD/MM/YYYY HH:mm" /> 
+						            	</div>
+						        	</div>
+						        	
+						        	<div class="control-group span6">
+						            	<label class="control-label" for="pickerMaxSelector">{{ 'date.end' | translate}}:*</label>
+						            	<div class="controls">
+						                	<input class="span12" type="datetime" placeholder="{{ 'date.end' | translate}}" date-time ng-model="smellsDetectionCtrl.maxDate" id="pickerMaxSelector" date-change="smellsDetectionCtrl.changeMinMax" min-date="smellsDetectionCtrl.minDate" view="date" format="DD/MM/YYYY HH:mm" /> 
+						            	</div>
+						        	</div>
+								</div>
+					        	<div class="form-actions">
+					            	<button ng-click="smellsDetectionCtrl.view()"  class="btn btn-primary pull-right submit">{{ 'datamining.smells.testes.startevaluation' | translate }}</button>
+					        	</div>
+							</fieldset>
+						</form>
+		        	</div>
+	        	</div>
+	        	
+	        </div>
+	    </div>	    
+
+    </div>

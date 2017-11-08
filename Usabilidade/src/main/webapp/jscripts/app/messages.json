@@ -221,7 +221,6 @@
 	"datamining.tasks.actions.url.url" : "URL",
 	"datamining.tasks.actions.url.jhm" : "Metadado (Funcionalidade)",
 	"datamining.tasks.actions.url.step" : "Metadado (Passo da Funcionalidade)",
-	"datamining.tasks.actions.description" : "Descrição",
 	"datamining.tasks.actions.selected" : "Informações da Ação Selecionada",
 	
 	"datamining.tasks.actions.field.add" : "Adicionar Restrição",
@@ -261,6 +260,26 @@
 	"dataminint.step.comparing.info": "",
 	"dataminint.step.verify.info" : "",
 	
-	"dataminint.step.general.info": "<p>Clique em 'Avançar' ou 'Voltar' para navegar entre as Etapas. Se preferir, clique na Etapa desejada para ir direto a ela.<br/></p>"
+	"dataminint.step.general.info": "<p>Clique em 'Avançar' ou 'Voltar' para navegar entre as Etapas. Se preferir, clique na Etapa desejada para ir direto a ela.<br/></p>",
+	
+	
+	
+	"datamining.smells.testes.viewstatistics" : "Visualizar Estatísticas do Sistema",
+	"datamining.smells.testes.detection" : "Detecção de Usability Smells",
+	
+	"datamining.smells.testes.statistics.form.title" : "Definição de Métricas",
+	"datamining.smells.testes.statistics.form.view" : "Visualizar",
+	
+	"datamining.smells.testes.detection.form.title" : "Definição de Smells",
+	"datamining.smells.testes.detection.form.taskdefinition" : "Definição de Tarefas",
+	"datamining.smells.testes.timewindow" : "Janela Temporal",
+	
+	"datamining.smells.testes.metrics" : "Métricas",
+	"datamining.smells.testes.smellname" : "Nome do Smell",
+	"datamining.smells.testes.evaluate" : "Avaliar",
+	"datamining.smells.testes.config" : "Configurar",
+	"datamining.smells.testes.startevaluation" : "Iniciar Avaliação",
+	
+	"datamining.smells.testes.config.title" : "Configurar Smell"
 	
 }

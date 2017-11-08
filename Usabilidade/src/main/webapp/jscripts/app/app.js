@@ -195,11 +195,39 @@ angular.module('useskill',
 		    }
 	    })
 	    
+	    //Smells
+	    .when('/testes/:testId/smells/statistics', {
+			controller:'SmellsStatisticFormController as smellCtrl',
+			templateUrl:config[env].apiUrl+'/templates/smells/statisticsform.html',
+			resolve: {
+				test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
+	    })
+	    .when('/testes/:testId/smells/detection', {
+			controller:'SmellsDetectionFormController as smellsDetectionCtrl',
+			templateUrl:config[env].apiUrl+'/templates/smells/detectionform.html',
+			resolve: {
+				test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
+	    })
+	    .when('/testes/:testId/smells/config/:smellId', {
+			controller:'SmellConfigController as smellConfigCtrl',
+			templateUrl:config[env].apiUrl+'/templates/smells/config.html',
+			resolve: {
+				test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
+	    })
+	    
 	    .when('/error', {
 	        templateUrl: config[env].apiUrl+'/templates/error.html',
 	        controller: 'ErrorController'
 	    })
-	    
 	    .when('/informacoes', {
 	        templateUrl: config[env].apiUrl+'/templates/informations.html',
 	        controller: 'InformationsController'
@@ -413,7 +441,18 @@ angular.module('useskill',
         		actions: actions
         	}
         	return doRequest('POST', '/datamining/testes/avaliacao/tarefas/saveActionSituation', data);
-        }
+        },
+        
+        //SMELLS
+        viewSmellsStatistics: function(obj){
+        	return doRequest('POST', '/datamining/testes/smells/statistics', obj);
+        },
+        detectSmells: function(obj){
+        	return doRequest('POST', '/datamining/testes/smells/detection', obj);
+        },
+        configSmell: function(obj, smellId){
+        	return doRequest('POST', '/datamining/testes/smells/config/'+smellId, obj);
+        },
         
     };
 }])
@@ -508,7 +547,27 @@ angular.module('useskill',
 	 	]
 	};
 })
-
+.factory("SmellsMetricsEnum", function(){
+	return {
+		metrics : [
+	 	    {name:'Taxa de ciclos', value:'1'},
+	 	    {name:'Taxa de ocorrência', value:'2'},
+	 	    {name:'Quantidade de ações', value:'3'}
+	 	]
+	};
+})
+.factory("SmellsEnum", function(){
+	return {
+		smells : [
+	 	    {name:'Laborious Task', value:'1'},
+	 	    {name:'Cyclic Task', value:'2'},
+	 	    {name:'Lonely Action', value:'3'},
+	 	    {name:'Too Many Layers', value:'4'},
+	 	    {name:'Undescriptive Element', value:'5'},
+	 	    {name:'Missing Feedback', value:'6'}
+	 	]
+	};
+})
 
 .controller('ErrorController', function($scope, cfpLoadingBar, config, env) {
 	console.log('error controller');
@@ -518,6 +577,179 @@ angular.module('useskill',
 .controller('InformationsController', function($scope, config, env) {
 	console.log('info controller');
 	$scope.urlapp = config[env].apiUrl;
+})
+
+//Smells Controllers
+.controller('SmellsStatisticFormController', function(test, UtilsService, SmellsMetricsEnum, ServerAPI) {
+	var smellCtrl = this;
+	smellCtrl.test = JSON.parse(test.data.string);
+	console.log(smellCtrl.test);
+	
+	smellCtrl.minDate = new Date().getTime();
+	smellCtrl.maxDate = new Date().getTime();
+	
+	smellCtrl.formatDate = UtilsService.formatDate;
+	smellCtrl.momentTimestamp = UtilsService.momentTimestamp;
+	
+	smellCtrl.metrics = SmellsMetricsEnum.metrics;
+	smellCtrl.metricsSelected = [];
+	
+	smellCtrl.view = function(){
+		var minDate = UtilsService.datepickerToTimestamp(smellCtrl.minDate);
+		var maxDate = UtilsService.datepickerToTimestamp(smellCtrl.maxDate);
+		
+		console.log('view', minDate, maxDate, smellCtrl.metricsSelected);
+		
+		var obj = angular.toJson({
+			test: smellCtrl.test, 
+			initDate: minDate, 
+			endDate: maxDate,
+			metrics: smellCtrl.metricsSelected
+		});
+		
+		ServerAPI.viewSmellsStatistics(obj).then(function(data) {
+			console.log(data);
+			//testCtrl.test = JSON.parse(data.data.string);
+		}, function(data) {
+			console.log(data);
+		});
+		
+	}
+	
+	smellCtrl.toggleSelection = function toggleSelection(id) {
+		id = parseInt(id);
+		var findIdx = -1;
+		for (var i = 0; i < smellCtrl.metricsSelected.length; i++) {
+			if (smellCtrl.metricsSelected[i] == id) {
+				findIdx = i;
+			}
+		}
+		if (findIdx == -1) {
+			smellCtrl.metricsSelected.push(id);
+		} else {
+			smellCtrl.metricsSelected.splice(findIdx, 1);
+		}
+	};
+	
+})
+.controller('SmellsDetectionFormController', function(test, UtilsService, SmellsEnum, ServerAPI) {
+	var smellsDetectionCtrl = this;
+	
+	smellsDetectionCtrl.test = JSON.parse(test.data.string);
+//	console.log(smellsDetectionCtrl.test);
+	
+	smellsDetectionCtrl.minDate = new Date().getTime();
+	smellsDetectionCtrl.maxDate = new Date().getTime();
+	
+	smellsDetectionCtrl.formatDate = UtilsService.formatDate;
+	smellsDetectionCtrl.momentTimestamp = UtilsService.momentTimestamp;
+	
+	smellsDetectionCtrl.smells = SmellsEnum.smells;
+	smellsDetectionCtrl.smellsSelected = [];
+	smellsDetectionCtrl.tasksSelected = [];
+	
+	smellsDetectionCtrl.view = function(){
+		var minDate = UtilsService.datepickerToTimestamp(smellsDetectionCtrl.minDate);
+		var maxDate = UtilsService.datepickerToTimestamp(smellsDetectionCtrl.maxDate);
+		
+		var obj = angular.toJson({
+			test: smellsDetectionCtrl.test, 
+			initDate: minDate, 
+			endDate: maxDate,
+			metrics: smellsDetectionCtrl.smellsSelected,
+			tasks: smellsDetectionCtrl.tasksSelected
+		});
+		
+		ServerAPI.detectSmells(obj).then(function(data) {
+			console.log(data);
+			//testCtrl.test = JSON.parse(data.data.string);
+		}, function(data) {
+			//console.log(data);
+		});
+		
+	}
+	
+	smellsDetectionCtrl.toggleSelection = function toggleSelection(id) {
+		id = parseInt(id);
+		var findIdx = -1;
+		for (var i = 0; i < smellsDetectionCtrl.smellsSelected.length; i++) {
+			if (smellsDetectionCtrl.smellsSelected[i] == id) {
+				findIdx = i;
+			}
+		}
+		if (findIdx == -1) {
+			smellsDetectionCtrl.smellsSelected.push(id);
+		} else {
+			smellsDetectionCtrl.smellsSelected.splice(findIdx, 1);
+		}
+	};
+	
+	smellsDetectionCtrl.toggleTaskSelection = function toggleSelection(id) {
+		id = parseInt(id);
+		var findIdx = -1;
+		for (var i = 0; i < smellsDetectionCtrl.tasksSelected.length; i++) {
+			if (smellsDetectionCtrl.tasksSelected[i] == id) {
+				findIdx = i;
+			}
+		}
+		if (findIdx == -1) {
+			smellsDetectionCtrl.tasksSelected.push(id);
+		} else {
+			smellsDetectionCtrl.tasksSelected.splice(findIdx, 1);
+		}
+	};
+	
+})
+.controller('SmellConfigController', function(test, UtilsService, SmellsEnum, ServerAPI) {
+	var smellsDetectionCtrl = this;
+	
+	smellsDetectionCtrl.test = JSON.parse(test.data.string);
+//	console.log(smellsDetectionCtrl.test);
+	
+//	smellsDetectionCtrl.minDate = new Date().getTime();
+//	smellsDetectionCtrl.maxDate = new Date().getTime();
+//	
+//	smellsDetectionCtrl.formatDate = UtilsService.formatDate;
+//	smellsDetectionCtrl.momentTimestamp = UtilsService.momentTimestamp;
+//	
+//	smellsDetectionCtrl.smells = SmellsEnum.smells;
+//	smellsDetectionCtrl.smellsSelected = [];
+//	
+//	smellsDetectionCtrl.view = function(){
+//		var minDate = UtilsService.datepickerToTimestamp(smellsDetectionCtrl.minDate);
+//		var maxDate = UtilsService.datepickerToTimestamp(smellsDetectionCtrl.maxDate);
+//		
+//		var obj = angular.toJson({
+//			test: smellCtrl.test, 
+//			initDate: minDate, 
+//			endDate: maxDate,
+//			metrics: smellCtrl.smellsSelected
+//		});
+//		
+//		ServerAPI.detectSmells(obj).then(function(data) {
+//			console.log(data);
+//			//testCtrl.test = JSON.parse(data.data.string);
+//		}, function(data) {
+//			//console.log(data);
+//		});
+//		
+//	}
+//	
+//	smellsDetectionCtrl.toggleSelection = function toggleSelection(id) {
+//		id = parseInt(id);
+//		var findIdx = -1;
+//		for (var i = 0; i < smellsDetectionCtrl.smellsSelected.length; i++) {
+//			if (smellsDetectionCtrl.smellsSelected[i] == id) {
+//				findIdx = i;
+//			}
+//		}
+//		if (findIdx == -1) {
+//			smellsDetectionCtrl.smellsSelected.push(id);
+//		} else {
+//			smellsDetectionCtrl.smellsSelected.splice(findIdx, 1);
+//		}
+//	};
+	
 })
 
 //Tests Controllers

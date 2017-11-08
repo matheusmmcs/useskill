@@ -1,0 +1,91 @@
+<body> 
+	<div class="container-padding-left">
+		
+		<ul class="breadcrumb">
+			<li>
+				<a ng-href="/"> 
+					{{ 'inicio' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li>
+				<a ng-href="#/testes/"> 
+					{{ 'datamining' | translate}} - {{ 'datamining.testes.list' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li ng-show="smellConfigCtrl.test.id">
+				<a ng-href="#/testes/{{smellConfigCtrl.test.id}}"> 
+					{{ 'datamining.testes.details' | translate}}
+				</a>
+				<span class="divider">/</span>
+			</li>
+			<li class="active">{{ 'datamining.smells.testes.config.title' | translate }}</li>
+		</ul>
+		
+		
+		<usdm-messages-alert></usdm-messages-alert>
+		
+	    
+	    <div class="span10 center">
+		
+			<form name="myForm" class="datamining-form form-layout form-horizontal">
+				<fieldset>
+					<legend>
+						<span><!-- {{ testCtrl.actionTitle }} -->Nome do Smell</span>
+						<hr/>
+					</legend>
+					
+<!-- 					<input type="hidden" name="test.id" ng-model="testCtrl.test.id" /> -->
+					
+					<div class="control-group">
+		            	<label class="control-label" for="testTitle"><!-- {{ 'datamining.testes.title' | translate}}:* -->Parâmetro X:</label>
+		            	<div class="controls">
+		                	<input type="text" ng-model="testCtrl.test.title" name="test.title"  id="testTitle" class="input" /> 
+		            	</div>
+		        	</div>
+		        	
+		        	<div class="control-group">
+		            	<label class="control-label" for="testClientAbbreviation"><!-- {{ 'datamining.testes.abbrev' | translate}}:* -->Parâmetro Y:</label>
+		            	<div class="controls">
+		                	<input type="text" ng-model="testCtrl.test.clientAbbreviation" name="test.clientAbbreviation"  id="testClientAbbreviation" class="input" /> 
+		            	</div>
+		        	</div>
+		        	
+		        	<div class="control-group">
+		            	<label class="control-label" for="testUrlSystem"><!-- {{ 'datamining.testes.url' | translate}}:* -->Parâmetro Z:</label>
+		            	<div class="controls">
+		                	<input type="text" ng-model="testCtrl.test.urlSystem" name="test.urlSystem"  id="testUrlSystem" class="input" /> 
+		            	</div>
+		        	</div>
+		        	
+<!-- 		        	<div class="control-group"> -->
+<!-- 		            	<label class="control-label" for="testIgnoreURL">{{ 'datamining.testes.control.ignoreurl' | translate}}:*</label> -->
+<!-- 		            	<div class="controls"> -->
+<!-- 		                	<input type="checkbox" ng-model="testCtrl.test.isIgnoreURL" name="test.isIgnoreURL"  id="testIgnoreURL" class="input" />  -->
+<!-- 		            	</div> -->
+<!-- 		        	</div> -->
+		        	
+<!-- 		        	<div class="control-group"> -->
+<!-- 		            	<label class="control-label" for="testsControl">{{ 'datamining.testes.control.select' | translate}}:*</label> -->
+<!-- 		            	<div class="controls"> -->
+<!-- 		                	<select ng-model="testCtrl.testControl" id="testsControl" ng-options="key as value for (key , value) in testCtrl.testsControl" class="input"> -->
+<!-- 		                		<option value="">{{ 'datamining.testes.control.select.none' | translate }}</option> -->
+<!-- 		                	</select> -->
+<!-- 		            	</div> -->
+<!-- 		        	</div> -->
+		
+					<hr/>
+					
+		        	<div class="form-actions">
+		            	<button ng-click="testCtrl.save()"  class="btn btn-primary pull-right submit"><!-- {{ testCtrl.actionTitle }} -->Salvar Alterações</button>
+		            	<a href="#/" onclick="window.history.go(-1); return false;" class="btn pull-right"><!-- {{ 'datamining.back' | translate}} -->Redefinir Padrão</a>
+		        	</div>
+		        	
+				</fieldset>
+			</form>
+		</div>
+	     
+	
+    </div>
+</body>
