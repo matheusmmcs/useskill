@@ -264,11 +264,18 @@
 	
 	
 	
+	
+	"datamining.smells.error.default" : "Ocorreu um erro, tente novamente...",
 	"datamining.smells.testes.viewstatistics" : "Visualizar Estatísticas do Sistema",
 	"datamining.smells.testes.detection" : "Detecção de Usability Smells",
+	"datamining.smells.testes.detection.result" : "Resultado",
 	
 	"datamining.smells.testes.statistics.form.title" : "Definição de Métricas",
 	"datamining.smells.testes.statistics.form.view" : "Visualizar",
+	
+	"datamining.smells.testes.statistics.actioncount" : "Quantidade de Ações",
+	"datamining.smells.testes.statistics.time" : "Duração",
+	"datamining.smells.testes.statistics.cyclerate" : "Taxa de Ciclos",
 	
 	"datamining.smells.testes.detection.form.title" : "Definição de Smells",
 	"datamining.smells.testes.detection.form.taskdefinition" : "Definição de Tarefas",

@@ -206,7 +206,7 @@ angular.module('useskill',
 		    }
 	    })
 	    .when('/testes/:testId/smells/detection', {
-			controller:'SmellsDetectionFormController as smellsDetectionCtrl',
+			controller:'SmellsDetectionFormController as smellCtrl',
 			templateUrl:config[env].apiUrl+'/templates/smells/detectionform.html',
 			resolve: {
 				test: function (ServerAPI, $route) {
@@ -214,8 +214,17 @@ angular.module('useskill',
 		        }
 		    }
 	    })
+	    .when('/testes/:testId/smells/detection/result', {
+			controller:'SmellsDetectionResultController as smellCtrl',
+			templateUrl:config[env].apiUrl+'/templates/smells/detectionresult.html',
+			resolve: {
+				test: function (ServerAPI, $route) {
+		        	return ServerAPI.getTest($route.current.params.testId);
+		        }
+		    }
+	    })
 	    .when('/testes/:testId/smells/config/:smellId', {
-			controller:'SmellConfigController as smellConfigCtrl',
+			controller:'SmellConfigController as smellCtrl',
 			templateUrl:config[env].apiUrl+'/templates/smells/config.html',
 			resolve: {
 				test: function (ServerAPI, $route) {
@@ -450,9 +459,9 @@ angular.module('useskill',
         detectSmells: function(obj){
         	return doRequest('POST', '/datamining/testes/smells/detection', obj);
         },
-        configSmell: function(obj, smellId){
-        	return doRequest('POST', '/datamining/testes/smells/config/'+smellId, obj);
-        },
+//        configSmell: function(obj, smellId){
+//        	return doRequest('POST', '/datamining/testes/smells/config/'+smellId, obj);
+//        },
         
     };
 }])
@@ -550,9 +559,18 @@ angular.module('useskill',
 .factory("SmellsMetricsEnum", function(){
 	return {
 		metrics : [
-	 	    {name:'Taxa de ciclos', value:'1'},
-	 	    {name:'Taxa de ocorrência', value:'2'},
-	 	    {name:'Quantidade de ações', value:'3'}
+	 	    {name:'Quantidade de ações', value:'1',
+	 	    	info: "Indica a quantidade 'bruta' de ações que foram executadas nas sessões de cada tarefa. " +
+	 	    			"Essas ações podem incluir cliques, preenchimento de campos de texto, carregamento de " +
+	 	    			"páginas, etc."},
+	 	    {name:'Tempo de duração', value:'2',
+	 	    	info: "Indica o tempo de duração das sessões de cada tarefa, em minutos."},
+	 	    {name:'Taxa de ciclos', value:'3',
+	 	    	info: "Indica a proporção de ações das sessões de cada tarefa que está contida em ciclos. " +
+	 	    			"Em outras palavras, esta medida diz a proporção da tarefa que envolve ações repetitvas."},
+	 	    {name:'Número de camadas', value:'4',
+	 	    	info: "Indica o número de páginas web diferentes que os usuários tiveram de percorrer para executar" +
+	 	    			" a tarefa. Contudo, apenas páginas com urls diferentes são contabilizadas."}
 	 	]
 	};
 })
@@ -580,7 +598,13 @@ angular.module('useskill',
 })
 
 //Smells Controllers
-.controller('SmellsStatisticFormController', function(test, UtilsService, SmellsMetricsEnum, ServerAPI) {
+/*TODO 
+ * mostrar as informacoes das metricas em uma caixa de info da useskill qnd clicado
+ * colocar cor padrao da useskill nos icones de informacao
+ * tirar o efeito de mouseover das caixas
+ * alterar o efeito de tooltip
+ */
+.controller('SmellsStatisticFormController', function(test, UtilsService, SmellsMetricsEnum, ServerAPI, $timeout) {
 	var smellCtrl = this;
 	smellCtrl.test = JSON.parse(test.data.string);
 	console.log(smellCtrl.test);
@@ -593,6 +617,10 @@ angular.module('useskill',
 	
 	smellCtrl.metrics = SmellsMetricsEnum.metrics;
 	smellCtrl.metricsSelected = [];
+	
+	for (var i = 0; i < Object.keys(SmellsMetricsEnum.metrics).length; i++) {
+		smellCtrl.metricsSelected.push(i+1);
+	}
 	
 	smellCtrl.view = function(){
 		var minDate = UtilsService.datepickerToTimestamp(smellCtrl.minDate);
@@ -608,8 +636,89 @@ angular.module('useskill',
 		});
 		
 		ServerAPI.viewSmellsStatistics(obj).then(function(data) {
-			console.log(data);
-			//testCtrl.test = JSON.parse(data.data.string);
+			if (data.status == 200) {
+				var charts = JSON.parse(data.data.string).areaCharts;
+				smellCtrl.charts = [];
+				for (var i = 0; i < charts.length; i++) {
+					var statistics = [];
+					for (var d in charts[i].series) {
+						var area = charts[i].series[d];
+						var areaData = {
+								"key" : area.description,
+								"values" : [],
+								"area" : true
+						};
+						for (var a in area.coordinates) {
+							areaData.values.push({x: area.coordinates[a].x, y: area.coordinates[a].y});
+						}
+						statistics.push(areaData);
+					}
+					smellCtrl.charts.push({
+						"description" : charts[i].description,
+						"statisticsOptions" : {
+				            chart: {
+				                type: 'lineChart',
+				                height: 450,
+				                margin : {
+				                    top: 20,
+				                    right: 20,
+				                    bottom: 40,
+				                    left: 55
+				                },
+				                x: function(d){ return d.x; },
+				                y: function(d){ return d.y; },
+				                useInteractiveGuideline: true,
+//				                dispatch: {
+//				                    stateChange: function(e){ console.log("stateChange"); },
+//				                    changeState: function(e){ console.log("changeState"); },
+//				                    tooltipShow: function(e){ console.log("tooltipShow"); },
+//				                    tooltipHide: function(e){ console.log("tooltipHide"); }
+//				                },
+				                xAxis: {
+				                    axisLabel: charts[i].descX
+				                },
+				                yAxis: {
+				                    axisLabel: charts[i].descY,
+				                    tickFormat: function(d){
+				                        return d3.format('.01f')(d);
+				                    },
+				                    axisLabelDistance: -10
+				                }//,
+//				                callback: function(chart){
+//				                    console.log("!!! lineChart callback !!!");
+//				                }
+				            }//,
+//				            title: {
+//				                enable: true,
+//				                text: charts[i].description
+//				            },
+//				            subtitle: {
+//				                enable: true,
+//				                text: 'Subtitle for simple line chart. Lorem ipsum dolor sit amet, at eam blandit sadipscing, vim adhuc sanctus disputando ex, cu usu affert alienum urbanitas.',
+//				                css: {
+//				                    'text-align': 'center',
+//				                    'margin': '10px 13px 0px 7px'
+//				                }
+//				            },
+//				            caption: {
+//				                enable: true,
+//				                html: '<b>Figure 1.</b> Lorem ipsum dolor sit amet, at eam blandit sadipscing, <span style="text-decoration: underline;">vim adhuc sanctus disputando ex</span>, cu usu affert alienum urbanitas. <i>Cum in purto erat, mea ne nominavi persecuti reformidans.</i> Docendi blandit abhorreant ea has, minim tantas alterum pro eu. <span style="color: darkred;">Exerci graeci ad vix, elit tacimates ea duo</span>. Id mel eruditi fuisset. Stet vidit patrioque in pro, eum ex veri verterem abhorreant, id unum oportere intellegam nec<sup>[1, <a href="https://github.com/krispo/angular-nvd3" target="_blank">2</a>, 3]</sup>.',
+//				                css: {
+//				                    'text-align': 'justify',
+//				                    'margin': '10px 13px 0px 7px'
+//				                }
+//				            }
+				        },
+					   "statisticsData" : statistics
+					});
+				}
+				
+//				$timeout(function(){
+//					for (var i = 0; i < charts.length; i++) {
+//						smellCtrl.charts[i].chartApi.refresh();
+//					}
+//				});
+			}
 		}, function(data) {
 			console.log(data);
 		});
@@ -633,31 +742,38 @@ angular.module('useskill',
 	
 })
 .controller('SmellsDetectionFormController', function(test, UtilsService, SmellsEnum, ServerAPI) {
-	var smellsDetectionCtrl = this;
+	var smellCtrl = this;
 	
-	smellsDetectionCtrl.test = JSON.parse(test.data.string);
-//	console.log(smellsDetectionCtrl.test);
+	smellCtrl.test = JSON.parse(test.data.string);
+//	console.log(smellCtrl.test);
 	
-	smellsDetectionCtrl.minDate = new Date().getTime();
-	smellsDetectionCtrl.maxDate = new Date().getTime();
+	smellCtrl.minDate = new Date().getTime();
+	smellCtrl.maxDate = new Date().getTime();
 	
-	smellsDetectionCtrl.formatDate = UtilsService.formatDate;
-	smellsDetectionCtrl.momentTimestamp = UtilsService.momentTimestamp;
+	smellCtrl.formatDate = UtilsService.formatDate;
+	smellCtrl.momentTimestamp = UtilsService.momentTimestamp;
 	
-	smellsDetectionCtrl.smells = SmellsEnum.smells;
-	smellsDetectionCtrl.smellsSelected = [];
-	smellsDetectionCtrl.tasksSelected = [];
+	smellCtrl.smells = SmellsEnum.smells;
+	smellCtrl.smellsSelected = [];
+	smellCtrl.tasksSelected = [];
 	
-	smellsDetectionCtrl.view = function(){
-		var minDate = UtilsService.datepickerToTimestamp(smellsDetectionCtrl.minDate);
-		var maxDate = UtilsService.datepickerToTimestamp(smellsDetectionCtrl.maxDate);
+	for (var i = 0; i < Object.keys(SmellsEnum.smells).length; i++) {
+		smellCtrl.smellsSelected.push(i+1);
+	}
+	for (var i = 0; i < smellCtrl.test.tasks.length; i++) {
+		smellCtrl.tasksSelected.push(i+1);
+	}
+	
+	smellCtrl.view = function(){
+		var minDate = UtilsService.datepickerToTimestamp(smellCtrl.minDate);
+		var maxDate = UtilsService.datepickerToTimestamp(smellCtrl.maxDate);
 		
 		var obj = angular.toJson({
-			test: smellsDetectionCtrl.test, 
+			test: smellCtrl.test, 
 			initDate: minDate, 
 			endDate: maxDate,
-			metrics: smellsDetectionCtrl.smellsSelected,
-			tasks: smellsDetectionCtrl.tasksSelected
+			smells: smellCtrl.smellsSelected,
+			tasks: smellCtrl.tasksSelected
 		});
 		
 		ServerAPI.detectSmells(obj).then(function(data) {
@@ -669,55 +785,55 @@ angular.module('useskill',
 		
 	}
 	
-	smellsDetectionCtrl.toggleSelection = function toggleSelection(id) {
+	smellCtrl.toggleSelection = function toggleSelection(id) {
 		id = parseInt(id);
 		var findIdx = -1;
-		for (var i = 0; i < smellsDetectionCtrl.smellsSelected.length; i++) {
-			if (smellsDetectionCtrl.smellsSelected[i] == id) {
+		for (var i = 0; i < smellCtrl.smellsSelected.length; i++) {
+			if (smellCtrl.smellsSelected[i] == id) {
 				findIdx = i;
 			}
 		}
 		if (findIdx == -1) {
-			smellsDetectionCtrl.smellsSelected.push(id);
+			smellCtrl.smellsSelected.push(id);
 		} else {
-			smellsDetectionCtrl.smellsSelected.splice(findIdx, 1);
+			smellCtrl.smellsSelected.splice(findIdx, 1);
 		}
 	};
 	
-	smellsDetectionCtrl.toggleTaskSelection = function toggleSelection(id) {
+	smellCtrl.toggleTaskSelection = function toggleSelection(id) {
 		id = parseInt(id);
 		var findIdx = -1;
-		for (var i = 0; i < smellsDetectionCtrl.tasksSelected.length; i++) {
-			if (smellsDetectionCtrl.tasksSelected[i] == id) {
+		for (var i = 0; i < smellCtrl.tasksSelected.length; i++) {
+			if (smellCtrl.tasksSelected[i] == id) {
 				findIdx = i;
 			}
 		}
 		if (findIdx == -1) {
-			smellsDetectionCtrl.tasksSelected.push(id);
+			smellCtrl.tasksSelected.push(id);
 		} else {
-			smellsDetectionCtrl.tasksSelected.splice(findIdx, 1);
+			smellCtrl.tasksSelected.splice(findIdx, 1);
 		}
 	};
 	
 })
 .controller('SmellConfigController', function(test, UtilsService, SmellsEnum, ServerAPI) {
-	var smellsDetectionCtrl = this;
+	var smellCtrl = this;
 	
-	smellsDetectionCtrl.test = JSON.parse(test.data.string);
-//	console.log(smellsDetectionCtrl.test);
+	smellCtrl.test = JSON.parse(test.data.string);
+//	console.log(smellCtrl.test);
 	
-//	smellsDetectionCtrl.minDate = new Date().getTime();
-//	smellsDetectionCtrl.maxDate = new Date().getTime();
+//	smellCtrl.minDate = new Date().getTime();
+//	smellCtrl.maxDate = new Date().getTime();
 //	
-//	smellsDetectionCtrl.formatDate = UtilsService.formatDate;
-//	smellsDetectionCtrl.momentTimestamp = UtilsService.momentTimestamp;
+//	smellCtrl.formatDate = UtilsService.formatDate;
+//	smellCtrl.momentTimestamp = UtilsService.momentTimestamp;
 //	
-//	smellsDetectionCtrl.smells = SmellsEnum.smells;
-//	smellsDetectionCtrl.smellsSelected = [];
+//	smellCtrl.smells = SmellsEnum.smells;
+//	smellCtrl.smellsSelected = [];
 //	
-//	smellsDetectionCtrl.view = function(){
-//		var minDate = UtilsService.datepickerToTimestamp(smellsDetectionCtrl.minDate);
-//		var maxDate = UtilsService.datepickerToTimestamp(smellsDetectionCtrl.maxDate);
+//	smellCtrl.view = function(){
+//		var minDate = UtilsService.datepickerToTimestamp(smellCtrl.minDate);
+//		var maxDate = UtilsService.datepickerToTimestamp(smellCtrl.maxDate);
 //		
 //		var obj = angular.toJson({
 //			test: smellCtrl.test, 
@@ -735,18 +851,18 @@ angular.module('useskill',
 //		
 //	}
 //	
-//	smellsDetectionCtrl.toggleSelection = function toggleSelection(id) {
+//	smellCtrl.toggleSelection = function toggleSelection(id) {
 //		id = parseInt(id);
 //		var findIdx = -1;
-//		for (var i = 0; i < smellsDetectionCtrl.smellsSelected.length; i++) {
-//			if (smellsDetectionCtrl.smellsSelected[i] == id) {
+//		for (var i = 0; i < smellCtrl.smellsSelected.length; i++) {
+//			if (smellCtrl.smellsSelected[i] == id) {
 //				findIdx = i;
 //			}
 //		}
 //		if (findIdx == -1) {
-//			smellsDetectionCtrl.smellsSelected.push(id);
+//			smellCtrl.smellsSelected.push(id);
 //		} else {
-//			smellsDetectionCtrl.smellsSelected.splice(findIdx, 1);
+//			smellCtrl.smellsSelected.splice(findIdx, 1);
 //		}
 //	};
 	

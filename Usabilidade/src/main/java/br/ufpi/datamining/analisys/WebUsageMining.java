@@ -46,6 +46,7 @@ import br.ufpi.datamining.models.aux.FieldSearchComparatorEnum;
 import br.ufpi.datamining.models.aux.OrderSearch;
 import br.ufpi.datamining.models.aux.ResultDataMining;
 import br.ufpi.datamining.models.aux.SessionResultDataMining;
+import br.ufpi.datamining.models.aux.TaskSmellAnalysis;
 import br.ufpi.datamining.models.aux.UserResultDataMining;
 import br.ufpi.datamining.models.enums.ActionTypeDataMiningEnum;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
@@ -148,12 +149,27 @@ public class WebUsageMining {
 		
 		// 31 (1440990000000) / 15 (1439607600000) / 05 (1438743600000) / 01 (1438398000000)
 		//iHealth IPMT | Marcar Consulta | 07/03/2016 (1457319600000) - 21/03/2016 (1458529200000)
-		ResultDataMining resultDataMining = analyze(2l, 1457319600000l, new SimpleDateFormat("dd/MM/yyyy").parse("21/03/2016").getTime(),
+		ResultDataMining resultDataMining = analyze(1l, 1457319600000l, new SimpleDateFormat("dd/MM/yyyy").parse("21/03/2016").getTime(),
+				SessionClassificationDataMiningFilterEnum.SUCCESS_ERROR_REPEAT, taskDataMiningRepository, actionDataMiningRepository);
+		
+		ResultDataMining resultDataMining2 = analyze(2l, 1457319600000l, new SimpleDateFormat("dd/MM/yyyy").parse("21/03/2016").getTime(),
 				SessionClassificationDataMiningFilterEnum.SUCCESS_ERROR_REPEAT, taskDataMiningRepository, actionDataMiningRepository);
 		
 //		System.out.println("Detectando sessões custosas...");
 //		new UsabilitySmellDetector().detectLaboriousSessions(resultDataMining.getSessions(), UsabilitySmellDetector.NUMBER_DEFAULT, UsabilitySmellDetector.NUMBER_DEFAULT);
 //		System.out.println("Detecção finalizada");
+		
+		List<TaskSmellAnalysis> tasks = new ArrayList<TaskSmellAnalysis>();
+		tasks.add(new TaskSmellAnalysis("1", resultDataMining.getSessions()));
+		tasks.add(new TaskSmellAnalysis("2", resultDataMining2.getSessions()));
+		
+		System.out.println("Gerando gráfico de quantidade de ações...");
+		new UsabilitySmellDetector().generateTaskActionCountChart(tasks);
+		System.out.println("Geração finalizada");
+		
+//		System.out.println("Gerando gráfico de duração de sessão...");
+//		new UsabilitySmellDetector().generateTaskTimeChart("Tempo", resultDataMining.getSessions());
+//		System.out.println("Geração finalizada");
 		
 //		System.out.println("Detectando sessões cíclicas...");
 //		new UsabilitySmellDetector().detectCyclicSessions(resultDataMining.getSessions(), UsabilitySmellDetector.RATE_DEFAULT);
@@ -181,9 +197,9 @@ public class WebUsageMining {
 //		new UsabilitySmellDetector().detectUndescriptiveElement(listActionsBetweenDates, 2000);
 //		System.out.println("Terminou");
 		
-		System.out.println("Detectado Missing Feedback...");
-		new UsabilitySmellDetector().detectMissingFeedback(resultDataMining.getSessions(), 1, 5);
-		System.out.println("Detecção finalizada!");
+//		System.out.println("Detectado Missing Feedback...");
+//		new UsabilitySmellDetector().detectMissingFeedback(resultDataMining.getSessions(), 1, 5);
+//		System.out.println("Detecção finalizada!");
 		
 //		List<ActionDataMining> lista = new ArrayList<ActionDataMining>();
 //		

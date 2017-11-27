@@ -24,6 +24,11 @@
 		
 		<usdm-messages-alert></usdm-messages-alert>
 	    
+<!--         <div class="alert alert-info alert-dismissable" style="position: absolute; width: 47.5%;"> -->
+<!--             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> -->
+<!--             Success! message sent successfully. -->
+<!--         </div>		 -->
+	    
 		<div class="row show-grid">
 		    <div class="span4">
 		    	<div class="usdm-box">
@@ -52,16 +57,17 @@
 		            </div>
 		    	</div>
 		    </div>
+		    
 	        <div class="span8">
 	        	
-	            <div class="usdm-clickable-box">
-	            	<h2 class="usdm-title-collapse">
+	            <div class="usdm-box">
+	            	<h3 class="usdm-title-collapse">
 	            		{{ 'datamining.smells.testes.statistics.form.title' | translate}}
-	            	</h2>
+	            	</h3>
 	            	<div class="usdm-clickable-box-content usdm-animate-show-hide">
 		        		<form name="myForm" class="usdm-clickable-box-form-lite form-layout">
 							<fieldset>
-								<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white">
+								<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white; padding-top: 0;">
 					                <thead>
 					                    <tr>
 					                        <th width="85%">{{'datamining.smells.testes.metrics' | translate}}</th>
@@ -70,7 +76,7 @@
 					                </thead>
 					                <tbody>
 				                        <tr ng-repeat="metric in smellCtrl.metrics | orderBy:'value'">
-				                            <td>{{metric.name}} <a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="Descrição da métrica"></a></td>
+				                            <td>{{metric.name}} <a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{metric.info}}"></a></td>
 				                            <td class="text-center"><input type="checkbox" checked="checked" name="selectedMetrics[]" value="{{metric.value}}" ng-click="smellCtrl.toggleSelection(metric.value)"></td>
 				                        </tr>
 					                </tbody>
@@ -93,28 +99,31 @@
 						            	</div>
 						        	</div>
 								</div>
-<!-- 								<hr/> -->
-<!-- 								<h4> -->
-<!-- 				            		Selecione as Smells desejadas: -->
-<!-- 				            	</h4> -->
-<!-- 				            	<br/> -->
-<!-- 								<div class="row-fluid"> -->
-<!-- 									<div class="control-group span12 usdm-checkboxes"> -->
-																		
-<!-- 									<div ng-repeat="metric in smellCtrl.metrics | orderBy:'value'"> -->
-<!-- 										<label class="checkbox"> -->
-<!-- 									      <input type="checkbox" name="selectedMetrics[]" value="{{metric.value}}" ng-click="smellCtrl.toggleSelection(metric.value)"> {{ metric.name }} -->
-<!-- 									    </label> -->
-<!-- 									</div> -->
 
-<!-- 									</div> -->
-<!-- 								</div> -->
 					        	<div class="form-actions">
 					            	<button ng-click="smellCtrl.view()"  class="btn btn-primary pull-right submit">{{ 'datamining.smells.testes.statistics.form.view' | translate }}</button>
 					        	</div>
 							</fieldset>
 						</form>
 		        	</div>
+	        	</div>
+	        	
+<!-- 	        	<div class="usdm-box" ng-show="smellCtrl.charts != null" ng-repeat="chart in smellCtrl.charts"> -->
+<!-- 	            	<h3 class="usdm-title-collapse"> -->
+<!-- 	            		{{chart.description}} -->
+<!-- 	            	</h3> -->
+<!-- 	            	<div class="usdm-clickable-box-content"> -->
+<!-- 	  					<nvd3 options="chart.statisticsOptions" data="chart.statisticsData" api="chart.chartApi"></nvd3> -->
+<!-- 	  				</div> -->
+<!-- 	        	</div> -->
+				
+				<div class="usdm-box" ng-show="smellCtrl.charts != null" ng-repeat="chart in smellCtrl.charts">
+	            	<h3 class="usdm-title-collapse">
+	            		{{chart.description}}
+	            	</h3>
+	            	<div class="usdm-clickable-box-content">
+	  					<nvd3 options="chart.statisticsOptions" data="chart.statisticsData" class="with-3d-shadow with-transitions"></nvd3>
+	  				</div>
 	        	</div>
 	        	
 	        </div>

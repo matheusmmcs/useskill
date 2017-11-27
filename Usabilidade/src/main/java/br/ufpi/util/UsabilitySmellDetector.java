@@ -33,6 +33,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYCoordinate;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jgrapht.Graph;
@@ -52,6 +53,9 @@ import com.google.common.collect.Multisets;
 import br.ufpi.datamining.models.ActionDataMining;
 import br.ufpi.datamining.models.PageViewActionDataMining;
 import br.ufpi.datamining.models.aux.SessionResultDataMining;
+import br.ufpi.datamining.models.aux.StackedAreaChart;
+import br.ufpi.datamining.models.aux.TaskSmellAnalysis;
+import br.ufpi.datamining.models.aux.XYSerie;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
 
@@ -629,41 +633,132 @@ public class UsabilitySmellDetector {
 		return null;
 	}
 	
-	public void generateTaskCyclicChart (List<SessionResultDataMining> sessions) throws IOException {
-		Map<String, String> idMapping = new HashMap<String, String>();
-		int[] actionId = {1};
-		//Cria uma lista com todas as taxas de ciclo das sessoes
-		List<Double> sessionRates = new ArrayList<Double>();
-		for (SessionResultDataMining session : sessions) {			
-			//Calcula a proporcao entre o numero de vertices que aparecem em ciclos e o 
-			//total de vertices da sessao e adiciona essa proporcao na lista
-			if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
-				//Calcula a taxa de ciclos da sessao
-				double rate = sessionCycleRate(session, idMapping, actionId);
-				sessionRates.add(rate);
-			}
-		}
-		Collections.sort(sessionRates);
-		
-		//Gera uma lista de proporcoes relativas a localizacao de cada amostra no conjunto de dados
-		List<Double> sampleProportions = new ArrayList<Double>();
-		for (int i = 0; i < sessionRates.size(); i++) {
-			sampleProportions.add((double)(i+1)/sessionRates.size());
+	public StackedAreaChart generateTaskActionCountChart (List<TaskSmellAnalysis> tasks) throws IOException{
+			
+		List<XYSerie> series = new ArrayList<XYSerie>();
+		for (TaskSmellAnalysis task : tasks) {
+			List<Double> taskActionCountDataset = new ArrayList<Double>();
+			for (SessionResultDataMining session : task.getSessions()) {
+				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
+					taskActionCountDataset.add((double)session.getActions().size());
+				}
+			}			
+//			Collections.sort(taskActionCountDataset);
+			series.add(getDatasetDistributionSerie(task.getName(), taskActionCountDataset));
 		}
 		
-		saveDatasetChart(sampleProportions, sessionRates,
-				"", "Sessões", "Proporção de amostras (%)", "Taxa cíclica (%)");
+//		saveDatasetChart("nome do grafico", "","Proporção de amostras (%)", "Quantidade de ações", datasets);
+		return new StackedAreaChart("Gráfico da Quantidade de Ações", "Proporção de amostras (%)", "Quantidade de ações", series);
 	}
 	
-	private void saveDatasetChart (List<Double> x, List<Double> y, String chartName, String datasetName, String xAxisName, String yAxisName) throws IOException {
+	public StackedAreaChart generateTaskTimeChart (List<TaskSmellAnalysis> tasks) throws IOException{
 		
-		XYSeries dataset = new XYSeries(datasetName);
-		for (int i = 0; i < x.size(); i++) {
-			dataset.add(x.get(i)*100, y.get(i)*100);
+		List<XYSerie> series = new ArrayList<XYSerie>();
+		for (TaskSmellAnalysis task : tasks) {
+			List<Double> taskTimeDataset = new ArrayList<Double>();
+			for (SessionResultDataMining session : task.getSessions()) {
+				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
+					taskTimeDataset.add((double)session.getTime());
+				}
+			}			
+//			Collections.sort(taskTimeDataset);
+			XYSerie taskTimeSerie = new XYSerie(task.getName());
+			for (XYCoordinate coordinate : getDatasetDistributionSerie(task.getName(), taskTimeDataset).getCoordinates()) {
+				taskTimeSerie.addCoordinate(new XYCoordinate(coordinate.getX(), TimeUnit.MILLISECONDS.toMinutes(Math.round(coordinate.getY()))));
+			}
+			series.add(taskTimeSerie);
 		}
 		
+		//sessionTimesDataset.add(sampleProportions.get(i)*100, TimeUnit.MILLISECONDS.toMinutes(taskSessionsTime.get(i)));
+		
+//		saveDatasetChart(taskName, "","Proporção de amostras (%)", "Tempo (min)", datasets);
+		return new StackedAreaChart("Gráfico de Duração", "Proporção de amostras (%)", "Tempo de duração (min)", series);
+	}
+	
+	public StackedAreaChart generateTaskCycleRateChart (List<TaskSmellAnalysis> tasks) throws IOException {
+		
+		List<XYSerie> series = new ArrayList<XYSerie>();
+		for (TaskSmellAnalysis task : tasks) {
+			Map<String, String> idMapping = new HashMap<String, String>();
+			int[] actionId = {1};
+			//Cria uma lista com todas as taxas de ciclo das sessoes
+			List<Double> taskCycleRateDataset = new ArrayList<Double>();
+			for (SessionResultDataMining session : task.getSessions()) {			
+				//Calcula a proporcao entre o numero de vertices que aparecem em ciclos e o 
+				//total de vertices da sessao e adiciona essa proporcao na lista
+				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
+					//Calcula a taxa de ciclos da sessao
+					taskCycleRateDataset.add(sessionCycleRate(session, idMapping, actionId)*100);
+				}
+			}
+//			Collections.sort(taskCycleRateDataset);
+			series.add(getDatasetDistributionSerie(task.getName(), taskCycleRateDataset));
+		}
+		
+		//saveDatasetChart(taskName, "", "Proporção de amostras (%)", "Taxa cíclica (%)", datasets);	
+		return new StackedAreaChart("Gráfico de Taxa de Ciclos", "Proporção de amostras (%)", "Taxa de ciclos (%)", series);
+	}
+	
+	public StackedAreaChart generateTaskLayerCountChart (List<TaskSmellAnalysis> tasks) {
+		List<XYSerie> series = new ArrayList<XYSerie>();
+		for (TaskSmellAnalysis task : tasks) {
+			List<Double> taskLayerCountDataset = new ArrayList<Double>();
+			for (SessionResultDataMining session : task.getSessions()) {			
+				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
+					Set<String> uniqueUrls = new HashSet<String>();
+					for (PageViewActionDataMining action : session.getActions()) {
+						uniqueUrls.add(action.getLocal());
+					}
+					taskLayerCountDataset.add((double)uniqueUrls.size());
+				}
+			}
+			series.add(getDatasetDistributionSerie(task.getName(), taskLayerCountDataset));
+		}
+		return new StackedAreaChart("Gráfico do Número de Camadas", "Proporção de amostras (%)", "Número de camadas", series);
+	}
+	
+	private XYSerie getDatasetDistributionSerie (String serieKey, List<Double> dataset) {
+		
+		List<Double> formattedDataset = new ArrayList<Double>(dataset);
+		XYSerie distribution = new XYSerie(serieKey);
+		int proportionCount = 1;
+		
+		while (formattedDataset.size() < 100)
+			formattedDataset.addAll(new ArrayList<Double>(dataset));
+		Collections.sort(formattedDataset);
+		if (formattedDataset.size() == 100) {
+			for (int i = 0; i < formattedDataset.size(); i++) {
+				distribution.addCoordinate(new XYCoordinate(proportionCount, formattedDataset.get(i)));
+				proportionCount++;
+			}
+		} else {
+			if (formattedDataset.size() < 100) {
+				distribution.addCoordinate(new XYCoordinate(proportionCount, formattedDataset.get(0)/2));
+				proportionCount++;
+			}		
+			for (int i = 1; i < formattedDataset.size(); i++) {
+				double sampleProportion = ((double)(i+1)/formattedDataset.size())*100;
+				if (sampleProportion > proportionCount) {
+					distribution.addCoordinate(new XYCoordinate(proportionCount, (formattedDataset.get(i)+formattedDataset.get(i-1))/2));
+					proportionCount++;
+				} else if (sampleProportion == proportionCount) {
+					distribution.addCoordinate(new XYCoordinate(proportionCount, formattedDataset.get(i)));
+					proportionCount++;
+				}
+				
+			}
+		} 
+		
+		return distribution;
+	}
+	
+	private void saveDatasetChart (String fileName, String chartName, String xAxisName, String yAxisName, List<XYSeries> datasets) throws IOException {
+		
 	    XYSeriesCollection graphic = new XYSeriesCollection();
-	    graphic.addSeries(dataset);
+	    
+	    for (XYSeries dataset : datasets) {
+	    	graphic.addSeries(dataset);			
+		}
 	    
 	    JFreeChart chart = ChartFactory.createXYLineChart(
 	    		chartName, 
@@ -675,7 +770,7 @@ public class UsabilitySmellDetector {
 	    
 	    int width = 640;   /* Width of the image */
 	    int height = 480;  /* Height of the image */
-	    File XYChart = new File( "XYLineChart.jpeg" );
+	    File XYChart = new File( fileName + ".jpeg" );
 	    ChartUtilities.saveChartAsJPEG( XYChart, chart, width, height);
 	    
 	}
