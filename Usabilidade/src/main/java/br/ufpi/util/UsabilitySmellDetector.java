@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -52,6 +53,7 @@ import com.google.common.collect.Multisets;
 
 import br.ufpi.datamining.models.ActionDataMining;
 import br.ufpi.datamining.models.PageViewActionDataMining;
+import br.ufpi.datamining.models.aux.BarChart;
 import br.ufpi.datamining.models.aux.SessionResultDataMining;
 import br.ufpi.datamining.models.aux.StackedAreaChart;
 import br.ufpi.datamining.models.aux.TaskSmellAnalysis;
@@ -145,91 +147,98 @@ public class UsabilitySmellDetector {
         new File("grafo.png").renameTo(new File(folderName + "/" + graphName + ".png"));
 	}
 	
-	public List<SessionResultDataMining> detectLaboriousSessions(List<SessionResultDataMining> sessions, int maxNumberOfActions, long maxTime) throws IOException{
+	public List<TaskSmellAnalysis> detectLaboriousTasks(List<TaskSmellAnalysis> tasks, int maxActionCount, long maxTime) throws IOException{
 		
-		//Calcula o valor ideal para o atributo
-		if (maxNumberOfActions == NUMBER_DEFAULT) {
-			//Constroi uma lista com todos os tamanhos de sessao
-			List<Long> sessionSizes = new ArrayList<Long>();
-			for (SessionResultDataMining session : sessions) {
-				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
-					 sessionSizes.add((long)session.getActions().size());
+		List<TaskSmellAnalysis> laboriousTasks = new ArrayList<TaskSmellAnalysis>();
+		
+		for (TaskSmellAnalysis task : tasks) {
+			
+			//Calcula o valor ideal para o atributo
+			if (maxActionCount == NUMBER_DEFAULT) {
+				//Constroi uma lista com todos os tamanhos de sessao
+				List<Long> sessionSizes = new ArrayList<Long>();
+				for (SessionResultDataMining session : task.getSessions()) {
+					if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
+						sessionSizes.add((long)session.getActions().size());
+					}
+				}
+				//Calcula a barreira externa e define como valor otimo
+				maxActionCount = (int)upperOuterFence(sessionSizes);
+			}
+			
+			//Calcula o valor ideal para o atributo
+			if (maxTime == TIME_DEFAULT) {
+				//Constroi uma lista com todos os tempos de sessao
+				List<Long> sessionTimes = new ArrayList<Long>();
+				for (SessionResultDataMining session : task.getSessions()) {
+					if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
+						sessionTimes.add(session.getTime());
+					}
+				}
+				//Calcula a barreira externa e define como valor otimo
+				maxTime = upperOuterFence(sessionTimes);
+			}
+			
+			//Cria um diretorio para armazenar os resultados das analises
+			String folderName = task.getName() + "_LS_" + maxActionCount + "actions_" + maxTime + "milis";
+			File dir = new File(folderName);
+			dir.mkdir();
+			
+			//Cria uma variavel para armazenar o log
+			StringBuilder log = new StringBuilder();
+			
+			List<SessionResultDataMining> laboriousSessions = new ArrayList<SessionResultDataMining>();
+			int laboriousSessionCount = 0;
+			int actionId[] = {1};
+			Map<String, String> idMapping = new LinkedHashMap<String, String>();
+			
+			//Percorre cada sessao
+			for (SessionResultDataMining session : task.getSessions()) {
+				//TODO perguntar pro matheus se a quantidade de acoes de uma sessao pode ser = 0
+				//e discutir sobre o estabelecimento de um limiar minimo para considerar a analise das sessoes, como um modo de eliminar o lixo
+				if (session.getActions().size() > 0) {
+					//Transforma a sessao em um grafo
+					DirectedPseudograph<String, DefaultWeightedEdge> g = createGraphFromSession(session, idMapping, actionId);
+					
+					//Filtra as sessoes problematicas
+					if (session.getActions().size() > maxActionCount && session.getTime() > maxTime) {
+						laboriousSessions.add(session);
+						laboriousSessionCount++;
+						log.append("\nDetectada sessão " + session.getId() + "\n");
+						log.append("Número de ações: " + session.getActions().size() + "\n");
+						Long millis = session.getTime();
+						log.append("Duração da sessão:" + String.format("%d min, %d sec", 
+								TimeUnit.MILLISECONDS.toMinutes(millis),
+								TimeUnit.MILLISECONDS.toSeconds(millis) - 
+								TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+								) + "\n");
+						
+						saveGraph(g, session.getId(), folderName);
+						
+						//TODO conversar sobre a existencia de uma sessao de referencia (sequencia de acoes que devem ser realizadas para concluir a tarefa)
+						
+					}
 				}
 			}
-			//Calcula a barreira externa e define como valor otimo
-			maxNumberOfActions = (int)upperOuterFence(sessionSizes);
-		}
-		
-		//Calcula o valor ideal para o atributo
-		if (maxTime == TIME_DEFAULT) {
-			//Constroi uma lista com todos os tempos de sessao
-			List<Long> sessionTimes = new ArrayList<Long>();
-			for (SessionResultDataMining session : sessions) {
-				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
-					 sessionTimes.add(session.getTime());
-				}
+			
+			log.append("\nTotal de sessões: " + task.getSessions().size() + "\n");
+			log.append("Sessões com grande esforço: " + laboriousSessionCount + "\n");
+			
+			//Salva o log em arquivo
+			saveToFile(log.toString(), folderName + "/log.txt");
+			
+			//Cria um arquivo contendo todas os ids usados nos grafos e as respectivas ações que eles representam
+			StringBuilder idMappingLog = new StringBuilder();
+			for (Map.Entry<String, String> entry : idMapping.entrySet()) {
+				idMappingLog.append(entry.getValue() + ";" + entry.getKey() + "\n");
 			}
-			//Calcula a barreira externa e define como valor otimo
-			maxTime = upperOuterFence(sessionTimes);
+			saveToFile(idMappingLog.toString(), folderName + "/idMapping.csv");
+			laboriousTasks.add(new TaskSmellAnalysis(task.getName(), laboriousSessions));
+			maxActionCount = NUMBER_DEFAULT;
+			maxTime = TIME_DEFAULT;
 		}
 		
-		//Cria um diretorio para armazenar os resultados das analises
-		String folderName = "LS_" + maxNumberOfActions + "actions" + maxTime + "milis";
-		File dir = new File(folderName);
-		dir.mkdir();
-		
-		//Cria uma variavel para armazenar o log
-		StringBuilder log = new StringBuilder();
-		
-		List<SessionResultDataMining> laboriousSessions = new ArrayList<SessionResultDataMining>();
-		int laboriousSessionCount = 0;
-		int actionId[] = {1};
-		Map<String, String> idMapping = new LinkedHashMap<String, String>();
-		
-		//Percorre cada sessao
-		for (SessionResultDataMining session : sessions) {
-			//TODO perguntar pro matheus se a quantidade de acoes de uma sessao pode ser = 0
-			//e discutir sobre o estabelecimento de um limiar minimo para considerar a analise das sessoes, como um modo de eliminar o lixo
-			if (session.getActions().size() > 0) {
-				//Transforma a sessao em um grafo
-				DirectedPseudograph<String, DefaultWeightedEdge> g = createGraphFromSession(session, idMapping, actionId);
-				
-				//Filtra as sessoes problematicas
-				if (session.getActions().size() > maxNumberOfActions && session.getTime() > maxTime) {
-					laboriousSessions.add(session);
-					laboriousSessionCount++;
-					log.append("\nDetectada sessão " + session.getId() + "\n");
-					log.append("Número de ações: " + session.getActions().size() + "\n");
-					Long millis = session.getTime();
-					log.append("Duração da sessão:" + String.format("%d min, %d sec", 
-						    TimeUnit.MILLISECONDS.toMinutes(millis),
-						    TimeUnit.MILLISECONDS.toSeconds(millis) - 
-						    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
-						) + "\n");
-					
-					saveGraph(g, session.getId(), folderName);
-					
-					//TODO conversar sobre a existencia de uma sessao de referencia (sequencia de acoes que devem ser realizadas para concluir a tarefa)
-					
-				}
-			}
-		}
-		
-		log.append("\nTotal de sessões: " + sessions.size() + "\n");
-		log.append("Sessões com grande esforço: " + laboriousSessionCount + "\n");
-		
-		//Salva o log em arquivo
-		saveToFile(log.toString(), folderName + "/log.txt");
-		
-		//Cria um arquivo contendo todas os ids usados nos grafos e as respectivas ações que eles representam
-		StringBuilder idMappingLog = new StringBuilder();
-		for (Map.Entry<String, String> entry : idMapping.entrySet()) {
-			idMappingLog.append(entry.getValue() + ";" + entry.getKey() + "\n");
-		}
-		saveToFile(idMappingLog.toString(), folderName + "/idMapping.csv");
-		
-		return laboriousSessions;
-				
+		return laboriousTasks;		
 	}
 		
 	public List<SessionResultDataMining> detectCyclicSessions(List<SessionResultDataMining> sessions, double maxCycleRate) throws IOException{
@@ -648,7 +657,7 @@ public class UsabilitySmellDetector {
 		}
 		
 //		saveDatasetChart("nome do grafico", "","Proporção de amostras (%)", "Quantidade de ações", datasets);
-		return new StackedAreaChart("Gráfico da Quantidade de Ações", "Proporção de amostras (%)", "Quantidade de ações", series);
+		return new StackedAreaChart("Gráfico da Quantidade de Ações", "Proporção de sessões da tarefa (%)", "Quantidade de ações", series);
 	}
 	
 	public StackedAreaChart generateTaskTimeChart (List<TaskSmellAnalysis> tasks) throws IOException{
@@ -672,7 +681,7 @@ public class UsabilitySmellDetector {
 		//sessionTimesDataset.add(sampleProportions.get(i)*100, TimeUnit.MILLISECONDS.toMinutes(taskSessionsTime.get(i)));
 		
 //		saveDatasetChart(taskName, "","Proporção de amostras (%)", "Tempo (min)", datasets);
-		return new StackedAreaChart("Gráfico de Duração", "Proporção de amostras (%)", "Tempo de duração (min)", series);
+		return new StackedAreaChart("Gráfico de Duração", "Proporção de sessões da tarefa (%)", "Tempo de duração (min)", series);
 	}
 	
 	public StackedAreaChart generateTaskCycleRateChart (List<TaskSmellAnalysis> tasks) throws IOException {
@@ -696,7 +705,43 @@ public class UsabilitySmellDetector {
 		}
 		
 		//saveDatasetChart(taskName, "", "Proporção de amostras (%)", "Taxa cíclica (%)", datasets);	
-		return new StackedAreaChart("Gráfico de Taxa de Ciclos", "Proporção de amostras (%)", "Taxa de ciclos (%)", series);
+		return new StackedAreaChart("Gráfico de Taxa de Ciclos", "Proporção de sessões da tarefa (%)", "Taxa de ciclos (%)", series);
+	}
+	
+	public BarChart generateActionOccurrenceRateChart (List<ActionDataMining> actions) {
+		
+		List<ActionDataMining> filteredActions = getFilteredActions(actions);
+		Collection<String> allUrls = CollectionUtils.collect(filteredActions, TransformerUtils.invokerTransformer("getsUrl"));
+		Set<String> uniqueUrls = new HashSet<String>(allUrls);
+		
+		List<Integer> sizes = new ArrayList<Integer>();
+		for (String url : uniqueUrls) {
+			sizes.add(getUrlActions(filteredActions, url).size());
+		}
+		int minNumberOfOccurrences = (int) median(sizes.toArray(new Integer[0]));
+		
+		Map<String, Double> mostFrequentActions = new LinkedHashMap<String, Double>();
+		for (int i = 0; i < 10; i++) {
+			mostFrequentActions.put(String.valueOf(i), 0.0);
+		}
+			
+		for (String url : uniqueUrls) {
+			List<String> actionIds = getUrlActions(filteredActions, url);				
+			if (actionIds.size() < minNumberOfOccurrences)
+				continue;
+			Multiset<String> idsFrequencyMapping = HashMultiset.create();
+			idsFrequencyMapping.addAll(actionIds);
+			for (String id : idsFrequencyMapping.elementSet()) {
+				double rate = (double)idsFrequencyMapping.count(id)/actionIds.size()*100;
+				String minKey = getMinKey(mostFrequentActions);	
+				if (rate > mostFrequentActions.get(minKey)){
+					mostFrequentActions.remove(minKey);
+					mostFrequentActions.put(id, rate);
+				}
+			}
+		}
+		
+		return new BarChart("Gráfico das Ações Mais Frequentes", "Ações", "Taxa de ocorrência (%)", mostFrequentActions);
 	}
 	
 	public StackedAreaChart generateTaskLayerCountChart (List<TaskSmellAnalysis> tasks) {
@@ -1010,5 +1055,17 @@ public class UsabilitySmellDetector {
 			}
 		});
 		return actions;
+	}
+	
+	private String getMinKey (Map<String, Double> map) {
+		String minKey = "";
+		double minValue = Double.MAX_VALUE;
+		for (Entry<String, Double> entry : map.entrySet()) {
+			if (entry.getValue() < minValue) {
+				minValue = entry.getValue();
+				minKey = entry.getKey();
+			}
+		}
+		return minKey;
 	}
 }

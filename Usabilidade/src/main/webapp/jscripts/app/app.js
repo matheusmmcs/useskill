@@ -559,16 +559,20 @@ angular.module('useskill',
 .factory("SmellsMetricsEnum", function(){
 	return {
 		metrics : [
-	 	    {name:'Quantidade de ações', value:'1',
+	 	    {name:'Quantidade de ações da tarefa', value:'1',
 	 	    	info: "Indica a quantidade 'bruta' de ações que foram executadas nas sessões de cada tarefa. " +
 	 	    			"Essas ações podem incluir cliques, preenchimento de campos de texto, carregamento de " +
 	 	    			"páginas, etc."},
-	 	    {name:'Tempo de duração', value:'2',
+	 	    {name:'Tempo de duração da tarefa', value:'2',
 	 	    	info: "Indica o tempo de duração das sessões de cada tarefa, em minutos."},
-	 	    {name:'Taxa de ciclos', value:'3',
+	 	    {name:'Taxa de ciclos da tarefa', value:'3',
 	 	    	info: "Indica a proporção de ações das sessões de cada tarefa que está contida em ciclos. " +
 	 	    			"Em outras palavras, esta medida diz a proporção da tarefa que envolve ações repetitvas."},
-	 	    {name:'Número de camadas', value:'4',
+   			{name:'Taxa de ocorrência da ação', value:'4',
+   	 	    	info: "Indica a relação entre a quantidade de vezes em que uma ação ocorre em determinada página e " +
+   	 	    			"o total de ações que ocorrem nessa página. Apenas ações explicitamente executadas pelo " +
+   	 	    			"usuário são consideradas."},
+	 	    {name:'Número de camadas da tarefa', value:'5',
 	 	    	info: "Indica o número de páginas web diferentes que os usuários tiveram de percorrer para executar" +
 	 	    			" a tarefa. Contudo, apenas páginas com urls diferentes são contabilizadas."}
 	 	]
@@ -637,12 +641,12 @@ angular.module('useskill',
 		
 		ServerAPI.viewSmellsStatistics(obj).then(function(data) {
 			if (data.status == 200) {
-				var charts = JSON.parse(data.data.string).areaCharts;
-				smellCtrl.charts = [];
-				for (var i = 0; i < charts.length; i++) {
+				var charts = JSON.parse(data.data.string);
+				smellCtrl.areaCharts = [];
+				for (var i = 0; i < charts.areaCharts.length; i++) {
 					var statistics = [];
-					for (var d in charts[i].series) {
-						var area = charts[i].series[d];
+					for (var d in charts.areaCharts[i].series) {
+						var area = charts.areaCharts[i].series[d];
 						var areaData = {
 								"key" : area.description,
 								"values" : [],
@@ -653,8 +657,8 @@ angular.module('useskill',
 						}
 						statistics.push(areaData);
 					}
-					smellCtrl.charts.push({
-						"description" : charts[i].description,
+					smellCtrl.areaCharts.push({
+						"description" : charts.areaCharts[i].description,
 						"statisticsOptions" : {
 				            chart: {
 				                type: 'lineChart',
@@ -675,10 +679,10 @@ angular.module('useskill',
 //				                    tooltipHide: function(e){ console.log("tooltipHide"); }
 //				                },
 				                xAxis: {
-				                    axisLabel: charts[i].descX
+				                    axisLabel: charts.areaCharts[i].descX
 				                },
 				                yAxis: {
-				                    axisLabel: charts[i].descY,
+				                    axisLabel: charts.areaCharts[i].descY,
 				                    tickFormat: function(d){
 				                        return d3.format('.01f')(d);
 				                    },
@@ -713,6 +717,52 @@ angular.module('useskill',
 					});
 				}
 				
+				smellCtrl.barCharts = [];
+				for (var i = 0; i < charts.barCharts.length; i++) {
+					var statistics = [];
+					for (var d in charts.barCharts[i].series) {
+						statistics.push({
+							"label" : d,
+							"value" : charts.barCharts[i].series[d]
+						});
+					}
+					
+					smellCtrl.barCharts.push({
+						"description" : charts.barCharts[i].description,
+						"statisticsOptions" : {
+				            chart: {
+				                type: 'discreteBarChart',
+				                height: 450,
+				                margin : {
+				                    top: 20,
+				                    right: 20,
+				                    bottom: 50,
+				                    left: 55
+				                },
+				                x: function(d){return d.label;},
+				                y: function(d){return d.value + (1e-10);},
+				                showValues: true,
+				                valueFormat: function(d){
+				                    return d3.format(',.1f')(d);
+				                },
+				                duration: 500,
+				                xAxis: {
+				                    axisLabel: charts.barCharts[i].descX
+				                },
+				                yAxis: {
+				                    axisLabel: charts.barCharts[i].descY,
+				                    axisLabelDistance: -10
+				                },
+				                showXAxis: false
+				            }
+				        },
+				        "statisticsData" : [{
+				        	key : charts.barCharts[i].description,
+				        	values : statistics
+				        }]
+					});
+					
+				}
 //				$timeout(function(){
 //					for (var i = 0; i < charts.length; i++) {
 //						smellCtrl.charts[i].chartApi.refresh();

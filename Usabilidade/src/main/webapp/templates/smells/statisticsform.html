@@ -117,12 +117,21 @@
 <!-- 	  				</div> -->
 <!-- 	        	</div> -->
 				
-				<div class="usdm-box" ng-show="smellCtrl.charts != null" ng-repeat="chart in smellCtrl.charts">
+				<div class="usdm-box" ng-show="smellCtrl.areaCharts != null" ng-repeat="chart in smellCtrl.areaCharts">
 	            	<h3 class="usdm-title-collapse">
 	            		{{chart.description}}
 	            	</h3>
 	            	<div class="usdm-clickable-box-content">
 	  					<nvd3 options="chart.statisticsOptions" data="chart.statisticsData" class="with-3d-shadow with-transitions"></nvd3>
+	  				</div>
+	        	</div>
+	        	
+	        	<div class="usdm-box" ng-show="smellCtrl.barCharts != null" ng-repeat="chart in smellCtrl.barCharts">
+	            	<h3 class="usdm-title-collapse">
+	            		{{chart.description}}
+	            	</h3>
+	            	<div class="usdm-clickable-box-content">
+	  					<nvd3 options="chart.statisticsOptions" data="chart.statisticsData"></nvd3>
 	  				</div>
 	        	</div>
 	        	
