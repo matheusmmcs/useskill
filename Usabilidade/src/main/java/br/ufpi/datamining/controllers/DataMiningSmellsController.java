@@ -3,6 +3,8 @@ package br.ufpi.datamining.controllers;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +64,7 @@ public class DataMiningSmellsController extends BaseController {
 	private static final int TASK_CYCLE_RATE = 3;
 	private static final int ACTION_OCCURRENCE_RATE = 4;
 	private static final int TASK_LAYER_COUNT = 5;
+	private static final int ACTION_REPETITION_COUNT = 6;
 	
 	//smells
 	private static final int LABORIOUS_TASK = 1;
@@ -121,7 +124,6 @@ public class DataMiningSmellsController extends BaseController {
 				if (resultDataMining.getSessions().size() > 0)
 					tasks.add(new TaskSmellAnalysis(task.getTitle(), resultDataMining.getSessions()));				
 			}
-			
 		}
 		
 		if (mineActions) {
@@ -150,6 +152,22 @@ public class DataMiningSmellsController extends BaseController {
 		if (ArrayUtils.contains(selectedMetrics, TASK_LAYER_COUNT)) {
 			System.out.println("Generating layer count chart...");
 			areaCharts.add(usm.generateTaskLayerCountChart(tasks));
+		}
+		if (ArrayUtils.contains(selectedMetrics, ACTION_REPETITION_COUNT)) {
+			System.out.println("Generating action repetition count chart...");
+			barCharts.add(usm.generateActionRepetitionCountChart2(actions, 10));
+			
+//			Instant start1 = Instant.now();
+//			usm.generateActionRepetitionCountChart(tasks);
+//			Instant end1 = Instant.now();
+//			
+//			System.out.println("O método 1 durou " + Duration.between(start1, end1));
+//			
+//			Instant start2 = Instant.now();
+//			usm.generateActionRepetitionCountChart2(actions, 10);
+//			Instant end2 = Instant.now();
+//			
+//			System.out.println("O método 2 durou " + Duration.between(start2, end2));
 		}
 		
 		if (areaCharts.size() > 0 || barCharts.size() > 0) {

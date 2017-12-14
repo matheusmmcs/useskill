@@ -574,7 +574,10 @@ angular.module('useskill',
    	 	    			"usuário são consideradas."},
 	 	    {name:'Número de camadas da tarefa', value:'5',
 	 	    	info: "Indica o número de páginas web diferentes que os usuários tiveram de percorrer para executar" +
-	 	    			" a tarefa. Contudo, apenas páginas com urls diferentes são contabilizadas."}
+	 	    			" a tarefa. Contudo, apenas páginas com urls diferentes são contabilizadas."},
+   			{name:'Número de repetições da ação', value:'6',
+   	 	    	info: "Indica as ações que mais se repetem, ou seja, aquelas que os usuários executam em sequência" +
+   	 	    			" mais frequentemente."}
 	 	]
 	};
 })

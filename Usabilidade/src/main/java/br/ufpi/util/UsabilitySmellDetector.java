@@ -72,6 +72,329 @@ public class UsabilitySmellDetector {
 	public static final double FENCE_TYPE_INNER = 1.5;
 	public static final double FENCE_TYPE_OUTER = 3.0;
 	
+	
+	//*********************************************************************************************
+	//************* MÉTODOS DE GERAÇÃO DE GRÁFICOS A PARTIR DAS MÉTRICAS DOS SMELLS ***************
+	//*********************************************************************************************
+	
+	/**
+	 * Gera o gráfico de quantidade de ações das sessões completas de cada tarefa. Todos os tipos 
+	 * de ações são contabilizadas, inclusive aquelas não realizadas diretamente pelo usuário 
+	 * (como o carregamento de páginas, por exemplo).
+	 *
+	 * @param	tasks	uma lista de tarefas a serem analisadas
+	 * @return			o gráfico de quantidade de ações correspondente às tarefas analisadas
+	 */
+	public StackedAreaChart generateTaskActionCountChart (List<TaskSmellAnalysis> tasks) throws IOException{
+		List<XYSerie> series = new ArrayList<XYSerie>();
+		for (TaskSmellAnalysis task : tasks) {
+			List<Double> taskActionCountDataset = new ArrayList<Double>();
+			for (SessionResultDataMining session : task.getSessions()) {
+				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
+					taskActionCountDataset.add((double)session.getActions().size());
+				}
+			}			
+			series.add(getDatasetDistributionSerie(task.getName(), taskActionCountDataset));
+		}
+		return new StackedAreaChart("Gráfico da Quantidade de Ações", "Proporção de sessões da tarefa (%)", "Quantidade de ações", series);
+	}
+	
+	/**
+	 * Gera o gráfico de duração das sessões completas de cada tarefa. A duração é apresentada em 
+	 * minutos no gráfico retornado como saída para facilitar a visualização.
+	 *
+	 * @param	tasks	uma lista de tarefas a serem analisadas
+	 * @return			o gráfico de duração correspondente às tarefas analisadas
+	 */
+	public StackedAreaChart generateTaskTimeChart (List<TaskSmellAnalysis> tasks) throws IOException{
+		List<XYSerie> series = new ArrayList<XYSerie>();
+		for (TaskSmellAnalysis task : tasks) {
+			List<Double> taskTimeDataset = new ArrayList<Double>();
+			for (SessionResultDataMining session : task.getSessions()) {
+				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
+					taskTimeDataset.add((double)session.getTime());
+				}
+			}			
+			XYSerie taskTimeSerie = new XYSerie(task.getName());
+			for (XYCoordinate coordinate : getDatasetDistributionSerie(task.getName(), taskTimeDataset).getCoordinates()) {
+				taskTimeSerie.addCoordinate(new XYCoordinate(coordinate.getX(), TimeUnit.MILLISECONDS.toMinutes(Math.round(coordinate.getY()))));
+			}
+			series.add(taskTimeSerie);
+		}
+		return new StackedAreaChart("Gráfico de Duração", "Proporção de sessões da tarefa (%)", "Tempo de duração (min)", series);
+	}
+	
+	/**
+	 * Gera o gráfico de quantidade de camadas das sessões completas de cada tarefa. A quantidade de camadas é determinada 
+	 * pelo número de urls diferentes na sessão, portanto, páginas diferentes com urls iguais são contabilizadas como sendo 
+	 * uma única página.
+	 *
+	 * @param	tasks	uma lista de tarefas a serem analisadas
+	 * @return			o gráfico de quantidade de camadas correspondente às tarefas analisadas
+	 */
+	public StackedAreaChart generateTaskLayerCountChart (List<TaskSmellAnalysis> tasks) {
+		List<XYSerie> series = new ArrayList<XYSerie>();
+		for (TaskSmellAnalysis task : tasks) {
+			List<Double> taskLayerCountDataset = new ArrayList<Double>();
+			for (SessionResultDataMining session : task.getSessions()) {			
+				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
+					Set<String> uniqueUrls = new HashSet<String>();
+					for (PageViewActionDataMining action : session.getActions()) {
+						uniqueUrls.add(action.getLocal());
+					}
+					taskLayerCountDataset.add((double)uniqueUrls.size());
+				}
+			}
+			series.add(getDatasetDistributionSerie(task.getName(), taskLayerCountDataset));
+		}
+		return new StackedAreaChart("Gráfico do Número de Camadas", "Proporção de amostras (%)", "Número de camadas", series);
+	}
+	
+	//FIM - Métodos para geração de gráficos das métricas dos smells
+	
+	//TODO testar e anotar
+	//TODO ver qual o resultado se forem consideradas apenas as sessoes comepletas
+	public BarChart generateActionRepetitionCountChart (List<TaskSmellAnalysis> tasks) {
+		
+		int top = 10;
+		
+		Map<String, Double> mostRepeatedActions = new HashMap<String, Double>(top);
+		
+		for (int i = 0; i < top; i++) {
+			mostRepeatedActions.put(String.valueOf(i), 0.0);
+		}
+		
+		for (TaskSmellAnalysis task : tasks) {
+			
+			Set<String> repeatedActions = new HashSet<String>();
+			for (SessionResultDataMining session : task.getSessions()) {
+				String previousAction = null;
+				for (PageViewActionDataMining action : getOrderedActions(session)) {
+					if (action.getPageViewActionUnique().equals(previousAction)) {
+						repeatedActions.add(previousAction);
+					}
+					previousAction = action.getPageViewActionUnique();
+				}
+			}
+			
+			//Mapeamento de cada acao do conjunto com a lista de numeros de ocorrencia da mesma em cada sessao
+			Map<String, List<Integer>> actionsRepetitionMapping = new HashMap<String, List<Integer>>();
+			
+			//Preenche o mapeamento com o maior numero de ocorrencias seguidas de cada acao em cada sessao
+			for (String repeatedAction : repeatedActions) {
+				actionsRepetitionMapping.put(repeatedAction, new ArrayList<Integer>());
+				for (SessionResultDataMining session : task.getSessions()) {
+					List<PageViewActionDataMining> actions = getOrderedActions(session);
+					int repetition = 0, maxRepetition = 0;
+					for (PageViewActionDataMining action : actions) {
+						if (action.getPageViewActionUnique().equals(repeatedAction))
+							repetition++;
+						else
+							repetition = 0;
+						
+						if (repetition > maxRepetition)
+							maxRepetition = repetition;
+					}
+					actionsRepetitionMapping.get(repeatedAction).add(maxRepetition);
+				}
+			}
+					
+			//Preenche o mapeamento de acoes detectadas, desconsiderando as sessoes com numero de ocorrencias igual a zero
+			for (String key : actionsRepetitionMapping.keySet()) {
+				actionsRepetitionMapping.get(key).removeAll(Arrays.asList(0));
+				double median = median(actionsRepetitionMapping.get(key).toArray(new Integer[actionsRepetitionMapping.get(key).size()]));
+				String minKey = getMinKey(mostRepeatedActions);
+				if (median > mostRepeatedActions.get(minKey)) {
+					mostRepeatedActions.remove(minKey);
+					mostRepeatedActions.put(key, median);
+				}
+			}
+						
+		}
+		
+		return new BarChart("Gráfico das Ações Mais Repetidas", "Proporção de amostras (%)", "Número de repetições", getSortedMap(mostRepeatedActions));
+	}
+	
+	//Testar recebendo as acoes, em vez das sessoes, como entrada
+	//Para isso separa-las por usuario e ordena-las, para cada usuario, por tempo
+	public BarChart generateActionRepetitionCountChart2 (List<ActionDataMining> actions, int maxChartActionCount) {
+		Map<String, List<ActionDataMining>> usersActions = new HashMap<String, List<ActionDataMining>>();
+		for (ActionDataMining action : actions) {
+			if (action.getsActionType().equals("mouseover"))
+				continue;
+			if (usersActions.get(action.getsUsername()) == null) {
+				usersActions.put(action.getsUsername(), new ArrayList<ActionDataMining>());
+				usersActions.get(action.getsUsername()).add(action);
+			} else {
+				usersActions.get(action.getsUsername()).add(action);
+			}
+		}
+		for (List<ActionDataMining> userActions : usersActions.values()) {
+			Collections.sort(userActions, new Comparator<Object>() {
+				@Override
+				public int compare(Object o1, Object o2) {
+					Long t1 = ((ActionDataMining) o1).getsTime();
+					Long t2 = ((ActionDataMining) o2).getsTime();
+					return t1 < t2 ? -1 : (t1 > t2 ? +1 : 0);
+				}
+			});
+		}
+		Map<String, List<Integer>> actionsRepetitions = new HashMap<String, List<Integer>>();
+		for (List<ActionDataMining> userActions : usersActions.values()) {
+			int repetitionCount = 1;
+			String currentAction = "";
+			String previousAction = "";
+			for (int i = 1; i < userActions.size(); i++) {
+				currentAction = getActionId(userActions.get(i));
+				previousAction = getActionId(userActions.get(i-1));
+				if (currentAction.equals(previousAction)) {
+					repetitionCount++;
+				} else {
+					if (actionsRepetitions.get(previousAction) == null) {
+						actionsRepetitions.put(previousAction, new ArrayList<Integer>());
+						actionsRepetitions.get(previousAction).add(repetitionCount);
+					} else {
+						actionsRepetitions.get(previousAction).add(repetitionCount);
+					}
+					repetitionCount = 1;
+				}
+			}
+			if (actionsRepetitions.get(currentAction) == null) {
+				actionsRepetitions.put(currentAction, new ArrayList<Integer>());
+				actionsRepetitions.get(currentAction).add(repetitionCount);
+			} else {
+				actionsRepetitions.get(currentAction).add(repetitionCount);
+			}
+		}
+		Map<String, Double> mostRepeatedActions = new HashMap<String, Double>();
+		for (int i = 0; i < maxChartActionCount; i++) {
+			mostRepeatedActions.put(String.valueOf(i), 0.0);
+		}
+		for (String key : actionsRepetitions.keySet()) {
+			double median = median(actionsRepetitions.get(key).toArray(new Integer[actionsRepetitions.get(key).size()]));
+			String minKey = getMinKey(mostRepeatedActions);
+			if (median > mostRepeatedActions.get(minKey)) {
+				mostRepeatedActions.remove(minKey);
+				mostRepeatedActions.put(key, median);
+			}
+		}
+		return new BarChart("Gráfico das Ações Mais Repetidas", "Proporção de amostras (%)", "Número de repetições", getSortedMap(mostRepeatedActions));
+	}
+	
+	//*********************************************************************************************
+	//************************** MÉTODOS DE DETECÇÃO DE USABILITY SMELLS **************************
+	//*********************************************************************************************
+	
+	
+	//*********************************************************************************************
+	//************************************ MÉTODOS AUXILIARES *************************************
+	//*********************************************************************************************
+	
+	/**
+	 * Retorna uma série de pontos (x,y) reprentando a distribuição de cada valor do conjunto de 
+	 * dados de entrada em relação ao todo. Os dados são ordenados em ordem crescente para 
+	 * facilitar a visualização. Independente da quantidade de dados de entrada, sempre são 
+	 * retornados 100 pontos (x,y), permitindo que múltiplas séries sejam plotadas em um mesmo 
+	 * gráfico. Se não houver valores no conjunto de entrada, o retorno é nulo.
+	 *
+	 * @param	serieKey	uma chave para identificar a série
+	 * @param	dataset		um conjunto de valores
+	 * @return				a série (x,y) representando a distribuição dos valores de entrada
+	 */
+	private XYSerie getDatasetDistributionSerie (String serieKey, List<Double> dataset) {
+		if (dataset.size() == 0)
+			return null;
+		List<Double> formattedDataset = new ArrayList<Double>(dataset);
+		XYSerie distribution = new XYSerie(serieKey);
+		int proportionCount = 1;
+		while (formattedDataset.size() < 100)
+			formattedDataset.addAll(new ArrayList<Double>(dataset));
+		Collections.sort(formattedDataset);
+		if (formattedDataset.size() == 100) {
+			for (int i = 0; i < formattedDataset.size(); i++) {
+				distribution.addCoordinate(new XYCoordinate(proportionCount, formattedDataset.get(i)));
+				proportionCount++;
+			}
+		} else {
+			if (formattedDataset.size() < 100) {
+				distribution.addCoordinate(new XYCoordinate(proportionCount, formattedDataset.get(0)/2));
+				proportionCount++;
+			}		
+			for (int i = 1; i < formattedDataset.size(); i++) {
+				double sampleProportion = ((double)(i+1)/formattedDataset.size())*100;
+				if (sampleProportion > proportionCount) {
+					distribution.addCoordinate(new XYCoordinate(proportionCount, (formattedDataset.get(i)+formattedDataset.get(i-1))/2));
+					proportionCount++;
+				} else if (sampleProportion == proportionCount) {
+					distribution.addCoordinate(new XYCoordinate(proportionCount, formattedDataset.get(i)));
+					proportionCount++;
+				}
+			}
+		} 
+		return distribution;
+	}
+	
+	/**
+	 * @param	map	um mapa de elementos
+	 * @return		a chave do elemento com menor valor no mapa de entrada
+	 */
+	private String getMinKey (Map<String, Double> map) {
+		String minKey = "";
+		double minValue = Double.MAX_VALUE;
+		for (Entry<String, Double> entry : map.entrySet()) {
+			if (entry.getValue() < minValue) {
+				minValue = entry.getValue();
+				minKey = entry.getKey();
+			}
+		}
+		return minKey;
+	}
+	
+	/**
+	 * @param	session	uma sessão de usuário
+	 * @return			a lista de ações da sessão de entrada ordenadas pela data/hora de execução
+	 */
+	private List<PageViewActionDataMining> getOrderedActions (SessionResultDataMining session) {
+		List<PageViewActionDataMining> actions = new ArrayList<PageViewActionDataMining>(session.getActions());
+		Collections.sort(actions, new Comparator<Object>() {
+			@Override
+			public int compare(Object o1, Object o2) {
+				Long t1 = ((PageViewActionDataMining) o1).getTime();
+				Long t2 = ((PageViewActionDataMining) o2).getTime();
+				return t1 < t2 ? -1 : (t1 > t2 ? +1 : 0);
+			}
+		});
+		return actions;
+	}
+	
+	/**
+	 * @param	map	um mapa de elementos
+	 * @return		o mapa de entrada ordenado pelo valor
+	 */
+	private Map<String, Double> getSortedMap (Map<String, Double> map) {
+		List<Map.Entry<String, Double>> entries = new ArrayList<Map.Entry<String, Double>>(map.entrySet());
+		Collections.sort(entries, new Comparator<Map.Entry<String, Double>>() {
+			public int compare(Map.Entry<String, Double> a, Map.Entry<String, Double> b){
+				return a.getValue().compareTo(b.getValue());
+			}
+		});
+		Map<String, Double> sortedMap = new LinkedHashMap<String, Double>();
+		for (Map.Entry<String, Double> entry : entries) {
+			sortedMap.put(entry.getKey(), entry.getValue());
+		}
+		return sortedMap;
+	}
+	
+	/**
+	 * @param	action	uma ação
+	 * @return			o identificador único da ação de entrada
+	 */
+	private String getActionId (ActionDataMining action) {
+		return action.getsUrl() + " | " + action.getsXPath() + " | " + action.getsActionType();
+	}
+	
+	//FIM - Métodos auxiliares
+	
 	private void executeCommand(final String command) throws IOException {
         
         final ArrayList<String> commands = new ArrayList<String>();
@@ -642,48 +965,6 @@ public class UsabilitySmellDetector {
 		return null;
 	}
 	
-	public StackedAreaChart generateTaskActionCountChart (List<TaskSmellAnalysis> tasks) throws IOException{
-			
-		List<XYSerie> series = new ArrayList<XYSerie>();
-		for (TaskSmellAnalysis task : tasks) {
-			List<Double> taskActionCountDataset = new ArrayList<Double>();
-			for (SessionResultDataMining session : task.getSessions()) {
-				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
-					taskActionCountDataset.add((double)session.getActions().size());
-				}
-			}			
-//			Collections.sort(taskActionCountDataset);
-			series.add(getDatasetDistributionSerie(task.getName(), taskActionCountDataset));
-		}
-		
-//		saveDatasetChart("nome do grafico", "","Proporção de amostras (%)", "Quantidade de ações", datasets);
-		return new StackedAreaChart("Gráfico da Quantidade de Ações", "Proporção de sessões da tarefa (%)", "Quantidade de ações", series);
-	}
-	
-	public StackedAreaChart generateTaskTimeChart (List<TaskSmellAnalysis> tasks) throws IOException{
-		
-		List<XYSerie> series = new ArrayList<XYSerie>();
-		for (TaskSmellAnalysis task : tasks) {
-			List<Double> taskTimeDataset = new ArrayList<Double>();
-			for (SessionResultDataMining session : task.getSessions()) {
-				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
-					taskTimeDataset.add((double)session.getTime());
-				}
-			}			
-//			Collections.sort(taskTimeDataset);
-			XYSerie taskTimeSerie = new XYSerie(task.getName());
-			for (XYCoordinate coordinate : getDatasetDistributionSerie(task.getName(), taskTimeDataset).getCoordinates()) {
-				taskTimeSerie.addCoordinate(new XYCoordinate(coordinate.getX(), TimeUnit.MILLISECONDS.toMinutes(Math.round(coordinate.getY()))));
-			}
-			series.add(taskTimeSerie);
-		}
-		
-		//sessionTimesDataset.add(sampleProportions.get(i)*100, TimeUnit.MILLISECONDS.toMinutes(taskSessionsTime.get(i)));
-		
-//		saveDatasetChart(taskName, "","Proporção de amostras (%)", "Tempo (min)", datasets);
-		return new StackedAreaChart("Gráfico de Duração", "Proporção de sessões da tarefa (%)", "Tempo de duração (min)", series);
-	}
-	
 	public StackedAreaChart generateTaskCycleRateChart (List<TaskSmellAnalysis> tasks) throws IOException {
 		
 		List<XYSerie> series = new ArrayList<XYSerie>();
@@ -741,83 +1022,7 @@ public class UsabilitySmellDetector {
 			}
 		}
 		
-		return new BarChart("Gráfico das Ações Mais Frequentes", "Ações", "Taxa de ocorrência (%)", mostFrequentActions);
-	}
-	
-	public StackedAreaChart generateTaskLayerCountChart (List<TaskSmellAnalysis> tasks) {
-		List<XYSerie> series = new ArrayList<XYSerie>();
-		for (TaskSmellAnalysis task : tasks) {
-			List<Double> taskLayerCountDataset = new ArrayList<Double>();
-			for (SessionResultDataMining session : task.getSessions()) {			
-				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
-					Set<String> uniqueUrls = new HashSet<String>();
-					for (PageViewActionDataMining action : session.getActions()) {
-						uniqueUrls.add(action.getLocal());
-					}
-					taskLayerCountDataset.add((double)uniqueUrls.size());
-				}
-			}
-			series.add(getDatasetDistributionSerie(task.getName(), taskLayerCountDataset));
-		}
-		return new StackedAreaChart("Gráfico do Número de Camadas", "Proporção de amostras (%)", "Número de camadas", series);
-	}
-	
-	private XYSerie getDatasetDistributionSerie (String serieKey, List<Double> dataset) {
-		
-		List<Double> formattedDataset = new ArrayList<Double>(dataset);
-		XYSerie distribution = new XYSerie(serieKey);
-		int proportionCount = 1;
-		
-		while (formattedDataset.size() < 100)
-			formattedDataset.addAll(new ArrayList<Double>(dataset));
-		Collections.sort(formattedDataset);
-		if (formattedDataset.size() == 100) {
-			for (int i = 0; i < formattedDataset.size(); i++) {
-				distribution.addCoordinate(new XYCoordinate(proportionCount, formattedDataset.get(i)));
-				proportionCount++;
-			}
-		} else {
-			if (formattedDataset.size() < 100) {
-				distribution.addCoordinate(new XYCoordinate(proportionCount, formattedDataset.get(0)/2));
-				proportionCount++;
-			}		
-			for (int i = 1; i < formattedDataset.size(); i++) {
-				double sampleProportion = ((double)(i+1)/formattedDataset.size())*100;
-				if (sampleProportion > proportionCount) {
-					distribution.addCoordinate(new XYCoordinate(proportionCount, (formattedDataset.get(i)+formattedDataset.get(i-1))/2));
-					proportionCount++;
-				} else if (sampleProportion == proportionCount) {
-					distribution.addCoordinate(new XYCoordinate(proportionCount, formattedDataset.get(i)));
-					proportionCount++;
-				}
-				
-			}
-		} 
-		
-		return distribution;
-	}
-	
-	private void saveDatasetChart (String fileName, String chartName, String xAxisName, String yAxisName, List<XYSeries> datasets) throws IOException {
-		
-	    XYSeriesCollection graphic = new XYSeriesCollection();
-	    
-	    for (XYSeries dataset : datasets) {
-	    	graphic.addSeries(dataset);			
-		}
-	    
-	    JFreeChart chart = ChartFactory.createXYLineChart(
-	    		chartName, 
-	    		xAxisName, 
-	    		yAxisName, 
-	    		graphic, 
-	    		PlotOrientation.VERTICAL, 
-	    		true, true, false);
-	    
-	    int width = 640;   /* Width of the image */
-	    int height = 480;  /* Height of the image */
-	    File XYChart = new File( fileName + ".jpeg" );
-	    ChartUtilities.saveChartAsJPEG( XYChart, chart, width, height);
-	    
+		return new BarChart("Gráfico das Ações Mais Frequentes", "Ações", "Taxa de ocorrência (%)", getSortedMap(mostFrequentActions));
 	}
 	
 	private DirectedPseudograph<String, DefaultWeightedEdge> createGraphFromSession(SessionResultDataMining session, Map<String, String> idMapping, int actionId[]){
@@ -907,13 +1112,15 @@ public class UsabilitySmellDetector {
 	}
 	
 	private double median (Integer values[]) {
-		if (values.length == 1)
-			return values[0];
+		Integer sortedValues[] = Arrays.copyOf(values, values.length);
+		Arrays.sort(sortedValues);
+		if (sortedValues.length == 1)
+			return sortedValues[0];
 		double median;
-		if (values.length%2==0)
-			median = (double)(values[values.length/2] + values[values.length/2-1])/2;
+		if (sortedValues.length%2==0)
+			median = (double)(sortedValues[sortedValues.length/2] + sortedValues[sortedValues.length/2-1])/2;
 		else
-			median = (double)values[values.length/2];		
+			median = (double)sortedValues[sortedValues.length/2];		
 		return median;
 	}
 	
@@ -1023,7 +1230,8 @@ public class UsabilitySmellDetector {
 		List<String> actionIds = new ArrayList<String>();
 		for (ActionDataMining action : actions) {
 			if (action.getsUrl().equals(url) && !action.getsActionType().equals("mouseover") && !action.getsActionType().equals("onload")) {
-				actionIds.add(action.getsActionType() + " " + action.getsXPath() + " " + url);
+				actionIds.add(url + " | " + action.getsXPath() + " | " + action.getsActionType());
+//				actionIds.add(action.getsActionType() + " " + action.getsXPath() + " " + url);
 			}
 		}
 		return actionIds;
@@ -1033,7 +1241,7 @@ public class UsabilitySmellDetector {
 		Map<String, String> actionContent = new HashMap<String, String>();
 		for (ActionDataMining action : actions) {
 			if (action.getsUrl().equals(url) && !action.getsActionType().equals("mouseover") && !action.getsActionType().equals("onload")) {
-				String actionId = action.getsActionType() + " " + action.getsXPath() + " " + url;
+				String actionId = url + " | " + action.getsXPath() + " | " + action.getsActionType();
 				if (actionContent.get(actionId) == null) {
 					actionContent.put(actionId, action.getsContent());
 					System.out.println(actionId + " -> " + action.getsContent());
@@ -1043,29 +1251,4 @@ public class UsabilitySmellDetector {
 		return actionContent;
 	}
 	
-	private List<PageViewActionDataMining> getOrderedActions (SessionResultDataMining session) {
-		//Pega a lista de acoes da sessao e ordena pelo tempo
-		List<PageViewActionDataMining> actions = session.getActions();
-		Collections.sort(actions, new Comparator<Object>() {
-			@Override
-			public int compare(Object o1, Object o2) {
-				Long t1 = ((PageViewActionDataMining) o1).getTime();
-				Long t2 = ((PageViewActionDataMining) o2).getTime();
-				return t1 < t2 ? -1 : (t1 > t2 ? +1 : 0);
-			}
-		});
-		return actions;
-	}
-	
-	private String getMinKey (Map<String, Double> map) {
-		String minKey = "";
-		double minValue = Double.MAX_VALUE;
-		for (Entry<String, Double> entry : map.entrySet()) {
-			if (entry.getValue() < minValue) {
-				minValue = entry.getValue();
-				minKey = entry.getKey();
-			}
-		}
-		return minKey;
-	}
 }
