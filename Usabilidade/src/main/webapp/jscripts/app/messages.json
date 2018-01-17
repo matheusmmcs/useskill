@@ -286,7 +286,11 @@
 	"datamining.smells.testes.evaluate" : "Avaliar",
 	"datamining.smells.testes.config" : "Configurar",
 	"datamining.smells.testes.startevaluation" : "Iniciar Avaliação",
+	"datamining.smells.testes.place" : "Local",
+	"datamining.smells.testes.element" : "Elemento",
+	"datamining.smells.testes.actiontype" : "Tipo de ação",
 	
-	"datamining.smells.testes.config.title" : "Configurar Smell"
+	"datamining.smells.testes.config.title" : "Configurar Smell",
+	"datamining.smells.testes.config.parameters.saveok" : "Parâmetros do Smell alterados com sucesso"
 	
 }

@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @Entity  
 @Table(name="datamining_parameter_smell_test")
 @NamedQueries({
-	@NamedQuery(name = "ParameterValue.SmellandTest", query = "SELECT p FROM ParameterSmellTestDataMining p WHERE p.test.id = :idTest AND p.parameterSmell.id = :idParameterSmell")
+	@NamedQuery(name = "ParameterValue.ValueParameterSmellTest", query = "SELECT p FROM ParameterSmellTestDataMining p WHERE p.test.id = :idTest AND p.parameterSmell.id = :idParameterSmell")
 })
 public class ParameterSmellTestDataMining implements Serializable {
 

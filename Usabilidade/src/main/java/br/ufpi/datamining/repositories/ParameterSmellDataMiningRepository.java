@@ -13,7 +13,7 @@ import br.ufpi.repositories.Repository;
 @Component
 public class ParameterSmellDataMiningRepository extends Repository<ParameterSmellDataMining, Long> {
 
-	protected ParameterSmellDataMiningRepository(EntityManager entityManager) {
+	public ParameterSmellDataMiningRepository(EntityManager entityManager) {
 		super(entityManager);
 	}
 	

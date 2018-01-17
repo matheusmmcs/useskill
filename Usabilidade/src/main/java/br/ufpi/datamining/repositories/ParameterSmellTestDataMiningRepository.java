@@ -11,12 +11,12 @@ import br.ufpi.repositories.Repository;
 @Component
 public class ParameterSmellTestDataMiningRepository extends Repository<ParameterSmellTestDataMining, Long> {
 
-	protected ParameterSmellTestDataMiningRepository(EntityManager entityManager) {
+	public ParameterSmellTestDataMiningRepository(EntityManager entityManager) {
 		super(entityManager);
 	}
 	
-	public ParameterSmellTestDataMining getParametersFromSmell(Long idTest, Long idParameterSmell) {
-		Query query = entityManager.createNamedQuery("ParameterValue.SmellandTest");
+	public ParameterSmellTestDataMining getValueParameterSmellTest(Long idTest, Long idParameterSmell) {
+		Query query = entityManager.createNamedQuery("ParameterValue.ValueParameterSmellTest");
 		query.setParameter("idTest", idTest);
 		query.setParameter("idParameterSmell", idParameterSmell);
 		
@@ -25,6 +25,10 @@ public class ParameterSmellTestDataMiningRepository extends Repository<Parameter
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+	
+	public void updateValueParameterSmellTest () {
+		
 	}
 
 }

@@ -227,8 +227,11 @@ angular.module('useskill',
 			controller:'SmellConfigController as smellCtrl',
 			templateUrl:config[env].apiUrl+'/templates/smells/config.html',
 			resolve: {
-				test: function (ServerAPI, $route) {
-		        	return ServerAPI.getTest($route.current.params.testId);
+				parameters: function (ServerAPI, $route) {
+		        	return ServerAPI.getConfigSmell($route.current.params.testId, $route.current.params.smellId);
+		        },
+		        idSmell: function ($route) {
+		        	return $route.current.params.smellId;
 		        }
 		    }
 	    })
@@ -459,9 +462,12 @@ angular.module('useskill',
         detectSmells: function(obj){
         	return doRequest('POST', '/datamining/testes/smells/detection', obj);
         },
-//        configSmell: function(obj, smellId){
-//        	return doRequest('POST', '/datamining/testes/smells/config/'+smellId, obj);
-//        },
+        getConfigSmell: function(testId, smellId){
+        	return doRequest('GET', '/datamining/testes/'+testId+'/smells/'+smellId+'/parameters');
+        },
+        changeSmellParameter: function(obj) {
+        	return doRequest('POST', '/datamining/testes/smells/parameters/change', obj);
+        }
         
     };
 }])
@@ -794,11 +800,11 @@ angular.module('useskill',
 	};
 	
 })
-.controller('SmellsDetectionFormController', function(test, UtilsService, SmellsEnum, ServerAPI) {
+.controller('SmellsDetectionFormController', function(test, UtilsService, SmellsEnum, ServerAPI, $filter, $scope) {
+	
 	var smellCtrl = this;
 	
 	smellCtrl.test = JSON.parse(test.data.string);
-//	console.log(smellCtrl.test);
 	
 	smellCtrl.minDate = new Date().getTime();
 	smellCtrl.maxDate = new Date().getTime();
@@ -823,19 +829,46 @@ angular.module('useskill',
 		
 		var obj = angular.toJson({
 			test: smellCtrl.test, 
-			initDate: minDate, 
-			endDate: maxDate,
+			initDate: 1457319600000,//minDate, 
+			endDate: 1457924400000,//maxDate,
 			smells: smellCtrl.smellsSelected,
 			tasks: smellCtrl.tasksSelected
 		});
 		
-		ServerAPI.detectSmells(obj).then(function(data) {
-			console.log(data);
+		ServerAPI.detectSmells(obj).then(function(data) {			
+			smellCtrl.detectionResult = JSON.parse(data.data.string);
+			//console.log(smellCtrl.detectionResult["Laborious Task"]["1 - Solicitar Exame (MarcarExameProfissional)"][0].graph.edgeMap);
+			console.log(smellCtrl.detectionResult);
+			
+			//$scope[$scope.graphIdsEnum.GRAPH_DEFAULT] = drawGraph('mynetwork', graphData, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX, preserveY);
+			
 			//testCtrl.test = JSON.parse(data.data.string);
 		}, function(data) {
-			//console.log(data);
+			console.log(data);
 		});
 		
+	}
+	
+	smellCtrl.showGraphSmell = function(session) {
+		var elemId = 'graph'+session.description;
+		
+		var graphData = generateGraphSmells(session.graph);
+		smellCtrl['smellgraphid'] = elemId;
+		smellCtrl.nodeSelected = null;
+		smellCtrl['smell-data-graph'] = drawGraph(elemId, graphData, [], {}, {}, 5, false);
+		smellCtrl['smell-data-nodes'] = session.graph;
+		smellCtrl.resetGraph();
+		
+		console.log('nos', graphData.arrNodes.length, 'arestas', graphData.arrEdges.length)
+	}
+	
+	smellCtrl.resetGraph = function() {
+		smellCtrl['smell-data-graph'].on("selectNode", function (params) {
+      	  	var node = smellCtrl['smell-data-graph'].body.nodes[params.nodes[0]];
+      	  	smellCtrl.nodeDesc = node.options.desc.split(" | ");
+      	  	smellCtrl.nodeSelected = node.options.desc;
+      	  	$scope.$apply();
+        });
 	}
 	
 	smellCtrl.toggleSelection = function toggleSelection(id) {
@@ -868,11 +901,48 @@ angular.module('useskill',
 		}
 	};
 	
-})
-.controller('SmellConfigController', function(test, UtilsService, SmellsEnum, ServerAPI) {
-	var smellCtrl = this;
+	smellCtrl.calculateDetectionRate = function (task, detectionCount) {
+		var taskSessions = smellCtrl.test.tasks.filter(function(obj){
+			return obj.title == task;
+		});
+		console.log(smellCtrl.test.tasks);
+		console.log(taskSessions);
+		smellCtrl.detectionRate = (detectionCount/taskSessions.length) * 100;
+	}
 	
-	smellCtrl.test = JSON.parse(test.data.string);
+})
+.controller('SmellConfigController', function(parameters, idSmell, UtilsService, SmellsEnum, ServerAPI) {
+	var smellCtrl = this;
+	var smell = null;
+	
+	for (var i in SmellsEnum.smells) {
+		if (SmellsEnum.smells[i].value == idSmell) {
+			smell = SmellsEnum.smells[i];
+			break;
+		}
+	}
+	
+	smellCtrl.smell = smell;
+	smellCtrl.parameters = JSON.parse(parameters.data.string);
+	console.log('chegou: ', smellCtrl.parameters, idSmell, smell);
+	
+	smellCtrl.changeValueParam = function(){
+		var obj = angular.toJson({
+			parameters: smellCtrl.parameters
+		});
+		ServerAPI.changeSmellParameter(obj).then(function(data) {
+			console.log(data);
+		}, function(data) {
+			console.error(data);
+		});
+	}
+	
+	smellCtrl.redefineDefault = function(){
+		for (var i = 0; i < smellCtrl.parameters.length; i++) {
+			smellCtrl.parameters[i].value = -1;
+		}
+	}
+	
 //	console.log(smellCtrl.test);
 	
 //	smellCtrl.minDate = new Date().getTime();

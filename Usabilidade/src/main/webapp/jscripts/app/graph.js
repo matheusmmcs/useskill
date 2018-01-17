@@ -343,6 +343,8 @@ function drawGraph(idContainer, graphData, sessions, actionsSituation, situation
 		maxVal = graphData.maxVal,
 		actualNodesPosY = {};
 	
+	console.log("render graph", idContainer, graphData, sessions, actionsSituation, situationsEnum, factorScaleX, preserveY);
+	
 	factorScaleX = factorScaleX || 3;
 	  
 	  //colorir grafo e organizar
@@ -472,5 +474,60 @@ function refreshGraph(network, actionsSituation, situationsEnum){
 			}
 		}
 		network.redraw();
+	}
+}
+
+function generateGraphSmells (sessionGraph) {
+	var arrNodes = [], arrEdges = [], maxVal = 0;
+	
+	//mapear todos os ids de nodes
+	var nodeIds = {};
+	var nodeIdsCount = 0;
+	for (var i in sessionGraph.edgeMap) {
+		var obj = sessionGraph.edgeMap[i];
+		if (nodeIdsCount == 0) {
+			nodeIds[obj.source] = {
+				id: nodeIdsCount,
+				value: 1,
+				desc: obj.source
+			}
+			nodeIdsCount++;
+		}
+		if (nodeIds[obj.target]) {
+			nodeIds[obj.target].value++;
+		} else {
+			nodeIds[obj.target] = {
+				id: nodeIdsCount,
+				value: 1,
+				desc: obj.target
+			}
+			nodeIdsCount++;
+		}
+	}
+	
+	for (var i in nodeIds) {
+		var obj = nodeIds[i];
+		arrNodes.push({
+			id: obj.id,
+			value: obj.value,
+			seq: obj.id,
+			desc: obj.desc,
+			label: "Action "+obj.id
+		});
+		maxVal = maxVal > obj.value ? maxVal : obj.value;
+	}
+	for (var i in sessionGraph.edgeMap) {
+		var obj = sessionGraph.edgeMap[i];
+		arrEdges.push({
+			from: nodeIds[obj.source].id,
+			to: nodeIds[obj.target].id,
+			value: obj.weight
+		});
+	}
+	
+	return {
+		arrNodes: 	arrNodes, 
+		arrEdges: 	arrEdges, 
+		maxVal:		maxVal
 	}
 }

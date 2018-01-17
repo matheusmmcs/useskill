@@ -2,10 +2,9 @@ package br.ufpi.datamining.controllers;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +36,7 @@ import br.ufpi.datamining.models.TaskDataMining;
 import br.ufpi.datamining.models.TestDataMining;
 import br.ufpi.datamining.models.aux.BarChart;
 import br.ufpi.datamining.models.aux.ResultDataMining;
+import br.ufpi.datamining.models.aux.SessionGraph;
 import br.ufpi.datamining.models.aux.StackedAreaChart;
 import br.ufpi.datamining.models.aux.TaskSmellAnalysis;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
@@ -49,9 +49,9 @@ import br.ufpi.datamining.repositories.ActionDataMiningRepository;
 import br.ufpi.datamining.repositories.ParameterSmellDataMiningRepository;
 import br.ufpi.datamining.repositories.ParameterSmellTestDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
-import br.ufpi.datamining.repositories.TestDataMiningRepository;
 import br.ufpi.datamining.utils.EntityDefaultManagerUtil;
 import br.ufpi.datamining.utils.EntityManagerUtil;
+import br.ufpi.datamining.utils.ParameterSmellUtils;
 import br.ufpi.util.UsabilitySmellDetector;
 
 @Path(value = "datamining")
@@ -65,6 +65,17 @@ public class DataMiningSmellsController extends BaseController {
 	private static final int ACTION_OCCURRENCE_RATE = 4;
 	private static final int TASK_LAYER_COUNT = 5;
 	private static final int ACTION_REPETITION_COUNT = 6;
+	
+	//parametros
+	private static final int MAX_ACTION_COUNT = 1;
+	private static final int MAX_TIME = 2;
+	private static final int MAX_CYCLE_RATE = 3;
+	private static final int MAX_OCCURRENCE_RATE = 4;
+	private static final int MIN_OCCURRENCE_COUNT_LA = 5;
+	private static final int MAX_LAYER_COUNT = 6;
+	private static final int MAX_ATTEMPT_COUNT = 7;
+	private static final int MAX_REPETITION_COUNT = 8;
+	private static final int MIN_OCCURRENCE_COUNT_MF = 9;
 	
 	//smells
 	private static final int LABORIOUS_TASK = 1;
@@ -114,7 +125,8 @@ public class DataMiningSmellsController extends BaseController {
 		boolean mineSessions =
 				ArrayUtils.contains(selectedMetrics, TASK_ACTION_COUNT) || ArrayUtils.contains(selectedMetrics, TASK_TIME) ||
 				ArrayUtils.contains(selectedMetrics, TASK_CYCLE_RATE) || ArrayUtils.contains(selectedMetrics, TASK_LAYER_COUNT);
-		boolean mineActions = ArrayUtils.contains(selectedMetrics, ACTION_OCCURRENCE_RATE);
+		boolean mineActions =
+				ArrayUtils.contains(selectedMetrics, ACTION_OCCURRENCE_RATE) || ArrayUtils.contains(selectedMetrics, ACTION_REPETITION_COUNT);
 		
 		for (TaskDataMining task : test.getTasks()) {
 			if (mineSessions) {
@@ -147,7 +159,7 @@ public class DataMiningSmellsController extends BaseController {
 		}
 		if (ArrayUtils.contains(selectedMetrics, ACTION_OCCURRENCE_RATE)) {
 			System.out.println("Generating action occurrence rate chart...");
-			barCharts.add(usm.generateActionOccurrenceRateChart(actions));
+			barCharts.add(usm.generateActionOccurrenceRateChart(actions, 10));
 		}
 		if (ArrayUtils.contains(selectedMetrics, TASK_LAYER_COUNT)) {
 			System.out.println("Generating layer count chart...");
@@ -156,18 +168,6 @@ public class DataMiningSmellsController extends BaseController {
 		if (ArrayUtils.contains(selectedMetrics, ACTION_REPETITION_COUNT)) {
 			System.out.println("Generating action repetition count chart...");
 			barCharts.add(usm.generateActionRepetitionCountChart2(actions, 10));
-			
-//			Instant start1 = Instant.now();
-//			usm.generateActionRepetitionCountChart(tasks);
-//			Instant end1 = Instant.now();
-//			
-//			System.out.println("O método 1 durou " + Duration.between(start1, end1));
-//			
-//			Instant start2 = Instant.now();
-//			usm.generateActionRepetitionCountChart2(actions, 10);
-//			Instant end2 = Instant.now();
-//			
-//			System.out.println("O método 2 durou " + Duration.between(start2, end2));
 		}
 		
 		if (areaCharts.size() > 0 || barCharts.size() > 0) {
@@ -183,20 +183,16 @@ public class DataMiningSmellsController extends BaseController {
 	@Post("/testes/smells/detection")
 	@Consumes("application/json")
 	@Logado
-	public void view(TestDataMining test, Long initDate, Long endDate, Integer[] selectedSmells, Integer[] selectedTasks) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
+	public void view(TestDataMining test, Long initDate, Long endDate, Integer[] selectedSmells, Long[] selectedTasks) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
 		Gson gson = new GsonBuilder()
 			.setExclusionStrategies(TestDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
 	        .create();
 		
-		System.out.println("Smells:");
-		for (int i = 0; i < selectedSmells.length; i++) {
-			System.out.println(selectedSmells[i]);
-		}
-		System.out.println("Tarefas:");
-		for (int i = 0; i < selectedTasks.length; i++) {
-			System.out.println(selectedTasks[i]);
-		}
+		ParameterSmellUtils.findParametersSmellValues(test.getId(), parameterSmellDataMiningRepository, parameterSmellTestDataMiningRepository);
+		List<ParameterSmellTestDataMining> smellsParametersValues = ParameterSmellUtils.findParametersSmellValues(test.getId(),
+				parameterSmellDataMiningRepository,
+				parameterSmellTestDataMiningRepository);
 		
 		EntityManager entityManager = EntityManagerUtil.getEntityManager();
 		EntityManager entityDafaultManager = EntityDefaultManagerUtil.getEntityManager();
@@ -206,41 +202,127 @@ public class DataMiningSmellsController extends BaseController {
 		
 		UsabilitySmellDetector usm = new UsabilitySmellDetector();
 		List<TaskSmellAnalysis> tasks = new ArrayList<TaskSmellAnalysis>();
+		List<ActionDataMining> actions = new ArrayList<ActionDataMining>();
 		
-		for (int i = 0; i < test.getTasks().size(); i++) {
-			System.out.println("Mining sessions for task " + i + "...");
-			ResultDataMining resultDataMining = WebUsageMining.analyze((long)(i+1), initDate, endDate,
-					SessionClassificationDataMiningFilterEnum.SUCCESS_ERROR_REPEAT, taskDataMiningRepository, actionDataMiningRepository);
-			if (resultDataMining.getSessions().size() > 0)
-				tasks.add(new TaskSmellAnalysis(test.getTasks().get(i).getTitle(), resultDataMining.getSessions()));				
+		Map<String, Map<String, List<SessionGraph>>> smellsDetections = new LinkedHashMap<String, Map<String,List<SessionGraph>>>();
+		
+		boolean mineSessions =
+				ArrayUtils.contains(selectedSmells, LABORIOUS_TASK) || ArrayUtils.contains(selectedSmells, CYCLIC_TASK) ||
+				ArrayUtils.contains(selectedSmells, TOO_MANY_LAYERS) || ArrayUtils.contains(selectedSmells, UNDESCRIPTIVE_ELEMENT);
+		boolean mineActions =
+				ArrayUtils.contains(selectedSmells, LONELY_ACTION) || ArrayUtils.contains(selectedSmells, MISSING_FEEDBACK);
+		
+		if (mineSessions) {
+			for (TaskDataMining task : test.getTasks()) {
+				if (ArrayUtils.contains(selectedTasks, task.getId())) {
+					System.out.println("Mining sessions for task " + task.getId() + "...");
+					ResultDataMining resultDataMining = WebUsageMining.analyze(task.getId(), initDate, endDate,
+							SessionClassificationDataMiningFilterEnum.SUCCESS_ERROR_REPEAT, taskDataMiningRepository, actionDataMiningRepository);
+					if (resultDataMining.getSessions().size() > 0)
+						tasks.add(new TaskSmellAnalysis(task.getTitle(), resultDataMining.getSessions()));				
+				}
+				//break;
+			}
+		}
+		
+		if (mineActions) {
+			System.out.println("Mining actions...");
+			actions = WebUsageMining.listActionsBetweenDates(
+					test.getTasks().get(0).getId(), taskDataMiningRepository, actionDataMiningRepository,
+					new Date(initDate), new Date(endDate), null);
 		}
 		
 		if (ArrayUtils.contains(selectedSmells, LABORIOUS_TASK)) {
+			int maxActionCount = 0, minSessionCount = 0;
+			long maxTime = 0;
+			for (ParameterSmellTestDataMining parameter : smellsParametersValues) {
+				if (parameter.getParameterSmell().getId() == MAX_ACTION_COUNT)
+					maxActionCount =  (int)(double)parameter.getValue();
+				if (parameter.getParameterSmell().getId() == MAX_TIME)
+					maxTime =  (long)(double)parameter.getValue();
+			}
+			
 			System.out.println("Detecting Laborious Task...");
-			usm.detectLaboriousTasks(tasks, UsabilitySmellDetector.NUMBER_DEFAULT, UsabilitySmellDetector.TIME_DEFAULT);
+			Map<String, List<SessionGraph>> sessionGraphs = usm.detectLaboriousTasks2(tasks,
+					maxActionCount, maxTime, UsabilitySmellDetector.DEFAULT_VALUE);
+			smellsDetections.put("Laborious Task", sessionGraphs);
 			//areaCharts.add(usm.generateTaskActionCountChart(tasks));
 		}
+		if (ArrayUtils.contains(selectedSmells, CYCLIC_TASK)) {
+			double maxCycleRate = 0;
+			for (ParameterSmellTestDataMining parameter : smellsParametersValues) {
+				if (parameter.getParameterSmell().getId() == MAX_CYCLE_RATE)
+					maxCycleRate =  (double)parameter.getValue();
+			}
+			System.out.println("Detecting Cyclic Task...");
+			Map<String, List<SessionGraph>> sessionGraphs = usm.detectCyclicSessions2(tasks,
+					maxCycleRate, UsabilitySmellDetector.DEFAULT_VALUE);
+			smellsDetections.put("Cyclic Task", sessionGraphs);
+		}
 		
-		String json = gson.toJson(new TestDataMiningVO(test));
+//		String json = gson.toJson(new TestDataMiningVO(test));
+		String json = gson.toJson(smellsDetections);
 		
 		result.use(Results.json()).from(json).serialize();
 	}
 	
-	@Get("/testes/{idTeste}/smells/{idSmell}/value")
+	@Get("/testes/{idTeste}/smells/{idSmell}/parameters")
 	@Logado
-	public void view(Long idTeste, Long idSmell) {
+	public void parameters(Long idTeste, Long idSmell) {
 		Gson gson = new GsonBuilder()
 	        .setExclusionStrategies(TaskDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
 	        .create();
 		
-		List<ParameterSmellDataMining> parametersFromSmell = parameterSmellDataMiningRepository.getParametersFromSmell(idSmell);
+		List<ParameterSmellTestDataMining> listParametersSmellValues = ParameterSmellUtils.findParametersSmellValues(idTeste,
+				parameterSmellDataMiningRepository,
+				parameterSmellTestDataMiningRepository);
 		
-		for (ParameterSmellDataMining p : parametersFromSmell) {
-			ParameterSmellTestDataMining valueParameter = parameterSmellTestDataMiningRepository.getParametersFromSmell(idTeste, p.getId());
+		List<ParameterSmellTestDataMining> listParametersValuesFromSmell = new ArrayList<ParameterSmellTestDataMining>();
+		for (ParameterSmellTestDataMining p : listParametersSmellValues) {
+			if (p.getParameterSmell().getIdSmell().equals(idSmell)) {
+				listParametersValuesFromSmell.add(p);
+			}
 		}
 		
-		result.use(Results.json()).from(gson.toJson(parametersFromSmell)).serialize();
+		result.use(Results.json()).from(gson.toJson(listParametersValuesFromSmell)).serialize();
+	}
+	
+	@Post("/testes/smells/parameters/change")
+	@Consumes("application/json")
+	@Logado
+	//public void changeParameter(Long idTeste, Long idParameterSmell, Double value) {
+	public void changeParameter(ParameterSmellTestDataMining[] parameters) {
+		Gson gson = new GsonBuilder()
+	        .serializeNulls()
+	        .create();
+		
+		ReturnVO returnvo;
+		
+		if (parameters != null) {
+			for (ParameterSmellTestDataMining parameter : parameters) {
+				parameterSmellTestDataMiningRepository.update(parameter);
+			}
+			returnvo = new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.smells.testes.config.parameters.saveok");
+		} else {
+			returnvo = new ReturnVO(ReturnStatusEnum.ERRO, "datamining.smells.error.default");
+		}
+		
+		//ParameterSmellTestDataMining[] listParametersValuesFromSmell
+		/*
+		ParameterSmellTestDataMining valueParameterSmellTest = parameterSmellTestDataMiningRepository.getValueParameterSmellTest(idTeste, idParameterSmell);
+		ReturnVO returnvo;
+		
+		if (valueParameterSmellTest != null) {
+			valueParameterSmellTest.setValue(value);
+			parameterSmellTestDataMiningRepository.update(valueParameterSmellTest);
+			returnvo = new ReturnVO(ReturnStatusEnum.ERRO, "datamining.smells.testes.config.parameters.saveok");
+		} else {
+			returnvo = new ReturnVO(ReturnStatusEnum.ERRO, "datamining.smells.error.default");
+		}
+		*/
+		
+		result.use(Results.json()).from(gson.toJson(returnvo)).serialize();
 	}
 	
 }
