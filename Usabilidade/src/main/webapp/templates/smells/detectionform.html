@@ -121,22 +121,22 @@
 		        	</div>
 	        	</div>
 	        	
-	        	<div class="usdm-box" ng-show="smellCtrl.detectionResult != null" ng-repeat="(smell, result) in smellCtrl.detectionResult">
+	        	<div class="usdm-box" ng-show="smellCtrl.detectionResult.tasksAnalysisResult != null" ng-repeat="(smell, result) in smellCtrl.detectionResult.tasksAnalysisResult">
 	            	<h3 class="usdm-title-collapse">
 	            		{{smell}}
 	            	</h3>
-	            	<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white; padding-top: 0;" ng-repeat="(task, sessions) in result">
+	            	<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white; padding-top: 0;" ng-repeat="task in result">
 						<thead>
-		                    <tr ng-init="smellCtrl.calculateDetectionRate(task, sessions.length)">
-		                        <th width="100%">{{task}} ({{smellCtrl.detectionRate}} afetada)</th>
+		                    <tr>
+		                        <th width="100%">{{task.name}} ({{smellCtrl.formatRate(task.detectionRate)}} afetada)</th>
 		                    </tr>
 		                </thead>
 		                <tbody>
-	                        <tr ng-repeat="session in sessions">
+	                        <tr ng-repeat="session in task.sessions">
 	                            <td>
 	                            	<a ng-click="smellCtrl.showGraphSmell(session)">{{session.description}}</a>
 	                            	<ul>
-	                            		<li ng-repeat="(info, value) in session.info"><b>{{info}}:</b> {{value}}</li>
+	                            		<li ng-repeat="(info, value) in session.info"><b>{{ info | translate }}:</b> {{value}}</li>
 	                            	</ul>
 	                            	<div ng-show="smellCtrl.smellgraphid == 'graph'+session.description">
 	                            		<div id="graph{{session.description}}" class="useskill-smell-graph"></div>
@@ -150,13 +150,41 @@
 	                        </tr>
 		                </tbody>
 		            </table>
-	            	
-<!-- 	            	<ul> -->
-<!-- 	            		<li ng-repeat="(task, sessions) in result"></li> -->
-<!-- 	            	</ul> -->
-<!-- 	            	<div class="usdm-clickable-box-content"> -->
-<!-- 	  					<nvd3 options="chart.statisticsOptions" data="chart.statisticsData" class="with-3d-shadow with-transitions"></nvd3> -->
-<!-- 	  				</div> -->
+	        	</div>
+	        	
+	        	<div class="usdm-box" ng-show="smellCtrl.detectionResult.actionsAnalysisResult != null" ng-repeat="(smell, result) in smellCtrl.detectionResult.actionsAnalysisResult">
+	            	<h3 class="usdm-title-collapse">
+	            		{{smell}}
+	            	</h3>
+	            	<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white; padding-top: 0;">
+						<thead>
+		                    <tr>
+		                        <th width="100%">{{ 'datamining.smells.testes.detectedactions' | translate }}</th>
+		                    </tr>
+		                </thead>
+		                <tbody>
+	                        <tr ng-repeat="(action, informations) in result">
+	                            <td>
+<!-- 	                            	<a ng-click="smellCtrl.showActionContent()">{{session.description}}</a> -->
+	                            	<ul>
+	                            		<li><b>{{ 'datamining.smells.testes.place' | translate }}:</b> {{smellCtrl.splitAction(action)[0]}}<br></li>
+	                            		<li><b>{{ 'datamining.smells.testes.element' | translate }}:</b> {{smellCtrl.splitAction(action)[1]}}<br></li>
+	                            		<li><b>{{ 'datamining.smells.testes.actiontype' | translate }}:</b> {{smellCtrl.splitAction(action)[2]}}<br></li>
+	                            		<li ng-repeat="(info, value) in informations"><b>{{ info | translate }}:</b> {{value}}</li>
+	                            	</ul>
+	                            	
+<!-- 	                            	<div ng-show="smellCtrl.smellgraphid == 'graph'+session.description"> -->
+<!-- 	                            		<div id="graph{{session.description}}" class="useskill-smell-graph"></div> -->
+<!-- 	                            		<p ng-show="smellCtrl.nodeSelected != null"> -->
+<!-- 	                            			<b>{{ 'datamining.smells.testes.place' | translate }}:</b> {{smellCtrl.nodeDesc[0]}}<br> -->
+<!-- 	                            			<b>{{ 'datamining.smells.testes.element' | translate }}:</b> {{smellCtrl.nodeDesc[1]}}<br> -->
+<!-- 	                            			<b>{{ 'datamining.smells.testes.actiontype' | translate }}:</b> {{smellCtrl.nodeDesc[2]}} -->
+<!-- 	                            		</p> -->
+<!-- 	                            	</div> -->
+	                            </td>
+	                        </tr>
+		                </tbody>
+		            </table>
 	        	</div>
 	        	
 	        </div>

@@ -901,13 +901,12 @@ angular.module('useskill',
 		}
 	};
 	
-	smellCtrl.calculateDetectionRate = function (task, detectionCount) {
-		var taskSessions = smellCtrl.test.tasks.filter(function(obj){
-			return obj.title == task;
-		});
-		console.log(smellCtrl.test.tasks);
-		console.log(taskSessions);
-		smellCtrl.detectionRate = (detectionCount/taskSessions.length) * 100;
+	smellCtrl.formatRate = function (rate) {
+		return (rate*100).toFixed(2) + "%";
+	}
+	
+	smellCtrl.splitAction = function (action) {
+		return action.split(" | ");
 	}
 	
 })

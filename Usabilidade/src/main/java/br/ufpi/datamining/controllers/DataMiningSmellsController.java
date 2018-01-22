@@ -39,10 +39,12 @@ import br.ufpi.datamining.models.aux.ResultDataMining;
 import br.ufpi.datamining.models.aux.SessionGraph;
 import br.ufpi.datamining.models.aux.StackedAreaChart;
 import br.ufpi.datamining.models.aux.TaskSmellAnalysis;
+import br.ufpi.datamining.models.aux.TaskSmellAnalysisResult;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningFilterEnum;
 import br.ufpi.datamining.models.vo.ChartsVO;
 import br.ufpi.datamining.models.vo.ReturnVO;
+import br.ufpi.datamining.models.vo.SmellAnalysisResultVO;
 import br.ufpi.datamining.models.vo.TaskDataMiningVO;
 import br.ufpi.datamining.models.vo.TestDataMiningVO;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
@@ -204,13 +206,15 @@ public class DataMiningSmellsController extends BaseController {
 		List<TaskSmellAnalysis> tasks = new ArrayList<TaskSmellAnalysis>();
 		List<ActionDataMining> actions = new ArrayList<ActionDataMining>();
 		
-		Map<String, Map<String, List<SessionGraph>>> smellsDetections = new LinkedHashMap<String, Map<String,List<SessionGraph>>>();
+		Map<String, List<TaskSmellAnalysisResult>> tasksAnalysisResult = new LinkedHashMap<String, List<TaskSmellAnalysisResult>>();
+		Map<String, Map<String, Map<String, String>>> actionsAnalysisResult = new LinkedHashMap<String, Map<String,Map<String,String>>>();
 		
 		boolean mineSessions =
 				ArrayUtils.contains(selectedSmells, LABORIOUS_TASK) || ArrayUtils.contains(selectedSmells, CYCLIC_TASK) ||
-				ArrayUtils.contains(selectedSmells, TOO_MANY_LAYERS) || ArrayUtils.contains(selectedSmells, UNDESCRIPTIVE_ELEMENT);
+				ArrayUtils.contains(selectedSmells, TOO_MANY_LAYERS);
 		boolean mineActions =
-				ArrayUtils.contains(selectedSmells, LONELY_ACTION) || ArrayUtils.contains(selectedSmells, MISSING_FEEDBACK);
+				ArrayUtils.contains(selectedSmells, LONELY_ACTION) || ArrayUtils.contains(selectedSmells, UNDESCRIPTIVE_ELEMENT) ||
+				ArrayUtils.contains(selectedSmells, MISSING_FEEDBACK);
 		
 		if (mineSessions) {
 			for (TaskDataMining task : test.getTasks()) {
@@ -243,9 +247,9 @@ public class DataMiningSmellsController extends BaseController {
 			}
 			
 			System.out.println("Detecting Laborious Task...");
-			Map<String, List<SessionGraph>> sessionGraphs = usm.detectLaboriousTasks2(tasks,
+			List<TaskSmellAnalysisResult> analysisResult = usm.detectLaboriousTasks2(tasks,
 					maxActionCount, maxTime, UsabilitySmellDetector.DEFAULT_VALUE);
-			smellsDetections.put("Laborious Task", sessionGraphs);
+			tasksAnalysisResult.put("Laborious Task", analysisResult);
 			//areaCharts.add(usm.generateTaskActionCountChart(tasks));
 		}
 		if (ArrayUtils.contains(selectedSmells, CYCLIC_TASK)) {
@@ -255,13 +259,53 @@ public class DataMiningSmellsController extends BaseController {
 					maxCycleRate =  (double)parameter.getValue();
 			}
 			System.out.println("Detecting Cyclic Task...");
-			Map<String, List<SessionGraph>> sessionGraphs = usm.detectCyclicSessions2(tasks,
+			List<TaskSmellAnalysisResult> analysisResult = usm.detectCyclicSessions2(tasks,
 					maxCycleRate, UsabilitySmellDetector.DEFAULT_VALUE);
-			smellsDetections.put("Cyclic Task", sessionGraphs);
+			tasksAnalysisResult.put("Cyclic Task", analysisResult);
+		}
+		if (ArrayUtils.contains(selectedSmells, LONELY_ACTION)) {
+			double maxOccurrenceRate = 0;
+			int minOccurrenceCount = 0;
+			for (ParameterSmellTestDataMining parameter : smellsParametersValues) {
+				if (parameter.getParameterSmell().getId() == MAX_OCCURRENCE_RATE)
+					maxOccurrenceRate =  parameter.getValue();
+				if (parameter.getParameterSmell().getId() == MAX_TIME)
+					minOccurrenceCount =  (int)(double)parameter.getValue();
+			}
+			System.out.println("Detecting Lonely Action...");
+			actionsAnalysisResult.put("Lonely Action", usm.detectLonelyAction2(actions, maxOccurrenceRate, minOccurrenceCount));
+		}
+		if (ArrayUtils.contains(selectedSmells, TOO_MANY_LAYERS)) {
+			int maxLayerCount = UsabilitySmellDetector.DEFAULT_VALUE;
+			for (ParameterSmellTestDataMining parameter : smellsParametersValues) {
+				if (parameter.getParameterSmell().getId() == MAX_LAYER_COUNT)
+					maxLayerCount =  (int)(double)parameter.getValue();
+			}
+			System.out.println("Detecting Too Many Layers...");
+			tasksAnalysisResult.put("Too Many Layers", usm.detectTooManyLayers2(tasks, maxLayerCount));
+		}
+		if (ArrayUtils.contains(selectedSmells, UNDESCRIPTIVE_ELEMENT)) {
+			int maxAttemptCount = UsabilitySmellDetector.DEFAULT_VALUE;
+			for (ParameterSmellTestDataMining parameter : smellsParametersValues) {
+				if (parameter.getParameterSmell().getId() == MAX_ATTEMPT_COUNT);
+					maxAttemptCount =  (int)(double)parameter.getValue();
+			}
+			System.out.println("Detecting Undescriptive Element...");
+			actionsAnalysisResult.put("Undescriptive Element", usm.detectUndescriptiveElement2(actions, maxAttemptCount, 5));
+		}
+		if (ArrayUtils.contains(selectedSmells, MISSING_FEEDBACK)) {
+			int maxRepetitionCount = UsabilitySmellDetector.DEFAULT_VALUE, minOccurrenceCount = UsabilitySmellDetector.DEFAULT_VALUE;
+			for (ParameterSmellTestDataMining parameter : smellsParametersValues) {
+				if (parameter.getParameterSmell().getId() == MAX_REPETITION_COUNT)
+					maxRepetitionCount =  (int)(double)parameter.getValue();
+				if (parameter.getParameterSmell().getId() == MIN_OCCURRENCE_COUNT_MF)
+					minOccurrenceCount =  (int)(double)parameter.getValue();
+			}
+			System.out.println("Detecting Missing Feedback...");
+			actionsAnalysisResult.put("Missing Feedback", usm.detectMissingFeedback2(actions, maxRepetitionCount, minOccurrenceCount));
 		}
 		
-//		String json = gson.toJson(new TestDataMiningVO(test));
-		String json = gson.toJson(smellsDetections);
+		String json = gson.toJson(new SmellAnalysisResultVO(tasksAnalysisResult, actionsAnalysisResult));
 		
 		result.use(Results.json()).from(json).serialize();
 	}

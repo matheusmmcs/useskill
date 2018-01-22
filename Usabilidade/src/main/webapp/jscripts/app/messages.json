@@ -273,10 +273,6 @@
 	"datamining.smells.testes.statistics.form.title" : "Definição de Métricas",
 	"datamining.smells.testes.statistics.form.view" : "Visualizar",
 	
-	"datamining.smells.testes.statistics.actioncount" : "Quantidade de Ações",
-	"datamining.smells.testes.statistics.time" : "Duração",
-	"datamining.smells.testes.statistics.cyclerate" : "Taxa de Ciclos",
-	
 	"datamining.smells.testes.detection.form.title" : "Definição de Smells",
 	"datamining.smells.testes.detection.form.taskdefinition" : "Definição de Tarefas",
 	"datamining.smells.testes.timewindow" : "Janela Temporal",
@@ -289,6 +285,17 @@
 	"datamining.smells.testes.place" : "Local",
 	"datamining.smells.testes.element" : "Elemento",
 	"datamining.smells.testes.actiontype" : "Tipo de ação",
+	"datamining.smells.testes.actionscount" : "Quantidade de ações",
+	"datamining.smells.testes.time" : "Duração",
+	"datamining.smells.testes.cyclerate" : "Taxa de ciclos",
+	"datamining.smells.testes.occurrencerate" : "Taxa de ocorrência",
+	"datamining.smells.testes.occurrencecount" : "Quantidade de ocorrências",
+	"datamining.smells.testes.content" : "Conteúdo",
+	"datamining.smells.testes.detectedactions" : "Ações Detectadas",
+	"datamining.smells.testes.layercount" : "Quantidade de camadas",
+	"datamining.smells.testes.tooltipattempts" : "Tentativas de tooltip",
+	"datamining.smells.testes.repetitionmedian" : "Média de repetições",
+	"datamining.smells.testes.instances" : "Instâncias",
 	
 	"datamining.smells.testes.config.title" : "Configurar Smell",
 	"datamining.smells.testes.config.parameters.saveok" : "Parâmetros do Smell alterados com sucesso"

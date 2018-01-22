@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -58,6 +59,7 @@ import br.ufpi.datamining.models.aux.SessionGraph;
 import br.ufpi.datamining.models.aux.SessionResultDataMining;
 import br.ufpi.datamining.models.aux.StackedAreaChart;
 import br.ufpi.datamining.models.aux.TaskSmellAnalysis;
+import br.ufpi.datamining.models.aux.TaskSmellAnalysisResult;
 import br.ufpi.datamining.models.aux.XYSerie;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
@@ -171,14 +173,14 @@ public class UsabilitySmellDetector {
 		for (String url : uniqueUrls) {
 			urlsActionCount.add(filteredActionsIds(sessionFreeActions, url).size());
 		}
-		int minNumberOfOccurrences = (int) median(urlsActionCount.toArray(new Integer[0]));
+		int minOccurrenceCount = (int) median(urlsActionCount.toArray(new Integer[0]));
 		Map<String, Double> mostFrequentActions = new LinkedHashMap<String, Double>();
 		for (int i = 0; i < maxResultCount; i++) {
 			mostFrequentActions.put(String.valueOf(i), 0.0);
 		}
 		for (String url : uniqueUrls) {
 			List<String> actionsIds = filteredActionsIds(sessionFreeActions, url);				
-			if (actionsIds.size() < minNumberOfOccurrences)
+			if (actionsIds.size() < minOccurrenceCount)
 				continue;
 			Multiset<String> idsFrequencyMapping = HashMultiset.create();
 			idsFrequencyMapping.addAll(actionsIds);
@@ -315,8 +317,8 @@ public class UsabilitySmellDetector {
 			String currentAction = "";
 			String previousAction = "";
 			for (int i = 1; i < userActions.size(); i++) {
-				currentAction = getActionId(userActions.get(i));
-				previousAction = getActionId(userActions.get(i-1));
+				currentAction = actionId(userActions.get(i));
+				previousAction = actionId(userActions.get(i-1));
 				if (currentAction.equals(previousAction)) {
 					repetitionCount++;
 				} else {
@@ -355,13 +357,12 @@ public class UsabilitySmellDetector {
 	//************************** MÉTODOS DE DETECÇÃO DE USABILITY SMELLS **************************
 	//*********************************************************************************************
 	
-	//TODO em construcao
 	/**
 	 * Retorna a lista de grafos das sessões onde o smell foi detectado. A detecção é determinada 
 	 * pelos atributos maxActionCount e maxTime, onde a sessão é considerada como contendo o smell 
-	 * caso ultrapasse ambos os valores máximos estabelecidos. No mapa de retorno, cada chave 
-	 * representa uma tarefa, e o valor da chave contém a lista de sessões dessa tarefa onde foram 
-	 * realizadas as detecções do smell.
+	 * caso ultrapasse ambos os valores máximos estabelecidos. Apenas as ações explicitamente 
+	 * executadas pelo usuário são contadas, ou seja, desconsideram-se as ações do tipo "mouseover"
+	 *  e "onload". Além disso, apenas as sessões completas são analisadas.
 	 * 
 	 * @param	tasks			uma lista de tarefas
 	 * @param	maxActionCount	o número máximo de ações que uma sessão sem o smell pode conter
@@ -370,8 +371,8 @@ public class UsabilitySmellDetector {
 	 * @return					a lista de grafos das sessões detectadas com o smell
 	 * @throws IOException
 	 */
-	public Map<String, List<SessionGraph>> detectLaboriousTasks2(List<TaskSmellAnalysis> tasks, int maxActionCount, long maxTime, int minSessionCount) throws IOException{
-		Map<String, List<SessionGraph>> detections = new HashMap<String, List<SessionGraph>>();		
+	public List<TaskSmellAnalysisResult> detectLaboriousTasks2(List<TaskSmellAnalysis> tasks, int maxActionCount, long maxTime, int minSessionCount) throws IOException{
+		List<TaskSmellAnalysisResult> detections = new ArrayList<TaskSmellAnalysisResult>();
 		if (maxActionCount == DEFAULT_VALUE)
 			maxActionCount = 50;
 		if (maxTime == DEFAULT_VALUE)
@@ -379,28 +380,31 @@ public class UsabilitySmellDetector {
 		if (minSessionCount == DEFAULT_VALUE)
 			minSessionCount = 10;
 		for (TaskSmellAnalysis task : tasks) {
-			detections.put(task.getName(), new ArrayList<SessionGraph>());
+			List<SessionGraph> detectedSessions = new ArrayList<SessionGraph>();
 			if (task.getSessions().size() >= minSessionCount) {				
 				for (SessionResultDataMining session : task.getSessions()) {
 					int sessionActionCount = explicitActionCount(session);
-					if (sessionActionCount > maxActionCount && session.getTime() > maxTime) {
+					if (sessionActionCount > maxActionCount && session.getTime() > maxTime
+							&& session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
 						Map<String, String> sessionInfo = new LinkedHashMap<String, String>();
-						sessionInfo.put("Quantidade de ações", String.valueOf(sessionActionCount));
-						sessionInfo.put("Duração", TimeUnit.MILLISECONDS.toMinutes(session.getTime()) + " minutos");
-						detections.get(task.getName()).add(new SessionGraph(session.getId(), session, sessionGraph(session), sessionInfo));
+						sessionInfo.put("datamining.smells.testes.actionscount", String.valueOf(sessionActionCount));
+						sessionInfo.put("datamining.smells.testes.time", TimeUnit.MILLISECONDS.toMinutes(session.getTime()) + " min");
+						detectedSessions.add(new SessionGraph(session.getId(), session, sessionGraph(session), sessionInfo));
 					}
 				}
+				if (detectedSessions.size() > 0)
+					detections.add(new TaskSmellAnalysisResult(task.getName(), detectedSessions, (double)detectedSessions.size()/task.getSessions().size()));
 			}
 		}
-		return cleanSessionGraphMap(detections);
+		return detections;
 	}
+	
 	/**
 	 * Retorna a lista de grafos das sessões onde o smell foi detectado. A detecção é determinada 
 	 * pelo atributo maxCycleRate, onde a sessão é considerada como contendo o smell caso 
 	 * ultrapasse o valor máximo estabelecido. A taxa de ciclos representa a proporção da sessão 
-	 * que é constituída de atividades repetitivas (cíclicas). No mapa de retorno, cada chave 
-	 * representa uma tarefa, e o valor da chave contém a lista de sessões dessa tarefa onde foram 
-	 * realizadas as detecções do smell.
+	 * que é constituída de atividades repetitivas (cíclicas). Apenas as sessões completas são 
+	 * analisadas.
 	 * 
 	 * @param	tasks			uma lista de tarefas
 	 * @param	maxCycleRate	a taxa de ciclos máxima que uma sessão sem o smell pode conter
@@ -408,14 +412,14 @@ public class UsabilitySmellDetector {
 	 * @return					a lista de grafos das sessões detectadas com o smell
 	 * @throws IOException
 	 */
-	public Map<String, List<SessionGraph>> detectCyclicSessions2(List<TaskSmellAnalysis> tasks, double maxCycleRate, int minActionCount) throws IOException{
-		Map<String, List<SessionGraph>> detections = new HashMap<String, List<SessionGraph>>();
+	public List<TaskSmellAnalysisResult> detectCyclicSessions2(List<TaskSmellAnalysis> tasks, double maxCycleRate, int minActionCount) throws IOException{
+		List<TaskSmellAnalysisResult> detections = new ArrayList<TaskSmellAnalysisResult>();
 		if (maxCycleRate == DEFAULT_VALUE)
 			maxCycleRate = 0.9;
 		if (minActionCount == DEFAULT_VALUE)
 			minActionCount = 10;
 		for (TaskSmellAnalysis task : tasks) {
-			detections.put(task.getName(), new ArrayList<SessionGraph>());
+			List<SessionGraph> detectedSessions = new ArrayList<SessionGraph>();
 			for (SessionResultDataMining session : task.getSessions()) {				
 				if (session.getActions().size() > minActionCount
 						&& session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)){
@@ -432,14 +436,251 @@ public class UsabilitySmellDetector {
 					double rate = (double) cyclicActionsCount/session.getActions().size();
 					if (rate > maxCycleRate) {
 						Map<String, String> sessionInfo = new LinkedHashMap<String, String>();
-						sessionInfo.put("Taxa de ciclos", (rate*100) + "%");
-						detections.get(task.getName()).add(new SessionGraph(session.getId(), session, sessionGraph, sessionInfo));
+						sessionInfo.put("datamining.smells.testes.cyclerate", String.format("%.2f", rate*100) + "%");
+						detectedSessions.add(new SessionGraph(session.getId(), session, sessionGraph, sessionInfo));
 					}
 				}
 			}
-			
+			if (detectedSessions.size() > 0)
+				detections.add(new TaskSmellAnalysisResult(task.getName(), detectedSessions, (double)detectedSessions.size()/task.getSessions().size()));
 		}
-		return cleanSessionGraphMap(detections);
+		return detections;
+	}
+	
+	/**
+	 * Retorna uma lista de informações sobre as ações onde o smell foi detectado. A detecção é 
+	 * determinada pelo atributo maxOccurreceRate, onde a ação é considerada como contendo o smell 
+	 * caso ultrapasse o valor estabelecido. A taxa de ocorrência determina a proporção de 
+	 * ocorrência de uma determinada ação em uma determinada url em comparação às demais ações que 
+	 * ocorrem nessa mesma url. As ações do tipo "mouseover" e "onload" são desconsideradas nessa 
+	 * análise, pois não são diretamente executadas pelo usuário.
+	 * 
+	 * @param	actions				uma lista de ações
+	 * @param	maxOccurrenceRate	a taxa de ocorrência máxima que uma ação sem o smell pode ter
+	 * @param	minOccurrenceCount	o número mínimo de ações que uma url deve ter para a análise
+	 * @return						a lista de ações onde o smell foi detectado
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, Map<String, String>> detectLonelyAction2(List<ActionDataMining> actions, double maxOccurrenceRate, int minOccurrenceCount) throws IOException{
+		Map<String, Map<String, String>> detections = new HashMap<String, Map<String,String>>();
+		List<ActionDataMining> sessionFreeActions = sessionFreeActions(actions);
+		Collection<String> allUrls = CollectionUtils.collect(sessionFreeActions, TransformerUtils.invokerTransformer("getsUrl"));
+		Set<String> uniqueUrls = new HashSet<String>(allUrls);
+		if (minOccurrenceCount == DEFAULT_VALUE) {
+			List<Integer> urlsActionCount = new ArrayList<Integer>();
+			for (String url : uniqueUrls) {
+				urlsActionCount.add(filteredActionsIds(sessionFreeActions, url).size());
+			}
+			minOccurrenceCount = (int)median(urlsActionCount.toArray(new Integer[0]));
+		}
+		boolean recalcOcurrenceRate = false;
+		if (maxOccurrenceRate == DEFAULT_VALUE)
+			recalcOcurrenceRate = true;
+		for (String url : uniqueUrls) {
+			List<String> urlActionsIds = filteredActionsIds(sessionFreeActions, url);
+			if (urlActionsIds.size() < minOccurrenceCount)
+				continue;
+			Multiset<String> urlActionsIdsFrequencyMapping = HashMultiset.create();
+			urlActionsIdsFrequencyMapping.addAll(urlActionsIds);			
+			if (recalcOcurrenceRate) {
+				if (urlActionsIdsFrequencyMapping.size() > 1) {
+					List<Double> urlActionsFrequencyRates = new ArrayList<Double>();
+					for (String id : urlActionsIdsFrequencyMapping.elementSet()) {
+						double rate = (double)urlActionsIdsFrequencyMapping.count(id)/urlActionsIds.size();
+						urlActionsFrequencyRates.add(rate);
+					}
+					Collections.sort(urlActionsFrequencyRates);
+					maxOccurrenceRate = 5*urlActionsFrequencyRates.get(urlActionsFrequencyRates.size()-2);
+				} else {
+					maxOccurrenceRate = 0;
+				}
+			}			
+			for (String id : urlActionsIdsFrequencyMapping.elementSet()) {
+				int actionOccurrenceCount = urlActionsIdsFrequencyMapping.count(id);
+				double actionOccurrenceRate = (double)actionOccurrenceCount/urlActionsIds.size();
+				if (actionOccurrenceRate > maxOccurrenceRate){
+					Map<String, String> info = new LinkedHashMap<String, String>();
+					info.put("datamining.smells.testes.occurrencecount", String.valueOf(actionOccurrenceCount));
+					info.put("datamining.smells.testes.occurrencerate", String.format("%.2f", actionOccurrenceRate*100)+"%");
+					info.put("datamining.smells.testes.content", getActionById(sessionFreeActions, id).getsContent());
+					detections.put(id, info);
+					break;
+				}
+			}
+		}		
+		return detections;
+	}
+	
+	/**
+	 * Retorna a lista de grafos das sessões onde o smell foi detectado. A detecção é determinada 
+	 * pelo atributo maxLayerCount, onde a sessão é considerada como contendo o smell caso 
+	 * ultrapasse o valor estabelecido. A quantidade de camadas é determinada pelo número de urls 
+	 * diferentes na sessão, portanto, páginas diferentes com urls iguais são contabilizadas como 
+	 * sendo uma única página. Em adição, somente as sessões completas são analisadas.
+	 * 
+	 * @param	tasks			uma lista de tarefas
+	 * @param	maxLayerCount	o número máximo de camadas que uma sessão sem o smell pode ter
+	 * @return					a lista de grafos das sessões detectadas com o smell
+	 * @throws IOException
+	 */
+	public List<TaskSmellAnalysisResult> detectTooManyLayers2(List<TaskSmellAnalysis> tasks, int maxLayerCount) throws IOException{
+		if (maxLayerCount == DEFAULT_VALUE) {
+			maxLayerCount = 5;
+		}
+		List<TaskSmellAnalysisResult> detections = new ArrayList<TaskSmellAnalysisResult>();
+		for (TaskSmellAnalysis task : tasks) {
+			List<SessionGraph> detectedSessions = new ArrayList<SessionGraph>();
+			for (SessionResultDataMining session : task.getSessions()) {
+				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)){
+					Set<String> sessionUniqueUrls = new HashSet<String>();
+					for (PageViewActionDataMining action : session.getActions()) {
+						sessionUniqueUrls.add(action.getLocal());
+					}
+					if (sessionUniqueUrls.size() > maxLayerCount) {
+						Map<String, String> sessionInfo = new HashMap<String, String>();
+						sessionInfo.put("datamining.smells.testes.layercount", String.valueOf(sessionUniqueUrls.size()));
+						detectedSessions.add(new SessionGraph(session.getId(), session, sessionGraph(session), sessionInfo));
+					}
+				}
+			}
+			if (detectedSessions.size() != 0){
+				detections.add(new TaskSmellAnalysisResult(task.getName(), detectedSessions, (double)detectedSessions.size()/task.getSessions().size()));
+			}
+		}
+		return detections;
+	}
+	
+	/**
+	 * Retorna uma lista de informações sobre as ações onde o smell foi detectado. A detecção é 
+	 * determinada pelos atributos maxAttemptCount e maxTimeInterval, onde a detecção é realizada 
+	 * caso a ação ultrapasse o valor máximo dentro do intervalo de tempo estabelecido. O número de
+	 *  tentativas diz respeito à quantidade de tentativas de "tooltip" em um determinado elemento.
+	 *  O intervalo de tempo estabelece a diferença máxima de tempo entre a ocorrência de dois 
+	 * eventos para que estes sejam considerados em uma mesma análise.
+	 * 
+	 * @param	actions			uma lista de ações
+	 * @param	maxAttemptCount	o número máximo de tentativas qeu uma ação sem o smell pode ter
+	 * @param	maxTimeInterval	o intervalo de tempo máximo (em dias) para a análise
+	 * @return					a lista de ações onde o smell foi detectado
+	 * @throws IOException
+	 */
+	//TODO remover os elementos de sessao das urls (sessionFreeActions) desse e do missing feedback
+	public Map<String, Map<String, String>> detectUndescriptiveElement2(List<ActionDataMining> actions, int maxAttemptCount, int maxTimeInterval) throws IOException {
+		if (maxAttemptCount == DEFAULT_VALUE) {
+			maxAttemptCount = 100;
+		}
+		Map<String, Map<String, String>> detections = new HashMap<String, Map<String,String>>();
+		long maxStartDate = Long.MAX_VALUE, maxEndDate = Long.MIN_VALUE;
+		for (ActionDataMining action : actions) {
+			if (action.getsTime() < maxStartDate)
+				maxStartDate = action.getsTime();
+			if (action.getsTime() > maxEndDate)
+				maxEndDate = action.getsTime();
+		}
+		long startDate = maxStartDate, endDate = maxStartDate + TimeUnit.DAYS.toMillis(maxTimeInterval-1);
+		final long oneDay = TimeUnit.DAYS.toMillis(1);
+		do{
+			List<String> actionsIds = new ArrayList<String>();
+			for (ActionDataMining action : actions) {
+				if (action.getsActionType().equals("mouseover") && action.getsTime() >= startDate && action.getsTime() <= endDate)
+					actionsIds.add(actionId(action));
+			}
+			Multiset<String> actionsFrequencyMapping = HashMultiset.create();
+			actionsFrequencyMapping.addAll(actionsIds);
+			for (String id : actionsFrequencyMapping.elementSet()) {
+				int actionCount = actionsFrequencyMapping.count(id);
+				if (actionCount > maxAttemptCount) {
+					Map<String, String> actionInfo = new HashMap<String, String>();
+					actionInfo.put("datamining.smells.testes.tooltipattempts", String.valueOf(actionCount));
+					detections.put(id, actionInfo);
+				}
+			}
+			startDate += oneDay;
+			endDate += oneDay;
+		} while (endDate <= maxEndDate);
+		return detections;
+	}
+	
+	/**
+	 * Retorna uma lista de informações sobre as ações onde o smell foi detectado. A detecção é 
+	 * determinada pelo atributo maxRepetitionCount, onde a ação é considerada como contendo o 
+	 * smell caso ultrapasse o valor máximo estabelecido. O número de repetições representa a 
+	 * quantidade de vezes que uma ação é realizada em sequência, ou seja, repetidas vezes. As 
+	 * ações do tipo "mouseover" não são analisadas nem contabilizadas.
+	 * 
+	 * @param	actions				uma lista de ações
+	 * @param	maxRepetitionCount	o número máximo de repetições que uma ação sem o smell pode ter
+	 * @param	minOccurrenceCount	mínimo de ocorrências não-sequenciais de uma ação para análise
+	 * @return						a lista de ações onde o smell foi detectado
+	 */
+	public Map<String, Map<String, String>> detectMissingFeedback2 (List<ActionDataMining> actions, int maxRepetitionCount, int minOccurrenceCount) {
+		if (maxRepetitionCount == DEFAULT_VALUE)
+			maxRepetitionCount = 3;
+		if (minOccurrenceCount == DEFAULT_VALUE)
+			minOccurrenceCount = 5;
+		Map<String, Map<String, String>> detections = new HashMap<String, Map<String,String>>();
+		Map<String, List<ActionDataMining>> usersActions = new HashMap<String, List<ActionDataMining>>();
+		for (ActionDataMining action : actions) {
+			if (action.getsActionType().equals("mouseover"))
+				continue;
+			if (usersActions.get(action.getsUsername()) == null) {
+				usersActions.put(action.getsUsername(), new ArrayList<ActionDataMining>());
+				usersActions.get(action.getsUsername()).add(action);
+			} else {
+				usersActions.get(action.getsUsername()).add(action);
+			}
+		}
+		for (List<ActionDataMining> userActions : usersActions.values()) {
+			Collections.sort(userActions, new Comparator<Object>() {
+				@Override
+				public int compare(Object o1, Object o2) {
+					Long t1 = ((ActionDataMining) o1).getsTime();
+					Long t2 = ((ActionDataMining) o2).getsTime();
+					return t1 < t2 ? -1 : (t1 > t2 ? +1 : 0);
+				}
+			});
+		}
+		Map<String, List<Integer>> actionsRepetitions = new HashMap<String, List<Integer>>();
+		for (List<ActionDataMining> userActions : usersActions.values()) {
+			int repetitionCount = 1;
+			String currentAction = "";
+			String previousAction = "";
+			for (int i = 1; i < userActions.size(); i++) {
+				currentAction = actionId(userActions.get(i));
+				previousAction = actionId(userActions.get(i-1));
+				if (currentAction.equals(previousAction)) {
+					repetitionCount++;
+				} else {
+					if (actionsRepetitions.get(previousAction) == null) {
+						actionsRepetitions.put(previousAction, new ArrayList<Integer>());
+						actionsRepetitions.get(previousAction).add(repetitionCount);
+					} else {
+						actionsRepetitions.get(previousAction).add(repetitionCount);
+					}
+					repetitionCount = 1;
+				}
+			}
+			if (actionsRepetitions.get(currentAction) == null) {
+				actionsRepetitions.put(currentAction, new ArrayList<Integer>());
+				actionsRepetitions.get(currentAction).add(repetitionCount);
+			} else {
+				actionsRepetitions.get(currentAction).add(repetitionCount);
+			}
+		}
+		for (String key : actionsRepetitions.keySet()) {
+			if (actionsRepetitions.get(key).size() > minOccurrenceCount) {
+				double actionRepetitionsMedian = median(actionsRepetitions.get(key).toArray(new Integer[actionsRepetitions.get(key).size()]));
+				if (actionRepetitionsMedian > maxRepetitionCount) {
+					Map<String, String> actionInfo = new LinkedHashMap<String, String>();
+					actionInfo.put("datamining.smells.testes.repetitionmedian", String.valueOf(actionRepetitionsMedian));
+					actionInfo.put("datamining.smells.testes.instances", String.valueOf(actionsRepetitions.get(key).size()));
+					actionInfo.put("datamining.smells.testes.content", getActionById(actions, key).getsContent());
+					detections.put(key, actionInfo);
+				}				
+			}
+		}
+		return detections;
 	}
 	
 	//*********************************************************************************************
@@ -545,7 +786,7 @@ public class UsabilitySmellDetector {
 	 * @param	action	uma ação
 	 * @return			o identificador único da ação de entrada
 	 */
-	private String getActionId (ActionDataMining action) {
+	private String actionId (ActionDataMining action) {
 		return action.getsUrl() + " | " + action.getsXPath() + " | " + action.getsActionType();
 	}
 	
@@ -672,16 +913,17 @@ public class UsabilitySmellDetector {
 	}
 	
 	/**
-	 * @param	map	um mapa de grafos de sessão
-	 * @return		o mapa de entrada sem as tarefas com a lista de sessões vazia
+	 * @param	actions		uma lista de ações
+	 * @param	actionId	o id de uma ação presente na lista de entrada
+	 * @return				a ação da lista de entrada com o id correspondente
 	 */
-	private Map<String, List<SessionGraph>> cleanSessionGraphMap (Map<String, List<SessionGraph>> map) {
-		Map<String, List<SessionGraph>> cleanMap = new HashMap<String, List<SessionGraph>>();
-		for (Entry<String, List<SessionGraph>> entry : map.entrySet()) {
-			if (entry.getValue().size() != 0)
-				cleanMap.put(entry.getKey(), entry.getValue());
+	private ActionDataMining getActionById (List<ActionDataMining> actions, String actionId){
+		for (ActionDataMining action : actions) {
+			if (actionId.equals(actionId(action))) {
+				return action;
+			}
 		}
-		return cleanMap;
+		return null;
 	}
 	
 	//*********************************************************************************************
@@ -830,8 +1072,6 @@ public class UsabilitySmellDetector {
 								) + "\n");
 						
 						saveGraph(g, session.getId(), folderName);
-						
-						//TODO conversar sobre a existencia de uma sessao de referencia (sequencia de acoes que devem ser realizadas para concluir a tarefa)
 						
 					}
 				}
