@@ -565,25 +565,13 @@ angular.module('useskill',
 .factory("SmellsMetricsEnum", function(){
 	return {
 		metrics : [
-	 	    {name:'Quantidade de ações da tarefa', value:'1',
-	 	    	info: "Indica a quantidade 'bruta' de ações que foram executadas nas sessões de cada tarefa. " +
-	 	    			"Essas ações podem incluir cliques, preenchimento de campos de texto, carregamento de " +
-	 	    			"páginas, etc."},
-	 	    {name:'Tempo de duração da tarefa', value:'2',
-	 	    	info: "Indica o tempo de duração das sessões de cada tarefa, em minutos."},
-	 	    {name:'Taxa de ciclos da tarefa', value:'3',
-	 	    	info: "Indica a proporção de ações das sessões de cada tarefa que está contida em ciclos. " +
-	 	    			"Em outras palavras, esta medida diz a proporção da tarefa que envolve ações repetitvas."},
-   			{name:'Taxa de ocorrência da ação', value:'4',
-   	 	    	info: "Indica a relação entre a quantidade de vezes em que uma ação ocorre em determinada página e " +
-   	 	    			"o total de ações que ocorrem nessa página. Apenas ações explicitamente executadas pelo " +
-   	 	    			"usuário são consideradas."},
-	 	    {name:'Número de camadas da tarefa', value:'5',
-	 	    	info: "Indica o número de páginas web diferentes que os usuários tiveram de percorrer para executar" +
-	 	    			" a tarefa. Contudo, apenas páginas com urls diferentes são contabilizadas."},
-   			{name:'Número de repetições da ação', value:'6',
-   	 	    	info: "Indica as ações que mais se repetem, ou seja, aquelas que os usuários executam em sequência" +
-   	 	    			" mais frequentemente."}
+	 	    {name:'datamining.smells.testes.actioncount', value:'1'},
+	 	    {name:'datamining.smells.testes.time', value:'2'},
+	 	    {name:'datamining.smells.testes.cyclerate', value:'3'},
+   			{name:'datamining.smells.testes.occurrencerate', value:'4'},
+	 	    {name:'datamining.smells.testes.layercount', value:'5'},
+	 	    {name:'datamining.smells.testes.attemptcount', value:'6'},
+   			{name:'datamining.smells.testes.repetitioncount', value:'7'}
 	 	]
 	};
 })
@@ -617,7 +605,7 @@ angular.module('useskill',
  * tirar o efeito de mouseover das caixas
  * alterar o efeito de tooltip
  */
-.controller('SmellsStatisticFormController', function(test, UtilsService, SmellsMetricsEnum, ServerAPI, $timeout) {
+.controller('SmellsStatisticFormController', function(test, UtilsService, SmellsMetricsEnum, ServerAPI, $timeout, $filter) {
 	var smellCtrl = this;
 	smellCtrl.test = JSON.parse(test.data.string);
 	console.log(smellCtrl.test);
@@ -688,10 +676,10 @@ angular.module('useskill',
 //				                    tooltipHide: function(e){ console.log("tooltipHide"); }
 //				                },
 				                xAxis: {
-				                    axisLabel: charts.areaCharts[i].descX
+				                    axisLabel: $filter('translate')(charts.areaCharts[i].descX)
 				                },
 				                yAxis: {
-				                    axisLabel: charts.areaCharts[i].descY,
+				                    axisLabel: $filter('translate')(charts.areaCharts[i].descY),
 				                    tickFormat: function(d){
 				                        return d3.format('.01f')(d);
 				                    },
@@ -756,10 +744,10 @@ angular.module('useskill',
 				                },
 				                duration: 500,
 				                xAxis: {
-				                    axisLabel: charts.barCharts[i].descX
+				                    axisLabel: $filter('translate')(charts.barCharts[i].descX)
 				                },
 				                yAxis: {
-				                    axisLabel: charts.barCharts[i].descY,
+				                    axisLabel: $filter('translate')(charts.barCharts[i].descY),
 				                    axisLabelDistance: -10
 				                },
 				                showXAxis: false
@@ -905,10 +893,37 @@ angular.module('useskill',
 		return (rate*100).toFixed(2) + "%";
 	}
 	
+	smellCtrl.smellInfo = function (smell) {
+		return 'datamining.smells.testes.detection.' + smell.replace(/ /g, '').toLowerCase() + '.info';
+	}
+	
+	smellCtrl.smellHint = function (smell) {
+		return 'datamining.smells.testes.detection.hint.' + smell.replace(/ /g, '').toLowerCase();
+	}
+	
+	smellCtrl.smellProblems = function (smell) {
+		var i = 1;
+		var problem = 'datamining.smells.testes.detection.problem' + i + '.' + smell.replace(/ /g, '').toLowerCase();
+		var problems = [];
+		while (problem != $filter('translate')(problem)) {
+			problems.push(problem);
+			i++;
+			var problem = 'datamining.smells.testes.detection.problem' + i + '.' + smell.replace(/ /g, '').toLowerCase();
+		}
+		return problems;
+	}
+	
 	smellCtrl.splitAction = function (action) {
 		return action.split(" | ");
 	}
 	
+	smellCtrl.problemTitle = function (problem) {
+		return $filter('translate')(problem).split(":")[0];
+	}
+	
+	smellCtrl.problemDescription = function (problem) {
+		return $filter('translate')(problem).split(":")[1];
+	}
 })
 .controller('SmellConfigController', function(parameters, idSmell, UtilsService, SmellsEnum, ServerAPI) {
 	var smellCtrl = this;

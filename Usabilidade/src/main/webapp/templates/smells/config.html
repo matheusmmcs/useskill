@@ -33,23 +33,23 @@
 				<fieldset>
 					<legend>
 						<span>{{ smellCtrl.smell.name }}</span>
-						<hr/>
 					</legend>
 					
 					<div class="control-group" ng-repeat="param in smellCtrl.parameters | orderBy:'id'">
-		            	<label class="control-label" for="{{ param.id }}">{{ param.parameterSmell.description }}:</label>
+		            	<label class="control-label" for="{{ param.id }}">{{ param.parameterSmell.description | translate }}: 
+		            		<a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ param.parameterSmell.description.replace('detection', 'config') + '.info' | translate }}"></a>
+		            	</label>
 		            	<div class="controls">
 		            		<input type="text" ng-model="param.value" id="{{ param.id }}" class="input" />
 		            	</div>
 		        	</div>
 		        	
-		
 					<hr/>
 					
 		        	<div class="form-actions">
-		            	<button ng-click="smellCtrl.changeValueParam()" class="btn btn-primary pull-right submit">Salvar Alterações</button>
-		            	<button ng-click="smellCtrl.redefineDefault()" class="btn pull-right">Redefinir Padrão</button>
-<!-- 		            	<a href="#/" onclick="window.history.go(-1); return false;" class="btn pull-right">{{ 'datamining.back' | translate}}</a> -->
+		            	<button ng-click="smellCtrl.changeValueParam()" class="btn btn-primary pull-right submit">{{ 'datamining.smells.testes.config.save' | translate }}</button>
+		            	<button ng-click="smellCtrl.redefineDefault()" class="btn pull-right">{{ 'datamining.smells.testes.config.redefine' | translate }}</button>
+		            	<a href="#/" onclick="window.history.go(-1); return false;" class="btn pull-left">{{ 'datamining.back' | translate}}</a>
 		        	</div>
 		        	
 				</fieldset>

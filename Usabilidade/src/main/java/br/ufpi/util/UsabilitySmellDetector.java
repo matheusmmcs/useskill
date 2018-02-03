@@ -21,10 +21,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -101,7 +103,7 @@ public class UsabilitySmellDetector {
 			}			
 			series.add(datasetDistributionSerie(task.getName(), taskActionCountDataset));
 		}
-		return new StackedAreaChart("Gráfico da Quantidade de Ações", "Proporção de sessões da tarefa (%)", "Quantidade de ações", series);
+		return new StackedAreaChart("datamining.smells.testes.statistics.actioncountchart", "datamining.smells.testes.statistics.sessionproportion", "datamining.smells.testes.actioncount", series);
 	}
 	
 	/**
@@ -126,7 +128,7 @@ public class UsabilitySmellDetector {
 			}
 			series.add(taskTimeSerie);
 		}
-		return new StackedAreaChart("Gráfico de Duração", "Proporção de sessões da tarefa (%)", "Tempo de duração (min)", series);
+		return new StackedAreaChart("datamining.smells.testes.statistics.timechart", "datamining.smells.testes.statistics.sessionproportion", "datamining.smells.testes.time", series);
 	}
 	
 	/**
@@ -147,7 +149,7 @@ public class UsabilitySmellDetector {
 			}
 			series.add(datasetDistributionSerie(task.getName(), taskCycleRateDataset));
 		}
-		return new StackedAreaChart("Gráfico de Taxa de Ciclos", "Proporção de sessões da tarefa (%)", "Taxa de ciclos (%)", series);
+		return new StackedAreaChart("datamining.smells.testes.statistics.cycleratechart", "datamining.smells.testes.statistics.sessionproportion", "datamining.smells.testes.cyclerate", series);
 	}
 	
 	/**
@@ -193,7 +195,7 @@ public class UsabilitySmellDetector {
 				}
 			}
 		}
-		return new BarChart("Gráfico das Ações Mais Frequentes", "Ações", "Taxa de ocorrência (%)", sortedMap(mostFrequentActions));
+		return new BarChart("datamining.smells.testes.statistics.actionfrequencychart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.occurrencerate", sortedMap(mostFrequentActions));
 	}
 	
 	/**
@@ -219,77 +221,59 @@ public class UsabilitySmellDetector {
 			}
 			series.add(datasetDistributionSerie(task.getName(), taskLayerCountDataset));
 		}
-		return new StackedAreaChart("Gráfico do Número de Camadas", "Proporção de amostras (%)", "Número de camadas", series);
+		return new StackedAreaChart("datamining.smells.testes.statistics.layercountchart", "datamining.smells.testes.statistics.sessionproportion", "datamining.smells.testes.layercount", series);
 	}
 	
-	//FIM - Métodos para geração de gráficos das métricas dos smells
-	
-	//TODO testar e anotar
-	//TODO ver qual o resultado se forem consideradas apenas as sessoes comepletas
-	public BarChart generateActionRepetitionCountChart (List<TaskSmellAnalysis> tasks) {
-		
-		int top = 10;
-		
+	/**
+	 * Gera o gráfico dos elementos que possuem mais tentativas de tooltip, onde esses elementos 
+	 * são determinados através da busca por ações do tipo "mouseover". Como a quantidade de ações 
+	 * possíveis em uma determinada aplicação pode ser muito grande, esse gráfico deve ser limitado
+	 *  por um número máximo de resultados, representando os elementos com maior quantidade de 
+	 * tentativas de tooltip ordenados em ordem crescente.
+	 * 
+	 * @param	actions			uma lista de ações
+	 * @param	maxResultCount	a quantidade máxima de ações no gráfico de saída
+	 * @return					o gráfico de tentativas de tooltip referente às ações de entrada
+	 */
+	public BarChart generateActionTooltipCountChart (List<ActionDataMining> actions, int maxResultCount) {
+		List<ActionDataMining> sessionFreeActions = sessionFreeActions(actions);
+		List<String> actionsIds = new ArrayList<String>();
+		for (ActionDataMining action : sessionFreeActions) {
+			if (action.getsActionType().equals("mouseover"))
+				actionsIds.add(actionId(action));
+		}
 		Map<String, Double> mostRepeatedActions = new HashMap<String, Double>();
-		
-		for (int i = 0; i < top; i++) {
+		for (int i = 0; i < maxResultCount; i++) {
 			mostRepeatedActions.put(String.valueOf(i), 0.0);
 		}
-		
-		for (TaskSmellAnalysis task : tasks) {
-			
-			Set<String> repeatedActions = new HashSet<String>();
-			for (SessionResultDataMining session : task.getSessions()) {
-				String previousAction = null;
-				for (PageViewActionDataMining action : orderedActions(session)) {
-					if (action.getPageViewActionUnique().equals(previousAction)) {
-						repeatedActions.add(previousAction);
-					}
-					previousAction = action.getPageViewActionUnique();
-				}
+		Multiset<String> actionsFrequencyMapping = HashMultiset.create();
+		actionsFrequencyMapping.addAll(actionsIds);
+		for (String id : actionsFrequencyMapping.elementSet()) {
+			int actionCount = actionsFrequencyMapping.count(id);
+			String minKey = minKey(mostRepeatedActions);
+			if (actionCount > mostRepeatedActions.get(minKey)) {
+				mostRepeatedActions.remove(minKey);
+				mostRepeatedActions.put(id, (double)actionCount);
 			}
-			
-			//Mapeamento de cada acao do conjunto com a lista de numeros de ocorrencia da mesma em cada sessao
-			Map<String, List<Integer>> actionsRepetitionMapping = new HashMap<String, List<Integer>>();
-			
-			//Preenche o mapeamento com o maior numero de ocorrencias seguidas de cada acao em cada sessao
-			for (String repeatedAction : repeatedActions) {
-				actionsRepetitionMapping.put(repeatedAction, new ArrayList<Integer>());
-				for (SessionResultDataMining session : task.getSessions()) {
-					List<PageViewActionDataMining> actions = orderedActions(session);
-					int repetition = 0, maxRepetition = 0;
-					for (PageViewActionDataMining action : actions) {
-						if (action.getPageViewActionUnique().equals(repeatedAction))
-							repetition++;
-						else
-							repetition = 0;
-						
-						if (repetition > maxRepetition)
-							maxRepetition = repetition;
-					}
-					actionsRepetitionMapping.get(repeatedAction).add(maxRepetition);
-				}
-			}
-					
-			//Preenche o mapeamento de acoes detectadas, desconsiderando as sessoes com numero de ocorrencias igual a zero
-			for (String key : actionsRepetitionMapping.keySet()) {
-				actionsRepetitionMapping.get(key).removeAll(Arrays.asList(0));
-				double median = median(actionsRepetitionMapping.get(key).toArray(new Integer[actionsRepetitionMapping.get(key).size()]));
-				String minKey = minKey(mostRepeatedActions);
-				if (median > mostRepeatedActions.get(minKey)) {
-					mostRepeatedActions.remove(minKey);
-					mostRepeatedActions.put(key, median);
-				}
-			}
-						
 		}
-		
-		return new BarChart("Gráfico das Ações Mais Repetidas", "Proporção de amostras (%)", "Número de repetições (mediana)", sortedMap(mostRepeatedActions));
+		return new BarChart("datamining.smells.testes.statistics.actiontooltipchart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.attemptcount", sortedMap(mostRepeatedActions));
 	}
 	
-	//Testar recebendo as acoes, em vez das sessoes, como entrada
-	//Para isso separa-las por usuario e ordena-las, para cada usuario, por tempo
-	public BarChart generateActionRepetitionCountChart2 (List<ActionDataMining> actions, int maxChartActionCount) {
+	/**
+	 * Gera o gráfico de quantidade de repetições das ações mais repetidas. Como a quantidade de 
+	 * ações possíveis em uma determinada aplicação pode ser muito grande, esse gráfico deve ser 
+	 * limitado por um número máximo de resultados, representando as ações com maior quantidade 
+	 * média de repetições ordenadas em ordem crescente. As ações do tipo "mouseover" são 
+	 * desconsideradas, pois nem sempre são realizadas intencionalmente pelo usuário. Internamente 
+	 * também é estabelecido um número mínimo de ocorrências não-sequenciais para que uma ação seja
+	 *  analisada (evitando que ações esporádicas gerem uma quantidade de repetições muito 
+	 * elevadas), dado pela mediana do número de instâncias de cada ação.
+	 * 
+	 * @param	actions			uma lista de ações
+	 * @param	maxResultCount	a quantidade máxima de ações no gráfico de saída
+	 * @return					o gráfico de quantidade de repetições referente às ações de entrada
+	 */
+	public BarChart generateActionRepetitionCountChart (List<ActionDataMining> actions, int maxResultCount) {
 		Map<String, List<ActionDataMining>> usersActions = new HashMap<String, List<ActionDataMining>>();
 		for (ActionDataMining action : actions) {
 			if (action.getsActionType().equals("mouseover"))
@@ -338,19 +322,25 @@ public class UsabilitySmellDetector {
 				actionsRepetitions.get(currentAction).add(repetitionCount);
 			}
 		}
+		List<Integer> actionInstancesCount = new ArrayList<Integer>();
+		for (List<Integer> actionInstances : actionsRepetitions.values())
+			actionInstancesCount.add(actionInstances.size());
+		int minOccurrenceCount = (int)median(actionInstancesCount.toArray(new Integer[actionInstancesCount.size()]));
 		Map<String, Double> mostRepeatedActions = new HashMap<String, Double>();
-		for (int i = 0; i < maxChartActionCount; i++) {
+		for (int i = 0; i < maxResultCount; i++) {
 			mostRepeatedActions.put(String.valueOf(i), 0.0);
 		}
 		for (String key : actionsRepetitions.keySet()) {
-			double median = median(actionsRepetitions.get(key).toArray(new Integer[actionsRepetitions.get(key).size()]));
-			String minKey = minKey(mostRepeatedActions);
-			if (median > mostRepeatedActions.get(minKey)) {
-				mostRepeatedActions.remove(minKey);
-				mostRepeatedActions.put(key, median);
+			if (actionsRepetitions.get(key).size() >= minOccurrenceCount) {
+				double median = median(actionsRepetitions.get(key).toArray(new Integer[actionsRepetitions.get(key).size()]));
+				String minKey = minKey(mostRepeatedActions);
+				if (median > mostRepeatedActions.get(minKey)) {
+					mostRepeatedActions.remove(minKey);
+					mostRepeatedActions.put(key, median);
+				}
 			}
 		}
-		return new BarChart("Gráfico das Ações Mais Repetidas", "Proporção de amostras (%)", "Número de repetições", sortedMap(mostRepeatedActions));
+		return new BarChart("datamining.smells.testes.statistics.actionrepetitionchart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.repetitioncount", sortedMap(mostRepeatedActions));
 	}
 	
 	//*********************************************************************************************
@@ -371,7 +361,7 @@ public class UsabilitySmellDetector {
 	 * @return					a lista de grafos das sessões detectadas com o smell
 	 * @throws IOException
 	 */
-	public List<TaskSmellAnalysisResult> detectLaboriousTasks2(List<TaskSmellAnalysis> tasks, int maxActionCount, long maxTime, int minSessionCount) throws IOException{
+	public List<TaskSmellAnalysisResult> detectLaboriousTask (List<TaskSmellAnalysis> tasks, int maxActionCount, long maxTime, int minSessionCount) throws IOException{
 		List<TaskSmellAnalysisResult> detections = new ArrayList<TaskSmellAnalysisResult>();
 		if (maxActionCount == DEFAULT_VALUE)
 			maxActionCount = 50;
@@ -387,13 +377,22 @@ public class UsabilitySmellDetector {
 					if (sessionActionCount > maxActionCount && session.getTime() > maxTime
 							&& session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
 						Map<String, String> sessionInfo = new LinkedHashMap<String, String>();
-						sessionInfo.put("datamining.smells.testes.actionscount", String.valueOf(sessionActionCount));
+						sessionInfo.put("datamining.smells.testes.actioncount", String.valueOf(sessionActionCount));
 						sessionInfo.put("datamining.smells.testes.time", TimeUnit.MILLISECONDS.toMinutes(session.getTime()) + " min");
 						detectedSessions.add(new SessionGraph(session.getId(), session, sessionGraph(session), sessionInfo));
 					}
 				}
-				if (detectedSessions.size() > 0)
+				if (detectedSessions.size() > 0) {
+					Collections.sort(detectedSessions, new Comparator<Object>() {
+						@Override
+						public int compare(Object o1, Object o2) {
+							Long t1 = ((SessionGraph) o1).getSession().getTime() + ((SessionGraph) o1).getSession().getActions().size();
+							Long t2 = ((SessionGraph) o2).getSession().getTime() + ((SessionGraph) o2).getSession().getActions().size();
+							return t2 < t1 ? -1 : (t2 > t1 ? +1 : 0);
+						}
+					});
 					detections.add(new TaskSmellAnalysisResult(task.getName(), detectedSessions, (double)detectedSessions.size()/task.getSessions().size()));
+				}
 			}
 		}
 		return detections;
@@ -412,7 +411,7 @@ public class UsabilitySmellDetector {
 	 * @return					a lista de grafos das sessões detectadas com o smell
 	 * @throws IOException
 	 */
-	public List<TaskSmellAnalysisResult> detectCyclicSessions2(List<TaskSmellAnalysis> tasks, double maxCycleRate, int minActionCount) throws IOException{
+	public List<TaskSmellAnalysisResult> detectCyclicTask (List<TaskSmellAnalysis> tasks, double maxCycleRate, int minActionCount) throws IOException{
 		List<TaskSmellAnalysisResult> detections = new ArrayList<TaskSmellAnalysisResult>();
 		if (maxCycleRate == DEFAULT_VALUE)
 			maxCycleRate = 0.9;
@@ -436,13 +435,22 @@ public class UsabilitySmellDetector {
 					double rate = (double) cyclicActionsCount/session.getActions().size();
 					if (rate > maxCycleRate) {
 						Map<String, String> sessionInfo = new LinkedHashMap<String, String>();
-						sessionInfo.put("datamining.smells.testes.cyclerate", String.format("%.2f", rate*100) + "%");
+						sessionInfo.put("datamining.smells.testes.cyclerate", String.format("%.2f", rate*100));
 						detectedSessions.add(new SessionGraph(session.getId(), session, sessionGraph, sessionInfo));
 					}
 				}
 			}
-			if (detectedSessions.size() > 0)
+			if (detectedSessions.size() > 0){
+				Collections.sort(detectedSessions, new Comparator<Object>() {
+					@Override
+					public int compare(Object o1, Object o2) {
+						Double t1 = Double.valueOf(((SessionGraph) o1).getInfo().get("datamining.smells.testes.cyclerate").substring(0, 4).replace(",", "."));
+						Double t2 = Double.valueOf(((SessionGraph) o2).getInfo().get("datamining.smells.testes.cyclerate").substring(0, 4).replace(",", "."));
+						return t2 < t1 ? -1 : (t2 > t1 ? +1 : 0);
+					}
+				});
 				detections.add(new TaskSmellAnalysisResult(task.getName(), detectedSessions, (double)detectedSessions.size()/task.getSessions().size()));
+			}
 		}
 		return detections;
 	}
@@ -462,7 +470,7 @@ public class UsabilitySmellDetector {
 	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
-	public Map<String, Map<String, String>> detectLonelyAction2(List<ActionDataMining> actions, double maxOccurrenceRate, int minOccurrenceCount) throws IOException{
+	public Map<String, Map<String, String>> detectLonelyAction (List<ActionDataMining> actions, double maxOccurrenceRate, int minOccurrenceCount) throws IOException{
 		Map<String, Map<String, String>> detections = new HashMap<String, Map<String,String>>();
 		List<ActionDataMining> sessionFreeActions = sessionFreeActions(actions);
 		Collection<String> allUrls = CollectionUtils.collect(sessionFreeActions, TransformerUtils.invokerTransformer("getsUrl"));
@@ -501,15 +509,26 @@ public class UsabilitySmellDetector {
 				double actionOccurrenceRate = (double)actionOccurrenceCount/urlActionsIds.size();
 				if (actionOccurrenceRate > maxOccurrenceRate){
 					Map<String, String> info = new LinkedHashMap<String, String>();
+					info.put("datamining.smells.testes.occurrencerate", String.format("%.2f", actionOccurrenceRate*100));
 					info.put("datamining.smells.testes.occurrencecount", String.valueOf(actionOccurrenceCount));
-					info.put("datamining.smells.testes.occurrencerate", String.format("%.2f", actionOccurrenceRate*100)+"%");
 					info.put("datamining.smells.testes.content", getActionById(sessionFreeActions, id).getsContent());
 					detections.put(id, info);
 					break;
 				}
 			}
-		}		
-		return detections;
+		}
+//		List<Map.Entry<String, Map<String, String>>> list = new LinkedList<Map.Entry<String, Map<String, String>>>(detections.entrySet());
+//        Collections.sort( list, new Comparator<Map.Entry<String, Map<String, String>>>() {
+//            public int compare(Map.Entry<String, Map<String, String>> o1, Map.Entry<String, Map<String, String>> o2) {
+//            	return (o2.getValue().get("datamining.smells.testes.occurrencerate")).compareTo( o1.getValue().get("datamining.smells.testes.occurrencerate") );
+//            }
+//        });
+//
+//        Map<String, Map<String, String>> sortedDetections = new LinkedHashMap<String, Map<String, String>>();
+//        for (Map.Entry<String, Map<String, String>> entry : list) {
+//            sortedDetections.put(entry.getKey(), entry.getValue());
+//        }
+        return detections;
 	}
 	
 	/**
@@ -524,7 +543,7 @@ public class UsabilitySmellDetector {
 	 * @return					a lista de grafos das sessões detectadas com o smell
 	 * @throws IOException
 	 */
-	public List<TaskSmellAnalysisResult> detectTooManyLayers2(List<TaskSmellAnalysis> tasks, int maxLayerCount) throws IOException{
+	public List<TaskSmellAnalysisResult> detectTooManyLayers (List<TaskSmellAnalysis> tasks, int maxLayerCount) throws IOException{
 		if (maxLayerCount == DEFAULT_VALUE) {
 			maxLayerCount = 5;
 		}
@@ -545,6 +564,14 @@ public class UsabilitySmellDetector {
 				}
 			}
 			if (detectedSessions.size() != 0){
+				Collections.sort(detectedSessions, new Comparator<Object>() {
+					@Override
+					public int compare(Object o1, Object o2) {
+						Integer t1 = Integer.valueOf(((SessionGraph) o1).getInfo().get("datamining.smells.testes.layercount"));
+						Integer t2 = Integer.valueOf(((SessionGraph) o2).getInfo().get("datamining.smells.testes.layercount"));;
+						return t2 < t1 ? -1 : (t2 > t1 ? +1 : 0);
+					}
+				});
 				detections.add(new TaskSmellAnalysisResult(task.getName(), detectedSessions, (double)detectedSessions.size()/task.getSessions().size()));
 			}
 		}
@@ -565,14 +592,14 @@ public class UsabilitySmellDetector {
 	 * @return					a lista de ações onde o smell foi detectado
 	 * @throws IOException
 	 */
-	//TODO remover os elementos de sessao das urls (sessionFreeActions) desse e do missing feedback
-	public Map<String, Map<String, String>> detectUndescriptiveElement2(List<ActionDataMining> actions, int maxAttemptCount, int maxTimeInterval) throws IOException {
+	public Map<String, Map<String, String>> detectUndescriptiveElement (List<ActionDataMining> actions, int maxAttemptCount, int maxTimeInterval) throws IOException {
 		if (maxAttemptCount == DEFAULT_VALUE) {
 			maxAttemptCount = 100;
 		}
+		List<ActionDataMining> sessionFreeActions = sessionFreeActions(actions);
 		Map<String, Map<String, String>> detections = new HashMap<String, Map<String,String>>();
 		long maxStartDate = Long.MAX_VALUE, maxEndDate = Long.MIN_VALUE;
-		for (ActionDataMining action : actions) {
+		for (ActionDataMining action : sessionFreeActions) {
 			if (action.getsTime() < maxStartDate)
 				maxStartDate = action.getsTime();
 			if (action.getsTime() > maxEndDate)
@@ -582,7 +609,7 @@ public class UsabilitySmellDetector {
 		final long oneDay = TimeUnit.DAYS.toMillis(1);
 		do{
 			List<String> actionsIds = new ArrayList<String>();
-			for (ActionDataMining action : actions) {
+			for (ActionDataMining action : sessionFreeActions) {
 				if (action.getsActionType().equals("mouseover") && action.getsTime() >= startDate && action.getsTime() <= endDate)
 					actionsIds.add(actionId(action));
 			}
@@ -614,14 +641,15 @@ public class UsabilitySmellDetector {
 	 * @param	minOccurrenceCount	mínimo de ocorrências não-sequenciais de uma ação para análise
 	 * @return						a lista de ações onde o smell foi detectado
 	 */
-	public Map<String, Map<String, String>> detectMissingFeedback2 (List<ActionDataMining> actions, int maxRepetitionCount, int minOccurrenceCount) {
+	public Map<String, Map<String, String>> detectMissingFeedback (List<ActionDataMining> actions, int maxRepetitionCount, int minOccurrenceCount) {
 		if (maxRepetitionCount == DEFAULT_VALUE)
 			maxRepetitionCount = 3;
 		if (minOccurrenceCount == DEFAULT_VALUE)
 			minOccurrenceCount = 5;
 		Map<String, Map<String, String>> detections = new HashMap<String, Map<String,String>>();
 		Map<String, List<ActionDataMining>> usersActions = new HashMap<String, List<ActionDataMining>>();
-		for (ActionDataMining action : actions) {
+		List<ActionDataMining> sessionFreeActions = sessionFreeActions(actions);
+		for (ActionDataMining action : sessionFreeActions) {
 			if (action.getsActionType().equals("mouseover"))
 				continue;
 			if (usersActions.get(action.getsUsername()) == null) {
@@ -675,7 +703,7 @@ public class UsabilitySmellDetector {
 					Map<String, String> actionInfo = new LinkedHashMap<String, String>();
 					actionInfo.put("datamining.smells.testes.repetitionmedian", String.valueOf(actionRepetitionsMedian));
 					actionInfo.put("datamining.smells.testes.instances", String.valueOf(actionsRepetitions.get(key).size()));
-					actionInfo.put("datamining.smells.testes.content", getActionById(actions, key).getsContent());
+					actionInfo.put("datamining.smells.testes.content", getActionById(sessionFreeActions, key).getsContent());
 					detections.put(key, actionInfo);
 				}				
 			}
@@ -967,32 +995,6 @@ public class UsabilitySmellDetector {
             log.severe("Erro = " + ex.getMessage());
         }
     }
-    
-//    private void displayImage() throws IOException {
-//        BufferedImage img=ImageIO.read(new File("grafo.png"));
-//        ImageIcon icon=new ImageIcon(img);
-//        JFrame frame=new JFrame();
-//        frame.setLayout(new FlowLayout());
-//        frame.setSize(img.getWidth(),img.getHeight()+50);
-//        JLabel lbl=new JLabel();
-//        lbl.setIcon(icon);
-//        frame.add(lbl);
-//        frame.setVisible(true);
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//    }
-	
-//	private void show(Graph<String, DefaultWeightedEdge> g) throws IOException{
-//		
-//		List<String> vertices = new ArrayList<String>();
-//		vertices.add(g.edgeSet().toString().replace(" ", "").replace("[", "").replace("]", ""));
-//		Path file = Paths.get("vertices.txt");
-//		Files.write(file, vertices, Charset.forName("UTF-8"));
-//		
-//        executeCommand("python graph_drawer.py vertices.txt");
-//        executeCommand("eog grafo.png");
-//		
-////        displayImage();
-//	}
 	
 	private void saveGraph(Graph<String, DefaultWeightedEdge> graph, String graphName, String folderName) throws IOException{
 		List<String> vertices = new ArrayList<String>();
@@ -1005,7 +1007,7 @@ public class UsabilitySmellDetector {
         new File("grafo.png").renameTo(new File(folderName + "/" + graphName + ".png"));
 	}
 	
-	public List<TaskSmellAnalysis> detectLaboriousTasks(List<TaskSmellAnalysis> tasks, int maxActionCount, long maxTime) throws IOException{
+	public List<TaskSmellAnalysis> detectLaboriousTasksDeprecated(List<TaskSmellAnalysis> tasks, int maxActionCount, long maxTime) throws IOException{
 		
 		List<TaskSmellAnalysis> laboriousTasks = new ArrayList<TaskSmellAnalysis>();
 		
@@ -1097,7 +1099,7 @@ public class UsabilitySmellDetector {
 		return laboriousTasks;		
 	}
 		
-	public List<SessionResultDataMining> detectCyclicSessions(List<SessionResultDataMining> sessions, double maxCycleRate) throws IOException{
+	public List<SessionResultDataMining> detectCyclicSessionsDeprecated(List<SessionResultDataMining> sessions, double maxCycleRate) throws IOException{
 		
 		int actionId[] = {1};
 		Map<String, String> idMapping = new LinkedHashMap<String, String>();
@@ -1177,7 +1179,7 @@ public class UsabilitySmellDetector {
 		return cyclicSessions;
 	}
 	
-	public List<String> detectLonelyActions(List<ActionDataMining> actions, double maxOccurrenceRate, int minNumberOfOccurrences) throws IOException{
+	public List<String> detectLonelyActionsDeprecated(List<ActionDataMining> actions, double maxOccurrenceRate, int minNumberOfOccurrences) throws IOException{
 			
 		//Armazena todo o conjunto de urls diferentes da aplicacao
 		List<ActionDataMining> filteredActions = sessionFreeActions(actions);
@@ -1278,7 +1280,7 @@ public class UsabilitySmellDetector {
 		
 	}
 	
-	public List<SessionResultDataMining> detectTooManyLayers(List<SessionResultDataMining> sessions, int maxNumberOfLayers) throws IOException{
+	public List<SessionResultDataMining> detectTooManyLayersDeprecated(List<SessionResultDataMining> sessions, int maxNumberOfLayers) throws IOException{
 		
 		if (maxNumberOfLayers == NUMBER_DEFAULT) {
 			maxNumberOfLayers = 25;
@@ -1329,7 +1331,7 @@ public class UsabilitySmellDetector {
 		return detectedSessions;
 	}
 	
-	public List<String> detectUndescriptiveElement (List<ActionDataMining> actions, int maxNumberOfAttempts) throws IOException {
+	public List<String> detectUndescriptiveElementDeprecated (List<ActionDataMining> actions, int maxNumberOfAttempts) throws IOException {
 		
 		//Cria um diretorio para armazenar os resultados das analises
 		String folderName = "UE_" + maxNumberOfAttempts + "attempts";
@@ -1373,7 +1375,7 @@ public class UsabilitySmellDetector {
 	 * @param maxNumberOfRepetitions	número máximo de repetições sequenciais tolerado para uma ação que não contenha o smell.
 	 * @param minNumberOfOcurrences		número mínimo de sessões contendo uma determinada ação para que ela possa ser considerada na análise.
 	 */
-	public Map<String, Double> detectMissingFeedback (List<SessionResultDataMining> sessions, int maxNumberOfRepetitions, int minNumberOfOcurrences) throws FileNotFoundException {
+	public Map<String, Double> detectMissingFeedbackDeprecated (List<SessionResultDataMining> sessions, int maxNumberOfRepetitions, int minNumberOfOcurrences) throws FileNotFoundException {
 		//Cria diretorio para armazenar os resultados
 		String folderName = "MF_" + maxNumberOfRepetitions + "repetitions";
 		File dir = new File(folderName);
