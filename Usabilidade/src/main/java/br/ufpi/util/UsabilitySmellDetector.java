@@ -89,10 +89,11 @@ public class UsabilitySmellDetector {
 	 * de ações são contabilizadas, inclusive aquelas não realizadas diretamente pelo usuário 
 	 * (como o carregamento de páginas, por exemplo).
 	 *
-	 * @param	tasks	uma lista de tarefas a serem analisadas
-	 * @return			o gráfico de quantidade de ações correspondente às tarefas analisadas
+	 * @param	tasks		uma lista de tarefas a serem analisadas
+	 * @param	useLiteral	define que o gráfico deve ser baseado na quantidade literal de sessões
+	 * @return				o gráfico de quantidade de ações correspondente às tarefas analisadas
 	 */
-	public StackedAreaChart generateTaskActionCountChart (List<TaskSmellAnalysis> tasks) throws IOException{
+	public StackedAreaChart generateTaskActionCountChart (List<TaskSmellAnalysis> tasks, boolean useLiteral) throws IOException{
 		List<XYSerie> series = new ArrayList<XYSerie>();
 		for (TaskSmellAnalysis task : tasks) {
 			List<Double> taskActionCountDataset = new ArrayList<Double>();
@@ -100,20 +101,29 @@ public class UsabilitySmellDetector {
 				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
 					taskActionCountDataset.add((double)session.getActions().size());
 				}
-			}			
-			series.add(datasetDistributionSerie(task.getName(), taskActionCountDataset));
+			}
+			if (useLiteral)
+				series.add(datasetDistributionLiteralSerie(task.getName(), taskActionCountDataset));
+			else
+				series.add(datasetDistributionSerie(task.getName(), taskActionCountDataset));
 		}
-		return new StackedAreaChart("datamining.smells.testes.statistics.actioncountchart", "datamining.smells.testes.statistics.sessionproportion", "datamining.smells.testes.actioncount", series);
+		String xLabel;
+		if (useLiteral)
+			xLabel = "datamining.smells.testes.statistics.sessioncount";
+		else
+			xLabel = "datamining.smells.testes.statistics.sessionproportion";
+		return new StackedAreaChart("datamining.smells.testes.statistics.actioncountchart", xLabel, "datamining.smells.testes.actioncount", series);
 	}
 	
 	/**
 	 * Gera o gráfico de duração das sessões completas de cada tarefa. A duração é apresentada em 
 	 * minutos no gráfico retornado como saída para facilitar a visualização.
 	 *
-	 * @param	tasks	uma lista de tarefas a serem analisadas
-	 * @return			o gráfico de duração correspondente às tarefas analisadas
+	 * @param	tasks		uma lista de tarefas a serem analisadas
+	 * @param	useLiteral	define que o gráfico deve ser baseado na quantidade literal de sessões
+	 * @return				o gráfico de duração correspondente às tarefas analisadas
 	 */
-	public StackedAreaChart generateTaskTimeChart (List<TaskSmellAnalysis> tasks) throws IOException{
+	public StackedAreaChart generateTaskTimeChart (List<TaskSmellAnalysis> tasks, boolean useLiteral) throws IOException{
 		List<XYSerie> series = new ArrayList<XYSerie>();
 		for (TaskSmellAnalysis task : tasks) {
 			List<Double> taskTimeDataset = new ArrayList<Double>();
@@ -123,12 +133,22 @@ public class UsabilitySmellDetector {
 				}
 			}			
 			XYSerie taskTimeSerie = new XYSerie(task.getName());
-			for (XYCoordinate coordinate : datasetDistributionSerie(task.getName(), taskTimeDataset).getCoordinates()) {
+			XYSerie datasetDistributionSerie;
+			if (useLiteral)
+				datasetDistributionSerie = datasetDistributionLiteralSerie(task.getName(), taskTimeDataset);
+			else
+				datasetDistributionSerie = datasetDistributionSerie(task.getName(), taskTimeDataset);
+			for (XYCoordinate coordinate : datasetDistributionSerie.getCoordinates()) {
 				taskTimeSerie.addCoordinate(new XYCoordinate(coordinate.getX(), TimeUnit.MILLISECONDS.toMinutes(Math.round(coordinate.getY()))));
 			}
 			series.add(taskTimeSerie);
 		}
-		return new StackedAreaChart("datamining.smells.testes.statistics.timechart", "datamining.smells.testes.statistics.sessionproportion", "datamining.smells.testes.time", series);
+		String xLabel;
+		if (useLiteral)
+			xLabel = "datamining.smells.testes.statistics.sessioncount";
+		else
+			xLabel = "datamining.smells.testes.statistics.sessionproportion";
+		return new StackedAreaChart("datamining.smells.testes.statistics.timechart", xLabel, "datamining.smells.testes.time", series);
 	}
 	
 	/**
@@ -136,10 +156,11 @@ public class UsabilitySmellDetector {
 	 * representa a proporção de ações da sessão que estão contidas em atividades cíclicas, ou 
 	 * seja, em sequências de ações que envolvem a repetição de ações anteriormente executadas.
 	 *
-	 * @param	tasks	uma lista de tarefas a serem analisadas
-	 * @return			o gráfico de taxa de ciclos correspondente às tarefas analisadas
+	 * @param	tasks		uma lista de tarefas a serem analisadas
+	 * @param	useLiteral	define que o gráfico deve ser baseado na quantidade literal de sessões
+	 * @return				o gráfico de taxa de ciclos correspondente às tarefas analisadas
 	 */
-	public StackedAreaChart generateTaskCycleRateChart (List<TaskSmellAnalysis> tasks) throws IOException {
+	public StackedAreaChart generateTaskCycleRateChart (List<TaskSmellAnalysis> tasks, boolean useLiteral) throws IOException {
 		List<XYSerie> series = new ArrayList<XYSerie>();
 		for (TaskSmellAnalysis task : tasks) {
 			List<Double> taskCycleRateDataset = new ArrayList<Double>();
@@ -147,9 +168,17 @@ public class UsabilitySmellDetector {
 				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS))
 					taskCycleRateDataset.add(sessionCycleRate(session)*100);
 			}
-			series.add(datasetDistributionSerie(task.getName(), taskCycleRateDataset));
+			if (useLiteral)
+				series.add(datasetDistributionLiteralSerie(task.getName(), taskCycleRateDataset));
+			else
+				series.add(datasetDistributionSerie(task.getName(), taskCycleRateDataset));
 		}
-		return new StackedAreaChart("datamining.smells.testes.statistics.cycleratechart", "datamining.smells.testes.statistics.sessionproportion", "datamining.smells.testes.cyclerate", series);
+		String xLabel;
+		if (useLiteral)
+			xLabel = "datamining.smells.testes.statistics.sessioncount";
+		else
+			xLabel = "datamining.smells.testes.statistics.sessionproportion";
+		return new StackedAreaChart("datamining.smells.testes.statistics.cycleratechart", xLabel, "datamining.smells.testes.cyclerate", series);
 	}
 	
 	/**
@@ -203,10 +232,11 @@ public class UsabilitySmellDetector {
 	 * pelo número de urls diferentes na sessão, portanto, páginas diferentes com urls iguais são contabilizadas como sendo 
 	 * uma única página.
 	 *
-	 * @param	tasks	uma lista de tarefas a serem analisadas
-	 * @return			o gráfico de quantidade de camadas correspondente às tarefas analisadas
+	 * @param	tasks		uma lista de tarefas a serem analisadas
+	 * @param	useLiteral	define que o gráfico deve ser baseado na quantidade literal de sessões
+	 * @return				o gráfico de quantidade de camadas correspondente às tarefas analisadas
 	 */
-	public StackedAreaChart generateTaskLayerCountChart (List<TaskSmellAnalysis> tasks) {
+	public StackedAreaChart generateTaskLayerCountChart (List<TaskSmellAnalysis> tasks, boolean useLiteral) {
 		List<XYSerie> series = new ArrayList<XYSerie>();
 		for (TaskSmellAnalysis task : tasks) {
 			List<Double> taskLayerCountDataset = new ArrayList<Double>();
@@ -219,9 +249,17 @@ public class UsabilitySmellDetector {
 					taskLayerCountDataset.add((double)uniqueUrls.size());
 				}
 			}
-			series.add(datasetDistributionSerie(task.getName(), taskLayerCountDataset));
+			if (useLiteral)
+				series.add(datasetDistributionLiteralSerie(task.getName(), taskLayerCountDataset));
+			else
+				series.add(datasetDistributionSerie(task.getName(), taskLayerCountDataset));
 		}
-		return new StackedAreaChart("datamining.smells.testes.statistics.layercountchart", "datamining.smells.testes.statistics.sessionproportion", "datamining.smells.testes.layercount", series);
+		String xLabel;
+		if (useLiteral)
+			xLabel = "datamining.smells.testes.statistics.sessioncount";
+		else
+			xLabel = "datamining.smells.testes.statistics.sessionproportion";
+		return new StackedAreaChart("datamining.smells.testes.statistics.layercountchart", xLabel, "datamining.smells.testes.layercount", series);
 	}
 	
 	/**
@@ -756,6 +794,29 @@ public class UsabilitySmellDetector {
 				}
 			}
 		} 
+		return distribution;
+	}
+	
+	/**
+	 * Retorna uma série de pontos (x,y) reprentando a distribuição de cada valor do conjunto de 
+	 * dados de entrada em relação ao todo. Os dados são ordenados em ordem crescente para 
+	 * facilitar a visualização. A quantidade de pontos retornados corresponde diretamente ao 
+	 * tamanho do conjunto de entrada. Se não houver valores no conjunto de entrada, o retorno é 
+	 * nulo.
+	 *
+	 * @param	serieKey	uma chave para identificar a série
+	 * @param	dataset		um conjunto de valores
+	 * @return				a série (x,y) representando a distribuição dos valores de entrada
+	 */
+	private XYSerie datasetDistributionLiteralSerie (String serieKey, List<Double> dataset) {
+		if (dataset.size() == 0)
+			return null;
+		List<Double> formattedDataset = new ArrayList<Double>(dataset);
+		Collections.sort(formattedDataset);
+		XYSerie distribution = new XYSerie(serieKey);
+		for (int i = 0; i < formattedDataset.size(); i++) {
+			distribution.addCoordinate(new XYCoordinate(i+1, formattedDataset.get(i)));
+		}
 		return distribution;
 	}
 	

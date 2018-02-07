@@ -619,6 +619,9 @@ angular.module('useskill',
 	smellCtrl.metrics = SmellsMetricsEnum.metrics;
 	smellCtrl.metricsSelected = [];
 	
+	smellCtrl.useLiteral = false;
+	smellCtrl.maxResultCount = 10;
+	
 	for (var i = 0; i < Object.keys(SmellsMetricsEnum.metrics).length; i++) {
 		smellCtrl.metricsSelected.push(i+1);
 	}
@@ -633,7 +636,9 @@ angular.module('useskill',
 			test: smellCtrl.test, 
 			initDate: minDate, 
 			endDate: maxDate,
-			metrics: smellCtrl.metricsSelected
+			metrics: smellCtrl.metricsSelected,
+			useLiteral: smellCtrl.useLiteral,
+			maxResultCount: smellCtrl.maxResultCount
 		});
 		
 		ServerAPI.viewSmellsStatistics(obj).then(function(data) {
@@ -817,8 +822,8 @@ angular.module('useskill',
 		
 		var obj = angular.toJson({
 			test: smellCtrl.test, 
-			initDate: 1457319600000,//minDate, 
-			endDate: 1457924400000,//maxDate,
+			initDate: minDate,//1457319600000, 
+			endDate: maxDate,//1457924400000,
 			smells: smellCtrl.smellsSelected,
 			tasks: smellCtrl.tasksSelected
 		});

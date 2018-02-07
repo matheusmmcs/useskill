@@ -273,6 +273,8 @@
 	"datamining.smells.testes.detection.config" : "Configurar",
 	"datamining.smells.testes.detection.startevaluation" : "Iniciar Avaliação",
 	
+	
+	"datamining.smells.testes.detection.detections" : "Detecções",
 	"datamining.smells.testes.detection.place" : "Local",
 	"datamining.smells.testes.detection.element" : "Elemento",
 	"datamining.smells.testes.detection.actiontype" : "Tipo de ação",
@@ -309,8 +311,14 @@
 	"datamining.smells.testes.statistics.title" : "Definição de Métricas",
 	"datamining.smells.testes.statistics.view" : "Visualizar",
 	"datamining.smells.testes.statistics.metrics" : "Métricas",
+	"datamining.smells.testes.statistics.useliteral" : "Mostrar quantidade literal de sessões",
+	"datamining.smells.testes.statistics.useliteral.info" : "Gera os gráficos utilizando como base a quantidade literal de sessões de cada tarefa, em vez da proporção em relação ao total de amostras. Esta opção afeta apenas as métricas relacionadas à tarefas.",
+	"datamining.smells.testes.statistics.maxresultcount" : "Quantidade máxima de resultados",
+	"datamining.smells.testes.statistics.maxresultcount.info" : "Define a quantidade máxima de ações apresentadas nos gráficos a serem gerados. Esta opção afeta apenas as métricas relacionadas à ações.",
+	"datamining.smells.testes.statistics.config" : "Configurações",
 	
 	"datamining.smells.testes.statistics.sessionproportion" : "Proporção de sessões da tarefa (%)",
+	"datamining.smells.testes.statistics.sessioncount" : "Quantidade de sessões da tarefa",
 	"datamining.smells.testes.statistics.actions" : "Ações",
 	
 	"datamining.smells.testes.statistics.actioncountchart" : "Gráfico da Quantidade de Ações",

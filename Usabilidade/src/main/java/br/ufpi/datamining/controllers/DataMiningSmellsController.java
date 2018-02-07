@@ -110,7 +110,7 @@ public class DataMiningSmellsController extends BaseController {
 	@Post("/testes/smells/statistics")
 	@Consumes("application/json")
 	@Logado
-	public void view(TestDataMining test, Long initDate, Long endDate, Integer[] selectedMetrics) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException, InterruptedException {
+	public void view(TestDataMining test, Long initDate, Long endDate, Integer[] selectedMetrics, Boolean useLiteral, Integer maxResultCount) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException, InterruptedException {
 		Gson gson = new GsonBuilder()
 			.setExclusionStrategies(TestDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
@@ -155,31 +155,31 @@ public class DataMiningSmellsController extends BaseController {
 		
 		if (ArrayUtils.contains(selectedMetrics, TASK_ACTION_COUNT)) {
 			System.out.println("Generating action count chart...");
-			areaCharts.add(usm.generateTaskActionCountChart(tasks));
+			areaCharts.add(usm.generateTaskActionCountChart(tasks, useLiteral));
 		}
 		if (ArrayUtils.contains(selectedMetrics, TASK_TIME)) {
 			System.out.println("Generating time chart...");
-			areaCharts.add(usm.generateTaskTimeChart(tasks));
+			areaCharts.add(usm.generateTaskTimeChart(tasks, useLiteral));
 		}
 		if (ArrayUtils.contains(selectedMetrics, TASK_CYCLE_RATE)) {
 			System.out.println("Generating cycle rate chart...");
-			areaCharts.add(usm.generateTaskCycleRateChart(tasks));
+			areaCharts.add(usm.generateTaskCycleRateChart(tasks, useLiteral));
 		}
 		if (ArrayUtils.contains(selectedMetrics, ACTION_OCCURRENCE_RATE)) {
 			System.out.println("Generating action occurrence rate chart...");
-			barCharts.add(usm.generateActionOccurrenceRateChart(actions, 10));
+			barCharts.add(usm.generateActionOccurrenceRateChart(actions, maxResultCount));
 		}
 		if (ArrayUtils.contains(selectedMetrics, TASK_LAYER_COUNT)) {
 			System.out.println("Generating layer count chart...");
-			areaCharts.add(usm.generateTaskLayerCountChart(tasks));
+			areaCharts.add(usm.generateTaskLayerCountChart(tasks, useLiteral));
 		}
 		if (ArrayUtils.contains(selectedMetrics, ACTION_TOOLTIP_COUNT)) {
 			System.out.println("Generating tooltip count chart...");
-			barCharts.add(usm.generateActionTooltipCountChart(actions, 10));
+			barCharts.add(usm.generateActionTooltipCountChart(actions, maxResultCount));
 		}
 		if (ArrayUtils.contains(selectedMetrics, ACTION_REPETITION_COUNT)) {
 			System.out.println("Generating action repetition count chart...");
-			barCharts.add(usm.generateActionRepetitionCountChart(actions, 10));
+			barCharts.add(usm.generateActionRepetitionCountChart(actions, maxResultCount));
 		}
 		
 		if (areaCharts.size() > 0 || barCharts.size() > 0) {

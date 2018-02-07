@@ -81,6 +81,24 @@
 				                        </tr>
 					                </tbody>
 					            </table>
+					            
+					            <hr>
+					            <h3>{{'datamining.smells.testes.statistics.config' | translate}}</h3>
+					            <br>
+								<div class="row-fluid">
+									<div class="control-group span6">
+										<input type="checkbox" name="useLiteral" ng-model="smellCtrl.useLiteral"> {{ 'datamining.smells.testes.statistics.useliteral' | translate }} <a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ 'datamining.smells.testes.statistics.useliteral.info' | translate }}"></a>
+									</div>
+									<div class="control-group span6">
+										<label class="control-label" for="maxResultCount">{{ 'datamining.smells.testes.statistics.maxresultcount' | translate }} 
+				            				<a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ 'datamining.smells.testes.statistics.maxresultcount.info' | translate }}"></a>
+				            			</label>
+				            			<div class="controls">
+											<input type="text" ng-model="smellCtrl.maxResultCount" id="maxResultCount" class="input" />
+										</div>
+									</div>
+								</div>
+					            
 					            <hr>
 					            <h3>{{'datamining.smells.testes.timewindow' | translate}}</h3>
 					            <br>
@@ -99,7 +117,7 @@
 						            	</div>
 						        	</div>
 								</div>
-
+								
 					        	<div class="form-actions">
 					            	<button ng-click="smellCtrl.view()"  class="btn btn-primary pull-right submit">{{ 'datamining.smells.testes.statistics.view' | translate }}</button>
 					        	</div>
