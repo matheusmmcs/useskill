@@ -483,6 +483,7 @@ function generateGraphSmells (sessionGraph) {
 	//mapear todos os ids de nodes
 	var nodeIds = {};
 	var nodeIdsCount = 0;
+	console.log(sessionGraph.edgeMap);
 	for (var i in sessionGraph.edgeMap) {
 		var obj = sessionGraph.edgeMap[i];
 		if (nodeIdsCount == 0) {
@@ -494,11 +495,11 @@ function generateGraphSmells (sessionGraph) {
 			nodeIdsCount++;
 		}
 		if (nodeIds[obj.target]) {
-			nodeIds[obj.target].value++;
+			nodeIds[obj.target].value += obj.weight;
 		} else {
 			nodeIds[obj.target] = {
 				id: nodeIdsCount,
-				value: 1,
+				value: obj.weight,
 				desc: obj.target
 			}
 			nodeIdsCount++;
@@ -516,6 +517,7 @@ function generateGraphSmells (sessionGraph) {
 		});
 		maxVal = maxVal > obj.value ? maxVal : obj.value;
 	}
+	
 	for (var i in sessionGraph.edgeMap) {
 		var obj = sessionGraph.edgeMap[i];
 		arrEdges.push({
@@ -524,7 +526,7 @@ function generateGraphSmells (sessionGraph) {
 			value: obj.weight
 		});
 	}
-	
+
 	return {
 		arrNodes: 	arrNodes, 
 		arrEdges: 	arrEdges, 

@@ -275,9 +275,7 @@
 	
 	
 	"datamining.smells.testes.detection.detections" : "Detecções",
-	"datamining.smells.testes.detection.place" : "Local",
-	"datamining.smells.testes.detection.element" : "Elemento",
-	"datamining.smells.testes.detection.actiontype" : "Tipo de ação",
+	"datamining.smells.testes.detection.affected" : "afetada",
 	"datamining.smells.testes.detection.detectedactions" : "Ações Detectadas",
 	
 	"datamining.smells.testes.detection.laborioustask.info" : "Este smell ocorre quando é necessário realizar uma grande quantidade de ações para cumprir determinada tarefa. Uma tarefa com muitas ações exige um grande esforço e consome muito tempo dos usuários, o que reduz a produtividade e o engajamento dos mesmos.",
@@ -367,7 +365,11 @@
 	"datamining.smells.testes.repetitioncount" : "Quantidade de repetições",
 	
 	"datamining.smells.testes.occurrencecount" : "Quantidade de ocorrências",
+	"datamining.smells.testes.place" : "Local",
+	"datamining.smells.testes.element" : "Elemento",
+	"datamining.smells.testes.actiontype" : "Tipo de ação",
 	"datamining.smells.testes.content" : "Conteúdo",
+	"datamining.smells.testes.ocuurences" : "Ocorrências",
 	"datamining.smells.testes.tooltipattempts" : "Tentativas de tooltip",
 	"datamining.smells.testes.repetitionmedian" : "Média de repetições",
 	"datamining.smells.testes.instances" : "Instâncias",

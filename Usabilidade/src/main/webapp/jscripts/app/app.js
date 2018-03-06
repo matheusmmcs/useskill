@@ -755,7 +755,25 @@ angular.module('useskill',
 				                    axisLabel: $filter('translate')(charts.barCharts[i].descY),
 				                    axisLabelDistance: -10
 				                },
-				                showXAxis: false
+				                showXAxis: false,
+				                useInteractiveGuideline: false,
+				                interactive: true,
+				                tooltip: {
+				                	enabled: true,
+				                	contentGenerator: function(d) {
+				                		var actionContent = "";
+				                		for (var i = 0; i < charts.barCharts.length; i++) {
+				        					if(charts.barCharts[i].actionsContent[d.data.label] != undefined) {
+				        						actionContent = charts.barCharts[i].actionsContent[d.data.label];
+				        					}
+				                		}
+				                		var idElements = d.data.label.split(" | ");
+				                		return	'<div style="padding: 8px;"><b>' + $filter('translate')('datamining.smells.testes.detection.place') + '</b>: ' + idElements[0] + '<br>' +
+				                				'<b>' + $filter('translate')('datamining.smells.testes.element') + '</b>: ' + idElements[1] + '<br>' +
+				                				'<b>' + $filter('translate')('datamining.smells.testes.detection.actiontype') + '</b>: ' + idElements[2] + '<br>' +
+				                				'<b>' + $filter('translate')('datamining.smells.testes.content') + '</b>: ' + actionContent + '</div>';
+				                	}
+				                }
 				            }
 				        },
 				        "statisticsData" : [{
@@ -790,6 +808,13 @@ angular.module('useskill',
 		} else {
 			smellCtrl.metricsSelected.splice(findIdx, 1);
 		}
+	};
+	
+	smellCtrl.setChartId = function (id) {
+		smellCtrl.chartId = id;
+		smellCtrl.actionUrl = "";
+		smellCtrl.actionElement = "";
+		smellCtrl.actionType = "";
 	};
 	
 })
@@ -842,8 +867,8 @@ angular.module('useskill',
 		
 	}
 	
-	smellCtrl.showGraphSmell = function(session) {
-		var elemId = 'graph'+session.description;
+	smellCtrl.showGraphSmell = function(smellName, taskName, session) {
+		var elemId = 'graph-'+ smellCtrl.formattedId(smellName, taskName, session.description);
 		
 		var graphData = generateGraphSmells(session.graph);
 		smellCtrl['smellgraphid'] = elemId;
@@ -860,7 +885,19 @@ angular.module('useskill',
       	  	var node = smellCtrl['smell-data-graph'].body.nodes[params.nodes[0]];
       	  	smellCtrl.nodeDesc = node.options.desc.split(" | ");
       	  	smellCtrl.nodeSelected = node.options.desc;
+      	  	smellCtrl.nodeValue = node.options.value;
       	  	$scope.$apply();
+        });
+		smellCtrl['smell-data-graph'].on("selectEdge", function (params) {
+    		var edge = smellCtrl['smell-data-graph'].body.edges[params.edges[0]];
+    		var from = smellCtrl['smell-data-graph'].body.nodes[edge.options.from].options.desc.split(" | ");
+    		var to = smellCtrl['smell-data-graph'].body.nodes[edge.options.to].options.desc.split(" | ");
+    		smellCtrl.nodeSelected = edge.id;
+    		smellCtrl.nodeDesc[0] = from[0] + ' --> ' + to[0];
+    		smellCtrl.nodeDesc[1] = from[1] + ' --> ' + to[1];
+    		smellCtrl.nodeDesc[2] = from[2] + ' --> ' + to[2];
+    		smellCtrl.nodeValue = edge.options.value;
+    		$scope.$apply();
         });
 	}
 	
@@ -894,7 +931,7 @@ angular.module('useskill',
 		}
 	};
 	
-	smellCtrl.formatRate = function (rate) {
+	smellCtrl.formattedRate = function (rate) {
 		return (rate*100).toFixed(2) + "%";
 	}
 	
@@ -918,8 +955,16 @@ angular.module('useskill',
 		return problems;
 	}
 	
-	smellCtrl.splitAction = function (action) {
-		return action.split(" | ");
+	smellCtrl.actionPlace = function (action) {
+		return action.split(" | ")[0];
+	}
+	
+	smellCtrl.actionElement = function (action) {
+		return action.split(" | ")[1];
+	}
+	
+	smellCtrl.actionType = function (action) {
+		return action.split(" | ")[2];
 	}
 	
 	smellCtrl.problemTitle = function (problem) {
@@ -928,6 +973,10 @@ angular.module('useskill',
 	
 	smellCtrl.problemDescription = function (problem) {
 		return $filter('translate')(problem).split(":")[1];
+	}
+	//consertar a o lance de estar mudando todas as divs ao clicar em uma acao
+	smellCtrl.formattedId = function (smell, task, session) {
+		return (smell + '-' + task + '-' + session).replace(/[{()}\. ]/g, '');
 	}
 })
 .controller('SmellConfigController', function(parameters, idSmell, UtilsService, SmellsEnum, ServerAPI) {

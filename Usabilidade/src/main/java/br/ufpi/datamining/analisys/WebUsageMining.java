@@ -163,9 +163,9 @@ public class WebUsageMining {
 		tasks.add(new TaskSmellAnalysis("1", resultDataMining.getSessions()));
 		tasks.add(new TaskSmellAnalysis("2", resultDataMining2.getSessions()));
 		
-		System.out.println("Gerando gráfico de quantidade de ações...");
-		new UsabilitySmellDetector().generateTaskActionCountChart(tasks);
-		System.out.println("Geração finalizada");
+//		System.out.println("Gerando gráfico de quantidade de ações...");
+//		new UsabilitySmellDetector().generateTaskActionCountChart(tasks);
+//		System.out.println("Geração finalizada");
 		
 //		System.out.println("Gerando gráfico de duração de sessão...");
 //		new UsabilitySmellDetector().generateTaskTimeChart("Tempo", resultDataMining.getSessions());

@@ -224,7 +224,11 @@ public class UsabilitySmellDetector {
 				}
 			}
 		}
-		return new BarChart("datamining.smells.testes.statistics.actionfrequencychart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.occurrencerate", sortedMap(mostFrequentActions));
+		Map<String, String> actionsContent = new HashMap<String, String>();
+		for (Map.Entry<String, Double> entry : mostFrequentActions.entrySet()) {
+			actionsContent.put(entry.getKey(), getActionById(sessionFreeActions, entry.getKey()).getsContent());
+		} 
+		return new BarChart("datamining.smells.testes.statistics.actionfrequencychart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.occurrencerate", sortedMap(mostFrequentActions), actionsContent);
 	}
 	
 	/**
@@ -294,7 +298,11 @@ public class UsabilitySmellDetector {
 				mostRepeatedActions.put(id, (double)actionCount);
 			}
 		}
-		return new BarChart("datamining.smells.testes.statistics.actiontooltipchart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.attemptcount", sortedMap(mostRepeatedActions));
+		Map<String, String> actionsContent = new HashMap<String, String>();
+		for (Map.Entry<String, Double> entry : mostRepeatedActions.entrySet()) {
+			actionsContent.put(entry.getKey(), getActionById(sessionFreeActions, entry.getKey()).getsContent());
+		}
+		return new BarChart("datamining.smells.testes.statistics.actiontooltipchart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.attemptcount", sortedMap(mostRepeatedActions), actionsContent);
 	}
 	
 	/**
@@ -378,7 +386,11 @@ public class UsabilitySmellDetector {
 				}
 			}
 		}
-		return new BarChart("datamining.smells.testes.statistics.actionrepetitionchart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.repetitioncount", sortedMap(mostRepeatedActions));
+		Map<String, String> actionsContent = new HashMap<String, String>();
+		for (Map.Entry<String, Double> entry : mostRepeatedActions.entrySet()) {
+			actionsContent.put(entry.getKey(), getActionById(actions, entry.getKey()).getsContent());
+		}
+		return new BarChart("datamining.smells.testes.statistics.actionrepetitionchart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.repetitioncount", sortedMap(mostRepeatedActions), actionsContent);
 	}
 	
 	//*********************************************************************************************
@@ -925,7 +937,14 @@ public class UsabilitySmellDetector {
 		sessionGraph.addVertex(lastAction);
 		for (PageViewActionDataMining action : sessionActions.subList(1, sessionActions.size())) {
 			sessionGraph.addVertex(action.getPageViewActionUnique());
-			sessionGraph.addEdge(lastAction, action.getPageViewActionUnique());
+			//TODO testar e finalizar
+			if (sessionGraph.containsEdge(lastAction, action.getPageViewActionUnique())) {
+				sessionGraph.setEdgeWeight(
+						sessionGraph.getEdge(lastAction, action.getPageViewActionUnique()),
+						sessionGraph.getEdgeWeight(
+								sessionGraph.getEdge(lastAction, action.getPageViewActionUnique()))+1);
+			} else
+				sessionGraph.addEdge(lastAction, action.getPageViewActionUnique());
 			lastAction = action.getPageViewActionUnique();
 		}
 		return sessionGraph;
