@@ -462,6 +462,12 @@ angular.module('useskill',
         detectSmells: function(obj){
         	return doRequest('POST', '/datamining/testes/smells/detection', obj);
         },
+        updateIgnoredUrls: function(obj){
+        	return doRequest('POST', '/datamining/testes/smells/detection/ignoredurls/update', obj);
+        },
+        getIgnoredUrls: function(obj){
+        	return doRequest('POST', '/datamining/testes/smells/detection/ignoredurls/get', obj);
+        },
         getConfigSmell: function(testId, smellId){
         	return doRequest('GET', '/datamining/testes/'+testId+'/smells/'+smellId+'/parameters');
         },
@@ -768,9 +774,9 @@ angular.module('useskill',
 				        					}
 				                		}
 				                		var idElements = d.data.label.split(" | ");
-				                		return	'<div style="padding: 8px;"><b>' + $filter('translate')('datamining.smells.testes.detection.place') + '</b>: ' + idElements[0] + '<br>' +
+				                		return	'<div style="padding: 8px;"><b>' + $filter('translate')('datamining.smells.testes.place') + '</b>: ' + idElements[0] + '<br>' +
 				                				'<b>' + $filter('translate')('datamining.smells.testes.element') + '</b>: ' + idElements[1] + '<br>' +
-				                				'<b>' + $filter('translate')('datamining.smells.testes.detection.actiontype') + '</b>: ' + idElements[2] + '<br>' +
+				                				'<b>' + $filter('translate')('datamining.smells.testes.actiontype') + '</b>: ' + idElements[2] + '<br>' +
 				                				'<b>' + $filter('translate')('datamining.smells.testes.content') + '</b>: ' + actionContent + '</div>';
 				                	}
 				                }
@@ -834,12 +840,30 @@ angular.module('useskill',
 	smellCtrl.smellsSelected = [];
 	smellCtrl.tasksSelected = [];
 	
+	smellCtrl.groupSessions = false;
+	smellCtrl.similarityRate = 60;
+	
+	smellCtrl.ignoredUrls = [];
+	
 	for (var i = 0; i < Object.keys(SmellsEnum.smells).length; i++) {
 		smellCtrl.smellsSelected.push(i+1);
 	}
 	for (var i = 0; i < smellCtrl.test.tasks.length; i++) {
 		smellCtrl.tasksSelected.push(i+1);
 	}
+	
+	var obj = angular.toJson({
+		testId: smellCtrl.test.id
+	});
+	
+	ServerAPI.getIgnoredUrls(obj).then(function(data) {			
+		var ignoredUrls = JSON.parse(data.data.string);
+		for (var i = 0; i < ignoredUrls.length; i++) {
+			smellCtrl.ignoredUrls.push(ignoredUrls[i].url);
+		}
+	}, function(data) {
+		console.log('ignoredUrls', data);
+	});
 	
 	smellCtrl.view = function(){
 		var minDate = UtilsService.datepickerToTimestamp(smellCtrl.minDate);
@@ -850,7 +874,10 @@ angular.module('useskill',
 			initDate: minDate,//1457319600000, 
 			endDate: maxDate,//1457924400000,
 			smells: smellCtrl.smellsSelected,
-			tasks: smellCtrl.tasksSelected
+			tasks: smellCtrl.tasksSelected,
+			groupSessions: smellCtrl.groupSessions,
+			similarityRate: smellCtrl.similarityRate/100,
+			ignoredUrls: smellCtrl.ignoredUrls
 		});
 		
 		ServerAPI.detectSmells(obj).then(function(data) {			
@@ -977,6 +1004,38 @@ angular.module('useskill',
 	//consertar a o lance de estar mudando todas as divs ao clicar em uma acao
 	smellCtrl.formattedId = function (smell, task, session) {
 		return (smell + '-' + task + '-' + session).replace(/[{()}\. ]/g, '');
+	}
+	
+	smellCtrl.addIgnoredUrl = function () {
+		var obj = angular.toJson({
+			url: {
+				testId: smellCtrl.test.id,
+				url: smellCtrl.ignoreUrl
+			}, 
+			remove: false
+		});
+		ServerAPI.updateIgnoredUrls(obj).then(function(data) {			
+			console.log(data);
+		}, function(data) {
+			console.error(data);
+		});
+		smellCtrl.ignoredUrls.push(smellCtrl.ignoreUrl);
+		smellCtrl.ignoreUrl = "";
+	}
+	smellCtrl.removeIgnoredUrl = function (index) {
+		var obj = angular.toJson({
+			url: {
+				testId: smellCtrl.test.id,
+				url: smellCtrl.ignoredUrls[index]
+			}, 
+			remove: true
+		});
+		ServerAPI.updateIgnoredUrls(obj).then(function(data) {			
+			console.log(data);
+		}, function(data) {
+			console.error(data);
+		});
+		smellCtrl.ignoredUrls.splice(index, 1);
 	}
 })
 .controller('SmellConfigController', function(parameters, idSmell, UtilsService, SmellsEnum, ServerAPI) {
@@ -3432,6 +3491,23 @@ angular.module('useskill',
 		    	});
 		    }
 	  };
+})
+
+//Smells
+.directive('defaultHolder', function($filter)
+{
+    return{
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attrs, ngModelController){
+            ngModelController.$formatters.push(function(value){
+            	if (value == -1)
+            		return $filter('translate')('pattern');
+            	else
+            		return value;
+            })
+        }
+    }
 })
 
 /* FILTER */

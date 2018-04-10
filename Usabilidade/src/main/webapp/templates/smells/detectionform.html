@@ -61,12 +61,12 @@
 	            	<div class="usdm-clickable-box-content usdm-animate-show-hide">
 		        		<form name="myForm" class="usdm-clickable-box-form-lite form-layout">
 							<fieldset>
-								<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white; padding-top: 0;">
+								<table class="table table-striped table-bordered table-condensed datamining-table white-table">
 					                <thead>
 					                    <tr>
 					                        <th width="60%">{{'datamining.smells.testes.detection.smellname' | translate}}</th>
 					                        <th width="15%">{{'datamining.smells.testes.evaluate' | translate}}</th>
-					                        <th width="25%">{{'datamining.smells.testes.detection.config' | translate}}</th>
+					                        <th width="25%">{{'datamining.smells.testes.detection.actions' | translate}}</th>
 					                    </tr>
 					                </thead>
 					                <tbody>
@@ -80,7 +80,7 @@
 					            <hr>
 					            <h3>{{ 'datamining.smells.testes.detection.taskdefinition' | translate}}</h3>
 					            <br>
-					            <table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white; padding-top: 0;">
+					            <table class="table table-striped table-bordered table-condensed datamining-table white-table">
 					                <thead>
 					                    <tr>
 					                        <th width="85%">{{'datamining.testes.title' | translate}}</th>
@@ -94,6 +94,53 @@
 				                        </tr>
 					                </tbody>
 					            </table>
+					            
+					            <hr>
+					            <h3>{{'datamining.smells.testes.config' | translate}}</h3>
+					            <br>
+					            
+								<div class="row-fluid">
+									<div class="control-group span6">
+										<input type="checkbox" name="groupSessions" ng-model="smellCtrl.groupSessions"> {{ 'datamining.smells.testes.detection.groupsessions' | translate }} <a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ 'datamining.smells.testes.detection.groupsessions.info' | translate }}"></a>
+									</div>
+									<div class="control-group span6">
+										<label class="control-label" for="similarityRate">{{ 'datamining.smells.testes.detection.similarityrate' | translate }} 
+				            				<a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ 'datamining.smells.testes.detection.similarityrate.info' | translate }}"></a>
+				            			</label>
+				            			<div class="controls">
+											<input type="text" ng-model="smellCtrl.similarityRate" id="similarityRate" class="input span12" ng-disabled="!smellCtrl.groupSessions" />
+										</div>
+									</div>
+								</div>
+								
+								<table class="table table-striped table-bordered table-condensed datamining-table white-table" ng-show="smellCtrl.ignoredUrls.length != 0">
+					                <thead>
+					                    <tr>
+					                        <th width="85%">{{'datamining.smells.testes.detection.ignoredurls' | translate}}</th>
+					                        <th width="15%">{{'datamining.smells.testes.detection.actions' | translate}}</th>
+					                    </tr>
+					                </thead>
+					                <tbody>
+				                        <tr ng-repeat="url in smellCtrl.ignoredUrls">
+				                            <td>{{url}}</td>
+				                            <td class="text-center">
+				                            	<a class="btn btn-primary" ng-click="smellCtrl.removeIgnoredUrl($index)"><span class="icon-white icon-trash"></span></a>
+				                            </td>
+				                        </tr>
+					                </tbody>
+					            </table>
+					            
+					            <div class="row-fluid">
+									<div class="control-group">
+						            	<label class="control-label" for="ignoreUrl">{{ 'datamining.smells.testes.detection.ignoreurl' | translate }} 
+						            		<a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ 'datamining.smells.testes.detection.ignoreurl.info' | translate }}"></a>
+						            	</label>
+						            	<div class="controls form-horizontal">
+						            		<input style="width: 530px; margin-right: 10px" type="text" ng-model="smellCtrl.ignoreUrl" id="ignoreUrl" class="input"/> <a id="addIgnoreUrl" class="btn" ng-click="smellCtrl.addIgnoredUrl()"><i class="icon-plus"></i></a>
+						            	</div>
+						        	</div>
+								</div>
+								
 					            <hr>
 					            <h3>{{ 'datamining.smells.testes.timewindow' | translate}}</h3>
 					            <br>
@@ -163,6 +210,64 @@
 	                            			<b>{{ 'datamining.smells.testes.ocuurences' | translate }}:</b> {{smellCtrl.nodeValue}}
 	                            		</p>
 	                            	</div>
+	                            </td>
+	                        </tr>
+		                </tbody>
+		            </table>
+	        	</div>
+	        	
+	        	<div class="span12">
+		        <div class="usdm-box" ng-show="smellCtrl.detectionResult.tasksAnalysisGroupedResult != null" ng-repeat="(smell, result) in smellCtrl.detectionResult.tasksAnalysisGroupedResult">
+	            	<h3 class="usdm-title-collapse">
+	            		{{smell}}
+	            	</h3>
+	            	<hr>
+	            	<h3>{{ 'datamining.smells.testes.detection.hint' | translate }}</h3>
+		            {{ smellCtrl.smellHint(smell) | translate }}
+		            <br><br>
+		            <h4>{{ 'datamining.smells.testes.detection.problems' | translate }}</h4>
+		            <div ng-repeat="problem in smellCtrl.smellProblems(smell)">
+		            	<br>
+		            	- <b>{{smellCtrl.problemTitle(problem)}}</b>:{{smellCtrl.problemDescription(problem)}}
+		            	<br>
+		            </div>
+		            <hr>
+		            <h3>{{ 'datamining.smells.testes.detection.detections' | translate }}</h3>
+	            	<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white; padding-top: 0;" ng-repeat="task in result">
+						<thead>
+		                    <tr>
+		                        <th width="100%">{{task.name}} ({{smellCtrl.formattedRate(task.detectionRate)}} {{ 'datamining.smells.testes.detection.affected' | translate }})</th>
+		                    </tr>
+		                </thead>
+		                <tbody>
+	                        <tr ng-repeat="group in task.sessions")">
+	                            <td>
+		                            <table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white;">
+		                            	<thead>
+						                    <tr>
+						                        <th width="100%" ng-init="console.log(group)">{{ 'datamining.smells.testes.detection.group' | translate }} {{$index+1}}</th>
+						                    </tr>
+						                </thead>
+						                <tbody>
+						                	<tr ng-repeat="session in group">
+						                		<td>
+						                			<a ng-click="smellCtrl.showGraphSmell(smell, task.name, session)" data-toggle="collapse" href="#panel-{{smellCtrl.formattedId(smell, task.name, session.description)}}">{{session.description}}</a>
+					                            	<ul>
+					                            		<li ng-repeat="(info, value) in session.info"><b>{{ info | translate }}:</b> {{value}}</li>
+					                            	</ul>
+					                            	<div id="panel-{{smellCtrl.formattedId(smell, task.name, session.description)}}" class="collapse">
+					                            		<div id="graph-{{smellCtrl.formattedId(smell, task.name, session.description)}}" class="useskill-smell-graph"></div>
+					                            		<p ng-show="smellCtrl.nodeSelected != null && smellCtrl.smellgraphid == 'graph-'+smellCtrl.formattedId(smell, task.name, session.description)">
+					                            			<b>{{ 'datamining.smells.testes.place' | translate }}:</b> {{smellCtrl.nodeDesc[0]}}<br>
+					                            			<b>{{ 'datamining.smells.testes.element' | translate }}:</b> {{smellCtrl.nodeDesc[1]}}<br>
+					                            			<b>{{ 'datamining.smells.testes.actiontype' | translate }}:</b> {{smellCtrl.nodeDesc[2]}}<br>
+					                            			<b>{{ 'datamining.smells.testes.ocuurences' | translate }}:</b> {{smellCtrl.nodeValue}}
+					                            		</p>
+					                            	</div>
+						                		</td>
+						                	</tr>
+						                </tbody>
+		                            </table>
 	                            </td>
 	                        </tr>
 		                </tbody>

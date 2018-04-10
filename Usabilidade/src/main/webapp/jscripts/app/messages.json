@@ -270,13 +270,24 @@
 	"datamining.smells.testes.detection.title" : "Definição de Smells",
 	"datamining.smells.testes.detection.taskdefinition" : "Definição de Tarefas",
 	"datamining.smells.testes.detection.smellname" : "Nome do Smell",
-	"datamining.smells.testes.detection.config" : "Configurar",
+	"datamining.smells.testes.detection.actions" : "Ações",
 	"datamining.smells.testes.detection.startevaluation" : "Iniciar Avaliação",
-	
+	"datamining.smells.testes.detection.config" : "Configurar",
+	"datamining.smells.testes.detection.ignoredurls" : "URLs Ignoradas",
+	"datamining.smells.testes.detection.ignoreurl" : "Ignorar URL",
+	"datamining.smells.testes.detection.saveok" : "URL adicionada com sucesso",
+	"datamining.smells.testes.detection.removeok" : "URL removida com sucesso",
+	"datamining.smells.testes.detection.ignoreurl.info" : "Permite adicionar as URLs do sistema que se deseja excluir da análise.",
+	"datamining.smells.testes.detection.groupsessions" : "Agrupar sessões por similaridade",
+	"datamining.smells.testes.detection.groupsessions.info" : "Agrupa as sessões (grafos) detectadas de cada tarefa acordo com a taxa de similaridade definida. Sessões similares tendem a evidenciar um mesmo problema, assim, esta configuração ajuda a evitar a análise de sessões redundantes.",
+	"datamining.smells.testes.detection.similarityrate" : "Taxa de similaridade (%)",
+	"datamining.smells.testes.detection.similarityrate.info" : "Define o nível de similaridade mínimo para que duas sessões sejam consideradas como similares. Sessões com similaridade igual ou superior ao valor definido serão agrupadas em um mesmo grupo.",
 	
 	"datamining.smells.testes.detection.detections" : "Detecções",
 	"datamining.smells.testes.detection.affected" : "afetada",
+	"datamining.smells.testes.detection.group" : "Grupo",
 	"datamining.smells.testes.detection.detectedactions" : "Ações Detectadas",
+	"datamining.smells.testes.detection.appok" : "Nenhum Usability Smell detectado.",
 	
 	"datamining.smells.testes.detection.laborioustask.info" : "Este smell ocorre quando é necessário realizar uma grande quantidade de ações para cumprir determinada tarefa. Uma tarefa com muitas ações exige um grande esforço e consome muito tempo dos usuários, o que reduz a produtividade e o engajamento dos mesmos.",
 	"datamining.smells.testes.detection.cyclictask.info" : "Este smell ocorre quando a tarefa executada exige a realização de muitas ações que se repetem consecutivamente, o que pode tornar a tarefa exaustiva e tediosa para o usuário e, consequentemente, aumentar sua propensão a erros.",
@@ -313,7 +324,6 @@
 	"datamining.smells.testes.statistics.useliteral.info" : "Gera os gráficos utilizando como base a quantidade literal de sessões de cada tarefa, em vez da proporção em relação ao total de amostras. Esta opção afeta apenas as métricas relacionadas à tarefas.",
 	"datamining.smells.testes.statistics.maxresultcount" : "Quantidade máxima de resultados",
 	"datamining.smells.testes.statistics.maxresultcount.info" : "Define a quantidade máxima de ações apresentadas nos gráficos a serem gerados. Esta opção afeta apenas as métricas relacionadas à ações.",
-	"datamining.smells.testes.statistics.config" : "Configurações",
 	
 	"datamining.smells.testes.statistics.sessionproportion" : "Proporção de sessões da tarefa (%)",
 	"datamining.smells.testes.statistics.sessioncount" : "Quantidade de sessões da tarefa",
@@ -373,6 +383,7 @@
 	"datamining.smells.testes.tooltipattempts" : "Tentativas de tooltip",
 	"datamining.smells.testes.repetitionmedian" : "Média de repetições",
 	"datamining.smells.testes.instances" : "Instâncias",
+	"datamining.smells.testes.config" : "Configurações",
 	
 	"datamining.smells.testes.actioncount.info" : "Indica a quantidade \"bruta\" de ações que foram executadas nas sessões de cada tarefa. Essas ações podem incluir cliques, preenchimento de campos de texto, carregamento de páginas, etc.",
 	"datamining.smells.testes.time.info" : "Indica o tempo de duração das sessões de cada tarefa, em minutos.",

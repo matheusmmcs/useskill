@@ -83,7 +83,7 @@
 					            </table>
 					            
 					            <hr>
-					            <h3>{{'datamining.smells.testes.statistics.config' | translate}}</h3>
+					            <h3>{{'datamining.smells.testes.config' | translate}}</h3>
 					            <br>
 								<div class="row-fluid">
 									<div class="control-group span6">
@@ -94,7 +94,7 @@
 				            				<a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ 'datamining.smells.testes.statistics.maxresultcount.info' | translate }}"></a>
 				            			</label>
 				            			<div class="controls">
-											<input type="text" ng-model="smellCtrl.maxResultCount" id="maxResultCount" class="input" />
+											<input type="text" ng-model="smellCtrl.maxResultCount" id="maxResultCount" class="input span12" />
 										</div>
 									</div>
 								</div>
@@ -125,7 +125,8 @@
 						</form>
 		        	</div>
 	        	</div>
-	        	
+	        </div>
+	        
 <!-- 	        	<div class="usdm-box" ng-show="smellCtrl.charts != null" ng-repeat="chart in smellCtrl.charts"> -->
 <!-- 	            	<h3 class="usdm-title-collapse"> -->
 <!-- 	            		{{chart.description}} -->
@@ -134,8 +135,9 @@
 <!-- 	  					<nvd3 options="chart.statisticsOptions" data="chart.statisticsData" api="chart.chartApi"></nvd3> -->
 <!-- 	  				</div> -->
 <!-- 	        	</div> -->
-				
-				<div class="usdm-box" ng-show="smellCtrl.areaCharts != null" ng-repeat="chart in smellCtrl.areaCharts">
+	        
+	        <div class="span12">
+	        	<div class="usdm-box" ng-show="smellCtrl.areaCharts != null" ng-repeat="chart in smellCtrl.areaCharts">
 	            	<h3 class="usdm-title-collapse">
 	            		{{ chart.description | translate }}
 	            	</h3>
@@ -150,16 +152,8 @@
 	            	</h3>
 	            	<div class="usdm-clickable-box-content">
 	  					<nvd3 options="chart.statisticsOptions" data="chart.statisticsData"></nvd3>
-<!-- 	  					<div ng-show="smellCtrl.chartId == chart.description"> -->
-<!-- 	                   		<ul> -->
-<!-- 	                        	<li><b>{{ 'datamining.smells.testes.place' | translate }}:</b> {{smellCtrl.actionUrl}}<br></li> -->
-<!-- 	                            <li><b>{{ 'datamining.smells.testes.element' | translate }}:</b> {{smellCtrl.actionElement}}<br></li> -->
-<!-- 	                            <li><b>{{ 'datamining.smells.testes.actiontype' | translate }}:</b> {{smellCtrl.actionType}}<br></li> -->
-<!-- 	                    	</ul> -->
-<!-- 	                	</div> -->
 	  				</div>
 	        	</div>
-	        	
 	        </div>
 	    </div>	    
 

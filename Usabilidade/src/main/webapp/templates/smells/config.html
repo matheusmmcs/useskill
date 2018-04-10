@@ -36,12 +36,16 @@
 					</legend>
 					
 					<div class="control-group" ng-repeat="param in smellCtrl.parameters | orderBy:'id'">
-		            	<label class="control-label" for="{{ param.id }}">{{ param.parameterSmell.description | translate }}: 
+		            	<label style="width: 240px;" class="control-label" for="{{ param.id }}">{{ param.parameterSmell.description | translate }}: 
 		            		<a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ param.parameterSmell.description.replace('detection', 'config') + '.info' | translate }}"></a>
 		            	</label>
-		            	<div class="controls">
-		            		<input type="text" ng-model="param.value" id="{{ param.id }}" class="input" />
+		            	<div style="margin-left: 260px;" class="controls">
+		            		<input type="text" default-holder ng-model="param.value" id="{{ param.id }}" class="input" ng-disabled="smellCtrl.disableField[param.id]"/>
 		            	</div>
+<!-- 		            	<label> -->
+<!-- 		            			<input type="checkbox" ng-model="smellCtrl.disableField[param.id]" ng-true-value="true" ng-false-value="false"> -->
+<!-- 		            			Padrão -->
+<!-- 		            		</label> -->
 		        	</div>
 		        	
 					<hr/>

@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -61,6 +62,7 @@ import br.ufpi.datamining.models.aux.SessionGraph;
 import br.ufpi.datamining.models.aux.SessionResultDataMining;
 import br.ufpi.datamining.models.aux.StackedAreaChart;
 import br.ufpi.datamining.models.aux.TaskSmellAnalysis;
+import br.ufpi.datamining.models.aux.TaskSmellAnalysisGroupedResult;
 import br.ufpi.datamining.models.aux.TaskSmellAnalysisResult;
 import br.ufpi.datamining.models.aux.XYSerie;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningEnum;
@@ -1037,6 +1039,135 @@ public class UsabilitySmellDetector {
 	//*********************************************************************************************
 	//********************************** MÉTODOS PARA REFATORAR ***********************************
 	//*********************************************************************************************
+	
+	public List<TaskSmellAnalysisGroupedResult> sessionsGroupedBySimilarity (List<TaskSmellAnalysisResult> taskAnalysisResults, double similarityRate) {
+		Random rand = new Random();
+		List<TaskSmellAnalysisGroupedResult> groupedResult = new ArrayList<TaskSmellAnalysisGroupedResult>();
+		for (TaskSmellAnalysisResult result : taskAnalysisResults) {
+			List<List<SessionGraph>> groups = new ArrayList<List<SessionGraph>>();
+			groups.add(new ArrayList<SessionGraph>());
+			groups.get(0).add(result.getSessions().get(0));
+			for (SessionGraph session : result.getSessions().subList(1, result.getSessions().size())) {
+				boolean createNewGroup = true;
+				for (int i = 0; i < groups.size(); i++) {
+					SessionGraph groupSampleSession = groups.get(i).get(rand.nextInt(groups.get(i).size()));
+//					System.out.println("1: " + session.getGraph().edgeSet().size() + "2: " + groupSampleSession.getGraph().edgeSet().size());
+					if (sessionsSimilarity(session, groupSampleSession) >= similarityRate) {
+						groups.get(i).add(session);
+						createNewGroup = false;
+						break;
+					}
+				}
+				if (createNewGroup) {
+					List<SessionGraph> newGroup = new ArrayList<SessionGraph>();
+					newGroup.add(session);
+					groups.add(newGroup);
+				}
+			}
+			groupedResult.add(new TaskSmellAnalysisGroupedResult(result.getName(), groups, result.getDetectionRate()));
+		}
+		return groupedResult;
+	}
+	
+	private double sessionsSimilarity (SessionGraph session1, SessionGraph session2) {
+		int total = 0;
+		Set<String> allEdges = new HashSet<String>();
+		for (DefaultWeightedEdge edge : session1.getGraph().edgeSet()) {
+			allEdges.add(edge.toString());
+		}
+		for (DefaultWeightedEdge edge : session2.getGraph().edgeSet()) {
+			allEdges.add(edge.toString());
+		}
+		for (String edge : allEdges) {
+			String vertices[] = edge.substring(1, edge.length()-1).split(" : ");
+			if (session1.getGraph().containsEdge(vertices[0], vertices[1])) {
+				if (session2.getGraph().containsEdge(vertices[0], vertices[1])) {
+					if (session1.getGraph().getEdgeWeight(session1.getGraph().getEdge(vertices[0], vertices[1]))
+							> session2.getGraph().getEdgeWeight(session2.getGraph().getEdge(vertices[0], vertices[1])))
+						total += session1.getGraph().getEdgeWeight(session1.getGraph().getEdge(vertices[0], vertices[1]));
+					else
+						total += session2.getGraph().getEdgeWeight(session2.getGraph().getEdge(vertices[0], vertices[1]));
+				} else
+					total += session1.getGraph().getEdgeWeight(session1.getGraph().getEdge(vertices[0], vertices[1]));
+			} else
+				total += session2.getGraph().getEdgeWeight(session2.getGraph().getEdge(vertices[0], vertices[1]));
+		}
+		
+		int dif = 0;
+		for (DefaultWeightedEdge edge : session1.getGraph().edgeSet()) {
+			String vertices[] = edge.toString().substring(1, edge.toString().length()-1).split(" : ");
+			if (session2.getGraph().containsEdge(vertices[0], vertices[1])) {
+				dif += Math.abs(session1.getGraph().getEdgeWeight(session1.getGraph().getEdge(vertices[0], vertices[1]))
+						- session2.getGraph().getEdgeWeight(session2.getGraph().getEdge(vertices[0], vertices[1])));
+			} else {
+				dif += session1.getGraph().getEdgeWeight(session1.getGraph().getEdge(vertices[0], vertices[1]));
+			}
+		}
+		
+		for (DefaultWeightedEdge edge : session2.getGraph().edgeSet()) {
+			String vertices[] = edge.toString().substring(1, edge.toString().length()-1).split(" : ");
+			if (!session1.getGraph().containsEdge(session1.getGraph().getEdge(vertices[0], vertices[1]))) {
+				dif += session2.getGraph().getEdgeWeight(session2.getGraph().getEdge(vertices[0], vertices[1]));
+			}
+		}
+		
+		return (double)(total-dif)/total;
+	}
+	
+	public static void main(String[] args) {
+		DirectedPseudograph<String, DefaultWeightedEdge> graphA = new DirectedPseudograph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+    	graphA.addVertex("A");
+    	graphA.addVertex("B");
+    	graphA.addVertex("C");
+    	graphA.addEdge("A", "B");
+    	graphA.addEdge("B", "C");
+    	
+		DirectedPseudograph<String, DefaultWeightedEdge> graphB = new DirectedPseudograph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		graphB.addVertex("A");
+		graphB.addVertex("B");
+		graphB.addVertex("C");
+		graphB.addVertex("D");
+		graphB.addVertex("E");
+		graphB.addVertex("F");
+		graphB.addEdge("A", "B");
+		graphB.addEdge("B", "D");
+		graphB.addEdge("B", "E");
+		graphB.addEdge("C", "D");
+		graphB.addEdge("D", "E");
+		graphB.addEdge("E", "F");
+		
+		DirectedPseudograph<String, DefaultWeightedEdge> graphC = new DirectedPseudograph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		graphC.addVertex("A");
+		graphC.addVertex("B");
+		graphC.addVertex("C");
+		graphC.addVertex("D");
+		graphC.addVertex("E");
+		graphC.addVertex("F");
+		graphC.addEdge("A", "B");
+		graphC.addEdge("B", "D");
+		graphC.addEdge("B", "E");
+		graphC.addEdge("C", "D");
+		graphC.addEdge("D", "E");
+		graphC.addEdge("E", "F");
+		graphC.addEdge("F", "A");
+		
+		Random rand = new Random();
+		List<List<String>> groups = new ArrayList<List<String>>();
+		List<String> lista = new ArrayList<String>();
+		lista.add("A");
+		groups.add(lista);
+		groups.add(lista);
+		groups.add(lista);
+		groups.add(lista);
+		groups.add(lista);
+		
+		for (int i = 0; i < groups.size(); i++) {
+			System.out.println(rand.nextInt(groups.get(i).size()));
+		}
+		
+		
+//		System.out.println(new UsabilitySmellDetector().sessionsSimilarity(new SessionGraph("", null, graphB, null), new SessionGraph("", null, graphC, null)));
+	}
 	
 	private void executeCommand(final String command) throws IOException {
         

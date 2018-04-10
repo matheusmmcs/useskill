@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import br.ufpi.componets.ValidateComponente;
 import br.ufpi.controllers.BaseController;
 import br.ufpi.datamining.analisys.WebUsageMining;
 import br.ufpi.datamining.models.ActionDataMining;
+import br.ufpi.datamining.models.IgnoredUrlDataMining;
 import br.ufpi.datamining.models.ParameterSmellDataMining;
 import br.ufpi.datamining.models.ParameterSmellTestDataMining;
 import br.ufpi.datamining.models.TaskDataMining;
@@ -40,15 +42,18 @@ import br.ufpi.datamining.models.aux.ResultDataMining;
 import br.ufpi.datamining.models.aux.SessionGraph;
 import br.ufpi.datamining.models.aux.StackedAreaChart;
 import br.ufpi.datamining.models.aux.TaskSmellAnalysis;
+import br.ufpi.datamining.models.aux.TaskSmellAnalysisGroupedResult;
 import br.ufpi.datamining.models.aux.TaskSmellAnalysisResult;
 import br.ufpi.datamining.models.enums.ReturnStatusEnum;
 import br.ufpi.datamining.models.enums.SessionClassificationDataMiningFilterEnum;
 import br.ufpi.datamining.models.vo.ChartsVO;
 import br.ufpi.datamining.models.vo.ReturnVO;
+import br.ufpi.datamining.models.vo.SmellAnalysisGroupedResultVO;
 import br.ufpi.datamining.models.vo.SmellAnalysisResultVO;
 import br.ufpi.datamining.models.vo.TaskDataMiningVO;
 import br.ufpi.datamining.models.vo.TestDataMiningVO;
 import br.ufpi.datamining.repositories.ActionDataMiningRepository;
+import br.ufpi.datamining.repositories.IgnoredUrlDataMiningRepository;
 import br.ufpi.datamining.repositories.ParameterSmellDataMiningRepository;
 import br.ufpi.datamining.repositories.ParameterSmellTestDataMiningRepository;
 import br.ufpi.datamining.repositories.TaskDataMiningRepository;
@@ -95,15 +100,19 @@ public class DataMiningSmellsController extends BaseController {
 	private final ParameterSmellDataMiningRepository parameterSmellDataMiningRepository;
 	private final ParameterSmellTestDataMiningRepository parameterSmellTestDataMiningRepository;
 	
+	private final IgnoredUrlDataMiningRepository ignoredUrlRepository;
+	
 	public DataMiningSmellsController(Result result, Validator validator,
 			TesteView testeView, UsuarioLogado usuarioLogado,
 			ValidateComponente validateComponente,
 			ParameterSmellDataMiningRepository parameterSmellDataMiningRepository,
-			ParameterSmellTestDataMiningRepository parameterSmellTestDataMiningRepository
+			ParameterSmellTestDataMiningRepository parameterSmellTestDataMiningRepository,
+			IgnoredUrlDataMiningRepository ignoredUrlRepository
 			) {
 		super(result, validator, testeView, usuarioLogado, validateComponente);
 		this.parameterSmellDataMiningRepository = parameterSmellDataMiningRepository;
 		this.parameterSmellTestDataMiningRepository = parameterSmellTestDataMiningRepository;
+		this.ignoredUrlRepository = ignoredUrlRepository;
 	}
 
 	
@@ -195,7 +204,7 @@ public class DataMiningSmellsController extends BaseController {
 	@Post("/testes/smells/detection")
 	@Consumes("application/json")
 	@Logado
-	public void view(TestDataMining test, Long initDate, Long endDate, Integer[] selectedSmells, Long[] selectedTasks) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
+	public void view(TestDataMining test, Long initDate, Long endDate, Integer[] selectedSmells, Long[] selectedTasks, Boolean groupSessions, Double similarityRate, String[] ignoredUrls) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
 		Gson gson = new GsonBuilder()
 			.setExclusionStrategies(TestDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
@@ -244,6 +253,15 @@ public class DataMiningSmellsController extends BaseController {
 			actions = WebUsageMining.listActionsBetweenDates(
 					test.getTasks().get(0).getId(), taskDataMiningRepository, actionDataMiningRepository,
 					new Date(initDate), new Date(endDate), null);
+			//TODO terminar e adicionar às iformacoes/orientacoes que esse processo eh hierarquico, ou seja, todas as urls contendo a string passada serao eliminadas/ se nao tiver sido feito ainda, remover a contagem do processo de agrupamento
+			for (String url : ignoredUrls) {
+				Iterator<ActionDataMining> i = actions.iterator();
+				while (i.hasNext()) {
+					ActionDataMining action = i.next();
+					if (action.getsUrl().contains(url))
+						i.remove();
+				}				
+			}
 		}
 		
 		if (ArrayUtils.contains(selectedSmells, LABORIOUS_TASK)) {
@@ -259,7 +277,9 @@ public class DataMiningSmellsController extends BaseController {
 			}
 			
 			System.out.println("Detecting Laborious Task...");
-			tasksAnalysisResult.put("Laborious Task", usm.detectLaboriousTask(tasks, maxActionCount, maxTime, minSessionCount));
+			List<TaskSmellAnalysisResult> result = usm.detectLaboriousTask(tasks, maxActionCount, maxTime, minSessionCount);
+			if (result.size() > 0)
+				tasksAnalysisResult.put("Laborious Task", result);
 		}
 		if (ArrayUtils.contains(selectedSmells, CYCLIC_TASK)) {
 			double maxCycleRate = UsabilitySmellDetector.DEFAULT_VALUE;
@@ -271,7 +291,9 @@ public class DataMiningSmellsController extends BaseController {
 					minActionCount =  (int)(double)parameter.getValue();
 			}
 			System.out.println("Detecting Cyclic Task...");
-			tasksAnalysisResult.put("Cyclic Task", usm.detectCyclicTask(tasks, maxCycleRate, minActionCount));
+			List<TaskSmellAnalysisResult> result = usm.detectCyclicTask(tasks, maxCycleRate, minActionCount);
+			if (result.size() > 0)
+				tasksAnalysisResult.put("Cyclic Task", result);
 		}
 		if (ArrayUtils.contains(selectedSmells, LONELY_ACTION)) {
 			double maxOccurrenceRate = UsabilitySmellDetector.DEFAULT_VALUE;
@@ -283,7 +305,9 @@ public class DataMiningSmellsController extends BaseController {
 					minOccurrenceCount =  (int)(double)parameter.getValue();
 			}
 			System.out.println("Detecting Lonely Action...");
-			actionsAnalysisResult.put("Lonely Action", usm.detectLonelyAction(actions, maxOccurrenceRate, minOccurrenceCount));
+			Map<String, Map<String, String>> result = usm.detectLonelyAction(actions, maxOccurrenceRate, minOccurrenceCount);
+			if (result.size() > 0)
+				actionsAnalysisResult.put("Lonely Action", result);
 		}
 		if (ArrayUtils.contains(selectedSmells, TOO_MANY_LAYERS)) {
 			int maxLayerCount = UsabilitySmellDetector.DEFAULT_VALUE;
@@ -292,7 +316,9 @@ public class DataMiningSmellsController extends BaseController {
 					maxLayerCount =  (int)(double)parameter.getValue();
 			}
 			System.out.println("Detecting Too Many Layers...");
-			tasksAnalysisResult.put("Too Many Layers", usm.detectTooManyLayers(tasks, maxLayerCount));
+			List<TaskSmellAnalysisResult> result = usm.detectTooManyLayers(tasks, maxLayerCount);
+			if (result.size() > 0)
+				tasksAnalysisResult.put("Too Many Layers", result);
 		}
 		if (ArrayUtils.contains(selectedSmells, UNDESCRIPTIVE_ELEMENT)) {
 			int maxAttemptCount = UsabilitySmellDetector.DEFAULT_VALUE, maxTimeInterval = UsabilitySmellDetector.DEFAULT_VALUE;
@@ -303,7 +329,9 @@ public class DataMiningSmellsController extends BaseController {
 					maxTimeInterval =  (int)(double)parameter.getValue();
 			}
 			System.out.println("Detecting Undescriptive Element...");
-			actionsAnalysisResult.put("Undescriptive Element", usm.detectUndescriptiveElement(actions, maxAttemptCount, maxTimeInterval));
+			Map<String, Map<String, String>> result = usm.detectUndescriptiveElement(actions, maxAttemptCount, maxTimeInterval);
+			if (result.size() > 0)
+				actionsAnalysisResult.put("Undescriptive Element", result);
 		}
 		if (ArrayUtils.contains(selectedSmells, MISSING_FEEDBACK)) {
 			int maxRepetitionCount = UsabilitySmellDetector.DEFAULT_VALUE, minOccurrenceCount = UsabilitySmellDetector.DEFAULT_VALUE;
@@ -314,9 +342,25 @@ public class DataMiningSmellsController extends BaseController {
 					minOccurrenceCount =  (int)(double)parameter.getValue();
 			}
 			System.out.println("Detecting Missing Feedback...");
-			actionsAnalysisResult.put("Missing Feedback", usm.detectMissingFeedback(actions, maxRepetitionCount, minOccurrenceCount));
+			Map<String, Map<String, String>> result = usm.detectMissingFeedback(actions, maxRepetitionCount, minOccurrenceCount);
+			if (result.size() > 0)
+				actionsAnalysisResult.put("Missing Feedback", result);
 		}
-		String json = gson.toJson(new SmellAnalysisResultVO(tasksAnalysisResult, actionsAnalysisResult));
+		
+		String json;		
+		if (tasksAnalysisResult.size() == 0 && actionsAnalysisResult.size() == 0)
+			json = gson.toJson(new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.smells.testes.detection.appok"));
+		else {
+			if (groupSessions) {
+				System.out.println("Grouping sessions...");
+				Map<String, List<TaskSmellAnalysisGroupedResult>> taskAnalysisGroupedResult = new LinkedHashMap<String, List<TaskSmellAnalysisGroupedResult>>();
+				for (Map.Entry<String, List<TaskSmellAnalysisResult>> entry : tasksAnalysisResult.entrySet()) {
+					taskAnalysisGroupedResult.put(entry.getKey(), usm.sessionsGroupedBySimilarity(entry.getValue(), similarityRate));
+				}
+				json = gson.toJson(new SmellAnalysisGroupedResultVO(taskAnalysisGroupedResult, actionsAnalysisResult));
+			} else
+				json = gson.toJson(new SmellAnalysisResultVO(tasksAnalysisResult, actionsAnalysisResult));
+		}
 		
 		result.use(Results.json()).from(json).serialize();
 	}
@@ -378,6 +422,42 @@ public class DataMiningSmellsController extends BaseController {
 		*/
 		
 		result.use(Results.json()).from(gson.toJson(returnvo)).serialize();
+	}
+	
+	@Post("/testes/smells/detection/ignoredurls/update")
+	@Consumes("application/json")
+	@Logado
+	public void updateIgnoredUrls(IgnoredUrlDataMining url, Boolean remove) {
+		Gson gson = new GsonBuilder()
+	        .serializeNulls()
+	        .create();
+		
+		ReturnVO returnvo;
+		
+		if (!remove) {
+			ignoredUrlRepository.create(url);
+			returnvo = new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.smells.testes.detection.saveok");
+		} else {
+			ignoredUrlRepository.destroy(url);
+			returnvo = new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.smells.testes.detection.removeok");
+		}
+		
+		result.use(Results.json()).from(gson.toJson(returnvo)).serialize();
+	}
+	
+	@Post("/testes/smells/detection/ignoredurls/get")
+	@Consumes("application/json")
+	@Logado
+	public void ignoredUrls(Long testId) {
+		Gson gson = new GsonBuilder()
+	        .serializeNulls()
+	        .create();
+		
+		List<IgnoredUrlDataMining> ignoredUrls = ignoredUrlRepository.getIgnoredUrls(testId);
+		if (ignoredUrls != null)
+			result.use(Results.json()).from(gson.toJson(ignoredUrls)).serialize();
+		else
+			result.use(Results.json()).from(gson.toJson(new ArrayList<IgnoredUrlDataMining>())).serialize();
 	}
 	
 }
