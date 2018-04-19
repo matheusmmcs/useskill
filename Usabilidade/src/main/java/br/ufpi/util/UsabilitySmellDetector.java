@@ -1036,11 +1036,73 @@ public class UsabilitySmellDetector {
 		return null;
 	}
 	
-	//*********************************************************************************************
-	//********************************** MÉTODOS PARA REFATORAR ***********************************
-	//*********************************************************************************************
+	/**
+	 * Retorna uma proporção (normalizada) representando a similaridade entre as duas sessões 
+	 * passadas como parâmetro. O cálculo em questão leva em em consideração as diferenças entre as
+	 * transições de ações (arestas do grafo) que ocorrem em cada sessão, bem como as diferenças
+	 * entre a quantidade de vezes em que essas ações ocorrem (pesos das arestas).
+	 * 
+	 * @param	session1	um grafo de sessão
+	 * @param	session2	um grafo de sessão
+	 * @return				uma proporção representando a similaridade entre as sessões de entrada
+	 */
+	private double sessionsSimilarity (DirectedPseudograph<String, DefaultWeightedEdge> session1, DirectedPseudograph<String, DefaultWeightedEdge> session2) {
+		int total = 0, dif = 0;
+		Set<String> allEdges = new HashSet<String>();
+		for (DefaultWeightedEdge edge : session1.edgeSet()) {
+			allEdges.add(edge.toString());
+		}
+		for (DefaultWeightedEdge edge : session2.edgeSet()) {
+			allEdges.add(edge.toString());
+		}
+		for (String edge : allEdges) {
+			String vertices[] = edge.substring(1, edge.length()-1).split(" : ");
+			if (session1.containsEdge(vertices[0], vertices[1])) {
+				if (session2.containsEdge(vertices[0], vertices[1])) {
+					if (session1.getEdgeWeight(session1.getEdge(vertices[0], vertices[1]))
+							> session2.getEdgeWeight(session2.getEdge(vertices[0], vertices[1])))
+						total += session1.getEdgeWeight(session1.getEdge(vertices[0], vertices[1]));
+					else
+						total += session2.getEdgeWeight(session2.getEdge(vertices[0], vertices[1]));
+				} else
+					total += session1.getEdgeWeight(session1.getEdge(vertices[0], vertices[1]));
+			} else
+				total += session2.getEdgeWeight(session2.getEdge(vertices[0], vertices[1]));
+		}
+		for (DefaultWeightedEdge edge : session1.edgeSet()) {
+			String vertices[] = edge.toString().substring(1, edge.toString().length()-1).split(" : ");
+			if (session2.containsEdge(vertices[0], vertices[1])) {
+				dif += Math.abs(session1.getEdgeWeight(session1.getEdge(vertices[0], vertices[1]))
+						- session2.getEdgeWeight(session2.getEdge(vertices[0], vertices[1])));
+			} else {
+				dif += session1.getEdgeWeight(session1.getEdge(vertices[0], vertices[1]));
+			}
+		}
+		for (DefaultWeightedEdge edge : session2.edgeSet()) {
+			String vertices[] = edge.toString().substring(1, edge.toString().length()-1).split(" : ");
+			if (!session1.containsEdge(session1.getEdge(vertices[0], vertices[1]))) {
+				dif += session2.getEdgeWeight(session2.getEdge(vertices[0], vertices[1]));
+			}
+		}
+		return (double)(total-dif)/total;
+	}
 	
-	public List<TaskSmellAnalysisGroupedResult> sessionsGroupedBySimilarity (List<TaskSmellAnalysisResult> taskAnalysisResults, double similarityRate) {
+	/**
+	 * Retorna a lista de resultados (referentes a uma análise de smells) de entrada com as sessões
+	 * detectadas agrupadas por similaridade. Duas sessões são consideradas como similares caso
+	 * a taxa de similaridade calculada entre elas seja igual ou superior ao valor definido como
+	 * parâmetro. Por questões de desempenho (visto que as sessões têm de ser comparadas par a
+	 * par), durante a formação dos grupos, para definir se determinada sessão será integrada a um
+	 * grupo preexistente ou encabeçar a criação de um novo, a mesma é comparada com uma amostra 
+	 * (sessão) aleatória pertencente a cada um dos grupos já formados. Assim, duas execuções 
+	 * diferentes deste método realizadas com um mesmo conjunto de entrada podem gerar agrupamentos
+	 * diferentes, contudo essa probabilidade é bem pequena.
+	 * 
+	 * @param	taskAnalysisResults	uma lista de resultados referentes a uma análise de smells
+	 * @param	minSimilarityRate	a taxa (normalizada) que define se duas sessões são similares
+	 * @return						a lista de entrada com as sessões agrupadas por similaridade
+	 */
+	public List<TaskSmellAnalysisGroupedResult> sessionsGroupedBySimilarity (List<TaskSmellAnalysisResult> taskAnalysisResults, double minSimilarityRate) {
 		Random rand = new Random();
 		List<TaskSmellAnalysisGroupedResult> groupedResult = new ArrayList<TaskSmellAnalysisGroupedResult>();
 		for (TaskSmellAnalysisResult result : taskAnalysisResults) {
@@ -1051,8 +1113,7 @@ public class UsabilitySmellDetector {
 				boolean createNewGroup = true;
 				for (int i = 0; i < groups.size(); i++) {
 					SessionGraph groupSampleSession = groups.get(i).get(rand.nextInt(groups.get(i).size()));
-//					System.out.println("1: " + session.getGraph().edgeSet().size() + "2: " + groupSampleSession.getGraph().edgeSet().size());
-					if (sessionsSimilarity(session, groupSampleSession) >= similarityRate) {
+					if (sessionsSimilarity(session.getGraph(), groupSampleSession.getGraph()) >= minSimilarityRate) {
 						groups.get(i).add(session);
 						createNewGroup = false;
 						break;
@@ -1069,50 +1130,9 @@ public class UsabilitySmellDetector {
 		return groupedResult;
 	}
 	
-	private double sessionsSimilarity (SessionGraph session1, SessionGraph session2) {
-		int total = 0;
-		Set<String> allEdges = new HashSet<String>();
-		for (DefaultWeightedEdge edge : session1.getGraph().edgeSet()) {
-			allEdges.add(edge.toString());
-		}
-		for (DefaultWeightedEdge edge : session2.getGraph().edgeSet()) {
-			allEdges.add(edge.toString());
-		}
-		for (String edge : allEdges) {
-			String vertices[] = edge.substring(1, edge.length()-1).split(" : ");
-			if (session1.getGraph().containsEdge(vertices[0], vertices[1])) {
-				if (session2.getGraph().containsEdge(vertices[0], vertices[1])) {
-					if (session1.getGraph().getEdgeWeight(session1.getGraph().getEdge(vertices[0], vertices[1]))
-							> session2.getGraph().getEdgeWeight(session2.getGraph().getEdge(vertices[0], vertices[1])))
-						total += session1.getGraph().getEdgeWeight(session1.getGraph().getEdge(vertices[0], vertices[1]));
-					else
-						total += session2.getGraph().getEdgeWeight(session2.getGraph().getEdge(vertices[0], vertices[1]));
-				} else
-					total += session1.getGraph().getEdgeWeight(session1.getGraph().getEdge(vertices[0], vertices[1]));
-			} else
-				total += session2.getGraph().getEdgeWeight(session2.getGraph().getEdge(vertices[0], vertices[1]));
-		}
-		
-		int dif = 0;
-		for (DefaultWeightedEdge edge : session1.getGraph().edgeSet()) {
-			String vertices[] = edge.toString().substring(1, edge.toString().length()-1).split(" : ");
-			if (session2.getGraph().containsEdge(vertices[0], vertices[1])) {
-				dif += Math.abs(session1.getGraph().getEdgeWeight(session1.getGraph().getEdge(vertices[0], vertices[1]))
-						- session2.getGraph().getEdgeWeight(session2.getGraph().getEdge(vertices[0], vertices[1])));
-			} else {
-				dif += session1.getGraph().getEdgeWeight(session1.getGraph().getEdge(vertices[0], vertices[1]));
-			}
-		}
-		
-		for (DefaultWeightedEdge edge : session2.getGraph().edgeSet()) {
-			String vertices[] = edge.toString().substring(1, edge.toString().length()-1).split(" : ");
-			if (!session1.getGraph().containsEdge(session1.getGraph().getEdge(vertices[0], vertices[1]))) {
-				dif += session2.getGraph().getEdgeWeight(session2.getGraph().getEdge(vertices[0], vertices[1]));
-			}
-		}
-		
-		return (double)(total-dif)/total;
-	}
+	//*********************************************************************************************
+	//********************************** MÉTODOS PARA REFATORAR ***********************************
+	//*********************************************************************************************
 	
 	public static void main(String[] args) {
 		DirectedPseudograph<String, DefaultWeightedEdge> graphA = new DirectedPseudograph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
@@ -1151,22 +1171,8 @@ public class UsabilitySmellDetector {
 		graphC.addEdge("E", "F");
 		graphC.addEdge("F", "A");
 		
-		Random rand = new Random();
-		List<List<String>> groups = new ArrayList<List<String>>();
-		List<String> lista = new ArrayList<String>();
-		lista.add("A");
-		groups.add(lista);
-		groups.add(lista);
-		groups.add(lista);
-		groups.add(lista);
-		groups.add(lista);
+		System.out.println(new UsabilitySmellDetector().sessionsSimilarity(graphA, graphC));
 		
-		for (int i = 0; i < groups.size(); i++) {
-			System.out.println(rand.nextInt(groups.get(i).size()));
-		}
-		
-		
-//		System.out.println(new UsabilitySmellDetector().sessionsSimilarity(new SessionGraph("", null, graphB, null), new SessionGraph("", null, graphC, null)));
 	}
 	
 	private void executeCommand(final String command) throws IOException {

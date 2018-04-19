@@ -277,7 +277,7 @@
 	"datamining.smells.testes.detection.ignoreurl" : "Ignorar URL",
 	"datamining.smells.testes.detection.saveok" : "URL adicionada com sucesso",
 	"datamining.smells.testes.detection.removeok" : "URL removida com sucesso",
-	"datamining.smells.testes.detection.ignoreurl.info" : "Permite adicionar as URLs do sistema que se deseja excluir da análise.",
+	"datamining.smells.testes.detection.ignoreurl.info" : "Permite adicionar as URLs do sistema que não se deseja analisar. Todas as ações contendo a URL passada, total ou parcialmente, são desconsideradas durante a análise e busca por smells relacionados à ações.",
 	"datamining.smells.testes.detection.groupsessions" : "Agrupar sessões por similaridade",
 	"datamining.smells.testes.detection.groupsessions.info" : "Agrupa as sessões (grafos) detectadas de cada tarefa acordo com a taxa de similaridade definida. Sessões similares tendem a evidenciar um mesmo problema, assim, esta configuração ajuda a evitar a análise de sessões redundantes.",
 	"datamining.smells.testes.detection.similarityrate" : "Taxa de similaridade (%)",

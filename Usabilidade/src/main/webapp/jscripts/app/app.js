@@ -605,12 +605,6 @@ angular.module('useskill',
 })
 
 //Smells Controllers
-/*TODO 
- * mostrar as informacoes das metricas em uma caixa de info da useskill qnd clicado
- * colocar cor padrao da useskill nos icones de informacao
- * tirar o efeito de mouseover das caixas
- * alterar o efeito de tooltip
- */
 .controller('SmellsStatisticFormController', function(test, UtilsService, SmellsMetricsEnum, ServerAPI, $timeout, $filter) {
 	var smellCtrl = this;
 	smellCtrl.test = JSON.parse(test.data.string);
@@ -636,11 +630,9 @@ angular.module('useskill',
 		var minDate = UtilsService.datepickerToTimestamp(smellCtrl.minDate);
 		var maxDate = UtilsService.datepickerToTimestamp(smellCtrl.maxDate);
 		
-		console.log('view', minDate, maxDate, smellCtrl.metricsSelected);
-		
 		var obj = angular.toJson({
-			test: smellCtrl.test, 
-			initDate: minDate, 
+			test: smellCtrl.test,
+			initDate: minDate,
 			endDate: maxDate,
 			metrics: smellCtrl.metricsSelected,
 			useLiteral: smellCtrl.useLiteral,
@@ -827,7 +819,6 @@ angular.module('useskill',
 .controller('SmellsDetectionFormController', function(test, UtilsService, SmellsEnum, ServerAPI, $filter, $scope) {
 	
 	var smellCtrl = this;
-	
 	smellCtrl.test = JSON.parse(test.data.string);
 	
 	smellCtrl.minDate = new Date().getTime();
@@ -844,6 +835,8 @@ angular.module('useskill',
 	smellCtrl.similarityRate = 60;
 	
 	smellCtrl.ignoredUrls = [];
+	smellCtrl.nodesDesc = [];
+	smellCtrl['smell-data-graph'] = [];
 	
 	for (var i = 0; i < Object.keys(SmellsEnum.smells).length; i++) {
 		smellCtrl.smellsSelected.push(i+1);
@@ -870,9 +863,9 @@ angular.module('useskill',
 		var maxDate = UtilsService.datepickerToTimestamp(smellCtrl.maxDate);
 		
 		var obj = angular.toJson({
-			test: smellCtrl.test, 
-			initDate: minDate,//1457319600000, 
-			endDate: maxDate,//1457924400000,
+			test: smellCtrl.test,
+			initDate: minDate,
+			endDate: maxDate,
 			smells: smellCtrl.smellsSelected,
 			tasks: smellCtrl.tasksSelected,
 			groupSessions: smellCtrl.groupSessions,
@@ -882,48 +875,43 @@ angular.module('useskill',
 		
 		ServerAPI.detectSmells(obj).then(function(data) {			
 			smellCtrl.detectionResult = JSON.parse(data.data.string);
-			//console.log(smellCtrl.detectionResult["Laborious Task"]["1 - Solicitar Exame (MarcarExameProfissional)"][0].graph.edgeMap);
-			console.log(smellCtrl.detectionResult);
-			
-			//$scope[$scope.graphIdsEnum.GRAPH_DEFAULT] = drawGraph('mynetwork', graphData, taskCtrl.result.sessions, taskCtrl.actionsSituation, $scope.situationsEnum, $scope.factorScaleX, preserveY);
-			
-			//testCtrl.test = JSON.parse(data.data.string);
 		}, function(data) {
 			console.log(data);
 		});
-		
 	}
 	
-	smellCtrl.showGraphSmell = function(smellName, taskName, session) {
+	smellCtrl.showGraphSmell = function(smellName, taskName, session, index) {
 		var elemId = 'graph-'+ smellCtrl.formattedId(smellName, taskName, session.description);
-		
 		var graphData = generateGraphSmells(session.graph);
-		smellCtrl['smellgraphid'] = elemId;
-		smellCtrl.nodeSelected = null;
-		smellCtrl['smell-data-graph'] = drawGraph(elemId, graphData, [], {}, {}, 5, false);
-		smellCtrl['smell-data-nodes'] = session.graph;
-		smellCtrl.resetGraph();
-		
-		console.log('nos', graphData.arrNodes.length, 'arestas', graphData.arrEdges.length)
+//		smellCtrl['smellgraphid'] = elemId;
+		smellCtrl.nodesDesc[index] = null;
+		smellCtrl['smell-data-graph'][index] = drawGraph(elemId, graphData, [], {}, {}, 5, false);
+//		smellCtrl['smell-data-nodes'] = session.graph;
+		smellCtrl.resetGraph(index);
 	}
 	
-	smellCtrl.resetGraph = function() {
-		smellCtrl['smell-data-graph'].on("selectNode", function (params) {
-      	  	var node = smellCtrl['smell-data-graph'].body.nodes[params.nodes[0]];
-      	  	smellCtrl.nodeDesc = node.options.desc.split(" | ");
-      	  	smellCtrl.nodeSelected = node.options.desc;
-      	  	smellCtrl.nodeValue = node.options.value;
+	smellCtrl.resetGraph = function(index) {
+		smellCtrl['smell-data-graph'][index].on("selectNode", function (params) {
+      	  	var node = smellCtrl['smell-data-graph'][index].body.nodes[params.nodes[0]];
+      	  	var nodeDesc = node.options.desc.split(" | ");
+      	  	smellCtrl.nodesDesc[index] = {
+      	  			place: nodeDesc[0],
+      	  			element: nodeDesc[1],
+      	  			actiontype: nodeDesc[2],
+      	  			occurrences: node.options.value
+      	  	}
       	  	$scope.$apply();
         });
-		smellCtrl['smell-data-graph'].on("selectEdge", function (params) {
-    		var edge = smellCtrl['smell-data-graph'].body.edges[params.edges[0]];
-    		var from = smellCtrl['smell-data-graph'].body.nodes[edge.options.from].options.desc.split(" | ");
-    		var to = smellCtrl['smell-data-graph'].body.nodes[edge.options.to].options.desc.split(" | ");
-    		smellCtrl.nodeSelected = edge.id;
-    		smellCtrl.nodeDesc[0] = from[0] + ' --> ' + to[0];
-    		smellCtrl.nodeDesc[1] = from[1] + ' --> ' + to[1];
-    		smellCtrl.nodeDesc[2] = from[2] + ' --> ' + to[2];
-    		smellCtrl.nodeValue = edge.options.value;
+		smellCtrl['smell-data-graph'][index].on("selectEdge", function (params) {
+    		var edge = smellCtrl['smell-data-graph'][index].body.edges[params.edges[0]];
+    		var from = smellCtrl['smell-data-graph'][index].body.nodes[edge.options.from].options.desc.split(" | ");
+    		var to = smellCtrl['smell-data-graph'][index].body.nodes[edge.options.to].options.desc.split(" | ");
+    		smellCtrl.nodesDesc[index] = {
+      	  			place: from[0] + ' --> ' + to[0],
+      	  			element: from[1] + ' --> ' + to[1],
+      	  			actiontype: from[2] + ' --> ' + to[2],
+      	  			occurrences: edge.options.value
+      	  	}
     		$scope.$apply();
         });
 	}
@@ -1001,7 +989,7 @@ angular.module('useskill',
 	smellCtrl.problemDescription = function (problem) {
 		return $filter('translate')(problem).split(":")[1];
 	}
-	//consertar a o lance de estar mudando todas as divs ao clicar em uma acao
+	
 	smellCtrl.formattedId = function (smell, task, session) {
 		return (smell + '-' + task + '-' + session).replace(/[{()}\. ]/g, '');
 	}
@@ -1015,7 +1003,7 @@ angular.module('useskill',
 			remove: false
 		});
 		ServerAPI.updateIgnoredUrls(obj).then(function(data) {			
-			console.log(data);
+//			console.log(data);
 		}, function(data) {
 			console.error(data);
 		});
@@ -1031,7 +1019,7 @@ angular.module('useskill',
 			remove: true
 		});
 		ServerAPI.updateIgnoredUrls(obj).then(function(data) {			
-			console.log(data);
+//			console.log(data);
 		}, function(data) {
 			console.error(data);
 		});
@@ -1051,14 +1039,13 @@ angular.module('useskill',
 	
 	smellCtrl.smell = smell;
 	smellCtrl.parameters = JSON.parse(parameters.data.string);
-	console.log('chegou: ', smellCtrl.parameters, idSmell, smell);
 	
 	smellCtrl.changeValueParam = function(){
 		var obj = angular.toJson({
 			parameters: smellCtrl.parameters
 		});
 		ServerAPI.changeSmellParameter(obj).then(function(data) {
-			console.log(data);
+//			console.log(data);
 		}, function(data) {
 			console.error(data);
 		});
@@ -1069,52 +1056,6 @@ angular.module('useskill',
 			smellCtrl.parameters[i].value = -1;
 		}
 	}
-	
-//	console.log(smellCtrl.test);
-	
-//	smellCtrl.minDate = new Date().getTime();
-//	smellCtrl.maxDate = new Date().getTime();
-//	
-//	smellCtrl.formatDate = UtilsService.formatDate;
-//	smellCtrl.momentTimestamp = UtilsService.momentTimestamp;
-//	
-//	smellCtrl.smells = SmellsEnum.smells;
-//	smellCtrl.smellsSelected = [];
-//	
-//	smellCtrl.view = function(){
-//		var minDate = UtilsService.datepickerToTimestamp(smellCtrl.minDate);
-//		var maxDate = UtilsService.datepickerToTimestamp(smellCtrl.maxDate);
-//		
-//		var obj = angular.toJson({
-//			test: smellCtrl.test, 
-//			initDate: minDate, 
-//			endDate: maxDate,
-//			metrics: smellCtrl.smellsSelected
-//		});
-//		
-//		ServerAPI.detectSmells(obj).then(function(data) {
-//			console.log(data);
-//			//testCtrl.test = JSON.parse(data.data.string);
-//		}, function(data) {
-//			//console.log(data);
-//		});
-//		
-//	}
-//	
-//	smellCtrl.toggleSelection = function toggleSelection(id) {
-//		id = parseInt(id);
-//		var findIdx = -1;
-//		for (var i = 0; i < smellCtrl.smellsSelected.length; i++) {
-//			if (smellCtrl.smellsSelected[i] == id) {
-//				findIdx = i;
-//			}
-//		}
-//		if (findIdx == -1) {
-//			smellCtrl.smellsSelected.push(id);
-//		} else {
-//			smellCtrl.smellsSelected.splice(findIdx, 1);
-//		}
-//	};
 	
 })
 

@@ -3,42 +3,36 @@
 		<ul class="breadcrumb">
 			<li>
 				<a ng-href="/"> 
-					{{ 'inicio' | translate}}
+					{{ 'inicio' | translate }}
 				</a>
 				<span class="divider">/</span>
 			</li>
 			<li>
 				<a ng-href="#/testes/"> 
-					{{ 'datamining' | translate}} - {{ 'datamining.testes.list' | translate}}
+					{{ 'datamining' | translate }} - {{ 'datamining.testes.list' | translate }}
 				</a>
 				<span class="divider">/</span>
 			</li>
 			<li>
 				<a ng-href="#/testes/{{smellCtrl.test.id}}"> 
-					{{ 'datamining.testes.details' | translate}}
+					{{ 'datamining.testes.details' | translate }}
 				</a>
 				<span class="divider">/</span>
 			</li>
-			<li class="active">{{ 'datamining.smells.testes.viewstatistics' | translate}}</li>
+			<li class="active">{{ 'datamining.smells.testes.viewstatistics' | translate }}</li>
 		</ul>
 		
 		<usdm-messages-alert></usdm-messages-alert>
-	    
-<!--         <div class="alert alert-info alert-dismissable" style="position: absolute; width: 47.5%;"> -->
-<!--             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> -->
-<!--             Success! message sent successfully. -->
-<!--         </div>		 -->
 	    
 		<div class="row show-grid">
 		    <div class="span4">
 		    	<div class="usdm-box">
 		    		<h2 class="usdm-box-header">
-			    		{{ 'datamining.testes.details' | translate}}
-		            </h2>
-		            
+			    		{{ 'datamining.testes.details' | translate }}
+		            </h2>		            
 		            <div class="usdm-box-body">
 			            <dl>
-			            	<dt>{{ 'datamining.testes.title' | translate}}:</dt>
+			            	<dt>{{ 'datamining.testes.title' | translate }}:</dt>
 			            	<dd>
 			            		{{smellCtrl.test.title}}
 			            		<a class="btn pull-right" ng-href="#/testes/editar/{{smellCtrl.test.id}}" title="{{ 'datamining.edit' | translate}}"><span class="icon-edit"></span> {{ 'datamining.edit' | translate }}</a>
@@ -46,32 +40,29 @@
 			            	</dd>
 			            </dl>
 			            <dl>
-			            	<dt>{{ 'datamining.testes.abbrev' | translate}}:</dt>
+			            	<dt>{{ 'datamining.testes.abbrev' | translate }}:</dt>
 			            	<dd>{{smellCtrl.test.clientAbbreviation}}</dd>
 			            </dl>
 			            <dl>
-			            	<dt>{{ 'datamining.testes.url' | translate}}:</dt>
+			            	<dt>{{ 'datamining.testes.url' | translate }}:</dt>
 			            	<dd>{{smellCtrl.test.urlSystem}}</dd>
 			            </dl>
-			            
 		            </div>
 		    	</div>
 		    </div>
-		    
 	        <div class="span8">
-	        	
 	            <div class="usdm-box">
 	            	<h3 class="usdm-title-collapse">
-	            		{{ 'datamining.smells.testes.statistics.title' | translate}}
+	            		{{ 'datamining.smells.testes.statistics.title' | translate }}
 	            	</h3>
 	            	<div class="usdm-clickable-box-content usdm-animate-show-hide">
 		        		<form name="myForm" class="usdm-clickable-box-form-lite form-layout">
 							<fieldset>
-								<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white; padding-top: 0;">
+								<table class="table table-striped table-bordered table-condensed datamining-table white-table">
 					                <thead>
 					                    <tr>
-					                        <th width="85%">{{'datamining.smells.testes.statistics.metrics' | translate}}</th>
-					                        <th width="15%">{{'datamining.smells.testes.evaluate' | translate}}</th>
+					                        <th width="85%">{{'datamining.smells.testes.statistics.metrics' | translate }}</th>
+					                        <th width="15%">{{'datamining.smells.testes.evaluate' | translate }}</th>
 					                    </tr>
 					                </thead>
 					                <tbody>
@@ -81,9 +72,8 @@
 				                        </tr>
 					                </tbody>
 					            </table>
-					            
 					            <hr>
-					            <h3>{{'datamining.smells.testes.config' | translate}}</h3>
+					            <h3>{{'datamining.smells.testes.config' | translate }}</h3>
 					            <br>
 								<div class="row-fluid">
 									<div class="control-group span6">
@@ -98,26 +88,24 @@
 										</div>
 									</div>
 								</div>
-					            
 					            <hr>
 					            <h3>{{'datamining.smells.testes.timewindow' | translate}}</h3>
 					            <br>
 								<div class="row-fluid">
 									<div class="control-group span6">
-						            	<label class="control-label" for="pickerMinSelector">{{ 'date.initial' | translate}}:*</label>
+						            	<label class="control-label" for="pickerMinSelector">{{ 'date.initial' | translate }}:*</label>
 						            	<div class="controls">
 						                	<input class="span12" type="datetime" placeholder="{{ 'date.initial' | translate}}" date-time ng-model="smellCtrl.minDate" id="pickerMinSelector" date-change="smellCtrl.changeMinMax" max-date="smellCtrl.maxDate" view="date" format="DD/MM/YYYY HH:mm" /> 
 						            	</div>
 						        	</div>
 						        	
 						        	<div class="control-group span6">
-						            	<label class="control-label" for="pickerMaxSelector">{{ 'date.end' | translate}}:*</label>
+						            	<label class="control-label" for="pickerMaxSelector">{{ 'date.end' | translate }}:*</label>
 						            	<div class="controls">
 						                	<input class="span12" type="datetime" placeholder="{{ 'date.end' | translate}}" date-time ng-model="smellCtrl.maxDate" id="pickerMaxSelector" date-change="smellCtrl.changeMinMax" min-date="smellCtrl.minDate" view="date" format="DD/MM/YYYY HH:mm" /> 
 						            	</div>
 						        	</div>
 								</div>
-								
 					        	<div class="form-actions">
 					            	<button ng-click="smellCtrl.view()"  class="btn btn-primary pull-right submit">{{ 'datamining.smells.testes.statistics.view' | translate }}</button>
 					        	</div>
@@ -126,16 +114,6 @@
 		        	</div>
 	        	</div>
 	        </div>
-	        
-<!-- 	        	<div class="usdm-box" ng-show="smellCtrl.charts != null" ng-repeat="chart in smellCtrl.charts"> -->
-<!-- 	            	<h3 class="usdm-title-collapse"> -->
-<!-- 	            		{{chart.description}} -->
-<!-- 	            	</h3> -->
-<!-- 	            	<div class="usdm-clickable-box-content"> -->
-<!-- 	  					<nvd3 options="chart.statisticsOptions" data="chart.statisticsData" api="chart.chartApi"></nvd3> -->
-<!-- 	  				</div> -->
-<!-- 	        	</div> -->
-	        
 	        <div class="span12">
 	        	<div class="usdm-box" ng-show="smellCtrl.areaCharts != null" ng-repeat="chart in smellCtrl.areaCharts">
 	            	<h3 class="usdm-title-collapse">
@@ -145,7 +123,6 @@
 	  					<nvd3 options="chart.statisticsOptions" data="chart.statisticsData" class="with-3d-shadow with-transitions"></nvd3>
 	  				</div>
 	        	</div>
-	        	
 	        	<div class="usdm-box" ng-show="smellCtrl.barCharts != null" ng-repeat="chart in smellCtrl.barCharts">
 	            	<h3 class="usdm-title-collapse">
 	            		{{ chart.description | translate }}

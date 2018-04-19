@@ -343,7 +343,7 @@ function drawGraph(idContainer, graphData, sessions, actionsSituation, situation
 		maxVal = graphData.maxVal,
 		actualNodesPosY = {};
 	
-	console.log("render graph", idContainer, graphData, sessions, actionsSituation, situationsEnum, factorScaleX, preserveY);
+//	console.log("render graph", idContainer, graphData, sessions, actionsSituation, situationsEnum, factorScaleX, preserveY);
 	
 	factorScaleX = factorScaleX || 3;
 	  
@@ -483,7 +483,6 @@ function generateGraphSmells (sessionGraph) {
 	//mapear todos os ids de nodes
 	var nodeIds = {};
 	var nodeIdsCount = 0;
-	console.log(sessionGraph.edgeMap);
 	for (var i in sessionGraph.edgeMap) {
 		var obj = sessionGraph.edgeMap[i];
 		if (nodeIdsCount == 0) {

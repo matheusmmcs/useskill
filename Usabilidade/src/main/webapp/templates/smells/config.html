@@ -4,62 +4,50 @@
 		<ul class="breadcrumb">
 			<li>
 				<a ng-href="/"> 
-					{{ 'inicio' | translate}}
+					{{ 'inicio' | translate }}
 				</a>
 				<span class="divider">/</span>
 			</li>
 			<li>
 				<a ng-href="#/testes/"> 
-					{{ 'datamining' | translate}} - {{ 'datamining.testes.list' | translate}}
+					{{ 'datamining' | translate }} - {{ 'datamining.testes.list' | translate }}
 				</a>
 				<span class="divider">/</span>
 			</li>
 			<li ng-show="smellConfigCtrl.test.id">
 				<a ng-href="#/testes/{{smellConfigCtrl.test.id}}"> 
-					{{ 'datamining.testes.details' | translate}}
+					{{ 'datamining.testes.details' | translate }}
 				</a>
 				<span class="divider">/</span>
 			</li>
 			<li class="active">{{ 'datamining.smells.testes.config.title' | translate }}</li>
 		</ul>
 		
-		
 		<usdm-messages-alert></usdm-messages-alert>
-		
 	    
 	    <div class="span10 center">
-		
 			<form name="myForm" class="datamining-form form-layout form-horizontal">
 				<fieldset>
 					<legend>
 						<span>{{ smellCtrl.smell.name }}</span>
 					</legend>
-					
 					<div class="control-group" ng-repeat="param in smellCtrl.parameters | orderBy:'id'">
-		            	<label style="width: 240px;" class="control-label" for="{{ param.id }}">{{ param.parameterSmell.description | translate }}: 
+		            	<label class="control-label large" for="{{ param.id }}">{{ param.parameterSmell.description | translate }}: 
 		            		<a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ param.parameterSmell.description.replace('detection', 'config') + '.info' | translate }}"></a>
 		            	</label>
-		            	<div style="margin-left: 260px;" class="controls">
+		            	<div class="controls middle">
 		            		<input type="text" default-holder ng-model="param.value" id="{{ param.id }}" class="input" ng-disabled="smellCtrl.disableField[param.id]"/>
 		            	</div>
-<!-- 		            	<label> -->
-<!-- 		            			<input type="checkbox" ng-model="smellCtrl.disableField[param.id]" ng-true-value="true" ng-false-value="false"> -->
-<!-- 		            			Padrão -->
-<!-- 		            		</label> -->
-		        	</div>
-		        	
+		        	</div>		        	
 					<hr/>
-					
 		        	<div class="form-actions">
 		            	<button ng-click="smellCtrl.changeValueParam()" class="btn btn-primary pull-right submit">{{ 'datamining.smells.testes.config.save' | translate }}</button>
 		            	<button ng-click="smellCtrl.redefineDefault()" class="btn pull-right">{{ 'datamining.smells.testes.config.redefine' | translate }}</button>
-		            	<a href="#/" onclick="window.history.go(-1); return false;" class="btn pull-left">{{ 'datamining.back' | translate}}</a>
+		            	<a href="#/" onclick="window.history.go(-1); return false;" class="btn pull-left">{{ 'datamining.back' | translate }}</a>
 		        	</div>
-		        	
 				</fieldset>
 			</form>
 		</div>
 	     
-	
     </div>
 </body>

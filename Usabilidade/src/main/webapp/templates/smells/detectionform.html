@@ -3,23 +3,23 @@
 		<ul class="breadcrumb">
 			<li>
 				<a ng-href="/"> 
-					{{ 'inicio' | translate}}
+					{{ 'inicio' | translate }}
 				</a>
 				<span class="divider">/</span>
 			</li>
 			<li>
 				<a ng-href="#/testes/"> 
-					{{ 'datamining' | translate}} - {{ 'datamining.testes.list' | translate}}
+					{{ 'datamining' | translate }} - {{ 'datamining.testes.list' | translate }}
 				</a>
 				<span class="divider">/</span>
 			</li>
 			<li>
 				<a ng-href="#/testes/{{smellCtrl.test.id}}"> 
-					{{ 'datamining.testes.details' | translate}}
+					{{ 'datamining.testes.details' | translate }}
 				</a>
 				<span class="divider">/</span>
 			</li>
-			<li class="active">{{ 'datamining.smells.testes.detection' | translate}}</li>
+			<li class="active">{{ 'datamining.smells.testes.detection' | translate }}</li>
 		</ul>
 		
 		<usdm-messages-alert></usdm-messages-alert>
@@ -28,12 +28,11 @@
 		    <div class="span4">
 		    	<div class="usdm-box">
 		    		<h2 class="usdm-box-header">
-			    		{{ 'datamining.testes.details' | translate}}
+			    		{{ 'datamining.testes.details' | translate }}
 		            </h2>
-		            
 		            <div class="usdm-box-body">
 			            <dl>
-			            	<dt>{{ 'datamining.testes.title' | translate}}:</dt>
+			            	<dt>{{ 'datamining.testes.title' | translate }}:</dt>
 			            	<dd>
 			            		{{smellCtrl.test.title}}
 			            		<a class="btn pull-right" ng-href="#/testes/editar/{{smellCtrl.test.id}}" title="{{ 'datamining.edit' | translate}}"><span class="icon-edit"></span> {{ 'datamining.edit' | translate }}</a>
@@ -41,22 +40,21 @@
 			            	</dd>
 			            </dl>
 			            <dl>
-			            	<dt>{{ 'datamining.testes.abbrev' | translate}}:</dt>
+			            	<dt>{{ 'datamining.testes.abbrev' | translate }}:</dt>
 			            	<dd>{{smellCtrl.test.clientAbbreviation}}</dd>
 			            </dl>
 			            <dl>
-			            	<dt>{{ 'datamining.testes.url' | translate}}:</dt>
+			            	<dt>{{ 'datamining.testes.url' | translate }}:</dt>
 			            	<dd>{{smellCtrl.test.urlSystem}}</dd>
 			            </dl>
-			            
 		            </div>
 		    	</div>
 		    </div>
+		    
 	        <div class="span8">
-	        	
 	            <div class="usdm-box">
 	            	<h3 class="usdm-title-collapse">
-	            		{{ 'datamining.smells.testes.detection.title' | translate}}
+	            		{{ 'datamining.smells.testes.detection.title' | translate }}
 	            	</h3>
 	            	<div class="usdm-clickable-box-content usdm-animate-show-hide">
 		        		<form name="myForm" class="usdm-clickable-box-form-lite form-layout">
@@ -64,27 +62,27 @@
 								<table class="table table-striped table-bordered table-condensed datamining-table white-table">
 					                <thead>
 					                    <tr>
-					                        <th width="60%">{{'datamining.smells.testes.detection.smellname' | translate}}</th>
-					                        <th width="15%">{{'datamining.smells.testes.evaluate' | translate}}</th>
-					                        <th width="25%">{{'datamining.smells.testes.detection.actions' | translate}}</th>
+					                        <th width="60%">{{'datamining.smells.testes.detection.smellname' | translate }}</th>
+					                        <th width="15%">{{'datamining.smells.testes.evaluate' | translate }}</th>
+					                        <th width="25%">{{'datamining.smells.testes.detection.actions' | translate }}</th>
 					                    </tr>
 					                </thead>
 					                <tbody>
 				                        <tr ng-repeat="smell in smellCtrl.smells | orderBy:'value'">
 				                            <td>{{smell.name}} <a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ smellCtrl.smellInfo(smell.name) | translate }}"></a>
 				                            <td class="text-center"><input type="checkbox" checked="checked" name="selectedSmells[]" value="{{smell.value}}" ng-click="smellCtrl.toggleSelection(smell.value)"></td>
-				                            <td class="text-center"><a class="btn btn-primary" ng-href="#/testes/{{smellCtrl.test.id}}/smells/config/{{smell.value}}"><span class="icon-white icon-cog"></span> {{'datamining.smells.testes.detection.config' | translate}}</a></td>
+				                            <td class="text-center"><a class="btn btn-primary" ng-href="#/testes/{{smellCtrl.test.id}}/smells/config/{{smell.value}}"><span class="icon-white icon-cog"></span> {{'datamining.smells.testes.detection.config' | translate }}</a></td>
 				                        </tr>
 					                </tbody>
 					            </table>
 					            <hr>
-					            <h3>{{ 'datamining.smells.testes.detection.taskdefinition' | translate}}</h3>
+					            <h3>{{ 'datamining.smells.testes.detection.taskdefinition' | translate }}</h3>
 					            <br>
 					            <table class="table table-striped table-bordered table-condensed datamining-table white-table">
 					                <thead>
 					                    <tr>
-					                        <th width="85%">{{'datamining.testes.title' | translate}}</th>
-					                        <th width="15%">{{'datamining.smells.testes.evaluate' | translate}}</th>
+					                        <th width="85%">{{'datamining.testes.title' | translate }}</th>
+					                        <th width="15%">{{'datamining.smells.testes.evaluate' | translate }}</th>
 					                    </tr>
 					                </thead>
 					                <tbody>
@@ -94,11 +92,9 @@
 				                        </tr>
 					                </tbody>
 					            </table>
-					            
 					            <hr>
-					            <h3>{{'datamining.smells.testes.config' | translate}}</h3>
+					            <h3>{{'datamining.smells.testes.config' | translate }}</h3>
 					            <br>
-					            
 								<div class="row-fluid">
 									<div class="control-group span6">
 										<input type="checkbox" name="groupSessions" ng-model="smellCtrl.groupSessions"> {{ 'datamining.smells.testes.detection.groupsessions' | translate }} <a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ 'datamining.smells.testes.detection.groupsessions.info' | translate }}"></a>
@@ -112,12 +108,11 @@
 										</div>
 									</div>
 								</div>
-								
 								<table class="table table-striped table-bordered table-condensed datamining-table white-table" ng-show="smellCtrl.ignoredUrls.length != 0">
 					                <thead>
 					                    <tr>
-					                        <th width="85%">{{'datamining.smells.testes.detection.ignoredurls' | translate}}</th>
-					                        <th width="15%">{{'datamining.smells.testes.detection.actions' | translate}}</th>
+					                        <th width="85%">{{'datamining.smells.testes.detection.ignoredurls' | translate }}</th>
+					                        <th width="15%">{{'datamining.smells.testes.detection.actions' | translate }}</th>
 					                    </tr>
 					                </thead>
 					                <tbody>
@@ -129,29 +124,26 @@
 				                        </tr>
 					                </tbody>
 					            </table>
-					            
 					            <div class="row-fluid">
 									<div class="control-group">
 						            	<label class="control-label" for="ignoreUrl">{{ 'datamining.smells.testes.detection.ignoreurl' | translate }} 
 						            		<a href="" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="{{ 'datamining.smells.testes.detection.ignoreurl.info' | translate }}"></a>
 						            	</label>
 						            	<div class="controls form-horizontal">
-						            		<input style="width: 530px; margin-right: 10px" type="text" ng-model="smellCtrl.ignoreUrl" id="ignoreUrl" class="input"/> <a id="addIgnoreUrl" class="btn" ng-click="smellCtrl.addIgnoredUrl()"><i class="icon-plus"></i></a>
+						            		<input type="text" ng-model="smellCtrl.ignoreUrl" id="ignoreUrl" class="input large"/> <a id="addIgnoreUrl" class="btn" ng-click="smellCtrl.addIgnoredUrl()"><i class="icon-plus"></i></a>
 						            	</div>
 						        	</div>
 								</div>
-								
 					            <hr>
-					            <h3>{{ 'datamining.smells.testes.timewindow' | translate}}</h3>
+					            <h3>{{ 'datamining.smells.testes.timewindow' | translate }}</h3>
 					            <br>
 					            <div class="row-fluid">
 									<div class="control-group span6">
-						            	<label class="control-label" for="pickerMinSelector">{{ 'date.initial' | translate}}:*</label>
+						            	<label class="control-label" for="pickerMinSelector">{{ 'date.initial' | translate }}:*</label>
 						            	<div class="controls">
 						                	<input class="span12" type="datetime" placeholder="{{ 'date.initial' | translate}}" date-time ng-model="smellCtrl.minDate" id="pickerMinSelector" date-change="smellCtrl.changeMinMax" max-date="smellCtrl.maxDate" view="date" format="DD/MM/YYYY HH:mm" /> 
 						            	</div>
 						        	</div>
-						        	
 						        	<div class="control-group span6">
 						            	<label class="control-label" for="pickerMaxSelector">{{ 'date.end' | translate}}:*</label>
 						            	<div class="controls">
@@ -161,13 +153,11 @@
 								</div>
 					        	<div class="form-actions">
 					            	<button ng-click="smellCtrl.view()" class="btn btn-primary pull-right submit">{{ 'datamining.smells.testes.detection.startevaluation' | translate }}</button>
-<!-- 									<a ng-click="smellCtrl.view()" ng-href="#/testes/{{smellCtrl.test.id}}/smells/detection/result" class="btn btn-primary pull-right">{{ 'datamining.smells.testes.detection.startevaluation' | translate }}</a> -->
 					        	</div>
 							</fieldset>
 						</form>
 		        	</div>
-	        	</div>
-	        	
+	        	</div>	        	
 	        </div>
 	        
 	        <div class="span12">
@@ -187,7 +177,7 @@
 		            </div>
 		            <hr>
 		            <h3>{{ 'datamining.smells.testes.detection.detections' | translate }}</h3>
-	            	<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white; padding-top: 0;" ng-repeat="task in result">
+	            	<table class="table table-striped table-bordered table-condensed datamining-table white-table" ng-repeat="task in result">
 						<thead>
 		                    <tr>
 		                        <th width="100%">{{task.name}} ({{smellCtrl.formattedRate(task.detectionRate)}} {{ 'datamining.smells.testes.detection.affected' | translate }})</th>
@@ -196,18 +186,17 @@
 		                <tbody>
 	                        <tr ng-repeat="session in task.sessions">
 	                            <td>
-	                            	<a ng-click="smellCtrl.showGraphSmell(smell, task.name, session)" data-toggle="collapse" href="#panel-{{smellCtrl.formattedId(smell, task.name, session.description)}}">{{session.description}}</a>
+	                            	<a ng-click="smellCtrl.showGraphSmell(smell, task.name, session, $index)" data-toggle="collapse" href="#panel-{{smellCtrl.formattedId(smell, task.name, session.description)}}">{{session.description}}</a>
 	                            	<ul>
 	                            		<li ng-repeat="(info, value) in session.info"><b>{{ info | translate }}:</b> {{value}}</li>
 	                            	</ul>
-<!-- 	                            	<div ng-show="'graph'+session.description == smellCtrl['smellgraphid']"></div> -->
 	                            	<div id="panel-{{smellCtrl.formattedId(smell, task.name, session.description)}}" class="collapse">
 	                            		<div id="graph-{{smellCtrl.formattedId(smell, task.name, session.description)}}" class="useskill-smell-graph"></div>
-	                            		<p ng-show="smellCtrl.nodeSelected != null && smellCtrl.smellgraphid == 'graph-'+smellCtrl.formattedId(smell, task.name, session.description)">
-	                            			<b>{{ 'datamining.smells.testes.place' | translate }}:</b> {{smellCtrl.nodeDesc[0]}}<br>
-	                            			<b>{{ 'datamining.smells.testes.element' | translate }}:</b> {{smellCtrl.nodeDesc[1]}}<br>
-	                            			<b>{{ 'datamining.smells.testes.actiontype' | translate }}:</b> {{smellCtrl.nodeDesc[2]}}<br>
-	                            			<b>{{ 'datamining.smells.testes.ocuurences' | translate }}:</b> {{smellCtrl.nodeValue}}
+	                            		<p ng-show="smellCtrl.nodesDesc[$index] != null">
+	                            			<b>{{ 'datamining.smells.testes.place' | translate }}:</b> {{smellCtrl.nodesDesc[$index].place}}<br>
+	                            			<b>{{ 'datamining.smells.testes.element' | translate }}:</b> {{smellCtrl.nodesDesc[$index].element}}<br>
+	                            			<b>{{ 'datamining.smells.testes.actiontype' | translate }}:</b> {{smellCtrl.nodesDesc[$index].actiontype}}<br>
+	                            			<b>{{ 'datamining.smells.testes.ocuurences' | translate }}:</b> {{smellCtrl.nodesDesc[$index].occurrences}}
 	                            		</p>
 	                            	</div>
 	                            </td>
@@ -215,7 +204,6 @@
 		                </tbody>
 		            </table>
 	        	</div>
-	        	
 	        	<div class="span12">
 		        <div class="usdm-box" ng-show="smellCtrl.detectionResult.tasksAnalysisGroupedResult != null" ng-repeat="(smell, result) in smellCtrl.detectionResult.tasksAnalysisGroupedResult">
 	            	<h3 class="usdm-title-collapse">
@@ -233,7 +221,7 @@
 		            </div>
 		            <hr>
 		            <h3>{{ 'datamining.smells.testes.detection.detections' | translate }}</h3>
-	            	<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white; padding-top: 0;" ng-repeat="task in result">
+	            	<table class="table table-striped table-bordered table-condensed datamining-table white-table" ng-repeat="task in result">
 						<thead>
 		                    <tr>
 		                        <th width="100%">{{task.name}} ({{smellCtrl.formattedRate(task.detectionRate)}} {{ 'datamining.smells.testes.detection.affected' | translate }})</th>
@@ -242,7 +230,7 @@
 		                <tbody>
 	                        <tr ng-repeat="group in task.sessions")">
 	                            <td>
-		                            <table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white;">
+		                            <table class="table table-striped table-bordered table-condensed datamining-table">
 		                            	<thead>
 						                    <tr>
 						                        <th width="100%" ng-init="console.log(group)">{{ 'datamining.smells.testes.detection.group' | translate }} {{$index+1}}</th>
@@ -251,17 +239,17 @@
 						                <tbody>
 						                	<tr ng-repeat="session in group">
 						                		<td>
-						                			<a ng-click="smellCtrl.showGraphSmell(smell, task.name, session)" data-toggle="collapse" href="#panel-{{smellCtrl.formattedId(smell, task.name, session.description)}}">{{session.description}}</a>
+						                			<a ng-click="smellCtrl.showGraphSmell(smell, task.name, session, $index)" data-toggle="collapse" href="#panel-{{smellCtrl.formattedId(smell, task.name, session.description)}}">{{session.description}}</a>
 					                            	<ul>
 					                            		<li ng-repeat="(info, value) in session.info"><b>{{ info | translate }}:</b> {{value}}</li>
 					                            	</ul>
 					                            	<div id="panel-{{smellCtrl.formattedId(smell, task.name, session.description)}}" class="collapse">
 					                            		<div id="graph-{{smellCtrl.formattedId(smell, task.name, session.description)}}" class="useskill-smell-graph"></div>
-					                            		<p ng-show="smellCtrl.nodeSelected != null && smellCtrl.smellgraphid == 'graph-'+smellCtrl.formattedId(smell, task.name, session.description)">
-					                            			<b>{{ 'datamining.smells.testes.place' | translate }}:</b> {{smellCtrl.nodeDesc[0]}}<br>
-					                            			<b>{{ 'datamining.smells.testes.element' | translate }}:</b> {{smellCtrl.nodeDesc[1]}}<br>
-					                            			<b>{{ 'datamining.smells.testes.actiontype' | translate }}:</b> {{smellCtrl.nodeDesc[2]}}<br>
-					                            			<b>{{ 'datamining.smells.testes.ocuurences' | translate }}:</b> {{smellCtrl.nodeValue}}
+					                            		<p ng-show="smellCtrl.nodesDesc[$index] != null">
+					                            			<b>{{ 'datamining.smells.testes.place' | translate }}:</b> {{smellCtrl.nodesDesc[$index].place}}<br>
+					                            			<b>{{ 'datamining.smells.testes.element' | translate }}:</b> {{smellCtrl.nodesDesc[$index].element}}<br>
+					                            			<b>{{ 'datamining.smells.testes.actiontype' | translate }}:</b> {{smellCtrl.nodesDesc[$index].actiontype}}<br>
+					                            			<b>{{ 'datamining.smells.testes.ocuurences' | translate }}:</b> {{smellCtrl.nodesDesc[$index].occurrences}}
 					                            		</p>
 					                            	</div>
 						                		</td>
@@ -273,7 +261,6 @@
 		                </tbody>
 		            </table>
 	        	</div>
-	        	
 	        	<div class="usdm-box" ng-show="smellCtrl.detectionResult.actionsAnalysisResult != null" ng-repeat="(smell, result) in smellCtrl.detectionResult.actionsAnalysisResult">
 	            	<h3 class="usdm-title-collapse">
 	            		{{smell}}
@@ -290,7 +277,7 @@
 		            </div>
 		            <hr>
 		            <h3>{{ 'datamining.smells.testes.detection.detections' | translate }}</h3>
-	            	<table class="table table-striped table-bordered table-condensed datamining-table" style="background-color: white; padding-top: 0;">
+	            	<table class="table table-striped table-bordered table-condensed datamining-table white-table">
 						<thead>
 		                    <tr>
 		                        <th width="100%">{{ 'datamining.smells.testes.detection.detectedactions' | translate }}</th>
@@ -299,29 +286,18 @@
 		                <tbody>
 	                        <tr ng-repeat="(action, informations) in result">
 	                            <td>
-<!-- 	                            	<a ng-click="smellCtrl.showActionContent()">{{session.description}}</a> -->
 	                            	<ul>
 	                            		<li><b>{{ 'datamining.smells.testes.place' | translate }}:</b> {{smellCtrl.actionPlace(action)}}<br></li>
 	                            		<li><b>{{ 'datamining.smells.testes.element' | translate }}:</b> {{smellCtrl.actionElement(action)}}<br></li>
 	                            		<li><b>{{ 'datamining.smells.testes.actiontype' | translate }}:</b> {{smellCtrl.actionType(action)}}<br></li>
 	                            		<li ng-repeat="(info, value) in informations"><b>{{ info | translate }}:</b> {{value}}</li>
 	                            	</ul>
-	                            	
-<!-- 	                            	<div ng-show="smellCtrl.smellgraphid == 'graph'+session.description"> -->
-<!-- 	                            		<div id="graph{{session.description}}" class="useskill-smell-graph"></div> -->
-<!-- 	                            		<p ng-show="smellCtrl.nodeSelected != null"> -->
-<!-- 	                            			<b>{{ 'datamining.smells.testes.place' | translate }}:</b> {{smellCtrl.nodeDesc[0]}}<br> -->
-<!-- 	                            			<b>{{ 'datamining.smells.testes.element' | translate }}:</b> {{smellCtrl.nodeDesc[1]}}<br> -->
-<!-- 	                            			<b>{{ 'datamining.smells.testes.actiontype' | translate }}:</b> {{smellCtrl.nodeDesc[2]}} -->
-<!-- 	                            		</p> -->
-<!-- 	                            	</div> -->
 	                            </td>
 	                        </tr>
 		                </tbody>
 		            </table>
 	        	</div>
-	        </div>
-	        
+	        </div>	        
 	    </div>	    
 
     </div>
