@@ -7,15 +7,15 @@ public class BarChart {
 	private String descX;
 	private String descY;
 	private Map<String, Double> series;
-	private Map<String, String> actionsContent;
+	private Map<String, Map<String, String>> actionsAttributes;
 	
-	public BarChart(String description, String descX, String descY, Map<String, Double> series, Map<String, String> actionsContent) {
+	public BarChart(String description, String descX, String descY, Map<String, Double> series, Map<String, Map<String, String>> actionsAttributes) {
 		super();
 		this.description = description;
 		this.descX = descX;
 		this.descY = descY;
 		this.series = series;
-		this.actionsContent = actionsContent;
+		this.actionsAttributes = actionsAttributes;
 	}
 
 	public String getDescription() {
@@ -50,12 +50,12 @@ public class BarChart {
 		this.series = series;
 	}
 
-	public Map<String, String> getActionsContent() {
-		return actionsContent;
+	public Map<String, Map<String, String>> getActionsAttributes() {
+		return actionsAttributes;
 	}
 
-	public void setActionsContent(Map<String, String> actionsContent) {
-		this.actionsContent = actionsContent;
+	public void setActionsAttributes(Map<String, Map<String, String>> actionsAttributes) {
+		this.actionsAttributes = actionsAttributes;
 	}
 	
 }

@@ -577,7 +577,8 @@ angular.module('useskill',
    			{name:'datamining.smells.testes.occurrencerate', value:'4'},
 	 	    {name:'datamining.smells.testes.layercount', value:'5'},
 	 	    {name:'datamining.smells.testes.attemptcount', value:'6'},
-   			{name:'datamining.smells.testes.repetitioncount', value:'7'}
+   			{name:'datamining.smells.testes.repetitioncount', value:'7'},
+   			{name:'datamining.smells.testes.diffelementcount', value:'8'}
 	 	]
 	};
 })
@@ -589,7 +590,8 @@ angular.module('useskill',
 	 	    {name:'Lonely Action', value:'3'},
 	 	    {name:'Too Many Layers', value:'4'},
 	 	    {name:'Undescriptive Element', value:'5'},
-	 	    {name:'Missing Feedback', value:'6'}
+	 	    {name:'Missing Feedback', value:'6'},
+	 	    {name:'Fat Interface', value:'7'}
 	 	]
 	};
 })
@@ -622,8 +624,55 @@ angular.module('useskill',
 	smellCtrl.useLiteral = false;
 	smellCtrl.maxResultCount = 10;
 	
+	smellCtrl.ignoredUrls = [];
+	
 	for (var i = 0; i < Object.keys(SmellsMetricsEnum.metrics).length; i++) {
 		smellCtrl.metricsSelected.push(i+1);
+	}
+	
+	var obj = angular.toJson({
+		testId: smellCtrl.test.id
+	});
+	
+	ServerAPI.getIgnoredUrls(obj).then(function(data) {			
+		var ignoredUrls = JSON.parse(data.data.string);
+		for (var i = 0; i < ignoredUrls.length; i++) {
+			smellCtrl.ignoredUrls.push(ignoredUrls[i].url);
+		}
+	}, function(data) {
+		console.error('ignoredUrls', data);
+	});
+	
+	smellCtrl.addIgnoredUrl = function () {
+		var obj = angular.toJson({
+			url: {
+				testId: smellCtrl.test.id,
+				url: smellCtrl.ignoreUrl
+			}, 
+			remove: false
+		});
+		ServerAPI.updateIgnoredUrls(obj).then(function(data) {			
+//			console.log(data);
+		}, function(data) {
+			console.error(data);
+		});
+		smellCtrl.ignoredUrls.push(smellCtrl.ignoreUrl);
+		smellCtrl.ignoreUrl = "";
+	}
+	smellCtrl.removeIgnoredUrl = function (index) {
+		var obj = angular.toJson({
+			url: {
+				testId: smellCtrl.test.id,
+				url: smellCtrl.ignoredUrls[index]
+			}, 
+			remove: true
+		});
+		ServerAPI.updateIgnoredUrls(obj).then(function(data) {			
+//			console.log(data);
+		}, function(data) {
+			console.error(data);
+		});
+		smellCtrl.ignoredUrls.splice(index, 1);
 	}
 	
 	smellCtrl.view = function(){
@@ -636,7 +685,8 @@ angular.module('useskill',
 			endDate: maxDate,
 			metrics: smellCtrl.metricsSelected,
 			useLiteral: smellCtrl.useLiteral,
-			maxResultCount: smellCtrl.maxResultCount
+			maxResultCount: smellCtrl.maxResultCount,
+			ignoredUrls: smellCtrl.ignoredUrls
 		});
 		
 		ServerAPI.viewSmellsStatistics(obj).then(function(data) {
@@ -759,17 +809,23 @@ angular.module('useskill',
 				                tooltip: {
 				                	enabled: true,
 				                	contentGenerator: function(d) {
-				                		var actionContent = "";
+				                		var actionAttributes;
 				                		for (var i = 0; i < charts.barCharts.length; i++) {
-				        					if(charts.barCharts[i].actionsContent[d.data.label] != undefined) {
-				        						actionContent = charts.barCharts[i].actionsContent[d.data.label];
+				        					if(charts.barCharts[i].actionsAttributes[d.data.label] != undefined) {
+				        						actionAttributes = charts.barCharts[i].actionsAttributes[d.data.label];
+				        						break;
 				        					}
 				                		}
 				                		var idElements = d.data.label.split(" | ");
-				                		return	'<div style="padding: 8px;"><b>' + $filter('translate')('datamining.smells.testes.place') + '</b>: ' + idElements[0] + '<br>' +
-				                				'<b>' + $filter('translate')('datamining.smells.testes.element') + '</b>: ' + idElements[1] + '<br>' +
-				                				'<b>' + $filter('translate')('datamining.smells.testes.actiontype') + '</b>: ' + idElements[2] + '<br>' +
-				                				'<b>' + $filter('translate')('datamining.smells.testes.content') + '</b>: ' + actionContent + '</div>';
+				                		var html = '<div style="padding: 8px;"><b>' + $filter('translate')('datamining.smells.testes.place') + '</b>: ' + idElements[0];
+				                		if (idElements[1] != "")
+				                			html += '<br><b>' + $filter('translate')('datamining.smells.testes.element') + '</b>: ' + idElements[1];
+				                		if (idElements[2] != "")
+				                			html += '<br><b>' + $filter('translate')('datamining.smells.testes.actiontype') + '</b>: ' + idElements[2];
+				                		for (var attribute in actionAttributes)
+				                			if (actionAttributes[attribute] != " ")
+				                				html += '<br><b>' + $filter('translate')(attribute) + '</b>: ' + actionAttributes[attribute];
+				                		return html += '</div>';
 				                	}
 				                }
 				            }
@@ -855,7 +911,7 @@ angular.module('useskill',
 			smellCtrl.ignoredUrls.push(ignoredUrls[i].url);
 		}
 	}, function(data) {
-		console.log('ignoredUrls', data);
+		console.error('ignoredUrls', data);
 	});
 	
 	smellCtrl.view = function(){
@@ -878,6 +934,7 @@ angular.module('useskill',
 		}, function(data) {
 			console.log(data);
 		});
+		
 	}
 	
 	smellCtrl.showGraphSmell = function(smellName, taskName, session, index) {

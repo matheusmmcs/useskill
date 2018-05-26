@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.persistence.EntityManager;
 
@@ -72,6 +73,7 @@ public class DataMiningSmellsController extends BaseController {
 	private static final int TASK_LAYER_COUNT = 5;
 	private static final int ACTION_TOOLTIP_COUNT = 6;
 	private static final int ACTION_REPETITION_COUNT = 7;
+	private static final int URL_DIFF_ACTION_COUNT = 8;
 	
 	//parametros
 	private static final int MAX_ACTION_COUNT = 1;
@@ -86,6 +88,7 @@ public class DataMiningSmellsController extends BaseController {
 	private static final int MIN_SESSION_COUNT = 10;
 	private static final int MIN_ACTION_COUNT = 11;
 	private static final int MAX_TIME_INTERVAL = 12;
+	private static final int MAX_DIFF_ACTION_COUNT = 13;
 	
 	//smells
 	private static final int LABORIOUS_TASK = 1;
@@ -94,6 +97,7 @@ public class DataMiningSmellsController extends BaseController {
 	private static final int TOO_MANY_LAYERS = 4;
 	private static final int UNDESCRIPTIVE_ELEMENT = 5;
 	private static final int MISSING_FEEDBACK = 6;
+	private static final int FAT_INTERFACE = 7;
 	
 	private final ParameterSmellDataMiningRepository parameterSmellDataMiningRepository;
 	private final ParameterSmellTestDataMiningRepository parameterSmellTestDataMiningRepository;
@@ -115,7 +119,7 @@ public class DataMiningSmellsController extends BaseController {
 	@Post("/testes/smells/statistics")
 	@Consumes("application/json")
 	@Logado
-	public void view(TestDataMining test, Long initDate, Long endDate, Integer[] selectedMetrics, Boolean useLiteral, Integer maxResultCount) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException, InterruptedException {
+	public void view(TestDataMining test, Long initDate, Long endDate, Integer[] selectedMetrics, Boolean useLiteral, Integer maxResultCount, String[] ignoredUrls) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException, InterruptedException {
 		Gson gson = new GsonBuilder()
 			.setExclusionStrategies(TestDataMiningVO.exclusionStrategy)
 	        .serializeNulls()
@@ -139,7 +143,7 @@ public class DataMiningSmellsController extends BaseController {
 				ArrayUtils.contains(selectedMetrics, TASK_CYCLE_RATE) || ArrayUtils.contains(selectedMetrics, TASK_LAYER_COUNT);
 		boolean mineActions =
 				ArrayUtils.contains(selectedMetrics, ACTION_OCCURRENCE_RATE) || ArrayUtils.contains(selectedMetrics, ACTION_TOOLTIP_COUNT) ||
-				ArrayUtils.contains(selectedMetrics, ACTION_REPETITION_COUNT);
+				ArrayUtils.contains(selectedMetrics, ACTION_REPETITION_COUNT) || ArrayUtils.contains(selectedMetrics, URL_DIFF_ACTION_COUNT);
 		
 		if (mineSessions) {
 			for (TaskDataMining task : test.getTasks()) {
@@ -156,6 +160,14 @@ public class DataMiningSmellsController extends BaseController {
 			actions = WebUsageMining.listActionsBetweenDates(
 					test.getTasks().get(0).getId(), taskDataMiningRepository, actionDataMiningRepository,
 					new Date(initDate), new Date(endDate), null);
+			for (String url : ignoredUrls) {
+				Iterator<ActionDataMining> i = actions.iterator();
+				while (i.hasNext()) {
+					ActionDataMining action = i.next();
+					if (action.getsUrl().contains(url))
+						i.remove();
+				}				
+			}
 		}
 		
 		if (ArrayUtils.contains(selectedMetrics, TASK_ACTION_COUNT)) {
@@ -185,6 +197,10 @@ public class DataMiningSmellsController extends BaseController {
 		if (ArrayUtils.contains(selectedMetrics, ACTION_REPETITION_COUNT)) {
 			if (showLog) System.out.println("Generating action repetition count chart...");
 			barCharts.add(usm.generateActionRepetitionCountChart(actions, maxResultCount));
+		}
+		if (ArrayUtils.contains(selectedMetrics, URL_DIFF_ACTION_COUNT)) {
+			if (showLog) System.out.println("Generating url different action count chart...");
+			barCharts.add(usm.generateUrlElementCountChart(actions, maxResultCount));
 		}
 		
 		if (areaCharts.size() > 0 || barCharts.size() > 0) {
@@ -229,7 +245,7 @@ public class DataMiningSmellsController extends BaseController {
 				ArrayUtils.contains(selectedSmells, TOO_MANY_LAYERS);
 		boolean mineActions =
 				ArrayUtils.contains(selectedSmells, LONELY_ACTION) || ArrayUtils.contains(selectedSmells, UNDESCRIPTIVE_ELEMENT) ||
-				ArrayUtils.contains(selectedSmells, MISSING_FEEDBACK);
+				ArrayUtils.contains(selectedSmells, MISSING_FEEDBACK) || ArrayUtils.contains(selectedSmells, FAT_INTERFACE);
 		
 		if (mineSessions) {
 			for (TaskDataMining task : test.getTasks()) {
@@ -338,6 +354,17 @@ public class DataMiningSmellsController extends BaseController {
 			Map<String, Map<String, String>> result = usm.detectMissingFeedback(actions, maxRepetitionCount, minOccurrenceCount);
 			if (result.size() > 0)
 				actionsAnalysisResult.put("Missing Feedback", result);
+		}
+		if (ArrayUtils.contains(selectedSmells, FAT_INTERFACE)) {
+			double maxActionCount = UsabilitySmellDetector.DEFAULT_VALUE;
+			for (ParameterSmellTestDataMining parameter : smellsParametersValues) {
+				if (parameter.getParameterSmell().getId() == MAX_DIFF_ACTION_COUNT)
+					maxActionCount =  parameter.getValue();
+			}
+			if (showLog) System.out.println("Detecting Fat Interface...");
+			Map<String, Map<String, String>> result = usm.detectFatInterface(actions, maxActionCount);
+			if (result.size() > 0)
+				actionsAnalysisResult.put("Fat Interface", result);
 		}
 		
 		String json;		

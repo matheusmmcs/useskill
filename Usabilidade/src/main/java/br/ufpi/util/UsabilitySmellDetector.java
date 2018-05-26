@@ -17,11 +17,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,10 +28,12 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.TransformerUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -226,11 +226,11 @@ public class UsabilitySmellDetector {
 				}
 			}
 		}
-		Map<String, String> actionsContent = new HashMap<String, String>();
+		Map<String, Map<String, String>> actionsAttributes = new HashMap<String, Map<String,String>>();
 		for (Map.Entry<String, Double> entry : mostFrequentActions.entrySet()) {
-			actionsContent.put(entry.getKey(), getActionById(sessionFreeActions, entry.getKey()).getsContent());
+			actionsAttributes.put(entry.getKey(), actionCommonAttributes(entry.getKey(), sessionFreeActions));
 		} 
-		return new BarChart("datamining.smells.testes.statistics.actionfrequencychart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.occurrencerate", sortedMap(mostFrequentActions), actionsContent);
+		return new BarChart("datamining.smells.testes.statistics.actionfrequencychart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.occurrencerate", sortedMap(mostFrequentActions), actionsAttributes);
 	}
 	
 	/**
@@ -300,11 +300,11 @@ public class UsabilitySmellDetector {
 				mostRepeatedActions.put(id, (double)actionCount);
 			}
 		}
-		Map<String, String> actionsContent = new HashMap<String, String>();
+		Map<String, Map<String, String>> actionsAttributes = new HashMap<String, Map<String,String>>();
 		for (Map.Entry<String, Double> entry : mostRepeatedActions.entrySet()) {
-			actionsContent.put(entry.getKey(), getActionById(sessionFreeActions, entry.getKey()).getsContent());
+			actionsAttributes.put(entry.getKey(), actionCommonAttributes(entry.getKey(), sessionFreeActions));
 		}
-		return new BarChart("datamining.smells.testes.statistics.actiontooltipchart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.attemptcount", sortedMap(mostRepeatedActions), actionsContent);
+		return new BarChart("datamining.smells.testes.statistics.actiontooltipchart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.attemptcount", sortedMap(mostRepeatedActions), actionsAttributes);
 	}
 	
 	/**
@@ -388,11 +388,47 @@ public class UsabilitySmellDetector {
 				}
 			}
 		}
-		Map<String, String> actionsContent = new HashMap<String, String>();
+		Map<String, Map<String, String>> actionsAttributes = new HashMap<String, Map<String,String>>();
 		for (Map.Entry<String, Double> entry : mostRepeatedActions.entrySet()) {
-			actionsContent.put(entry.getKey(), getActionById(actions, entry.getKey()).getsContent());
+			actionsAttributes.put(entry.getKey(), actionCommonAttributes(entry.getKey(), actions));
 		}
-		return new BarChart("datamining.smells.testes.statistics.actionrepetitionchart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.repetitioncount", sortedMap(mostRepeatedActions), actionsContent);
+		return new BarChart("datamining.smells.testes.statistics.actionrepetitionchart", "datamining.smells.testes.statistics.actions", "datamining.smells.testes.repetitioncount", sortedMap(mostRepeatedActions), actionsAttributes);
+	}
+	
+	/**
+	 * Gera o gráfico de quantidade de elementos interagíveis diferentes de cada url. Como a
+	 * quantidade de urls possíveis em uma determinada aplicação pode ser muito grande, esse
+	 * gráfico deve ser limitado por um número máximo de resultados, representando as urls em que
+	 * contem mais elementos distintos, ordenadas em ordem crescente. Os elementos sobre os quais
+	 * ocorrem apenas ações do tipo "mouseover" e "onload" são desconsiderados, pois nem sempre
+	 * essas ações são realizadas intencionalmente pelo usuário. 
+	 * 
+	 * @param	actions			uma lista de ações
+	 * @param 	maxResultCount	a quantidade máxima de urls no gráfico de saída
+	 * @return					o gráfico de quantidade de elementos diferentes referente à entrada
+	 */
+	@SuppressWarnings("unchecked")
+	public BarChart generateUrlElementCountChart (List<ActionDataMining> actions, int maxResultCount) {
+		List<ActionDataMining> sessionFreeActions = sessionFreeActions(actions);
+		Collection<String> allUrls = CollectionUtils.collect(sessionFreeActions, TransformerUtils.invokerTransformer("getsUrl"));
+		Set<String> uniqueUrls = new HashSet<String>(allUrls);
+		Map<String, Double> highestElementCountUrls = new LinkedHashMap<String, Double>();
+		for (int i = 0; i < maxResultCount; i++) {
+			highestElementCountUrls.put(String.valueOf(i), 0.0);
+		}
+		for (String url : uniqueUrls) {
+			int urlElementCount = new HashSet<String>(elementsIds(filteredActionsIds(sessionFreeActions, url))).size();
+			String minKey = minKey(highestElementCountUrls);
+			if (urlElementCount > highestElementCountUrls.get(minKey)) {
+				highestElementCountUrls.remove(minKey);
+				highestElementCountUrls.put(url + " |  | ", (double)urlElementCount);
+			}
+		}
+		Map<String, Map<String, String>> elementsAttributes = new HashMap<String, Map<String,String>>();
+		for (Map.Entry<String, Double> entry : highestElementCountUrls.entrySet()) {
+			elementsAttributes.put(entry.getKey(), new LinkedHashMap<String, String>());
+		}
+		return new BarChart("datamining.smells.testes.statistics.urlelementcountchart", "datamining.smells.testes.statistics.urls", "datamining.smells.testes.diffelementcount", sortedMap(highestElementCountUrls), elementsAttributes);
 	}
 	
 	//*********************************************************************************************
@@ -556,15 +592,19 @@ public class UsabilitySmellDetector {
 					maxOccurrenceRate = 0;
 				}
 			}			
-			for (String id : urlActionsIdsFrequencyMapping.elementSet()) {
-				int actionOccurrenceCount = urlActionsIdsFrequencyMapping.count(id);
+			for (String actionId : urlActionsIdsFrequencyMapping.elementSet()) {
+				int actionOccurrenceCount = urlActionsIdsFrequencyMapping.count(actionId);
 				double actionOccurrenceRate = (double)actionOccurrenceCount/urlActionsIds.size();
 				if (actionOccurrenceRate > maxOccurrenceRate){
-					Map<String, String> info = new LinkedHashMap<String, String>();
-					info.put("datamining.smells.testes.occurrencerate", String.format("%.2f", actionOccurrenceRate*100));
-					info.put("datamining.smells.testes.occurrencecount", String.valueOf(actionOccurrenceCount));
-					info.put("datamining.smells.testes.content", getActionById(sessionFreeActions, id).getsContent());
-					detections.put(id, info);
+					Map<String, String> actionInfo = new LinkedHashMap<String, String>();
+					actionInfo.put("datamining.smells.testes.occurrencerate", String.format("%.2f", actionOccurrenceRate*100));
+					actionInfo.put("datamining.smells.testes.occurrencecount", String.valueOf(actionOccurrenceCount));
+					ActionDataMining action = getActionById(sessionFreeActions, actionId);
+					if (!action.getsContent().equals("")) actionInfo.put("datamining.smells.testes.content", action.getsContent());
+					if (!action.getsJhm().equals("")) actionInfo.put("datamining.smells.testes.jhm", action.getsJhm());
+					if (!action.getsStepJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmstep", action.getsStepJhm());
+					if (!action.getsActionJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmaction", action.getsActionJhm());
+					detections.put(actionId, actionInfo);
 					break;
 				}
 			}
@@ -667,12 +707,17 @@ public class UsabilitySmellDetector {
 			}
 			Multiset<String> actionsFrequencyMapping = HashMultiset.create();
 			actionsFrequencyMapping.addAll(actionsIds);
-			for (String id : actionsFrequencyMapping.elementSet()) {
-				int actionCount = actionsFrequencyMapping.count(id);
+			for (String actionId : actionsFrequencyMapping.elementSet()) {
+				int actionCount = actionsFrequencyMapping.count(actionId);
 				if (actionCount > maxAttemptCount) {
 					Map<String, String> actionInfo = new HashMap<String, String>();
 					actionInfo.put("datamining.smells.testes.tooltipattempts", String.valueOf(actionCount));
-					detections.put(id, actionInfo);
+					ActionDataMining action = getActionById(sessionFreeActions, actionId);
+					if (!action.getsContent().equals("")) actionInfo.put("datamining.smells.testes.content", action.getsContent());
+					if (!action.getsJhm().equals("")) actionInfo.put("datamining.smells.testes.jhm", action.getsJhm());
+					if (!action.getsStepJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmstep", action.getsStepJhm());
+					if (!action.getsActionJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmaction", action.getsActionJhm());
+					detections.put(actionId, actionInfo);
 				}
 			}
 			startDate += oneDay;
@@ -748,19 +793,63 @@ public class UsabilitySmellDetector {
 				actionsRepetitions.get(currentAction).add(repetitionCount);
 			}
 		}
-		for (String key : actionsRepetitions.keySet()) {
-			if (actionsRepetitions.get(key).size() > minOccurrenceCount) {
-				double actionRepetitionsMedian = median(actionsRepetitions.get(key).toArray(new Integer[actionsRepetitions.get(key).size()]));
+		for (String actionId : actionsRepetitions.keySet()) {
+			if (actionsRepetitions.get(actionId).size() > minOccurrenceCount) {
+				double actionRepetitionsMedian = median(actionsRepetitions.get(actionId).toArray(new Integer[actionsRepetitions.get(actionId).size()]));
 				if (actionRepetitionsMedian > maxRepetitionCount) {
 					Map<String, String> actionInfo = new LinkedHashMap<String, String>();
 					actionInfo.put("datamining.smells.testes.repetitionmedian", String.valueOf(actionRepetitionsMedian));
-					actionInfo.put("datamining.smells.testes.instances", String.valueOf(actionsRepetitions.get(key).size()));
-					actionInfo.put("datamining.smells.testes.content", getActionById(sessionFreeActions, key).getsContent());
-					detections.put(key, actionInfo);
+					actionInfo.put("datamining.smells.testes.instances", String.valueOf(actionsRepetitions.get(actionId).size()));
+					ActionDataMining action = getActionById(sessionFreeActions, actionId);
+					if (!action.getsContent().equals("")) actionInfo.put("datamining.smells.testes.content", action.getsContent());
+					if (!action.getsJhm().equals("")) actionInfo.put("datamining.smells.testes.jhm", action.getsJhm());
+					if (!action.getsStepJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmstep", action.getsStepJhm());
+					if (!action.getsActionJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmaction", action.getsActionJhm());
+					detections.put(actionId, actionInfo);
 				}				
 			}
 		}
 		return detections;
+	}
+	
+	/**
+	 * Retorna uma lista de informações sobre as URLs onde o smell foi detectado. A detecção é
+	 * determinada pelo atributo maxElementCount, onde a URL é considerada como contendo o smell 
+	 * caso ultrapasse o valor estabelecido. A quantidade de elementos (diferentes) máxima
+	 * determina quantos elementos distintos podem ter ações executadas sobre eles por um usuário
+	 * em determinada URL. Os elementos sobre os quais ocorrem apenas ações do tipo "mouseover" e
+	 * "onload" são desconsideradas nessa análise, pois esssas ações nem sempre são diretamente
+	 * executadas pelo usuário.
+	 * 
+	 * @param	actions			uma lista de ações
+	 * @param	maxElementCount	a quantidade de elementos máxima que uma url sem o smell pode ter
+	 * @return					a lista de urls onde o smell foi detectado
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, Map<String, String>> detectFatInterface (List<ActionDataMining> actions, double maxElementCount) {
+		Map<String, Map<String, String>> detections = new HashMap<String, Map<String,String>>();
+		List<ActionDataMining> sessionFreeActions = sessionFreeActions(actions);
+		Collection<String> allUrls = CollectionUtils.collect(sessionFreeActions, TransformerUtils.invokerTransformer("getsUrl"));
+		Set<String> uniqueUrls = new HashSet<String>(allUrls);
+		if (maxElementCount == DEFAULT_VALUE)
+			maxElementCount = 30;
+		for (String url : uniqueUrls) {
+			Set<String> urlElementsIds = new HashSet<String>(elementsIds(filteredActionsIds(sessionFreeActions, url)));
+			int urlElementCount = urlElementsIds.size();
+			if (urlElementCount > maxElementCount) {
+				Map<String, String> urlInfo = new LinkedHashMap<String, String>();
+				urlInfo.put("datamining.smells.testes.diffelementcount", String.valueOf(urlElementCount));
+				List<String> formattedUrlElementsIds = new ArrayList<String>();
+				int elementPosition = 0;
+				for (String element : urlElementsIds) {
+					elementPosition++;
+					formattedUrlElementsIds.add("\n" + elementPosition + " - " + element);
+				}
+				urlInfo.put("datamining.smells.testes.elements", String.join("", formattedUrlElementsIds));
+				detections.put(url+" |  | ", urlInfo);
+			}
+		}
+        return detections;
 	}
 	
 	//*********************************************************************************************
@@ -1130,9 +1219,43 @@ public class UsabilitySmellDetector {
 		return groupedResult;
 	}
 	
+	/**
+	 * Retorna a lista de atributos comuns de uma ação passada como parâmetro. Considera-se como
+	 * atributos comuns aqueles que são importantes independentemento do tipo de smell que está
+	 * sendo analisado. Os atributos que se encaixam nessa categoria são JHM, JHM Step, JHM Action
+	 * e conteúdo. Apenas os atributos que não possuem uma String vazia como valor são retornados.
+	 * 
+	 * @param	actionId	o id da ação
+	 * @param	actions		uma lista de ações
+	 * @return				os atributos da ação com o id, de acordo com a lista de entrada
+	 */
+	private Map<String, String> actionCommonAttributes (String actionId, List<ActionDataMining> actions) {
+		ActionDataMining action = getActionById(actions, actionId);
+		Map<String, String> actionAttributes = new LinkedHashMap<String, String>();
+		if (!action.getsContent().equals("")) actionAttributes.put("datamining.smells.testes.content", action.getsContent());
+		if (!action.getsJhm().equals("")) actionAttributes.put("datamining.smells.testes.jhm", action.getsJhm());
+		if (!action.getsStepJhm().equals("")) actionAttributes.put("datamining.smells.testes.jhmstep", action.getsStepJhm());
+		if (!action.getsActionJhm().equals("")) actionAttributes.put("datamining.smells.testes.jhmaction", action.getsActionJhm());
+		return actionAttributes;
+	}
+	
+	/**
+	 * Retorna uma cópia da lista de entrada apenas com a identificação do XPath de cada elemento. 
+	 * 
+	 * @param	actionsIds	uma lista de ids de ações
+	 * @return				uma lista de ids de elementos, de acordo com a lista de entrada
+	 */
+	private List<String> elementsIds (List<String> actionsIds) {
+		List<String> elementsIds = new ArrayList<String>();
+		for (String actionId : actionsIds)
+			elementsIds.add(actionId.split(Pattern.quote(" | "))[1]);
+		return elementsIds;
+	}
+	
 	//*********************************************************************************************
 	//********************************** MÉTODOS PARA REFATORAR ***********************************
 	//*********************************************************************************************
+	
 	
 	public static void main(String[] args) {
 		DirectedPseudograph<String, DefaultWeightedEdge> graphA = new DirectedPseudograph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
