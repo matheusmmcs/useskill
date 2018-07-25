@@ -7,12 +7,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.persistence.EntityManager;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import com.google.common.base.Stopwatch;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -63,7 +63,7 @@ import br.ufpi.util.UsabilitySmellDetector;
 @Resource
 public class DataMiningSmellsController extends BaseController {
 	
-	private boolean showLog = true;
+	private boolean debug = true;
 	
 	//metricas
 	private static final int TASK_ACTION_COUNT = 1;
@@ -147,19 +147,21 @@ public class DataMiningSmellsController extends BaseController {
 		
 		if (mineSessions) {
 			for (TaskDataMining task : test.getTasks()) {
-				if (showLog) System.out.println("Mining sessions for task " + task.getId() + "...");
+				if (debug) System.out.println("Mining sessions for task " + task.getTitle() + "...");
 				ResultDataMining resultDataMining = WebUsageMining.analyze(task.getId(), initDate, endDate,
 						SessionClassificationDataMiningFilterEnum.SUCCESS_ERROR_REPEAT, taskDataMiningRepository, actionDataMiningRepository);
+				if (debug) System.out.println(resultDataMining.getSessions().size() + " sessions found.");
 				if (resultDataMining.getSessions().size() > 0)
 					tasks.add(new TaskSmellAnalysis(task.getTitle(), resultDataMining.getSessions()));
 			}
 		}
 		
 		if (mineActions) {
-			if (showLog) System.out.println("Mining actions...");
+			if (debug) System.out.println("Mining actions...");
 			actions = WebUsageMining.listActionsBetweenDates(
-					test.getTasks().get(0).getId(), taskDataMiningRepository, actionDataMiningRepository,
+					test.getClientAbbreviation(), taskDataMiningRepository, actionDataMiningRepository,
 					new Date(initDate), new Date(endDate), null);
+			if (debug) System.out.println(actions.size() + " actions found.");
 			for (String url : ignoredUrls) {
 				Iterator<ActionDataMining> i = actions.iterator();
 				while (i.hasNext()) {
@@ -171,35 +173,35 @@ public class DataMiningSmellsController extends BaseController {
 		}
 		
 		if (ArrayUtils.contains(selectedMetrics, TASK_ACTION_COUNT)) {
-			if (showLog) System.out.println("Generating action count chart...");
+			if (debug) System.out.println("Generating action count chart...");
 			areaCharts.add(usm.generateTaskActionCountChart(tasks, useLiteral));
 		}
 		if (ArrayUtils.contains(selectedMetrics, TASK_TIME)) {
-			if (showLog) System.out.println("Generating time chart...");
+			if (debug) System.out.println("Generating time chart...");
 			areaCharts.add(usm.generateTaskTimeChart(tasks, useLiteral));
 		}
 		if (ArrayUtils.contains(selectedMetrics, TASK_CYCLE_RATE)) {
-			if (showLog) System.out.println("Generating cycle rate chart...");
+			if (debug) System.out.println("Generating cycle rate chart...");
 			areaCharts.add(usm.generateTaskCycleRateChart(tasks, useLiteral));
 		}
 		if (ArrayUtils.contains(selectedMetrics, ACTION_OCCURRENCE_RATE)) {
-			if (showLog) System.out.println("Generating action occurrence rate chart...");
+			if (debug) System.out.println("Generating action occurrence rate chart...");
 			barCharts.add(usm.generateActionOccurrenceRateChart(actions, maxResultCount));
 		}
 		if (ArrayUtils.contains(selectedMetrics, TASK_LAYER_COUNT)) {
-			if (showLog) System.out.println("Generating layer count chart...");
+			if (debug) System.out.println("Generating layer count chart...");
 			areaCharts.add(usm.generateTaskLayerCountChart(tasks, useLiteral));
 		}
 		if (ArrayUtils.contains(selectedMetrics, ACTION_TOOLTIP_COUNT)) {
-			if (showLog) System.out.println("Generating tooltip count chart...");
+			if (debug) System.out.println("Generating tooltip count chart...");
 			barCharts.add(usm.generateActionTooltipCountChart(actions, maxResultCount));
 		}
 		if (ArrayUtils.contains(selectedMetrics, ACTION_REPETITION_COUNT)) {
-			if (showLog) System.out.println("Generating action repetition count chart...");
+			if (debug) System.out.println("Generating action repetition count chart...");
 			barCharts.add(usm.generateActionRepetitionCountChart(actions, maxResultCount));
 		}
 		if (ArrayUtils.contains(selectedMetrics, URL_DIFF_ACTION_COUNT)) {
-			if (showLog) System.out.println("Generating url different action count chart...");
+			if (debug) System.out.println("Generating url different action count chart...");
 			barCharts.add(usm.generateUrlElementCountChart(actions, maxResultCount));
 		}
 		
@@ -247,23 +249,30 @@ public class DataMiningSmellsController extends BaseController {
 				ArrayUtils.contains(selectedSmells, LONELY_ACTION) || ArrayUtils.contains(selectedSmells, UNDESCRIPTIVE_ELEMENT) ||
 				ArrayUtils.contains(selectedSmells, MISSING_FEEDBACK) || ArrayUtils.contains(selectedSmells, FAT_INTERFACE);
 		
+		Stopwatch tasksTimer = Stopwatch.createStarted();
 		if (mineSessions) {
 			for (TaskDataMining task : test.getTasks()) {
 				if (ArrayUtils.contains(selectedTasks, task.getId())) {
-					if (showLog) System.out.println("Mining sessions for task " + task.getId() + "...");
+					if (debug) System.out.println("Mining sessions for task " + task.getTitle() + "...");
+					Stopwatch taskTimer = Stopwatch.createStarted();
 					ResultDataMining resultDataMining = WebUsageMining.analyze(task.getId(), initDate, endDate,
 							SessionClassificationDataMiningFilterEnum.SUCCESS_ERROR_REPEAT, taskDataMiningRepository, actionDataMiningRepository);
+					System.out.println("Finished in " + taskTimer.stop());
+					if (debug) System.out.println(resultDataMining.getSessions().size() + " sessions found.");
 					if (resultDataMining.getSessions().size() > 0)
 						tasks.add(new TaskSmellAnalysis(task.getTitle(), resultDataMining.getSessions()));				
 				}
 			}
 		}
+		System.out.println("Task mining took " + tasksTimer.stop());
 		
+		Stopwatch actionsTimer = Stopwatch.createStarted();
 		if (mineActions) {
-			if (showLog) System.out.println("Mining actions...");
+			if (debug) System.out.println("Mining actions...");
 			actions = WebUsageMining.listActionsBetweenDates(
-					test.getTasks().get(0).getId(), taskDataMiningRepository, actionDataMiningRepository,
+					test.getClientAbbreviation(), taskDataMiningRepository, actionDataMiningRepository,
 					new Date(initDate), new Date(endDate), null);
+			if (debug) System.out.println(actions.size() + " actions found.");
 			for (String url : ignoredUrls) {
 				Iterator<ActionDataMining> i = actions.iterator();
 				while (i.hasNext()) {
@@ -273,7 +282,9 @@ public class DataMiningSmellsController extends BaseController {
 				}				
 			}
 		}
+		System.out.println("Action mining took " + actionsTimer.stop());
 		
+		Stopwatch smellsTimer = Stopwatch.createStarted();
 		if (ArrayUtils.contains(selectedSmells, LABORIOUS_TASK)) {
 			int maxActionCount = UsabilitySmellDetector.DEFAULT_VALUE, minSessionCount = UsabilitySmellDetector.DEFAULT_VALUE;
 			long maxTime = UsabilitySmellDetector.DEFAULT_VALUE;
@@ -285,7 +296,7 @@ public class DataMiningSmellsController extends BaseController {
 				if (parameter.getParameterSmell().getId() == MIN_SESSION_COUNT)
 					minSessionCount =  (int)(double)parameter.getValue();
 			}
-			if (showLog) System.out.println("Detecting Laborious Task...");
+			if (debug) System.out.println("Detecting Laborious Task...");
 			List<TaskSmellAnalysisResult> result = usm.detectLaboriousTask(tasks, maxActionCount, maxTime, minSessionCount);
 			if (result.size() > 0)
 				tasksAnalysisResult.put("Laborious Task", result);
@@ -299,7 +310,7 @@ public class DataMiningSmellsController extends BaseController {
 				if (parameter.getParameterSmell().getId() == MIN_ACTION_COUNT)
 					minActionCount =  (int)(double)parameter.getValue();
 			}
-			if (showLog) System.out.println("Detecting Cyclic Task...");
+			if (debug) System.out.println("Detecting Cyclic Task...");
 			List<TaskSmellAnalysisResult> result = usm.detectCyclicTask(tasks, maxCycleRate, minActionCount);
 			if (result.size() > 0)
 				tasksAnalysisResult.put("Cyclic Task", result);
@@ -313,7 +324,7 @@ public class DataMiningSmellsController extends BaseController {
 				if (parameter.getParameterSmell().getId() == MIN_OCCURRENCE_COUNT_LA)
 					minOccurrenceCount =  (int)(double)parameter.getValue();
 			}
-			if (showLog) System.out.println("Detecting Lonely Action...");
+			if (debug) System.out.println("Detecting Lonely Action...");
 			Map<String, Map<String, String>> result = usm.detectLonelyAction(actions, maxOccurrenceRate, minOccurrenceCount);
 			if (result.size() > 0)
 				actionsAnalysisResult.put("Lonely Action", result);
@@ -324,7 +335,7 @@ public class DataMiningSmellsController extends BaseController {
 				if (parameter.getParameterSmell().getId() == MAX_LAYER_COUNT)
 					maxLayerCount =  (int)(double)parameter.getValue();
 			}
-			if (showLog) System.out.println("Detecting Too Many Layers...");
+			if (debug) System.out.println("Detecting Too Many Layers...");
 			List<TaskSmellAnalysisResult> result = usm.detectTooManyLayers(tasks, maxLayerCount);
 			if (result.size() > 0)
 				tasksAnalysisResult.put("Too Many Layers", result);
@@ -337,7 +348,7 @@ public class DataMiningSmellsController extends BaseController {
 				if (parameter.getParameterSmell().getId() == MAX_TIME_INTERVAL);
 					maxTimeInterval =  (int)(double)parameter.getValue();
 			}
-			if (showLog) System.out.println("Detecting Undescriptive Element...");
+			if (debug) System.out.println("Detecting Undescriptive Element...");
 			Map<String, Map<String, String>> result = usm.detectUndescriptiveElement(actions, maxAttemptCount, maxTimeInterval);
 			if (result.size() > 0)
 				actionsAnalysisResult.put("Undescriptive Element", result);
@@ -350,7 +361,7 @@ public class DataMiningSmellsController extends BaseController {
 				if (parameter.getParameterSmell().getId() == MIN_OCCURRENCE_COUNT_MF)
 					minOccurrenceCount =  (int)(double)parameter.getValue();
 			}
-			if (showLog) System.out.println("Detecting Missing Feedback...");
+			if (debug) System.out.println("Detecting Missing Feedback...");
 			Map<String, Map<String, String>> result = usm.detectMissingFeedback(actions, maxRepetitionCount, minOccurrenceCount);
 			if (result.size() > 0)
 				actionsAnalysisResult.put("Missing Feedback", result);
@@ -361,18 +372,19 @@ public class DataMiningSmellsController extends BaseController {
 				if (parameter.getParameterSmell().getId() == MAX_DIFF_ACTION_COUNT)
 					maxActionCount =  parameter.getValue();
 			}
-			if (showLog) System.out.println("Detecting Fat Interface...");
+			if (debug) System.out.println("Detecting Fat Interface...");
 			Map<String, Map<String, String>> result = usm.detectFatInterface(actions, maxActionCount);
 			if (result.size() > 0)
 				actionsAnalysisResult.put("Fat Interface", result);
 		}
+		System.out.println("Smells analysis took " + smellsTimer.stop());
 		
 		String json;		
 		if (tasksAnalysisResult.size() == 0 && actionsAnalysisResult.size() == 0)
 			json = gson.toJson(new ReturnVO(ReturnStatusEnum.SUCESSO, "datamining.smells.testes.detection.appok"));
 		else {
 			if (groupSessions) {
-				if (showLog) System.out.println("Grouping sessions...");
+				if (debug) System.out.println("Grouping sessions...");
 				Map<String, List<TaskSmellAnalysisGroupedResult>> taskAnalysisGroupedResult = new LinkedHashMap<String, List<TaskSmellAnalysisGroupedResult>>();
 				for (Map.Entry<String, List<TaskSmellAnalysisResult>> entry : tasksAnalysisResult.entrySet()) {
 					taskAnalysisGroupedResult.put(entry.getKey(), usm.sessionsGroupedBySimilarity(entry.getValue(), similarityRate));

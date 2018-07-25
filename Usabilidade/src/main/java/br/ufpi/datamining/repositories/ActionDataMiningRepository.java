@@ -80,6 +80,7 @@ public class ActionDataMiningRepository extends Repository<ActionDataMining, Lon
 			}
 			
 			try {
+				query.setMaxResults(800000);
 				return query.getResultList();
 			} catch (NoResultException e) {}
 		}

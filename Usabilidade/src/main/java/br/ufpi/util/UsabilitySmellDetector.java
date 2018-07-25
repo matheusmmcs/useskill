@@ -70,6 +70,9 @@ import br.ufpi.datamining.repositories.ActionDataMiningRepository;
 
 
 public class UsabilitySmellDetector {
+	
+	private static final boolean debug = true;
+	
 	private static final Logger log = Logger.getLogger(UsabilitySmellDetector.class.getName());
 	
 	public static final int DEFAULT_VALUE = -1;
@@ -133,17 +136,19 @@ public class UsabilitySmellDetector {
 				if (session.getClassification().equals(SessionClassificationDataMiningEnum.SUCCESS)) {
 					taskTimeDataset.add((double)session.getTime());
 				}
-			}			
-			XYSerie taskTimeSerie = new XYSerie(task.getName());
-			XYSerie datasetDistributionSerie;
-			if (useLiteral)
-				datasetDistributionSerie = datasetDistributionLiteralSerie(task.getName(), taskTimeDataset);
-			else
-				datasetDistributionSerie = datasetDistributionSerie(task.getName(), taskTimeDataset);
-			for (XYCoordinate coordinate : datasetDistributionSerie.getCoordinates()) {
-				taskTimeSerie.addCoordinate(new XYCoordinate(coordinate.getX(), TimeUnit.MILLISECONDS.toMinutes(Math.round(coordinate.getY()))));
 			}
-			series.add(taskTimeSerie);
+			if (taskTimeDataset.size() > 0) {
+				XYSerie taskTimeSerie = new XYSerie(task.getName());
+				XYSerie datasetDistributionSerie;
+				if (useLiteral)
+					datasetDistributionSerie = datasetDistributionLiteralSerie(task.getName(), taskTimeDataset);
+				else
+					datasetDistributionSerie = datasetDistributionSerie(task.getName(), taskTimeDataset);
+				for (XYCoordinate coordinate : datasetDistributionSerie.getCoordinates()) {
+					taskTimeSerie.addCoordinate(new XYCoordinate(coordinate.getX(), TimeUnit.MILLISECONDS.toMinutes(Math.round(coordinate.getY()))));
+				}
+				series.add(taskTimeSerie);
+			}
 		}
 		String xLabel;
 		if (useLiteral)
@@ -451,10 +456,28 @@ public class UsabilitySmellDetector {
 	 */
 	public List<TaskSmellAnalysisResult> detectLaboriousTask (List<TaskSmellAnalysis> tasks, int maxActionCount, long maxTime, int minSessionCount) throws IOException{
 		List<TaskSmellAnalysisResult> detections = new ArrayList<TaskSmellAnalysisResult>();
-		if (maxActionCount == DEFAULT_VALUE)
-			maxActionCount = 50;
-		if (maxTime == DEFAULT_VALUE)
-			maxTime = TimeUnit.MINUTES.toMillis(20);
+		if (maxActionCount == DEFAULT_VALUE) {
+			if (debug) System.out.println("Calculating action count threshold...");
+			List<Long> sessionsActionsCounts = new ArrayList<Long>();
+			for (TaskSmellAnalysis task : tasks) {
+				for (SessionResultDataMining session : task.getSessions())
+					sessionsActionsCounts.add((long) explicitActionCount(session));
+			}
+			maxActionCount = (int) upperOuterFence(sessionsActionsCounts);
+			if (debug) System.out.println("Max action count has been set to " + maxActionCount);
+//			maxActionCount = 50;
+		}
+		if (maxTime == DEFAULT_VALUE) {
+			if (debug) System.out.println("Calculating time threshold...");
+			List<Long> sessionsTimes = new ArrayList<Long>();
+			for (TaskSmellAnalysis task : tasks) {
+				for (SessionResultDataMining session : task.getSessions())
+					sessionsTimes.add(session.getTime());
+			}
+			maxTime = upperOuterFence(sessionsTimes);
+			if (debug) System.out.println("Max time has been set to " + TimeUnit.MILLISECONDS.toMinutes(maxTime) + " min");
+//			maxTime = TimeUnit.MINUTES.toMillis(20);
+		}
 		if (minSessionCount == DEFAULT_VALUE)
 			minSessionCount = 10;
 		for (TaskSmellAnalysis task : tasks) {
@@ -502,7 +525,7 @@ public class UsabilitySmellDetector {
 	public List<TaskSmellAnalysisResult> detectCyclicTask (List<TaskSmellAnalysis> tasks, double maxCycleRate, int minActionCount) throws IOException{
 		List<TaskSmellAnalysisResult> detections = new ArrayList<TaskSmellAnalysisResult>();
 		if (maxCycleRate == DEFAULT_VALUE)
-			maxCycleRate = 0.9;
+			maxCycleRate = 0.7;
 		if (minActionCount == DEFAULT_VALUE)
 			minActionCount = 10;
 		for (TaskSmellAnalysis task : tasks) {
@@ -580,13 +603,17 @@ public class UsabilitySmellDetector {
 			Multiset<String> urlActionsIdsFrequencyMapping = HashMultiset.create();
 			urlActionsIdsFrequencyMapping.addAll(urlActionsIds);			
 			if (recalcOcurrenceRate) {
-				if (urlActionsIdsFrequencyMapping.size() > 1) {
+				if (urlActionsIdsFrequencyMapping.elementSet().size() > 1) {
 					List<Double> urlActionsFrequencyRates = new ArrayList<Double>();
 					for (String id : urlActionsIdsFrequencyMapping.elementSet()) {
 						double rate = (double)urlActionsIdsFrequencyMapping.count(id)/urlActionsIds.size();
 						urlActionsFrequencyRates.add(rate);
 					}
 					Collections.sort(urlActionsFrequencyRates);
+					if (urlActionsFrequencyRates.size()-2 < 0) {
+						System.out.println(urlActionsIdsFrequencyMapping.size() + " " + urlActionsFrequencyRates);
+						System.in.read();
+					}
 					maxOccurrenceRate = 5*urlActionsFrequencyRates.get(urlActionsFrequencyRates.size()-2);
 				} else {
 					maxOccurrenceRate = 0;
@@ -599,11 +626,7 @@ public class UsabilitySmellDetector {
 					Map<String, String> actionInfo = new LinkedHashMap<String, String>();
 					actionInfo.put("datamining.smells.testes.occurrencerate", String.format("%.2f", actionOccurrenceRate*100));
 					actionInfo.put("datamining.smells.testes.occurrencecount", String.valueOf(actionOccurrenceCount));
-					ActionDataMining action = getActionById(sessionFreeActions, actionId);
-					if (!action.getsContent().equals("")) actionInfo.put("datamining.smells.testes.content", action.getsContent());
-					if (!action.getsJhm().equals("")) actionInfo.put("datamining.smells.testes.jhm", action.getsJhm());
-					if (!action.getsStepJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmstep", action.getsStepJhm());
-					if (!action.getsActionJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmaction", action.getsActionJhm());
+					actionInfo.putAll(actionCommonAttributes(actionId, sessionFreeActions));					
 					detections.put(actionId, actionInfo);
 					break;
 				}
@@ -686,7 +709,10 @@ public class UsabilitySmellDetector {
 	 */
 	public Map<String, Map<String, String>> detectUndescriptiveElement (List<ActionDataMining> actions, int maxAttemptCount, int maxTimeInterval) throws IOException {
 		if (maxAttemptCount == DEFAULT_VALUE) {
-			maxAttemptCount = 100;
+			maxAttemptCount = 30;
+		}
+		if (maxTimeInterval == DEFAULT_VALUE) {
+			maxTimeInterval = 5;
 		}
 		List<ActionDataMining> sessionFreeActions = sessionFreeActions(actions);
 		Map<String, Map<String, String>> detections = new HashMap<String, Map<String,String>>();
@@ -712,11 +738,7 @@ public class UsabilitySmellDetector {
 				if (actionCount > maxAttemptCount) {
 					Map<String, String> actionInfo = new HashMap<String, String>();
 					actionInfo.put("datamining.smells.testes.tooltipattempts", String.valueOf(actionCount));
-					ActionDataMining action = getActionById(sessionFreeActions, actionId);
-					if (!action.getsContent().equals("")) actionInfo.put("datamining.smells.testes.content", action.getsContent());
-					if (!action.getsJhm().equals("")) actionInfo.put("datamining.smells.testes.jhm", action.getsJhm());
-					if (!action.getsStepJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmstep", action.getsStepJhm());
-					if (!action.getsActionJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmaction", action.getsActionJhm());
+					actionInfo.putAll(actionCommonAttributes(actionId, sessionFreeActions));
 					detections.put(actionId, actionInfo);
 				}
 			}
@@ -800,11 +822,7 @@ public class UsabilitySmellDetector {
 					Map<String, String> actionInfo = new LinkedHashMap<String, String>();
 					actionInfo.put("datamining.smells.testes.repetitionmedian", String.valueOf(actionRepetitionsMedian));
 					actionInfo.put("datamining.smells.testes.instances", String.valueOf(actionsRepetitions.get(actionId).size()));
-					ActionDataMining action = getActionById(sessionFreeActions, actionId);
-					if (!action.getsContent().equals("")) actionInfo.put("datamining.smells.testes.content", action.getsContent());
-					if (!action.getsJhm().equals("")) actionInfo.put("datamining.smells.testes.jhm", action.getsJhm());
-					if (!action.getsStepJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmstep", action.getsStepJhm());
-					if (!action.getsActionJhm().equals("")) actionInfo.put("datamining.smells.testes.jhmaction", action.getsActionJhm());
+					actionInfo.putAll(actionCommonAttributes(actionId, sessionFreeActions));
 					detections.put(actionId, actionInfo);
 				}				
 			}
@@ -1116,7 +1134,7 @@ public class UsabilitySmellDetector {
 	 * @param	actionId	o id de uma ação presente na lista de entrada
 	 * @return				a ação da lista de entrada com o id correspondente
 	 */
-	private ActionDataMining getActionById (List<ActionDataMining> actions, String actionId){
+	private ActionDataMining getActionById (String actionId, List<ActionDataMining> actions){
 		for (ActionDataMining action : actions) {
 			if (actionId.equals(actionId(action))) {
 				return action;
@@ -1230,12 +1248,12 @@ public class UsabilitySmellDetector {
 	 * @return				os atributos da ação com o id, de acordo com a lista de entrada
 	 */
 	private Map<String, String> actionCommonAttributes (String actionId, List<ActionDataMining> actions) {
-		ActionDataMining action = getActionById(actions, actionId);
+		ActionDataMining action = getActionById(actionId, actions);
 		Map<String, String> actionAttributes = new LinkedHashMap<String, String>();
-		if (!action.getsContent().equals("")) actionAttributes.put("datamining.smells.testes.content", action.getsContent());
-		if (!action.getsJhm().equals("")) actionAttributes.put("datamining.smells.testes.jhm", action.getsJhm());
-		if (!action.getsStepJhm().equals("")) actionAttributes.put("datamining.smells.testes.jhmstep", action.getsStepJhm());
-		if (!action.getsActionJhm().equals("")) actionAttributes.put("datamining.smells.testes.jhmaction", action.getsActionJhm());
+		if (action.getsContent() != null && !action.getsContent().equals("")) actionAttributes.put("datamining.smells.testes.content", action.getsContent());
+		if (action.getsJhm() != null && !action.getsJhm().equals("")) actionAttributes.put("datamining.smells.testes.jhm", action.getsJhm());
+		if (action.getsStepJhm() != null && !action.getsStepJhm().equals("")) actionAttributes.put("datamining.smells.testes.jhmstep", action.getsStepJhm());
+		if (action.getsActionJhm() != null && !action.getsActionJhm().equals("")) actionAttributes.put("datamining.smells.testes.jhmaction", action.getsActionJhm());
 		return actionAttributes;
 	}
 	

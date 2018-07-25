@@ -898,7 +898,7 @@ angular.module('useskill',
 		smellCtrl.smellsSelected.push(i+1);
 	}
 	for (var i = 0; i < smellCtrl.test.tasks.length; i++) {
-		smellCtrl.tasksSelected.push(i+1);
+		smellCtrl.tasksSelected.push(smellCtrl.test.tasks[i].id);
 	}
 	
 	var obj = angular.toJson({
@@ -1081,6 +1081,10 @@ angular.module('useskill',
 			console.error(data);
 		});
 		smellCtrl.ignoredUrls.splice(index, 1);
+	}
+	
+	smellCtrl.objectSize = function (object) {
+		return Object.keys(object).length;
 	}
 })
 .controller('SmellConfigController', function(parameters, idSmell, UtilsService, SmellsEnum, ServerAPI) {

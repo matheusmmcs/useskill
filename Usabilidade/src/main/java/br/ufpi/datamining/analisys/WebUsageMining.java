@@ -317,7 +317,9 @@ public class WebUsageMining {
 							fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
 						}
 					} else {
-						fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
+						if (f.valueToObject() != null) {
+							fieldsSearch.add(new FieldSearch(f.getField(), f.getField(), f.valueToObject(), FieldSearchComparatorEnum.EQUALS));
+						}
 					}
 				}
 				//verifica janela temporal
@@ -924,6 +926,10 @@ public class WebUsageMining {
 		TaskDataMining taskDataMining = taskDataMiningRepository.find(taskId);
 		String clientAbbreviation = taskDataMining.getTestDataMining().getClientAbbreviation();
 		
+		return listActionsBetweenDates(clientAbbreviation, taskDataMiningRepository, actionDataMiningRepository, initialDate, finalDate, limit);
+	}
+	
+	public static List<ActionDataMining> listActionsBetweenDates(String clientAbbreviation, TaskDataMiningRepository taskDataMiningRepository, ActionDataMiningRepository actionDataMiningRepository, Date initialDate, Date finalDate, Long limit) {
 		List<FieldSearch> fieldsSearch = new ArrayList<FieldSearch>();
 		fieldsSearch.add(new FieldSearch("sClient", "sClient", clientAbbreviation, FieldSearchComparatorEnum.EQUALS));
 		if (initialDate != null) {
@@ -957,10 +963,10 @@ public class WebUsageMining {
 	private static boolean listContainsAction(List<ActionDataMining> list, ActionDataMining action){
 		for(ActionDataMining a : list){
 			
-			if(a.getsActionType().equals(action.getsActionType())
-				&& a.getsJhm().equals(action.getsJhm())
-				//&& a.getsUrl().equals(action.getsUrl())
-				&& a.getsStepJhm().equals(action.getsStepJhm())){
+			boolean containsJhm = a.getsJhm() != null && action.getsJhm() != null;
+			boolean actionsEqualsLocation = !containsJhm ? a.getsUrl().equals(action.getsUrl()) : (a.getsJhm().equals(action.getsJhm()) && a.getsStepJhm().equals(action.getsStepJhm()));
+			
+			if(a.getsActionType().equals(action.getsActionType()) && actionsEqualsLocation){
 				
 				if(action.getsActionType().equals(ActionTypeDataMiningEnum.click.getAction()) ||
 					action.getsActionType().equals(ActionTypeDataMiningEnum.focusout.getAction()) ||
