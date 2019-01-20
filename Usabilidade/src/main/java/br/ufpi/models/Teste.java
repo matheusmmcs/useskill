@@ -8,13 +8,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * 
  * @author Cleiton
  */
-@XmlRootElement
 @NamedQueries({
 		@NamedQuery(name = "Teste.findAll", query = "SELECT t FROM Teste t"),
 		@NamedQuery(name = "Teste.findById", query = "SELECT t FROM Teste t WHERE t.id = :id"),
